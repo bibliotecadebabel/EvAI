@@ -11,6 +11,7 @@ dt=0.1
 Comp=2
 S=3000
 test=True
+k=10
 
 if not(test):
     Target = input("What is the targets name?  ")
