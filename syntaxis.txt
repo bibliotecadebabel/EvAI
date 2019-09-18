@@ -1,0 +1,3 @@
+ np.save('test3.npy', a)    # .npy extension is added if not given
+In  [9]: d = np.load('test3.npy')
+np.random.rand(3,2)

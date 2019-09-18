@@ -1,0 +1,18 @@
+ np.save('test3.npy', a)    # .npy extension is added if not given
+In  [9]: d = np.load('test3.npy')
+np.random.rand(3,2)
+
+import random
+for x in range(10):
+  print random.randint(1,101)
+
+import sys
+print (sys.argv)
+text = input("prompt")  # Python 3
+
+In [1]: ls = [1,2,3]
+
+In [2]: ls.insert(0, "new")
+
+In [3]: ls
+Out[3]: ['new', 1, 2, 3]
