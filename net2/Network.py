@@ -1,0 +1,154 @@
+import Node as nd
+import Layer as ly
+import Functions
+
+class Network:
+
+    def __init__(self, objects):
+        # objects [x, y, k]
+        # x -> dimension x
+        # y -> dimension y
+        # k -> cantidad filtros
+        self.objects = objects
+        self.nodes = []
+        self.__createStructure()
+
+    def __createStructure(self):
+        nodes = []
+
+        nodes.append(nd.Node())
+        nodes.append(nd.Node())
+        nodes.append(nd.Node())
+        nodes.append(nd.Node())
+        nodes.append(nd.Node())
+
+        nodes[0].kids.append(nodes[1])
+        nodes[1].kids.append(nodes[2])
+        nodes[2].kids.append(nodes[3])
+        nodes[3].kids.append(nodes[4])
+
+        nodes[1].parents.append(nodes[0])
+        nodes[2].parents.append(nodes[1])
+        nodes[3].parents.append(nodes[2])
+        nodes[4].parents.append(nodes[3])
+
+
+        self.nodes = nodes 
+        self.__assignLayers()
+
+    def __assignLayers(self):
+
+        self.nodes[0].objects.append(ly.Layer(propagate=Functions.Nothing, node=self.nodes[0], 
+                            filters=Functions.createFilterA(self.objects), value=Functions.createValueA(self.objects),
+                            bias=Functions.createValueA(self.objects), backPropagate=Functions.a_filter_der))
+
+        self.nodes[1].objects.append(ly.Layer(propagate=Functions.ProductoPunto, node=self.nodes[1], 
+                           filters=Functions.createFilterB(self.objects), 
+                           bias=None, backPropagate=Functions.b_filter_der))
+
+        self.nodes[2].objects.append(ly.Layer(propagate=Functions.ProductoPunto, node=self.nodes[2],backPropagate=Functions.c_filter_der))
+        self.nodes[3].objects.append(ly.Layer(propagate=Functions.probability, node=self.nodes[3], backPropagate=Functions.probability_der))
+        self.nodes[4].objects.append(ly.Layer(propagate=Functions.logaritmo, node=self.nodes[4], backPropagate=Functions.Nothing))
+
+    def assign(self, x, label=None):
+        self.nodes[0].objects[0].value = x
+        self.nodes[3].objects[0].label = label
+
+    def Acumulate_der(self, n, peso=1):
+
+        for node in self.nodes:
+            layer = node.objects[0]
+
+            if layer.value_der is not None and layer.value_der_total is not None:
+                layer.value_der_total = (layer.value_der_total + layer.value_der) / n * peso
+
+            if layer.bias_der is not None and layer.bias_der_total is not None:
+                layer.bias_der_total = (layer.bias_der_total + layer.bias_der) / n * peso
+            
+            if layer.filter_der is not None and layer.filter_der_total is not None:
+                layer.filter_der_total = (layer.filter_der_total + layer.filter_der) / n * peso
+    
+    def Regularize_der(self):
+        
+        for node in self.nodes:
+            layer = node.objects[0]
+
+            if layer.bias is not None and layer.bias_der_total is not None:
+                layer.bias_der_total = layer.bias_der_total + layer.bias
+            
+            if layer.filters is not None and layer.filter_der_total is not None:
+                layer.filter_der_total = layer.filter_der_total + layer.filters
+
+    def Reset_der(self):
+
+        for node in self.nodes:
+            layer = node.objects[0]
+
+            if layer.value_der is not None:
+                layer.value_der = layer.value_der * 0
+
+            if layer.bias_der is not None:
+                layer.bias_der = layer.bias_der * 0
+            
+            if layer.filter_der is not None:
+                layer.filter_der = layer.filter_der * 0
+
+    def Reset_der_total(self):
+
+        for node in self.nodes:
+            layer = node.objects[0]
+
+            if layer.value_der_total is not None:
+                layer.value_der_total = layer.value_der_total * 0
+
+            if layer.bias_der_total is not None:
+                layer.bias_der_total = layer.bias_der_total * 0
+            
+            if layer.filter_der_total is not None:
+                layer.filter_der_total = layer.filter_der_total * 0
+
+    def Predict(self, image):
+        self.nodes[0].objects[0].value = image
+        
+        #Functions.Propagation(self.nodes[3].objects[0])
+        self.nodes[3].objects[0].propagate(self.nodes[3].objects[0])
+
+        print(self.nodes[3].objects[0].value)
+
+        return self.nodes[3].objects[0].value
+    
+    def Training(self, data, dt=0.1, p=0.9):
+        n = len(data) * 5/4
+        peso = len(data) / 4
+
+        self.Train(data[0], peso, n)
+
+        
+        while self.Predict(data[0]) < p:
+            self.Train(data[0], peso, n)
+
+            for image in data[1:]:
+                self.Train(image, 1, n)
+            
+            self.Regularize_der()
+            self.Update(dt)
+            self.Reset_der_total()
+        
+
+    def Train(self, dataElement, peso, n):
+        self.nodes[0].objects[0].value = dataElement[0]
+        self.nodes[3].objects[0].label = dataElement[1]
+
+        Functions.Propagation(self.nodes[4].objects[0])
+        Functions.BackPropagation(self.nodes[0].objects[0])
+
+        self.Acumulate_der(n, peso)
+
+    def Update(self, dt):
+        
+        for node in self.nodes:
+            layer = node.objects[0]
+
+            if layer.filter_der_total is not None and layer.bias_der_total is not None:
+                layer.filters = layer.filters - (layer.filter_der_total * dt)
+                layer.bias = layer.bias - (layer.bias_der_total * dt)
