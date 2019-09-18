@@ -89,14 +89,14 @@ def b_filter_der(layer):
     kid = layer.node.kids[0]
     filter_der = np.zeros((layer.filters.shape), dtype=float)
 
-    filter_der[0] = layer.value*kid.objects[0].value_der[0]
-    filter_der[1] = layer.value*kid.objects[0].value_der[1]
+    filter_der[0] = (layer.value*kid.objects[0].value_der[0])/len(layer.value)
+    filter_der[1] = (layer.value*kid.objects[0].value_der[1])/len(layer.value)
 
     value_der = np.zeros((layer.value.shape), dtype=float)
     bias_der = np.zeros((layer.value.shape), dtype=float)
 
-    value_der = (layer.filters[0] * kid.objects[0].value_der[0]) + (layer.filters[1] * kid.objects[0].value_der[1])
-    bias_der = (layer.filters[0] * kid.objects[0].value_der[0]) + (layer.filters[1] * kid.objects[0].value_der[1])
+    value_der = ((layer.filters[0] * kid.objects[0].value_der[0])/len(layer.filters[0])) + ((layer.filters[1] * kid.objects[0].value_der[1])/len(layer.filters[1]))
+    bias_der = ((layer.filters[0] * kid.objects[0].value_der[0])/len(layer.filters[0])) + ((layer.filters[1] * kid.objects[0].value_der[1])/len(layer.filters[1]))
 
     layer.filter_der = filter_der
     layer.filter_der_total = np.zeros((layer.filter_der.shape), dtype=float)
