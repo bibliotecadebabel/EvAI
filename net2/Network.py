@@ -38,17 +38,11 @@ class Network:
 
     def __assignLayers(self):
 
-        self.nodes[0].objects.append(ly.Layer(propagate=Functions.Nothing, node=self.nodes[0], 
-                            filters=Functions.createFilterA(self.objects), value=Functions.createValueA(self.objects),
-                            bias=Functions.createValueA(self.objects), backPropagate=Functions.a_filter_der))
-
-        self.nodes[1].objects.append(ly.Layer(propagate=Functions.ProductoPunto, node=self.nodes[1], 
-                           filters=Functions.createFilterB(self.objects), 
-                           bias=None, backPropagate=Functions.b_filter_der))
-
-        self.nodes[2].objects.append(ly.Layer(propagate=Functions.ProductoPunto, node=self.nodes[2],backPropagate=Functions.c_filter_der))
-        self.nodes[3].objects.append(ly.Layer(propagate=Functions.probability, node=self.nodes[3], backPropagate=Functions.probability_der))
-        self.nodes[4].objects.append(ly.Layer(propagate=Functions.logaritmo, node=self.nodes[4], backPropagate=Functions.Nothing))
+        self.nodes[0].objects.append(ly.createLayerA(self.nodes[0], self.objects))
+        self.nodes[1].objects.append(ly.createLayerB(self.nodes[1], self.objects))
+        self.nodes[2].objects.append(ly.createLayerC(self.nodes[2]))
+        self.nodes[3].objects.append(ly.createLayerD(self.nodes[3]))
+        self.nodes[4].objects.append(ly.createLayerE(self.nodes[4]))
 
     def assign(self, x, label=None):
         self.nodes[0].objects[0].value = x

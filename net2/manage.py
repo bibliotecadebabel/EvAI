@@ -40,7 +40,7 @@ def generateImageRandom(objects):
     
     return image
 
-x = 3
+x = 2
 y = 2
 k = 2
 
