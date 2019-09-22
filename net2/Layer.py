@@ -83,6 +83,8 @@ def createLayerC(nodeC):
     layer.bias_der = Functions.createTensorZero(layer.value.shape)
     layer.bias_der_total = Functions.createTensorZero(layer.value.shape)
 
+    layer.label = "c"
+    
     return layer
 
 def createLayerD(nodeD):
