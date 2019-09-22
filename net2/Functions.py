@@ -25,17 +25,11 @@ def Nothing(layer):
 def ProductoPunto(layer):
     parent = layer.node.parents[0]
     
-    value = np.zeros(len(parent.objects[0].filters))
-    bias = np.zeros(len(parent.objects[0].filters))
+    for i in range(len(parent.objects[0].filters)):
+        layer.value[i] = Dot(parent.objects[0].filters[i], (parent.objects[0].value + parent.objects[0].bias))
 
     for i in range(len(parent.objects[0].filters)):
-        value[i] = Dot(parent.objects[0].filters[i], (parent.objects[0].value + parent.objects[0].bias))
-
-    for i in range(len(parent.objects[0].filters)):
-        bias[i] = Dot(parent.objects[0].filters[i], (parent.objects[0].value + parent.objects[0].bias))
-
-    layer.value = value
-    layer.bias = bias
+        layer.bias[i] = Dot(parent.objects[0].filters[i], (parent.objects[0].value + parent.objects[0].bias))
 
 def probability(layer):
     parent = layer.node.parents[0]
@@ -51,8 +45,6 @@ def logaritmo(layer):
     parent = layer.node.parents[0]
     layer.value = np.log(parent.objects[0].value)*-1
 
-## f = filter
-## v = value
 def Dot(f, v):
 
     y = f * v
@@ -83,47 +75,24 @@ def c_filter_der(layer):
     
     layer.value_der = filter_der*kid.objects[0].value_der
 
-    layer.value_der_total = np.zeros((layer.value_der.shape), dtype=float)
-
 def b_filter_der(layer):
     kid = layer.node.kids[0]
-    filter_der = np.zeros((layer.filters.shape), dtype=float)
 
-    filter_der[0] = (layer.value*kid.objects[0].value_der[0])/len(layer.value)
-    filter_der[1] = (layer.value*kid.objects[0].value_der[1])/len(layer.value)
+    layer.filter_der[0] = (layer.value*kid.objects[0].value_der[0])/len(layer.value)
+    layer.filter_der[1] = (layer.value*kid.objects[0].value_der[1])/len(layer.value)
 
-    value_der = np.zeros((layer.value.shape), dtype=float)
-    bias_der = np.zeros((layer.value.shape), dtype=float)
-
-    value_der = ((layer.filters[0] * kid.objects[0].value_der[0])/len(layer.filters[0])) + ((layer.filters[1] * kid.objects[0].value_der[1])/len(layer.filters[1]))
-    bias_der = ((layer.filters[0] * kid.objects[0].value_der[0])/len(layer.filters[0])) + ((layer.filters[1] * kid.objects[0].value_der[1])/len(layer.filters[1]))
-
-    layer.filter_der = filter_der
-    layer.filter_der_total = np.zeros((layer.filter_der.shape), dtype=float)
-    
-    layer.value_der = value_der
-    layer.value_der_total = np.zeros((layer.value_der.shape), dtype=float)
-
-    layer.bias_der = bias_der
-    layer.bias_der_total = np.zeros((layer.bias_der.shape), dtype=float)
+    layer.value_der = ((layer.filters[0] * kid.objects[0].value_der[0])/len(layer.filters[0])) + ((layer.filters[1] * kid.objects[0].value_der[1])/len(layer.filters[1]))
+    layer.bias_der = ((layer.filters[0] * kid.objects[0].value_der[0])/len(layer.filters[0])) + ((layer.filters[1] * kid.objects[0].value_der[1])/len(layer.filters[1]))
 
 def a_filter_der(layer):
 
-    filter_der = np.zeros((layer.filters.shape), dtype=float)
-    bias_der = np.zeros((layer.value.shape), dtype=float)
     kid = layer.node.kids[0]
 
     for i in range(layer.filters.shape[0]):
-        filter_der[i] = (layer.value * kid.objects[0].value_der[i])/len(layer.value)
+        layer.filter_der[i] = (layer.value * kid.objects[0].value_der[i])/len(layer.value)
 
     for i in range(layer.filters.shape[0]):
-        bias_der += (layer.filters[i] * kid.objects[0].value_der[i])/len(layer.filters[i])
-    
-    layer.filter_der = filter_der
-    layer.bias_der = bias_der
-
-    layer.bias_der_total = np.zeros((layer.bias_der.shape), dtype=float)
-    layer.filter_der_total = np.zeros((layer.filter_der.shape), dtype=float)
+        layer.bias_der += (layer.filters[i] * kid.objects[0].value_der[i])/len(layer.filters[i])
 
 ############### ELIMINAR FILTROS ###############
 
@@ -227,19 +196,12 @@ def createNewFilterNodeB(oldFilter, newShape):
 
 
 
-############### ESTRUCTURA INICIAL NODOS A & B ###############
+############### CREADOR DE TENSORES ###############
 
-def createFilterA(networkObjects):
+def createTensorZero(shape):
 
-    filters = np.random.rand(networkObjects[2],networkObjects[0], networkObjects[1], 3)
-    return filters
+    return np.zeros((shape), dtype=float)
 
-def createValueA(networkObjects):
+def createTensorRandom(shape):
 
-    return np.random.rand(networkObjects[0], networkObjects[1], 3)
-
-def createFilterB(networkObjects):
-
-    filters = np.random.rand(2, networkObjects[2])
-
-    return filters
+    return np.random.rand(*shape)
