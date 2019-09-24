@@ -40,18 +40,18 @@ def generateImageRandom(objects):
 
     return image
 
-def Test_node_3(network,n=5,dt=0.01):
+def Test_node_4(network,n=5,dt=0.01):
     k=0
     layer_f=network.nodes[4].objects[0]
     layer_i=network.nodes[3].objects[0]
     while k<5:
-        print(layer_f.value)
+        print("K= ",k)
+        print("value of layer_f: ", layer_f.value)
         network.Reset_der_total()
-        print('The value of the parent is')
-        print(layer_f.node.parents[0].objects[0].value)
+        print('The value of the parent is ', layer_f.node.parents[0].objects[0].value, "\n")
         layer_f.propagate(layer_f)
-        layer_i.backpropagate(layer_i)
-        network.Acumulate_der()
+        layer_i.backPropagate(layer_i)
+        network.Acumulate_der(n)
         network.Update(dt)
         k=k+1
 
@@ -67,7 +67,7 @@ objects = Functions.np.full((3), (x, y, k))
 
 network = nw.Network([x,y,k])
 print('testing node 3')
-Test_node_3(network)
+Test_node_4(network)
 
 
 #data = []

@@ -203,5 +203,13 @@ def createTensorZero(shape):
     return np.zeros((shape), dtype=float)
 
 def createTensorRandom(shape):
+    
+
+    if isinstance(shape, int):
+        shape = [shape] 
 
     return np.random.rand(*shape)
+
+def generateNumberRandom():
+    
+    return random.random()
