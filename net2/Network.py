@@ -33,7 +33,7 @@ class Network:
         nodes[4].parents.append(nodes[3])
 
 
-        self.nodes = nodes 
+        self.nodes = nodes
         self.__assignLayers()
 
     def __assignLayers(self):
@@ -58,18 +58,18 @@ class Network:
 
             if layer.bias_der is not None and layer.bias_der_total is not None:
                 layer.bias_der_total = (layer.bias_der_total + layer.bias_der) / n * peso
-            
+
             if layer.filter_der is not None and layer.filter_der_total is not None:
                 layer.filter_der_total = (layer.filter_der_total + layer.filter_der) / n * peso
-    
+
     def Regularize_der(self):
-        
+
         for node in self.nodes:
             layer = node.objects[0]
 
             if layer.bias is not None and layer.bias_der_total is not None:
                 layer.bias_der_total = layer.bias_der_total + layer.bias
-            
+
             if layer.filters is not None and layer.filter_der_total is not None:
                 layer.filter_der_total = layer.filter_der_total + layer.filters
 
@@ -83,7 +83,7 @@ class Network:
 
             if layer.bias_der is not None:
                 layer.bias_der = layer.bias_der * 0
-            
+
             if layer.filter_der is not None:
                 layer.filter_der = layer.filter_der * 0
 
@@ -97,37 +97,37 @@ class Network:
 
             if layer.bias_der_total is not None:
                 layer.bias_der_total = layer.bias_der_total * 0
-            
+
             if layer.filter_der_total is not None:
                 layer.filter_der_total = layer.filter_der_total * 0
 
     def Predict(self, image):
         self.nodes[0].objects[0].value = image
-        
+
         #Functions.Propagation(self.nodes[3].objects[0])
         self.nodes[3].objects[0].propagate(self.nodes[3].objects[0])
 
         print(self.nodes[3].objects[0].value)
 
         return self.nodes[3].objects[0].value
-    
+
     def Training(self, data, dt=0.1, p=0.9):
         n = len(data) * 5/4
         peso = len(data) / 4
 
         self.Train(data[0], peso, n)
 
-        
+
         while self.Predict(data[0]) < p:
             self.Train(data[0], peso, n)
 
             for image in data[1:]:
                 self.Train(image, 1, n)
-            
+
             self.Regularize_der()
             self.Update(dt)
             self.Reset_der_total()
-        
+
 
     def Train(self, dataElement, peso, n):
         self.nodes[0].objects[0].value = dataElement[0]
@@ -139,7 +139,7 @@ class Network:
         self.Acumulate_der(n, peso)
 
     def Update(self, dt):
-        
+
         for node in self.nodes:
             layer = node.objects[0]
 

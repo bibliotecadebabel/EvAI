@@ -8,9 +8,9 @@ def Propagation(layer):
         Propagation(layerParent)
 
     layer.propagate(layer)
- 
+
 def BackPropagation(layer):
-    
+
     for kid in layer.node.kids:
         kidLayer = kid.objects[0]
         BackPropagation(kidLayer)
@@ -24,7 +24,7 @@ def Nothing(layer):
 
 def ProductoPunto(layer):
     parent = layer.node.parents[0]
-    
+
     for i in range(len(parent.objects[0].filters)):
         layer.value[i] = Dot(parent.objects[0].filters[i], (parent.objects[0].value + parent.objects[0].bias))
 
@@ -33,12 +33,13 @@ def ProductoPunto(layer):
 
 def probability(layer):
     parent = layer.node.parents[0]
-    sc =  parent.objects[0].value[0] 
+    sc =  parent.objects[0].value[0]
     sn = parent.objects[0].value[1]
-
-    if parent.objects[0].label is None or parent.objects[0].label == "c":
+    label=parent.objects[0].label
+    #print(label)
+    if label is None or label == "c":
         layer.value = np.exp(sc)/(np.exp(sc) + np.exp(sn))
-    elif parent.objects[0].label == "n":
+    elif label == "n":
         layer.value = (np.exp(sn)/(np.exp(sc) + np.exp(sn)))
 
 def logaritmo(layer):
@@ -49,9 +50,9 @@ def Dot(f, v):
 
     y = f * v
     y = y.sum()
-    y = y / len(f)
+    y = y / (len(f)*255)
 
-    return y 
+    return y
 
 ############### FUNCIONES BACKPROPAGATE ###############
 
@@ -61,38 +62,40 @@ def probability_der(layer):
 def c_filter_der(layer):
     kid = layer.node.kids[0]
     p = kid.objects[0].value
-    sc = layer.value[0] 
+    sc = layer.value[0]
     sn = layer.value[1]
-
+    label=layer.label
     filter_der = np.zeros(2, dtype=float)
-
-    if kid.objects[0].label == "c":
+    if label == "c":
         filter_der[0] = p - (p*p)
         filter_der[1] = (-(p*p)*np.exp(sn))/np.exp(sc)
     else:
         filter_der[0] = (-(p*p)*np.exp(sc))/np.exp(sn)
         filter_der[1] = p - (p*p)
-    
+
     layer.value_der = filter_der*kid.objects[0].value_der
 
 def b_filter_der(layer):
     kid = layer.node.kids[0]
 
-    layer.filter_der[0] = (layer.value*kid.objects[0].value_der[0])/len(layer.value)
-    layer.filter_der[1] = (layer.value*kid.objects[0].value_der[1])/len(layer.value)
+    layer.filter_der[0] = (layer.value+layer.bias)*kid.objects[0].value_der[0]
+    layer.filter_der[1] = (layer.value+layer.bias)*kid.objects[0].value_der[1]
 
-    layer.value_der = ((layer.filters[0] * kid.objects[0].value_der[0])/len(layer.filters[0])) + ((layer.filters[1] * kid.objects[0].value_der[1])/len(layer.filters[1]))
-    layer.bias_der = ((layer.filters[0] * kid.objects[0].value_der[0])/len(layer.filters[0])) + ((layer.filters[1] * kid.objects[0].value_der[1])/len(layer.filters[1]))
+    layer.value_der = (((layer.filters[0] * kid.objects[0].value_der[0]))
+        + ((layer.filters[1] * kid.objects[0].value_der[1])))
+    layer.bias_der = (((layer.filters[0] * kid.objects[0].value_der[0]))
+        + ((layer.filters[1] * kid.objects[0].value_der[1])))
 
 def a_filter_der(layer):
 
     kid = layer.node.kids[0]
 
     for i in range(layer.filters.shape[0]):
-        layer.filter_der[i] = (layer.value * kid.objects[0].value_der[i])/len(layer.value)
-
+        layer.filter_der[i] = ((layer.value+layer.bias) * kid.objects[0].value_der[i])
+    layer.bias_der=0
     for i in range(layer.filters.shape[0]):
-        layer.bias_der += (layer.filters[i] * kid.objects[0].value_der[i])/len(layer.filters[i])
+        layer.bias_der += (layer.filters[i]
+            * kid.objects[0].value_der[i])
 
 ############### ELIMINAR FILTROS ###############
 
@@ -102,12 +105,12 @@ def removeFilters(layer):
 
 def removeFilterNodeA(layerNodeA):
     if layerNodeA.filters is not None and len(layerNodeA.filters) > 0:
-        
+
         newFilterShape = list(layerNodeA.filters.shape)
-        
+
         if newFilterShape[0] > 0:
             newFilterShape[0] -= 1
-        
+
         layerNodeA.filters = deleteLastFilter(layerNodeA.filters, newFilterShape)
 
 def removeFilterNodeB(layerNodeB):
@@ -125,7 +128,7 @@ def removeFilterNodeB(layerNodeB):
         layerNodeB.filters = auxFilter
 
 def deleteLastFilter(oldFilter, newShape):
-    
+
     newFilter = np.zeros(tuple(newShape), dtype=float)
 
     for i in range(newShape[0]):
@@ -136,7 +139,7 @@ def deleteLastFilter(oldFilter, newShape):
 ############### AGREGAR FILTROS ###############
 
 def addFilters(layer):
-        
+
     addFilterNodeA(layer)
     addFilterNodeB(layer.node.kids[0].objects[0])
 
@@ -146,7 +149,7 @@ def addFilterNodeA(layerNodeA):
 
             # Obtengo la estructura del tensor del filtro original y lo convierto a lista mutable
             newFilterShape = list(layerNodeA.filters.shape)
-            
+
             # Aumento la cantidad de filtros (Valor de K)
             newFilterShape[0] += 1
 
@@ -154,7 +157,7 @@ def addFilterNodeA(layerNodeA):
 
 # Crear nuevos filtros para el nodo A
 def createNewFilterNodeA(oldFilter, newShape):
-    
+
     # Creo la nueva estructura del filtro
     newFilter = np.zeros(tuple(newShape), dtype=float)
 
@@ -189,7 +192,7 @@ def createNewFilterNodeB(oldFilter, newShape):
 
     for i in range(len(oldFilter)):
         newFilter[i] = oldFilter[i]
-        
+
     newFilter[len(newFilter) - 1] = random.uniform(0, 1)
 
     return newFilter
@@ -203,13 +206,13 @@ def createTensorZero(shape):
     return np.zeros((shape), dtype=float)
 
 def createTensorRandom(shape):
-    
+
 
     if isinstance(shape, int):
-        shape = [shape] 
+        shape = [shape]
 
     return np.random.rand(*shape)
 
 def generateNumberRandom():
-    
+
     return random.random()

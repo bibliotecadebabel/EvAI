@@ -40,22 +40,74 @@ def generateImageRandom(objects):
 
     return image
 
-def Test_node_4(network,n=5,dt=0.01):
+def Test_node_3(network,n=5,dt=0.001):
     k=0
     layer_f=network.nodes[4].objects[0]
     layer_i=network.nodes[3].objects[0]
     while k<5:
-        print("K= ",k)
-        print("value of layer_f: ", layer_f.value)
+        #print("K= ",k)
         network.Reset_der_total()
-        print('The value of the parent is ', layer_f.node.parents[0].objects[0].value, "\n")
+        #print('The value of the parent is ', layer_f.node.parents[0].objects[0].value, "\n")
         layer_f.propagate(layer_f)
         layer_i.backPropagate(layer_i)
         network.Acumulate_der(n)
-        network.Update(dt)
+        layer_i.value+=-layer_i.value_der*dt
+        #network.Update(dt)
+        print("value of layer_f: ", layer_f.value)
         k=k+1
 
+def Test_node_2(network,label="c",n=5,dt=0.001):
+    k=0
+    layer_f=network.nodes[4].objects[0]
+    layer_i=network.nodes[2].objects[0]
+    layer_i.label=label
+    while k<5:
+        network.Reset_der_total()
+        j=3
+        while j<5:
+            layer=network.nodes[j].objects[0]
+            layer.propagate(layer)
+            j=j+1
+        layer_i.backPropagate(layer_i)
+        network.Acumulate_der(n)
+        layer_i.value+=-layer_i.value_der*dt
+        #network.Update(dt)
+        print("value of layer_f: ", layer_f.value)
+        k=k+1
 
+def Test_node_1(network,n=5,dt=0.1):
+    k=0
+    layer_f=network.nodes[4].objects[0]
+    layer_i=network.nodes[1].objects[0]
+    while k<5:
+        network.Reset_der_total()
+        j=2
+        while j<5:
+            layer=network.nodes[j].objects[0]
+            layer.propagate(layer)
+            j=j+1
+        layer_i.backPropagate(layer_i)
+        network.Acumulate_der(1)
+        network.Update(dt)
+        print("value of layer_f: ", layer_f.value)
+        k=k+1
+
+def Test_node_0(network,n=5,dt=0.1):
+    k=0
+    layer_f=network.nodes[4].objects[0]
+    layer_i=network.nodes[0].objects[0]
+    while k<5:
+        network.Reset_der_total()
+        j=1
+        while j<5:
+            layer=network.nodes[j].objects[0]
+            layer.propagate(layer)
+            j=j+1
+        layer_i.backPropagate(layer_i)
+        network.Acumulate_der(1)
+        network.Update(dt)
+        print("value of layer_f: ", layer_f.value)
+        k=k+1
 
 x = 2
 y = 2
@@ -67,7 +119,15 @@ objects = Functions.np.full((3), (x, y, k))
 
 network = nw.Network([x,y,k])
 print('testing node 3')
-Test_node_4(network)
+Test_node_3(network)
+print('testing node 2 label=c')
+Test_node_2(network)
+print('testing node 2 label=n')
+Test_node_2(network,"n")
+print('testing node 1')
+Test_node_1(network)
+print('testing node 1')
+Test_node_0(network)
 
 
 #data = []
