@@ -52,4 +52,4 @@ data = []
 
 generateData(data, objects, 100)
 
-network.Training(data=data, dt=0.1, p=0.9)
+network.Training(data=data, dt=0.01, p=0.9)

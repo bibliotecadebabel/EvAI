@@ -12,6 +12,7 @@ class Network:
         self.objects = objects
         self.nodes = []
         self.__createStructure()
+        self.total_value = 0
 
     def __createStructure(self):
         nodes = []
@@ -62,6 +63,8 @@ class Network:
             if layer.filter_der is not None and layer.filter_der_total is not None:
                 layer.filter_der_total += ((layer.filter_der) / n) * peso
 
+        self.total_value += self.nodes[0].objects[0].value_der_total    
+
     def Regularize_der(self):
 
         for node in self.nodes:
@@ -72,6 +75,9 @@ class Network:
 
             if layer.filters is not None and layer.filter_der_total is not None:
                 layer.filter_der_total = layer.filter_der_total + layer.filters
+            
+            if layer.bias_der_total is not None and layer.filter_der_total is not None:
+                self.total_value += Functions.Dot(layer.bias_der_total, layer.bias_der_total) + Functions.Dot(layer.filter_der_total, layer.filter_der_total)
 
     def Reset_der(self):
 
@@ -100,6 +106,8 @@ class Network:
 
             if layer.filter_der_total is not None:
                 layer.filter_der_total = layer.filter_der_total * 0
+        
+        self.total_value = 0
 
     def Predict(self, image):
         self.assignLabels("c")
