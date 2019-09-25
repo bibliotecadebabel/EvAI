@@ -40,8 +40,8 @@ def generateImageRandom(objects):
     
     return image
 
-x = 2
-y = 2
+x = 30
+y = 30
 k = 2
 
 
@@ -52,4 +52,4 @@ data = []
 
 generateData(data, objects, 100)
 
-network.Training(data=data, dt=0.05, p=0.9)
+network.Training(data=data, dt=0.1, p=0.9)
