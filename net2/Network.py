@@ -63,7 +63,7 @@ class Network:
             if layer.filter_der is not None and layer.filter_der_total is not None:
                 layer.filter_der_total += ((layer.filter_der) / n) * peso
 
-        self.total_value += self.nodes[0].objects[0].value_der_total    
+        self.total_value += (self.nodes[4].objects[0].value)/n    
 
     def Regularize_der(self):
 
@@ -76,8 +76,10 @@ class Network:
             if layer.filters is not None and layer.filter_der_total is not None:
                 layer.filter_der_total = layer.filter_der_total + layer.filters
             
-            if layer.bias_der_total is not None and layer.filter_der_total is not None:
-                self.total_value += Functions.Dot(layer.bias_der_total, layer.bias_der_total) + Functions.Dot(layer.filter_der_total, layer.filter_der_total)
+        
+        #self.total_value += Functions.Dot(self.nodes[0].objects[0].filters, self.nodes[0].objects[0].filters) + Functions.Dot(self.nodes[0].objects[0].bias, self.nodes[0].objects[0].bias) + Functions.Dot(self.nodes[1].objects[0].filters, self.nodes[1].objects[0].filters) + Functions.Dot(self.nodes[1].objects[0].bias, self.nodes[1].objects[0].bias)
+
+        print("regularize value total ", self.total_value)
 
     def Reset_der(self):
 
@@ -115,11 +117,11 @@ class Network:
            
         Functions.Propagation(self.nodes[4].objects[0])
 
-        print(self.nodes[3].objects[0].value)
+        #print(self.nodes[3].objects[0].value)
 
         return self.nodes[3].objects[0].value
 
-    def Training(self, data, dt=0.1, p=0.9):
+    def Training(self, data, dt=0.1, p=0.99):
         n = len(data) * 5/4
         peso = len(data) / 4
 

@@ -14,11 +14,11 @@ def generateData(data, objects, n):
 
         for i in range(objects[0]//2):
             for j in range(objects[1]):
-                circulo[0][i][j] = [255, 255, 255]
+                circulo[0][i][j] = [1, 1, 1]
 
         for i in range(objects[0]//2, objects[0]):
             for j in range(objects[1]):
-                circulo[0][i][j] = [1,1,1]
+                circulo[0][i][j] = [255,255,255]
 
         for i in range(n-1):
             imagenRandom = []
@@ -34,15 +34,15 @@ def generateImageRandom(objects):
     
     for i in range(objects[0]):
         for j in range(objects[1]):
-            image[i,j] = [Functions.random.randint(1, 255), 
-                Functions.random.randint(1, 255), 
-                Functions.random.randint(1, 255)]
+            image[i,j] = [Functions.random.randint(1, 1), 
+                Functions.random.randint(1, 1), 
+                Functions.random.randint(1, 1)]
     
     return image
 
-x = 30
-y = 30
-k = 2
+x = 2
+y = 2
+k = 50
 
 
 objects = Functions.np.full((3), (x, y, k))
@@ -52,4 +52,8 @@ data = []
 
 generateData(data, objects, 100)
 
+
+
 network.Training(data=data, dt=0.01, p=0.9)
+
+#print("valor 50: ",network.Predict(data[50]))
