@@ -1,6 +1,6 @@
-import Node as nd
-import Layer as ly
-import Functions
+import net2.Node as nd
+import net2.Layer as ly
+import net2.Functions as Functions
 
 class Network:
 
@@ -79,7 +79,7 @@ class Network:
         
         #self.total_value += Functions.Dot(self.nodes[0].objects[0].filters, self.nodes[0].objects[0].filters) + Functions.Dot(self.nodes[0].objects[0].bias, self.nodes[0].objects[0].bias) + Functions.Dot(self.nodes[1].objects[0].filters, self.nodes[1].objects[0].filters) + Functions.Dot(self.nodes[1].objects[0].bias, self.nodes[1].objects[0].bias)
 
-        print("regularize value total ", self.total_value)
+        #print("regularize value total ", self.total_value)
 
     def Reset_der(self):
 

@@ -1,4 +1,4 @@
-import Functions
+import net2.Functions as Functions
 
 # Node.objects[0] = Layer
 class Layer():

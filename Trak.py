@@ -4,14 +4,16 @@ import Interfaces as Inter
 import Operations as Op
 import Net as Net0
 import sys
+import net2.Network as network
+
 print (sys.argv)
 
-p=0.75
-dt=0.1
+p=0.9
+dt=0.01
 Comp=2
-S=3000
+S=1000
 test=True
-k=10
+k=50
 
 if not(test):
     Target = input("What is the targets name?  ")
@@ -26,20 +28,35 @@ A=Op.Pool(Inter.Image2array(Image),Comp)
 x=Op.Pool(Inter.Image2array(Target),Comp)
 size=np.shape(x)
 print('Sampling Image')
-data=Op.Sample((size[0],size[1]),A,S)
-data.insert(0,x)
+#data=Op.Sample((size[0],size[1]),A,S)
+#data.insert(0,x)
+data = Op.SampleVer2((size[0],size[1]),A,S, "n")
+
+imageTarget = []
+imageTarget.append(x)
+imageTarget.append("c")
+
+data.insert(0, imageTarget)
+
 print('Training Net')
-Net=Net0.Network((size[0],size[1]))
+
+#Net=Net0.Network((size[0],size[1]))
+
+
+networkParameters = np.full((3), (size[0], size[1], k))
+Net = network.Network(networkParameters)
 l=['C']
 i=0
 while i<S:
     l.append('N')
     i=i+1
-Net.train(data,l,p,dt)
-np.save(Net_name+' w-node',Net.w_node.Value)
+Net.Training(data=data, dt=dt, p=p)
+print("finish training")
+np.save(Net_name+' w-node',Net.nodes[0].objects[0].value)
 
 print('Scaning Image')
 Inter.trak(Net,A,Net_name+' map')
+
 
 """x=np.load('data.npy')
 Shap=np.shape(x)

@@ -27,15 +27,21 @@ def traking(Net,Name,Out_name):
     Array2image(a,Out_name)
 
 def trak(Net,Ima,Out_name):
-    size=np.shape(Net.w_node.Value[0])
+    #size=np.shape(Net.w_node.Value[0])
+    size= np.shape(Net.nodes[0].objects[0].value)
     sizeb=np.shape(Ima)
+    print(sizeb)
     i=0
     j=0
     a=np.zeros((sizeb[0], sizeb[1], 3), dtype=np.uint8)
     while i<sizeb[0]-size[0]:
         while j<sizeb[1]-size[1]:
             x=Ima[i:i+size[0],j:j+size[1]]
-            p=Net.pre(x)
+            #p=Net.pre(x)
+            image = []
+            image.append(x)
+            image.append("n")
+            p = Net.Predict(image)
             a[i,j]=a[i,j]+p*255
             j=j+1
         i=i+1
