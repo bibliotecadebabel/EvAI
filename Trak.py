@@ -8,12 +8,12 @@ import net2.Network as network
 
 print (sys.argv)
 
-p=0.9
+p=2000
 dt=0.01
 Comp=2
-S=1000
+S=100
 test=True
-k=50
+k=5
 
 if not(test):
     Target = input("What is the targets name?  ")

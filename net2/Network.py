@@ -59,11 +59,11 @@ class Network:
 
             if layer.bias_der is not None and layer.bias_der_total is not None:
                 layer.bias_der_total += ((layer.bias_der) / n) * peso
-                
+
             if layer.filter_der is not None and layer.filter_der_total is not None:
                 layer.filter_der_total += ((layer.filter_der) / n) * peso
 
-        self.total_value += (self.nodes[4].objects[0].value)/n    
+        self.total_value += (self.nodes[4].objects[0].value)/n
 
     def Regularize_der(self):
 
@@ -75,8 +75,8 @@ class Network:
 
             if layer.filters is not None and layer.filter_der_total is not None:
                 layer.filter_der_total = layer.filter_der_total + layer.filters
-            
-        
+
+
         #self.total_value += Functions.Dot(self.nodes[0].objects[0].filters, self.nodes[0].objects[0].filters) + Functions.Dot(self.nodes[0].objects[0].bias, self.nodes[0].objects[0].bias) + Functions.Dot(self.nodes[1].objects[0].filters, self.nodes[1].objects[0].filters) + Functions.Dot(self.nodes[1].objects[0].bias, self.nodes[1].objects[0].bias)
 
         #print("regularize value total ", self.total_value)
@@ -108,16 +108,14 @@ class Network:
 
             if layer.filter_der_total is not None:
                 layer.filter_der_total = layer.filter_der_total * 0
-        
+
         self.total_value = 0
 
     def Predict(self, image):
         self.assignLabels("c")
         self.nodes[0].objects[0].value = image[0]
-           
-        Functions.Propagation(self.nodes[4].objects[0])
 
-        #print(self.nodes[3].objects[0].value)
+        Functions.Propagation(self.nodes[4].objects[0])
 
         return self.nodes[3].objects[0].value
 
@@ -127,8 +125,11 @@ class Network:
 
         #self.Train(data[0], peso, n)
 
-
-        while self.Predict(data[0]) < p:
+        i=0
+        while i < p:
+            if i % 10==0:
+                print(i)
+                print(self.nodes[3].objects[0].value)
             self.Reset_der_total()
             self.Train(data[0], peso, n)
 
@@ -137,6 +138,7 @@ class Network:
 
             self.Regularize_der()
             self.Update(dt)
+            i=i+1
 
 
     def Train(self, dataElement, peso, n):
@@ -164,6 +166,6 @@ class Network:
 
             if layer.filters is not None:
                 layer.filters = layer.filters - (layer.filter_der_total * dt)
-            
+
             if layer.bias is not None:
                 layer.bias = layer.bias - (layer.bias_der_total * dt)
