@@ -128,7 +128,7 @@ class Network:
         i=0
         while i < p:
             if i % 10==0:
-                print(i)
+                #print(i)
                 print(self.nodes[3].objects[0].value)
             self.Reset_der_total()
             self.Train(data[0], peso, n)
@@ -169,3 +169,9 @@ class Network:
 
             if layer.bias is not None:
                 layer.bias = layer.bias - (layer.bias_der_total * dt)
+
+    def addFilters(self):
+        
+        ly.addFilterNodeA(self.nodes[0].objects[0])
+        ly.addFilterNodeB(self.nodes[1].objects[0])
+

@@ -121,5 +121,48 @@ def createLayerE(nodeE):
 
     return layer
 
+def addFilterNodeA(layerNodeA):
 
+    layerNodeB = layerNodeA.node.kids[0].objects[0]
+
+    newFilterShape = list(layerNodeA.filters.shape)
+    newFilterShape[0] += 1
+
+    layerNodeA.filters = Functions.createNewTensor(layerNodeA.filters, newFilterShape)
+
+    layerNodeA.filter_der = Functions.createNewTensor(layerNodeA.filter_der, newFilterShape)
+
+    layerNodeA.filter_der_total = Functions.createNewTensor(layerNodeA.filter_der_total, newFilterShape)
+
+    newValueKidShape = [len(layerNodeA.filters)]
+    
+    layerNodeB.value = Functions.createNewTensor(layerNodeB.value, newValueKidShape)
+    layerNodeB.value_der = Functions.createNewTensor(layerNodeB.value_der, newValueKidShape)
+    layerNodeB.value_der_total = Functions.createNewTensor(layerNodeB.value_der_total, newValueKidShape)
+
+    layerNodeB.bias = Functions.createNewTensor(layerNodeB.bias, newValueKidShape)
+    layerNodeB.bias_der = Functions.createNewTensor(layerNodeB.bias_der, newValueKidShape)
+    layerNodeB.bias_der_total = Functions.createNewTensor(layerNodeB.bias_der_total, newValueKidShape)
+
+def addFilterNodeB(layerNodeB):
+
+    newFilterShape = list(layerNodeB.filters[0].shape)
+    newFilterShape[0] += 1
+
+    auxFilter = Functions.createTensorRandom((2, newFilterShape[0]))
+    auxFilter_der = Functions.createTensorRandom((2, newFilterShape[0]))
+    auxFilter_der_total = Functions.createTensorRandom((2, newFilterShape[0]))
+
+    auxFilter[0] = Functions.createNewTensor(layerNodeB.filters[0], newFilterShape)
+    auxFilter[1] = Functions.createNewTensor(layerNodeB.filters[1], newFilterShape)
+
+    auxFilter_der[0] = Functions.createNewTensor(layerNodeB.filter_der[0], newFilterShape)
+    auxFilter_der[1] = Functions.createNewTensor(layerNodeB.filter_der[1], newFilterShape)
+
+    auxFilter_der_total[0] = Functions.createNewTensor(layerNodeB.filter_der_total[0], newFilterShape)
+    auxFilter_der_total[1] = Functions.createNewTensor(layerNodeB.filter_der_total[1], newFilterShape)
+
+    layerNodeB.filters = auxFilter
+    layerNodeB.filter_der = auxFilter_der
+    layerNodeB.filter_der_total = auxFilter_der_total
 

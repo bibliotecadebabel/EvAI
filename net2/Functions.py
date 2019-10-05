@@ -136,69 +136,6 @@ def deleteLastFilter(oldFilter, newShape):
 
     return newFilter
 
-############### AGREGAR FILTROS ###############
-
-def addFilters(layer):
-
-    addFilterNodeA(layer)
-    addFilterNodeB(layer.node.kids[0].objects[0])
-
-def addFilterNodeA(layerNodeA):
-
-    if layerNodeA.filters is not None and len(layerNodeA.filters) > 0:
-
-            # Obtengo la estructura del tensor del filtro original y lo convierto a lista mutable
-            newFilterShape = list(layerNodeA.filters.shape)
-
-            # Aumento la cantidad de filtros (Valor de K)
-            newFilterShape[0] += 1
-
-            layerNodeA.filters = createNewFilterNodeA(layerNodeA.filters, newFilterShape)
-
-# Crear nuevos filtros para el nodo A
-def createNewFilterNodeA(oldFilter, newShape):
-
-    # Creo la nueva estructura del filtro
-    newFilter = np.zeros(tuple(newShape), dtype=float)
-
-
-    # Conservo los valores del filtro viejo
-    for i in range(len(oldFilter)):
-        newFilter[i] = oldFilter[i]
-
-    # Creo los nuevos valores random para el nuevo filtro K + 1.
-    newFilter[len(newFilter) - 1] = np.random.rand(*oldFilter.shape[1:])
-
-    return newFilter
-
-def addFilterNodeB(layerNodeB):
-
-    if layerNodeB.filters[0] is not None and len(layerNodeB.filters[0]) > 0:
-
-        newFilterShape = list(layerNodeB.filters[0].shape)
-        newFilterShape[0] += 1
-
-        auxFilter = np.zeros((2, newFilterShape[0]), dtype=float)
-
-        auxFilter[0] = createNewFilterNodeB(layerNodeB.filters[0], newFilterShape)
-        auxFilter[1] = createNewFilterNodeB(layerNodeB.filters[1], newFilterShape)
-
-        layerNodeB.filters = auxFilter
-
-
-# Crear nuevos filtros / bias para el nodo B
-def createNewFilterNodeB(oldFilter, newShape):
-    newFilter = np.zeros(tuple(newShape), dtype=float)
-
-    for i in range(len(oldFilter)):
-        newFilter[i] = oldFilter[i]
-
-    newFilter[len(newFilter) - 1] = random.uniform(0, 1)
-
-    return newFilter
-
-
-
 ############### CREADOR DE TENSORES ###############
 
 def createTensorZero(shape):
@@ -216,3 +153,15 @@ def createTensorRandom(shape):
 def generateNumberRandom():
 
     return random.random()
+
+
+# Crear nuevo tensor conservando valores del viejo  tensor
+def createNewTensor(oldTensor, newShape):
+
+    newFilter = createTensorRandom((newShape))
+
+    # Conservo los valores del filtro viejo
+    for i in range(len(oldTensor)):
+        newFilter[i] = oldTensor[i]
+
+    return newFilter

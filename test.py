@@ -1,5 +1,5 @@
-import Network as nw
-import Functions
+import net2.Network as nw
+import net2.Functions as Functions
 import decimal
 
 decimal.getcontext().prec = 100
@@ -116,15 +116,32 @@ def Test_node_0(network,n=1000,dt=0.1):
         #print("value_der nodo 3: ", network.nodes[3].objects[0].value_der)
         k=k+1
 
-x = 20
-y = 20
-k = 2
+def Test_addFilter(network, data):
+
+    print("Entrenando red \n")
+    network.Training(data=data, dt=0.01, p=200)
+    print("mutando la red: Agregando Filtro \n")
+    network.addFilters()
+    print("Entrenando la red mutada \n")
+    network.Training(data=data, dt=0.01, p=200)
+
+
+x = 2
+y = 2
+k = 3
 
 
 
 objects = Functions.np.full((3), (x, y, k))
 
 network = nw.Network([x,y,k])
+
+data = []
+
+generateData(data, objects, 100)
+
+Test_addFilter(network, data)
+
 
 '''
 print('testing node 3')
@@ -137,11 +154,11 @@ print('testing node 1')
 Test_node_1(network)
 print('testing node 1')
 '''
-Test_node_0(network)
+#Test_node_0(network)
 
 
-#data = []
 
-#generateData(data, objects, 100)
 
-#network.Training(data=data, dt=0.05, p=0.9)
+
+
+#network.Training(data=data, dt=0.05, p=10)
