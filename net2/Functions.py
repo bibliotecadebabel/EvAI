@@ -111,7 +111,7 @@ def removeFilterNodeA(layerNodeA):
         if newFilterShape[0] > 0:
             newFilterShape[0] -= 1
 
-        layerNodeA.filters = deleteLastFilter(layerNodeA.filters, newFilterShape)
+        #layerNodeA.filters = deleteLastFilter(layerNodeA.filters, newFilterShape)
 
 def removeFilterNodeB(layerNodeB):
     if layerNodeB.filters[0] is not None and len(layerNodeB.filters[0]) > 0:
@@ -122,19 +122,10 @@ def removeFilterNodeB(layerNodeB):
 
         auxFilter = np.zeros((2, newFilterShape[0]), dtype=float)
 
-        auxFilter[0] = deleteLastFilter(layerNodeB.filters[0], newFilterShape)
-        auxFilter[1] = deleteLastFilter(layerNodeB.filters[1], newFilterShape)
+        #auxFilter[0] = deleteLastFilter(layerNodeB.filters[0], newFilterShape)
+        #auxFilter[1] = deleteLastFilter(layerNodeB.filters[1], newFilterShape)
 
         layerNodeB.filters = auxFilter
-
-def deleteLastFilter(oldFilter, newShape):
-
-    newFilter = np.zeros(tuple(newShape), dtype=float)
-
-    for i in range(newShape[0]):
-        newFilter[i] = oldFilter[i]
-
-    return newFilter
 
 ############### CREADOR DE TENSORES ###############
 
@@ -162,6 +153,15 @@ def createNewTensor(oldTensor, newShape):
 
     # Conservo los valores del filtro viejo
     for i in range(len(oldTensor)):
+        newFilter[i] = oldTensor[i]
+
+    return newFilter
+
+def deleteLastTensorDimension(oldTensor, newShape):
+
+    newFilter = np.zeros(tuple(newShape), dtype=float)
+
+    for i in range(newShape[0]):
         newFilter[i] = oldTensor[i]
 
     return newFilter

@@ -116,12 +116,16 @@ def Test_node_0(network,n=1000,dt=0.1):
         #print("value_der nodo 3: ", network.nodes[3].objects[0].value_der)
         k=k+1
 
-def Test_addFilter(network, data):
+def Test_modifyNetwork(network, data):
 
     print("Entrenando red \n")
     network.Training(data=data, dt=0.01, p=200)
     print("mutando la red: Agregando Filtro \n")
     network.addFilters()
+    print("Entrenando la red mutada \n")
+    network.Training(data=data, dt=0.01, p=200)
+    print("mutando la red: Eliminando Filtro \n")
+    network.deleteFilters()
     print("Entrenando la red mutada \n")
     network.Training(data=data, dt=0.01, p=200)
 
@@ -140,7 +144,7 @@ data = []
 
 generateData(data, objects, 100)
 
-Test_addFilter(network, data)
+Test_modifyNetwork(network, data)
 
 
 '''

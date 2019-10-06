@@ -144,6 +144,30 @@ def addFilterNodeA(layerNodeA):
     layerNodeB.bias_der = Functions.createNewTensor(layerNodeB.bias_der, newValueKidShape)
     layerNodeB.bias_der_total = Functions.createNewTensor(layerNodeB.bias_der_total, newValueKidShape)
 
+
+def deleteFilterNodeA(layerNodeA):
+    
+    layerNodeB = layerNodeA.node.kids[0].objects[0]
+    
+    newShape = list(layerNodeA.filters.shape)
+
+    if newShape[0] > 0:
+        newShape[0] -= 1
+
+    layerNodeA.filters = Functions.deleteLastTensorDimension(layerNodeA.filters, newShape)
+    layerNodeA.filter_der = Functions.deleteLastTensorDimension(layerNodeA.filter_der, newShape)
+    layerNodeA.filter_der_total = Functions.deleteLastTensorDimension(layerNodeA.filter_der_total, newShape)
+
+    newKidValueShape = [len(layerNodeA.filters)]
+
+    layerNodeB.value = Functions.deleteLastTensorDimension(layerNodeB.value, newKidValueShape)
+    layerNodeB.value_der = Functions.deleteLastTensorDimension(layerNodeB.value_der, newKidValueShape)
+    layerNodeB.value_der_total = Functions.deleteLastTensorDimension(layerNodeB.value_der_total, newKidValueShape)
+
+    layerNodeB.bias = Functions.deleteLastTensorDimension(layerNodeB.bias, newKidValueShape)
+    layerNodeB.bias_der = Functions.deleteLastTensorDimension(layerNodeB.bias_der, newKidValueShape)
+    layerNodeB.bias_der_total = Functions.deleteLastTensorDimension(layerNodeB.bias_der_total, newKidValueShape)
+
 def addFilterNodeB(layerNodeB):
 
     newFilterShape = list(layerNodeB.filters[0].shape)
@@ -166,3 +190,27 @@ def addFilterNodeB(layerNodeB):
     layerNodeB.filter_der = auxFilter_der
     layerNodeB.filter_der_total = auxFilter_der_total
 
+def deleteFilterNodeB(layerNodeB):
+
+    newShape = list(layerNodeB.filters[0].shape)
+
+    if newShape[0] > 0:
+        newShape[0] -= 1
+    
+    auxFilter = Functions.createTensorRandom((2, newShape[0]))
+    auxFilter_der = Functions.createTensorRandom((2, newShape[0]))
+    auxFilter_der_total = Functions.createTensorRandom((2, newShape[0]))
+
+
+    auxFilter[0] = Functions.deleteLastTensorDimension(layerNodeB.filters[0], newShape)
+    auxFilter[1] = Functions.deleteLastTensorDimension(layerNodeB.filters[1], newShape)
+
+    auxFilter_der[0] = Functions.deleteLastTensorDimension(layerNodeB.filter_der[0], newShape)
+    auxFilter_der[1] = Functions.deleteLastTensorDimension(layerNodeB.filter_der[1], newShape)
+
+    auxFilter_der_total[0] = Functions.deleteLastTensorDimension(layerNodeB.filter_der_total[0], newShape)
+    auxFilter_der_total[1] = Functions.deleteLastTensorDimension(layerNodeB.filter_der_total[1], newShape)
+
+    layerNodeB.filters = auxFilter
+    layerNodeB.filter_der = auxFilter_der
+    layerNodeB.filter_der_total = auxFilter_der_total
