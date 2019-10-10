@@ -10,7 +10,7 @@ import V_graphics as cd
 import children.Data_generator as dgen
 import children.Interfaces as Inter
 import children.Operations as Op
-import children.net2.Network as network
+import children.net2.Network as nw
 
 
 # Initialization of parameters
@@ -41,6 +41,7 @@ class Status():
         self.mouse_frame2=[0]
         self.frame1=[]
         self.frame2=[]
+        self.Data_gen=None
 
 def potential(x):
     return (x-50)**2
@@ -215,6 +216,8 @@ def initialize_parameters(self):
 # in position 1 the size of such list
 
 def create_objects(status):
+    status.Data_gen=dgen.Data_gen()
+    status.Data_gen.gen_data()
     def add_node(g,i):
             node=nd.Node()
             q=qu.Quadrant(i)
@@ -240,6 +243,9 @@ def create_objects(status):
         par=particle()
         par.position.append(node)
         par.velocity.append(node)
+        #print(status.Data_gen.size)
+        par.objects.append(nw.Network([status.Data_gen.size[0],
+            status.Data_gen.size[1],2]))
         p.particles.append(par)
         p.num_particles+=1
         k=k+1

@@ -7,41 +7,29 @@ import children.net2.Network as network
 
 print (sys.argv)
 
-p=2000
-dt=0.01
-Comp=2
-S=100
-test=True
-k=5
-
-if not(test):
-    Target = input("What is the targets name?  ")
-    Image = input("What is the image name?  ")
-    Net_name = input("What would you like to call the network?")
-else:
-    Target='folder'
-    Image ='btest'
-    Net_name='Net_folder'
-print('Compressing and Vectorizing input.')
-A=Op.Pool(Inter.Image2array(Image),Comp)
-x=Op.Pool(Inter.Image2array(Target),Comp)
-size=np.shape(x)
-print('Sampling Image')
-#data=Op.Sample((size[0],size[1]),A,S)
-#data.insert(0,x)
-data = Op.SampleVer2((size[0],size[1]),A,S, "n")
-
-imageTarget = []
-imageTarget.append(x)
-imageTarget.append("c")
-
-data.insert(0, imageTarget)
-
-print('Training Net')
-
-#Net=Net0.Network((size[0],size[1]))
+class Data_gen():
+    def __init__(self):
+        self.Comp = 2
+        self.S=1000
+        self.Image='btest'
+        self.Target='folder'
+        self.Data=[]
+        self.size=None
+    def gen_data(self):
+        print('Compressing and Vectorizing input.')
+        A=Op.Pool(Inter.Image2array(self.Image),self.Comp)
+        x=Op.Pool(Inter.Image2array(self.Target),self.Comp)
+        size=np.shape(x)
+        print('Sampling Image')
+        self.Data = Op.SampleVer2((size[0],size[1]),A,self.S, "n")
+        imageTarget = []
+        imageTarget.append(x)
+        imageTarget.append("c")
+        self.Data.insert(0, imageTarget)
+        self.size=size
 
 
+"""
 networkParameters = np.full((3), (size[0], size[1], k))
 Net = network.Network(networkParameters)
 l=['C']
@@ -54,10 +42,10 @@ print("finish training")
 np.save(Net_name+' w-node',Net.nodes[0].objects[0].value)
 
 print('Scaning Image')
-Inter.trak(Net,A,Net_name+' map')
+Inter.trak(Net,A,Net_name+' map')"""
 
-
-"""x=np.load('data.npy')
+"""
+x=np.load('data.npy')
 Shap=np.shape(x)
 l=['C']
 i=0
