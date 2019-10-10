@@ -6,6 +6,7 @@ import torch
 import torch.nn as nn
 import torch.tensor as tensor
 
+import tools.Graphs as Graphs
 
 class Network(nn.Module):
 
@@ -26,26 +27,23 @@ class Network(nn.Module):
 
 
     def __createStructure(self):
-        nodes = []
+        
+        graph = Graphs.Graph()
 
-        nodes.append(nd.Node())
-        nodes.append(nd.Node())
-        nodes.append(nd.Node())
-        nodes.append(nd.Node())
-        #nodes.append(nd.Node())
+        amount_of_nodes = 4
+
+        for i in range(0, amount_of_nodes):
+            self.nodes.append(nd.Node())
+
+        for i in range(0, amount_of_nodes):
+
+            if i < (amount_of_nodes - 1):
+                graph.add_node(i, self.nodes[i])
+                graph.add_node(i + 1, self.nodes[i + 1])
+                graph.add_edges(i, [i+1])
 
 
-        nodes[0].kids.append(nodes[1])
-        nodes[1].kids.append(nodes[2])
-        nodes[2].kids.append(nodes[3])
-        #nodes[3].kids.append(nodes[4])
-
-        nodes[1].parents.append(nodes[0])
-        nodes[2].parents.append(nodes[1])
-        nodes[3].parents.append(nodes[2])
-        #nodes[4].parents.append(nodes[3])
-
-        self.nodes = nodes
+        self.nodes = list(graph.key2node.values())
         self.__assignLayers()
 
     def __assignLayers(self):
@@ -72,3 +70,17 @@ class Network(nn.Module):
                     print(type(param.data), param.size())
                     print("grad: ", param.grad)
                 i += 1
+
+
+
+
+net = Network([1,2,3])
+
+for node in net.nodes:
+
+    print("Current Node: ", node)
+    print("Parent of Current Node: ", node.parents)
+    print("Child of Current Node:", node.kids)
+    print(" ")
+    
+
