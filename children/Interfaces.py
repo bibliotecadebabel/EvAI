@@ -2,7 +2,7 @@ import numpy as np
 from PIL import Image
 import os
 import random
-import Net as Net0
+import children.Net as Net0
 
 def traking(Net,Name,Out_name):
     dir_path=os.path.dirname(os.path.realpath(__file__))

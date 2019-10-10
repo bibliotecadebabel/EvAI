@@ -1,4 +1,4 @@
-import net2.Functions as Functions
+import children.net2.Functions as Functions
 
 # Node.objects[0] = Layer
 class Layer():
@@ -84,7 +84,7 @@ def createLayerC(nodeC):
     layer.bias_der_total = Functions.createTensorRandom(layer.value.shape)
 
     layer.label = "c"
-    
+
     return layer
 
 def createLayerD(nodeD):
@@ -110,7 +110,7 @@ def createLayerE(nodeE):
 
     layer.propagate = Functions.logaritmo
     layer.backPropagate = Functions.Nothing
-    
+
     layer.value = Functions.generateNumberRandom()
     layer.value_der = Functions.generateNumberRandom()
     layer.value_der_total = Functions.generateNumberRandom()
@@ -135,7 +135,7 @@ def addFilterNodeA(layerNodeA):
     layerNodeA.filter_der_total = Functions.createNewTensor(layerNodeA.filter_der_total, newFilterShape)
 
     newValueKidShape = [len(layerNodeA.filters)]
-    
+
     layerNodeB.value = Functions.createNewTensor(layerNodeB.value, newValueKidShape)
     layerNodeB.value_der = Functions.createNewTensor(layerNodeB.value_der, newValueKidShape)
     layerNodeB.value_der_total = Functions.createNewTensor(layerNodeB.value_der_total, newValueKidShape)
@@ -146,9 +146,9 @@ def addFilterNodeA(layerNodeA):
 
 
 def deleteFilterNodeA(layerNodeA):
-    
+
     layerNodeB = layerNodeA.node.kids[0].objects[0]
-    
+
     newShape = list(layerNodeA.filters.shape)
 
     if newShape[0] > 0:
@@ -196,7 +196,7 @@ def deleteFilterNodeB(layerNodeB):
 
     if newShape[0] > 0:
         newShape[0] -= 1
-    
+
     auxFilter = Functions.createTensorRandom((2, newShape[0]))
     auxFilter_der = Functions.createTensorRandom((2, newShape[0]))
     auxFilter_der_total = Functions.createTensorRandom((2, newShape[0]))

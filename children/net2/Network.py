@@ -1,6 +1,6 @@
-import net2.Node as nd
-import net2.Layer as ly
-import net2.Functions as Functions
+import children.net2.Node as nd
+import children.net2.Layer as ly
+import children.net2.Functions as Functions
 
 class Network:
 
@@ -171,7 +171,7 @@ class Network:
                 layer.bias = layer.bias - (layer.bias_der_total * dt)
 
     def addFilters(self):
-        
+
         ly.addFilterNodeA(self.nodes[0].objects[0])
         ly.addFilterNodeB(self.nodes[1].objects[0])
 

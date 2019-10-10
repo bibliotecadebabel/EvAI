@@ -1,5 +1,5 @@
 import numpy as np
-import Interfaces as Inter
+import children.Interfaces as Inter
 import random
 
 def Pool(A,N=None):
@@ -65,7 +65,7 @@ def SampleVer2(size, A, N, l):
         imageRandom.append(l)
         images.append(imageRandom)
         k=k+1
-    
+
     return images
 """size=np.shape(data)
 print(size[0])

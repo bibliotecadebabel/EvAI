@@ -1,11 +1,11 @@
-import Network as nw
-import Functions
+import children.net2.Network as nw
+import children.net2.Functions
 import decimal
 
 decimal.getcontext().prec = 100
 
 def generateData(data, objects, n):
-    
+
         circulo = []
         circulo.append(Functions.np.zeros((objects[0], objects[1], 3), dtype=float))
         circulo.append("c")
@@ -31,13 +31,13 @@ def generateData(data, objects, n):
 def generateImageRandom(objects):
     image = Functions.np.zeros((objects[0], objects[1], 3), dtype=float)
 
-    
+
     for i in range(objects[0]):
         for j in range(objects[1]):
-            image[i,j] = [Functions.random.randint(1, 1), 
-                Functions.random.randint(1, 1), 
+            image[i,j] = [Functions.random.randint(1, 1),
+                Functions.random.randint(1, 1),
                 Functions.random.randint(1, 1)]
-    
+
     return image
 
 x = 2

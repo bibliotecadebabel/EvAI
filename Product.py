@@ -7,6 +7,10 @@ import TangentPlane as tplane
 import Graphs as gr
 import math
 import V_graphics as cd
+import children.Data_generator as dgen
+import children.Interfaces as Inter
+import children.Operations as Op
+import children.net2.Network as network
 
 
 # Initialization of parameters
@@ -115,7 +119,7 @@ def update_gradient(status):
             pf=qf.objects[0]
             dE=dE+(potential(float(qf.shape)-x0)
                 -potential(float(q.shape)-x0))
-            dE=dE+8*status.beta*(
+            dE=dE+100*status.beta*(
                 pf.density**(status.beta-1)
                     -p.density**(status.beta-1)
                     /abs(status.beta-1)
