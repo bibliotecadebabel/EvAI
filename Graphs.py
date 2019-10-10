@@ -12,7 +12,6 @@ class Graph():
         if not(key in self.key2node.keys()):
             self.key2node.update({key : node})
             self.node2key.update({node : key})
-            self.objects.append(node)
     def add_edges(self,key,keys):
         if not(key in self.key2node.keys()):
             pass
@@ -36,7 +35,6 @@ class Graph():
     def remove_node(self,key):
         if key in self.key2node.keys():
             node=self.key2node[key]
-            self.objects.remove(node)
             for kid in node.kids:
                 self.remove_edge(key,self.node2key[kid])
             self.key2node.pop(key, None)

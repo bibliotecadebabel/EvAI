@@ -228,7 +228,7 @@ def create_objects(status):
         g.add_edges(k,[k+1])
         k=k+1
     k=0
-    status.objects=g.objects
+    status.objects=list(g.key2node.values())
     node=status.objects[0]
     p=node_plane(node)
     #Initializes particles
