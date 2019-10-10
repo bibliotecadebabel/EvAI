@@ -92,7 +92,7 @@ while True:
 
     #Update status
     if Status.active:
-        #program.update(Status)
+        program.update(Status)
         Status.mouse_frame1=pygame.mouse.get_pos()
         program.plot(Status,gameDisplay,[[6,28],[8,14],5],sectors)
 

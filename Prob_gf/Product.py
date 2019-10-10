@@ -39,7 +39,7 @@ class Status():
         self.frame2=[]
 
 def potential(x):
-    return 500*x**2
+    return (x-50)**2
 
 def interaction(r,status):
     return (200*r/(2**status.dx))**(status.alpha)/abs(status.alpha-1)
@@ -96,13 +96,16 @@ def update_metric(status):
         for kid in node.kids:
             qf=kid.objects[0]
             pf=qf.objects[0]
-            m=(p.reg_density+pf.reg_density)/2
+            #m=(p.reg_density+pf.reg_density)/2
+            m=1
             p.metric.append(m)
 
 def update_gradient(status):
-    update_interaction_field(status)
+    #update_interaction_field(status)
     x0=status.mouse_frame2[0]
+    x0=0
     nodes=status.objects
+    dE=0
     for node in nodes:
         q=node.objects[0]
         p=q.objects[0]
@@ -110,15 +113,15 @@ def update_gradient(status):
         for kid in node.kids:
             qf=kid.objects[0]
             pf=qf.objects[0]
-            dE=status.beta/abs(status.beta-1)*(
-                pf.reg_density**(status.beta-1)
-                    -p.reg_density**(status.beta-1))
-            dE=dE+(potential(qf.shape[0][0]-x0)
-                -potential(q.shape[0][0]-x0))
-            dE=dE+(pf.interaction_field
-                -p.interaction_field)
-
-
+            dE=dE+(potential(float(qf.shape)-x0)
+                -potential(float(q.shape)-x0))
+            dE=dE+8*status.beta*(
+                pf.density**(status.beta-1)
+                    -p.density**(status.beta-1)
+                    /abs(status.beta-1)
+                        )
+            """dE=dE+(pf.interaction_field
+                -p.interaction_field)"""
             p.gradient.append(dE)
 
         #print(p.gradient)
@@ -146,9 +149,9 @@ def update(status):
                     ##print(q.objects[0].num_particles," - ", qf.objects[0].num_particles, " || LONGITUD REAL ||  ", len(q.objects[0].particles)," - ", len(qf.objects[0].particles))
 
 def update_velocity(status):
-    update_divergence(status)
+    #update_divergence(status)
     update_density(status)
-    reg_density(status)
+    #reg_density(status)
     update_metric(status)
     update_gradient(status)
     l = len(status.objects)
@@ -161,7 +164,7 @@ def update_velocity(status):
         for j in range(len(node.kids)):
             if p.gradient[j]<0:
                 dE=dE+(p.gradient[j]**2)*(
-                    p.metric[j]*2**status.dx)
+                    p.metric[j])
         dE=dE**(0.5)
         for particle in q.objects[0].particles:
             prob = np.random.uniform(0,1)
@@ -190,7 +193,7 @@ def update_velocity(status):
 def initialize_parameters(self):
     display_size=[1000,500]
     self.dt=0.1
-    self.n=10000
+    self.n=100
     self.dx=100
     self.L=1
     self.beta=2
@@ -215,7 +218,7 @@ def create_objects(status):
             node.objects.append(q)
             q.objects.append(p)
             g.add_node(i,node)
-            status.objects.append(node)
+            #status.objects.append(node)
     #Initializes graph
     g=gr.Graph()
     add_node(g,0)
@@ -225,13 +228,14 @@ def create_objects(status):
         g.add_edges(k,[k+1])
         k=k+1
     k=0
+    status.objects=g.objects
     node=status.objects[0]
     p=node_plane(node)
     #Initializes particles
     while k<status.n:
         par=particle()
-        par.position=node
-        par.velocity=node
+        par.position.append(node)
+        par.velocity.append(node)
         p.particles.append(par)
         p.num_particles+=1
         k=k+1
@@ -279,15 +283,16 @@ def plot(status,Display,size=None,tree=None):
     Lx_f=lx*size[0][1]
     Ly_o=p.objects[0].shape[1][1]-ly*size[1][0]
     Ly_f=p.objects[0].shape[1][1]-ly*size[1][1]
-    ddx=(Lx_f-Lx_o)/(status.dx)/4*6/5
-    ddy=(Ly_f-Ly_o)/status.n/2
+    ddx=(Lx_f-Lx_o)/(status.dx)
+    ddy=(Ly_f-Ly_o)/status.n*2
     status.frame1=[[0,Height],[1,0],[0,-1]]
     status.frame2=[[Lx_o+(Lx_f-Lx_o)/2,Ly_o/2*4/5],[(Lx_f-Lx_o)/2,0],[0,Ly_f-Ly_o/2*4/5]]
     frame1=status.frame1
     frame2=status.frame2
     mouse=[status.mouse_frame1[0],status.mouse_frame1[1]]
     status.mouse_frame2=cd.coord2vector(mouse,frame1,frame2)
-    print(status.mouse_frame2)
+    print(len(status.objects))
+    #print(status.mouse_frame2)
 #    positions=[[300,300],[400,400]]
     #pygame.draw.aaline(Display,white,positions[0],positions[1],True)
     for i in range(len(status.objects)-1):

@@ -105,7 +105,7 @@ def Test_node_0(network,n=1000,dt=0.1):
             #layer=network.nodes[j].objects[0]
             #layer.propagate(layer)
             #j=j+1
-        
+
         #layer_i.backPropagate(layer_i)
         Functions.Propagation(layer_f)
         Functions.BackPropagation(layer_i)
@@ -119,19 +119,19 @@ def Test_node_0(network,n=1000,dt=0.1):
 def Test_modifyNetwork(network, data):
 
     print("Entrenando red \n")
-    network.Training(data=data, dt=0.01, p=200)
+    #network.Training(data=data, dt=0.01, p=200)
     print("mutando la red: Agregando Filtro \n")
-    network.addFilters()
+    #network.addFilters()
     print("Entrenando la red mutada \n")
-    network.Training(data=data, dt=0.01, p=200)
+    network.Training(data=data, dt=0.001, p=100)
     print("mutando la red: Eliminando Filtro \n")
     network.deleteFilters()
     print("Entrenando la red mutada \n")
-    network.Training(data=data, dt=0.01, p=200)
+    network.Training(data=data, dt=0.001, p=1000)
 
 
-x = 2
-y = 2
+x = 10
+y = 10
 k = 3
 
 
@@ -146,8 +146,8 @@ generateData(data, objects, 100)
 
 Test_modifyNetwork(network, data)
 
+"""
 
-'''
 print('testing node 3')
 Test_node_3(network)
 print('testing node 2 label=c')
@@ -157,7 +157,8 @@ Test_node_2(network,"n")
 print('testing node 1')
 Test_node_1(network)
 print('testing node 1')
-'''
+
+"""
 #Test_node_0(network)
 
 
