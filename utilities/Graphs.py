@@ -7,7 +7,7 @@ class Graph():
         self.key2node={}
         self.node2key={}
         self.objects=[]
-        self.directed=True
+        self.directed=False
     def add_node(self,key,node):
         if not(key in self.key2node.keys()):
             self.key2node.update({key : node})

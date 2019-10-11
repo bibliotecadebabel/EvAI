@@ -1,6 +1,6 @@
 import sys, pygame
-import Quadrants as qu
-import Node as nd
+import utilities.Quadrants as qu
+import utilities.Node as nd
 import utilities.P_trees as tr
 import numpy as np
 import TangentPlane as tplane
@@ -132,12 +132,12 @@ def update_gradient(status):
         for kid in node.kids:
             qf=kid.objects[0]
             pf=qf.objects[0]
-            dE=dE+(potential(float(qf.shape)-x0)
-                -potential(float(q.shape)-x0))
+            dE=dE+(potential(float(qf.shape))
+                -potential(float(q.shape)))
             dE=dE+100*status.beta*(
                 pf.density**(status.beta-1)
                     -p.density**(status.beta-1)
-                    /abs(status.beta-1)
+                    #/abs(status.beta-1)
                         )
             """dE=dE+(pf.interaction_field
                 -p.interaction_field)"""
@@ -148,13 +148,14 @@ def update_gradient(status):
 
 
 def update(status):
-    update_nets(status)
+#    update_nets(status)
     #time.sleep(10)
     update_velocity(status)
     for i in range(len(status.objects)):
         q=status.objects[i].objects[0]
         if q.objects[0].num_particles > 0:
             for particle in q.objects[0].particles:
+                print(q.shape)
                 if not(particle.position[0]==particle.velocity[0]):
                     a=particle.position[0]
                     b=particle.velocity[0]
@@ -317,7 +318,7 @@ def plot(status,Display,size=None,tree=None):
     frame2=status.frame2
     #mouse=[status.mouse_frame1[0],status.mouse_frame1[1]]
     #status.mouse_frame2=cd.coord2vector(mouse,frame1,frame2)
-    print(len(status.objects))
+    #print(len(status.objects))
     #print(status.mouse_frame2)
 #    positions=[[300,300],[400,400]]
     #pygame.draw.aaline(Display,white,positions[0],positions[1],True)
