@@ -30,11 +30,12 @@ class Status():
         self.L = 1
         self.beta = 2
         self.alpha = 1
+        self.active = False
+
         self.Potantial = potential
         self.Interaction = interaction
         self.objects = []
         self.display_size = []
-        self.active = False
         self.center=None
         self.std_deviation=None
         self.mouse_frame1=[]
