@@ -1,12 +1,12 @@
-import Node as nd
-import Layer as ly
-import Functions as functions
+import children.pytorch.Node as nd
+import children.pytorch.Layer as ly
+import children.pytorch.Functions as functions
 
 import torch
 import torch.nn as nn
 import torch.tensor as tensor
 
-import tools.Graphs as Graphs
+import utilities.Graphs as Graphs
 
 class Network(nn.Module):
 

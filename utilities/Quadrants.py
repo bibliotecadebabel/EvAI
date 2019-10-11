@@ -1,5 +1,5 @@
-import Node as nd
-import P_trees as tr
+import utilities.Node as nd
+import utilities.P_trees as tr
 
 class Quadrant():
     def __init__(self,shape):

@@ -1,4 +1,4 @@
-import Node as nd
+import utilities.Node as nd
 
 #Given a node Node
 #Creates a periodic tree  with a number of layers determined

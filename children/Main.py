@@ -1,7 +1,7 @@
-from Node_class import Node
+from children.Node_class import Node
 import numpy as np
-import Interfaces as Inter
-import Net as Net0
+import children.Interfaces as Inter
+import children.Net as Net0
 
 N=1000
 dt=0.001

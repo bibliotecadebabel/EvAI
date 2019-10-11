@@ -1,6 +1,6 @@
-from Node_class import Node
+from children.Node_class import Node
 import numpy as np
-import Interfaces as Inter
+import children.Interfaces as Inter
 
 class Network():
     def __init__(self,size,N):

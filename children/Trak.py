@@ -1,10 +1,10 @@
-from Node_class import Node
+from children.Node_class import Node
 import numpy as np
-import Interfaces as Inter
-import Operations as Op
-import Net as Net0
+import children.Interfaces as Inter
+import children.Operations as Op
+import children.Net as Net0
 import sys
-import net2.Network as network
+import children.net2.Network as network
 
 print (sys.argv)
 

@@ -1,6 +1,6 @@
-import tools.Node as nd
-import tools.P_trees as tr
-from tools.Safe import safe_append, safe_remove, safe_ope
+import utilities.Node as nd
+import utilities.P_trees as tr
+from utilities.Safe import safe_append, safe_remove, safe_ope
 
 class Graph():
     def __init__(self):

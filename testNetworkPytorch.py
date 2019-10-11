@@ -1,5 +1,5 @@
-import Network as nw
-import Functions as Functions
+import children.pytorch.Network as nw
+import children.pytorch.Functions as Functions
 
 import torch
 import torch.nn as nn
