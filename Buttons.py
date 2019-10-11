@@ -1,7 +1,7 @@
 import pygame, sys
-import Quadrants as qu
-import Node as nd
-import P_trees as tr
+import utilities.Quadrants as qu
+import utilities.Node as nd
+import utilities.P_trees as tr
 import Product as program
 import tkinter as tk
 

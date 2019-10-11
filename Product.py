@@ -1,10 +1,10 @@
 import sys, pygame
 import Quadrants as qu
 import Node as nd
-import P_trees as tr
+import utilities.P_trees as tr
 import numpy as np
 import TangentPlane as tplane
-import Graphs as gr
+import utilities.Graphs as gr
 import math
 import V_graphics as cd
 import children.Data_generator as dgen
