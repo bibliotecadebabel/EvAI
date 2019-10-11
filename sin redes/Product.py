@@ -11,7 +11,7 @@ import children.Data_generator as dgen
 import children.Interfaces as Inter
 import children.Operations as Op
 import children.net2.Network as nw
-import time
+
 
 # Initialization of parameters
 class particle():
@@ -42,19 +42,8 @@ class Status():
         self.frame1=[]
         self.frame2=[]
         self.Data_gen=None
-        self.p=1
-        self.display=None
-        self.scale=None
-        self.sectors=None
 
 def update_nets(status):
-    for node in status.objects:
-        p=node_plane(node)
-        particles=p.particles
-        for par in particles:
-            net=par.objects[0]
-            net.Training(status.Data_gen.Data,dt=status.tau,p=2)
-            plot(status,status.display,status.scale,status.sectors)
     return
 
 def potential(x):
@@ -148,8 +137,6 @@ def update_gradient(status):
 
 
 def update(status):
-    update_nets(status)
-    #time.sleep(10)
     update_velocity(status)
     for i in range(len(status.objects)):
         q=status.objects[i].objects[0]
@@ -315,8 +302,8 @@ def plot(status,Display,size=None,tree=None):
     status.frame2=[[Lx_o+(Lx_f-Lx_o)/2,Ly_o/2*4/5],[(Lx_f-Lx_o)/2,0],[0,Ly_f-Ly_o/2*4/5]]
     frame1=status.frame1
     frame2=status.frame2
-    #mouse=[status.mouse_frame1[0],status.mouse_frame1[1]]
-    #status.mouse_frame2=cd.coord2vector(mouse,frame1,frame2)
+    mouse=[status.mouse_frame1[0],status.mouse_frame1[1]]
+    status.mouse_frame2=cd.coord2vector(mouse,frame1,frame2)
     print(len(status.objects))
     #print(status.mouse_frame2)
 #    positions=[[300,300],[400,400]]

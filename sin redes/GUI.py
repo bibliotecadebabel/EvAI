@@ -7,7 +7,6 @@ import Product as program
 
 
 
-
 def car(x,y):
     gameDisplay.blit(carImg, (x,y))
 
@@ -52,10 +51,7 @@ carImg = pygame.image.load('drone.png')
 carImg=pygame.transform.scale(carImg, (int(display_width/(2**n)),
         int(display_height/(2**n))))
 
-#program.create_objects(Status)
-Status.display=gameDisplay
-Status.scale=[[6,28],[8,14],5]
-Status.sectors=sectors
+program.create_objects(Status)
 
 
 
@@ -96,9 +92,9 @@ while True:
 
     #Update status
     if Status.active:
-        program.plot(Status,gameDisplay,[[6,28],[8,14],5],sectors)
         program.update(Status)
         Status.mouse_frame1=pygame.mouse.get_pos()
+        program.plot(Status,gameDisplay,[[6,28],[8,14],5],sectors)
 
 
 
