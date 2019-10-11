@@ -53,10 +53,13 @@ class Network(nn.Module):
         objectMSELoss = nn.MSELoss()
 
         valueLayerA = torch.rand(1, 3, self.objects[0], self.objects[1], dtype=torch.float32)
-        
+        valueLayerA = valueLayerA
+        valueLayerConv2d = torch.rand(1, self.objects[2], 1, 1, dtype=torch.float32)
+        valueLayerLinear = torch.rand(2, dtype=torch.float32)
+
         self.nodes[0].objects.append(ly.Layer(node=self.nodes[0], value=valueLayerA, propagate=functions.Nothing))
-        self.nodes[1].objects.append(ly.Layer(node=self.nodes[1], objectTorch=objectConv2d, propagate=functions.conv2d_propagate))
-        self.nodes[2].objects.append(ly.Layer(node=self.nodes[2], objectTorch=objectLinear, propagate=functions.linear_propagate))
+        self.nodes[1].objects.append(ly.Layer(node=self.nodes[1], objectTorch=objectConv2d, propagate=functions.conv2d_propagate, value=valueLayerConv2d))
+        self.nodes[2].objects.append(ly.Layer(node=self.nodes[2], objectTorch=objectLinear, propagate=functions.linear_propagate, value=valueLayerLinear))
         self.nodes[3].objects.append(ly.Layer(node=self.nodes[3], objectTorch=objectMSELoss, label=self.label, propagate=functions.MSEloss_propagate))
 
     def Acumulate_der(self, n, peso=1):
@@ -141,20 +144,18 @@ class Network(nn.Module):
 
         functions.Propagation(self.nodes[3].objects[0])
         self.nodes[3].objects[0].value.backward()
-        print("value nodo 3: ", self.nodes[3].objects[0].value)
+        #print("value nodo 3: ", self.nodes[3].objects[0].value)
         self.Acumulate_der(n, peso)
-
+        self.Reset_der()
 
     def Training(self, data, dt=0.1, p=0.99):
             n = len(data) * 5/4
             peso = len(data) / 4
 
-            #self.Train(data[0], peso, n)
-
             i=0
             while i < p:
                 if i % 10==0:
-                    #print(i)
+                    print(i)
                     print(self.nodes[3].objects[0].value)
                 self.Reset_der_total()
                 self.Train(data[0], peso, n)

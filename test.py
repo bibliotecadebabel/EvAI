@@ -1,5 +1,5 @@
-import net2.Network as nw
-import net2.Functions as Functions
+import children.net2.Network as nw
+import children.net2.Functions as Functions
 import decimal
 
 decimal.getcontext().prec = 100

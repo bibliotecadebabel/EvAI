@@ -1,13 +1,27 @@
 import numpy as np
 import random
 
-def Propagation(layer):
+def Propagation(layer, n=None):
 
-    for parent in layer.node.parents:
-        layerParent = parent.objects[0]
-        Propagation(layerParent)
+    if n is None:
+        for parent in layer.node.parents:
 
-    layer.propagate(layer)
+            layerParent = parent.objects[0]
+            Propagation(layerParent)
+
+        layer.propagate(layer)
+    else:
+        if n == 0:
+            pass
+        
+        else:
+            n -= 1
+            for parent in layer.node.parents:
+
+                layerParent = parent.objects[0]
+                Propagation(layerParent, n)
+
+            layer.propagate(layer)
 
 def BackPropagation(layer):
 
@@ -26,13 +40,13 @@ def conv2d_propagate(layer):
     
     parent = layer.node.parents[0].objects[0]
 
-    layer.value = layer.object(parent.value)
+    layer.value = layer.object(parent.value) / len(layer.getFilter())
 
 def linear_propagate(layer):
 
     parent = layer.node.parents[0].objects[0]
 
-    layer.value = layer.object(parent.value.view(-1))
+    layer.value = layer.object(parent.value.view(-1)) / len(layer.getFilter())
 
 def MSEloss_propagate(layer):
 

@@ -6,8 +6,6 @@ import torch.nn as nn
 import torch.tensor as tensor
 
 
-circle = tensor([0,1], dtype=torch.float32)
-notCircle = tensor([1,0], dtype=torch.float32)
 def generateData(data, objects, n):
 
         circulo = []
@@ -36,6 +34,8 @@ def generateData(data, objects, n):
 
             data.append(imagenRandom)
         
+        #for elemnt in data:
+        #    elemnt[0] = elemnt[0] / 255
 
 
 def generateImageRandom(objects):
@@ -58,21 +58,25 @@ def generateCircle():
 def generateNotCircle():
         return tensor([1,0], dtype=torch.float32)
 
-def Test_node_3(network,n=5,dt=0.001):
+def Test_node_3(network,n=100,dt=0.001):
     k=0
-    layer_f=network.nodes[4].objects[0]
-    layer_i=network.nodes[3].objects[0]
-    while k<5:
-        #print("K= ",k)
+    layer_f=network.nodes[3].objects[0]
+    #layer_i=network.nodes[2].objects[0]
+
+
+    
+    while k<50000:
         network.Reset_der_total()
-        #print('The value of the parent is ', layer_f.node.parents[0].objects[0].value, "\n")
-        layer_f.propagate(layer_f)
-        layer_i.backPropagate(layer_i)
+        #layer_f.propagate(layer_f)
+        Functions.Propagation(layer_f, 20)
+        layer_f.value.backward()
+        network.Regularize_der()
         network.Acumulate_der(n)
-        layer_i.value+=-layer_i.value_der*dt
-        #network.Update(dt)
+        #layer_i.value+=-layer_i.value_der*dt
+        network.Update(dt)
         print("value of layer_f: ", layer_f.value)
         k=k+1
+    
 
 def Test_node_2(network,label="c",n=5,dt=0.001):
     k=0
@@ -142,7 +146,7 @@ def Test_modifyNetwork(network, data):
 
 x = 4
 y = 5
-k = 2
+k = 12
 
 
 
@@ -156,6 +160,7 @@ generateData(data, objects, 100)
 
 Test_modifyNetwork(network, data)
 
+#Test_node_3(network)
 """
 
 print('testing node 3')
