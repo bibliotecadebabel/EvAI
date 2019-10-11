@@ -53,34 +53,115 @@ class Network(nn.Module):
         objectMSELoss = nn.MSELoss()
 
         valueLayerA = torch.rand(1, 3, self.objects[0], self.objects[1], dtype=torch.float32)
-
+        
         self.nodes[0].objects.append(ly.Layer(node=self.nodes[0], value=valueLayerA, propagate=functions.Nothing))
         self.nodes[1].objects.append(ly.Layer(node=self.nodes[1], objectTorch=objectConv2d, propagate=functions.conv2d_propagate))
         self.nodes[2].objects.append(ly.Layer(node=self.nodes[2], objectTorch=objectLinear, propagate=functions.linear_propagate))
         self.nodes[3].objects.append(ly.Layer(node=self.nodes[3], objectTorch=objectMSELoss, label=self.label, propagate=functions.MSEloss_propagate))
 
+    def Acumulate_der(self, n, peso=1):
 
-    def print_params(self):
-        
-        i = 1
+        for i in range(len(self.nodes)-1):
+            layer = self.nodes[i].objects[0]
+            biasDer = layer.getBiasDer()
+            filterDer = layer.getFilterDer()
+                
+            if biasDer is not None:
+                layer.bias_der_total += (biasDer / n) * peso
+
+            if filterDer is not None:
+                layer.filter_der_total += (filterDer / n) * peso
+    
+    def Regularize_der(self):
+
+        for node in self.nodes[:-1]:
+            layer = node.objects[0]
+
+            bias = layer.getBias()
+            filters = layer.getFilter()
+
+            if bias is not None and layer.bias_der_total is not None:
+                layer.bias_der_total = layer.bias_der_total + bias
+
+            if filters is not None and layer.filter_der_total is not None:
+                layer.filter_der_total = layer.filter_der_total + filters
+
+    def Reset_der(self):
+
         for node in self.nodes:
-            if len(node.objects) > 0 and node.objects[0].object is not None and len(list(node.objects[0].object.parameters())) > 0:
-                print("PARAMETROS LAYER ",i)
-                for param in node.objects[0].object.parameters():
-                    print(type(param.data), param.size())
-                    print("grad: ", param.grad)
-                i += 1
+            layer = node.objects[0]
 
+            if layer.object is not None:
+                layer.object.zero_grad()
 
+    def Reset_der_total(self):
 
+        for node in self.nodes:
+            layer = node.objects[0]
 
-net = Network([1,2,3])
+            if layer.bias_der_total is not None:
+                layer.bias_der_total = layer.bias_der_total * 0
 
-for node in net.nodes:
-
-    print("Current Node: ", node)
-    print("Parent of Current Node: ", node.parents)
-    print("Child of Current Node:", node.kids)
-    print(" ")
+            if layer.filter_der_total is not None:
+                layer.filter_der_total = layer.filter_der_total * 0
     
 
+    
+    def assignLabels(self, label):
+
+        for node in self.nodes:
+            node.objects[0].label = label
+
+    def Update(self, dt):
+
+        
+        for node in self.nodes[:-1]:
+            layer = node.objects[0]
+
+            if layer.getFilter() is not None:
+                layer.getFilter().data -= (layer.filter_der_total * dt)
+
+            if layer.getBias() is not None:
+                layer.getBias().data -= (layer.bias_der_total * dt)
+        
+    def Predict(self, image):
+        #self.assignLabels("c")
+        self.nodes[0].objects[0].value = image[0]
+
+        functions.Propagation(self.nodes[3].objects[0])
+
+        return self.nodes[3].objects[0].value
+
+
+    def Train(self, dataElement, peso, n):
+        self.nodes[0].objects[0].value = dataElement[0]
+        #self.nodes[3].objects[0].label = dataElement[1]
+
+        self.assignLabels(dataElement[1])
+
+        functions.Propagation(self.nodes[3].objects[0])
+        self.nodes[3].objects[0].value.backward()
+        print("value nodo 3: ", self.nodes[3].objects[0].value)
+        self.Acumulate_der(n, peso)
+
+
+    def Training(self, data, dt=0.1, p=0.99):
+            n = len(data) * 5/4
+            peso = len(data) / 4
+
+            #self.Train(data[0], peso, n)
+
+            i=0
+            while i < p:
+                if i % 10==0:
+                    #print(i)
+                    print(self.nodes[3].objects[0].value)
+                self.Reset_der_total()
+                self.Train(data[0], peso, n)
+
+                for image in data[1:]:
+                    self.Train(image, 1, n)
+
+                self.Regularize_der()
+                self.Update(dt)
+                i=i+1

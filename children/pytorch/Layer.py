@@ -6,24 +6,57 @@ class Layer():
         self.value =  value
         self.propagate = propagate
         self.label = label
-    
-    def getFilter(self):
 
-        print("Getting Filter")        
-        return self.__getParamValue(0)
+        self.bias_der_total = 0
+        self.filter_der_total = 0
+
+    def getBiasDer(self):
+
+        value = None
+
+        if self.object is not None:
+            value = self.object.bias.grad
+
+        return value
+
+    def getFilterDer(self):
+
+        value = None
+        
+        if self.object is not None:
+            value = self.object.weight.grad
+
+        return value
+       
+
+    def getFilter(self):
+ 
+        value = None
+        
+        if self.object is not None:
+            value = self.object.weight
+
+        return value
 
     def getBias(self):
 
-        print("Getting Bias")
-        return self.__getParamValue(1)
+        value = None
+        
+        if self.object is not None:
+            value = self.object.bias
 
-    def __getParamValue(self, index):
+        return value
+
+    def __getParamValue(self, index, grad):
 
         value = None
 
         paramList = list(self.object.parameters())
-        if self.object is not None and len(paramList) > 0:
-            value = paramList[index].data
 
-        print(value)
+        if self.object is not None and len(paramList) > 0:
+            if grad == False:
+                value = paramList[index].data
+            else:
+                value = paramList[index].grad.data
+
         return value

@@ -31,13 +31,6 @@ objects = [x,y,k]
 network = Net.Network(objects)
 
 Net.functions.Propagation(network.nodes[3].objects[0])
-#print("value D: ", network.nodes[3].objects[0].value)
 network.nodes[3].objects[0].value.backward()
+print("value D: ", network.nodes[3].objects[0].value)
 
-network.print_params()
-
-print("\n \n")
-network.nodes[3].objects[0].getBias()
-network.nodes[3].objects[0].getFilter()
-#print(network.nodes[0].objects[0].object.grad.data)
-#print(list(network.nodes[0].objects[0].object.parameters()))
