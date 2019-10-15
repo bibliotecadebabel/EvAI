@@ -18,7 +18,8 @@ class Transfer(ABC):
 
     def readLoad(self):
         self.read()
-        if self.status_transfer is not None:
+        if (self.status_transfer is not None
+            and self.status_transfer.particles is not None):
             self.load()
         else:
             print("NONE")

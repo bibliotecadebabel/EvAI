@@ -358,7 +358,7 @@ while True:
     status.Transfer.readLoad()
     if status.active:
         update(status)
-        print('active')
+        time.sleep(0.5)
     else:
         print('inactive')
     k=k+1
