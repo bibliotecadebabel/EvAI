@@ -11,14 +11,14 @@ class TransferLocal(Transfer):
         transfer.n=status.n
         transfer.dx=status.dx
         transfer.beta=status.beta
-
+        transfer.active = status.active
     def load(self):
         i=0
         transfer=self.status_transfer
         while  i<len(self.status.objects):
             node=self.status.objects[i]
             q=node.objects[0]
-            p=node.objects[0]
+            p=q.objects[0]
             p.num_particles=transfer.particles[i]
             i=i+1
 
@@ -27,17 +27,18 @@ class TransferLocal(Transfer):
 
 class TransferRemote(Transfer):
 
-    def __init__(self):
-        pass
+    def __init__(self,status,name_read,name_write):
+        super().__init__(status,name_read,name_write)
 
     def un_load(self):
         transfer=self.status_transfer
         i=0
+        transfer.particles=[]
         while  i<len(self.status.objects):
             node=self.status.objects[i]
             q=node.objects[0]
-            p=node.objects[0]
-            transfer[i]=p.num_particles
+            p=q.objects[0]
+            transfer.particles.append(p.num_particles)
             i=i+1
 
     def load(self):
@@ -47,6 +48,7 @@ class TransferRemote(Transfer):
         status.n=transfer.n
         status.dx=transfer.dx
         status.beta=transfer.beta
+        status.active = transfer.active
 
 
 

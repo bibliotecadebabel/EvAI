@@ -1,1 +1,0 @@
-{"dt": 0.1, "tau": null, "n": 100, "r": null, "dx": 100, "L": null, "beta": 2, "alpha": null, "active": null, "particles_transfer": null}

@@ -16,22 +16,38 @@ class Transfer(ABC):
     def load(self):
         pass
 
+    def readLoad(self):
+        self.read()
+        if self.status_transfer is not None:
+            self.load()
+        else:
+            print("NONE")
+
     def write(self):
         status=self.status_transfer
         value = json.dumps(status.__dict__)
         file = open(self.name_write,'w')
         file.write(str(value))
         file.close()
-        pass
 
     def read(self):
-        pass
+
+        try:
+            status = status_transfer()
+            file = open(self.name_read,'r')
+            value = file.read()
+            status.jsonToObject(json.loads(value))
+            file.close()
+        except Exception:
+            status = None
+
+        if status is not None:
+            self.status_transfer = status
 
     def update(self):
         self.un_load()
         self.write()
-        self.read()
-        self.load()
+        self.readLoad()
         pass
 
 class status_transfer:
@@ -45,7 +61,7 @@ class status_transfer:
         self.beta = None
         self.alpha = None
         self.active = None
-        self.particles_transfer = None
+        self.particles= None
 
     def jsonToObject(self, body):
         self.dt = body['dt']
@@ -57,7 +73,7 @@ class status_transfer:
         self.beta = body['beta']
         self.alpha = body['alpha']
         self.active = body['active']
-        self.particles_transfer = body['particles_transfer']
+        self.particles = body['particles']
 
 
 

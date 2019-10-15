@@ -142,9 +142,7 @@ def update_gradient(status):
 
 def update(status):
     status.Transfer.status=status
-    status.Transfer.un_load()
-    status.Transfer.write()
-    print('update')
+    status.Transfer.update()
 
 def update_velocity(status):
     #update_divergence(status)
@@ -305,11 +303,14 @@ def plot(status,Display,size=None,tree=None):
     for i in range(len(status.objects)-1):
         px_o=Lx_o+i*ddx
         px_f=Lx_o+(i+1)*ddx
+        print(status.objects[i].objects[0].objects[0].num_particles)
         py_o=Ly_o+status.objects[i].objects[0].objects[0].num_particles*ddy
         py_f=Ly_o+status.objects[i+1].objects[0].objects[0].num_particles*ddy
         positions=[[px_o,py_o],[px_f,py_f]]
 #        print(positions)
         pygame.draw.aaline(Display,white,positions[0],positions[1],True)
+
+
 
 
 """

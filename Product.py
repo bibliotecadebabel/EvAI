@@ -7,10 +7,11 @@ import TangentPlane as tplane
 import utilities.Graphs as gr
 import math
 import V_graphics as cd
-import children.Data_generator as dgen
-import children.Interfaces as Inter
-import children.Operations as Op
-import children.net2.Network as nw
+import Transfer.Transfer as tran
+#import children.Data_generator as dgen
+#import children.Interfaces as Inter
+#import children.Operations as Op
+#import children.net2.Network as nw
 import time
 
 
@@ -42,11 +43,13 @@ class Status():
         self.mouse_frame2=[0]
         self.frame1=[]
         self.frame2=[]
-        self.Data_gen=None
+        self.Transfer=None
+#        self.Data_gen=None
         self.p=1
         self.display=None
         self.scale=None
         self.sectors=None
+
 
 def update_nets(status):
     for node in status.objects:
@@ -151,12 +154,14 @@ def update_gradient(status):
 def update(status):
 #    update_nets(status)
     #time.sleep(10)
+    status.Transfer.status=status
+    status.Transfer.update()
     update_velocity(status)
     for i in range(len(status.objects)):
         q=status.objects[i].objects[0]
         if q.objects[0].num_particles > 0:
             for particle in q.objects[0].particles:
-                print(q.shape)
+                #print(q.shape)
                 if not(particle.position[0]==particle.velocity[0]):
                     a=particle.position[0]
                     b=particle.velocity[0]
@@ -234,8 +239,8 @@ def initialize_parameters(self):
 # in position 1 the size of such list
 
 def create_objects(status):
-    status.Data_gen=dgen.Data_gen()
-    status.Data_gen.gen_data()
+    #status.Data_gen=dgen.Data_gen()
+    #status.Data_gen.gen_data()
     def add_node(g,i):
             node=nd.Node()
             q=qu.Quadrant(i)
@@ -262,8 +267,8 @@ def create_objects(status):
         par.position.append(node)
         par.velocity.append(node)
         #print(status.Data_gen.size)
-        par.objects.append(nw.Network([status.Data_gen.size[0],
-            status.Data_gen.size[1],2]))
+        #par.objects.append(nw.Network([status.Data_gen.size[0],
+        #    status.Data_gen.size[1],2]))
         p.particles.append(par)
         p.num_particles+=1
         k=k+1
@@ -332,6 +337,31 @@ def plot(status,Display,size=None,tree=None):
 #        print(positions)
         pygame.draw.aaline(Display,white,positions[0],positions[1],True)
 
+status=Status()
+initialize_parameters(status)
+create_objects(status)
+status.Transfer=tran.TransferRemote(status,
+    'remote2local.txt','local2remote.txt')
+print('remote')
+status.Transfer.un_load()
+status.Transfer.write()
+k=0
+while False:
+    update(status)
+    status.Transfer.un_load()
+    status.Transfer.write()
+    transfer=status.Transfer.status_transfer
+    print(transfer.particles)
+    k=k+1
+    pass
+while True:
+    status.Transfer.readLoad()
+    if status.active:
+        update(status)
+        print('active')
+    else:
+        print('inactive')
+    k=k+1
 
 """
 c=[]
