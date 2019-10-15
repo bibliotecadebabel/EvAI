@@ -2,7 +2,7 @@ from abc import ABC, abstractmethod
 import json
 
 class Transfer(ABC):
-    def __init__(self,status,name_read,name_write):
+    def __init__(self,status,name_write,name_read):
         self.status=status
         self.status_transfer=status_transfer()
         self.name_read=name_read
