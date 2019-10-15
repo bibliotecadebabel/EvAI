@@ -1,5 +1,6 @@
 import children.net2.Network as nw
 import children.net2.Functions as Functions
+from DAO import GeneratorFromImage
 import decimal
 
 decimal.getcontext().prec = 100
@@ -119,19 +120,24 @@ def Test_node_0(network,n=1000,dt=0.1):
 def Test_modifyNetwork(network, data):
 
     print("Entrenando red \n")
-    #network.Training(data=data, dt=0.01, p=200)
+    network.Training(data=data, dt=0.01, p=200)
     print("mutando la red: Agregando Filtro \n")
-    #network.addFilters()
+    network.addFilters()
     print("Entrenando la red mutada \n")
     network.Training(data=data, dt=0.001, p=100)
     print("mutando la red: Eliminando Filtro \n")
     network.deleteFilters()
     print("Entrenando la red mutada \n")
-    network.Training(data=data, dt=0.001, p=1000)
+    network.Training(data=data, dt=0.001, p=100)
 
 
-x = 10
-y = 10
+dataGen = GeneratorFromImage.GeneratorFromImage(2, 100)
+
+dataGen.dataNumpy()
+
+print(dataGen.size)
+x = dataGen.size[0]
+y = dataGen.size[1]
 k = 3
 
 
@@ -144,7 +150,7 @@ data = []
 
 generateData(data, objects, 100)
 
-Test_modifyNetwork(network, data)
+Test_modifyNetwork(network, dataGen.data)
 
 """
 

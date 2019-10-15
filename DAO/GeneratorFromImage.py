@@ -3,7 +3,6 @@ import children.Operations as Op
 import children.net2.Network as network
 import numpy as np
 from DAO.Generator import Generator
-import torch
 
 class GeneratorFromImage(Generator):
     def __init__(self, comp, s):
@@ -31,5 +30,4 @@ class GeneratorFromImage(Generator):
         self.A = A
         self.x = x
         self.data = data
-        self.size = size
         
