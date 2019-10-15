@@ -60,7 +60,7 @@ def generateCircle():
 def generateNotCircle():
         return tensor([1,0], dtype=torch.float32)
 
-def Test_node_3(network,n=100,dt=0.1):
+def Test_node_4(network,n=100,dt=0.1):
     k=0
     layer_f=network.nodes[3].objects[0]
     #layer_i=network.nodes[2].objects[0]
@@ -71,12 +71,12 @@ def Test_node_3(network,n=100,dt=0.1):
     
     while k<10000:
         network.updateGradFlag(True)
-        Functions.Propagation(layer_f, 2)
+        Functions.Propagation(layer_f, 20)
         layer_f.value.backward()
         network.updateGradFlag(False)
         
-        network.Regularize_der()
-        network.Acumulate_der(n)
+        #network.Regularize_der()
+        network.Acumulate_der(1)
         network.Update(dt)
         network.Predict(image)
         network.Reset_der_total()
@@ -86,65 +86,95 @@ def Test_node_3(network,n=100,dt=0.1):
         
     
 
-def Test_node_2(network,label="c",n=5,dt=0.001):
+def Test_node_3(network,n=100,dt=0.1):
     k=0
-    layer_f=network.nodes[4].objects[0]
-    layer_i=network.nodes[2].objects[0]
-    layer_i.label=label
-    while k<5:
-        network.Reset_der_total()
-        j=3
-        while j<5:
-            layer=network.nodes[j].objects[0]
-            layer.propagate(layer)
-            j=j+1
-        layer_i.backPropagate(layer_i)
-        network.Acumulate_der(n)
-        layer_i.value+=-layer_i.value_der*dt
-        #network.Update(dt)
-        print("value of layer_f: ", layer_f.value)
-        k=k+1
+    layer_f=network.nodes[3].objects[0]
+    #layer_i=network.nodes[2].objects[0]
 
-def Test_node_1(network,n=5,dt=0.1):
+    image = []
+    image.append(network.nodes[0].objects[0].value)
+    image.append(torch.tensor([1,0], dtype=torch.float32))
+
     k=0
-    layer_f=network.nodes[4].objects[0]
-    layer_i=network.nodes[1].objects[0]
-    while k<5:
-        network.Reset_der_total()
-        j=2
-        while j<5:
-            layer=network.nodes[j].objects[0]
-            layer.propagate(layer)
-            j=j+1
-        layer_i.backPropagate(layer_i)
+
+    A = network.nodes[2].objects[0].value
+    A.requires_grad = True
+    while k < 100:
+        
+        #value = network.nodes[3].objects[0].object(A, image[1])
+        network.assignLabels(image[1])
+        network.nodes[2].objects[0].value.requires_grad = True
+        Functions.Propagation(network.nodes[3].objects[0], 1)
+        network.nodes[3].objects[0].value.backward()
+        network.nodes[2].objects[0].value.requires_grad = False
+        network.nodes[2].objects[0].value -= network.nodes[2].objects[0].value.grad * 0.1
+        network.nodes[2].objects[0].value.grad.data.zero_()
+        
+        print(network.nodes[2].objects[0].value)
+
+def Test_node_2(network,n=100,dt=0.1):
+    k=0
+    layer_f=network.nodes[3].objects[0]
+    #layer_i=network.nodes[2].objects[0]
+
+    image = []
+    image.append(network.nodes[0].objects[0].value)
+    image.append(torch.tensor([1,0], dtype=torch.float32))
+
+    k=0
+
+    A = network.nodes[2].objects[0].value
+    A.requires_grad = True
+    
+    print(network.nodes[2].objects[0].value)
+    while k < 1000:
+        
+        network.updateGradFlag(True)
+        network.assignLabels(image[1])
+        network.nodes[2].objects[0].propagate(network.nodes[2].objects[0])
+        network.nodes[3].objects[0].propagate(network.nodes[3].objects[0])
+        network.nodes[3].objects[0].value.backward()
+        network.updateGradFlag(False)
+        network.Regularize_der()
         network.Acumulate_der(1)
         network.Update(dt)
-        print("value of layer_f: ", layer_f.value)
-        k=k+1
-
-def Test_node_0(network,n=1000,dt=0.1):
-    k=0
-    layer_f=network.nodes[4].objects[0]
-    layer_i=network.nodes[0].objects[0]
-    while k<n:
-        network.Predict(layer_i.value)
-        network.assignLabels("n")
         network.Reset_der_total()
-        #j=1
-        #while j<5:
-            #layer=network.nodes[j].objects[0]
-            #layer.propagate(layer)
-            #j=j+1
+        network.Reset_der()
+        print(network.nodes[2].objects[0].value)
+        k+=1
 
-        #layer_i.backPropagate(layer_i)
-        Functions.Propagation(layer_f)
-        Functions.BackPropagation(layer_i)
+def Test_node_1(network,n=100,dt=0.1):
+    k=0
+    layer_f=network.nodes[3].objects[0]
+    #layer_i=network.nodes[2].objects[0]
+
+    image = []
+    image.append(network.nodes[0].objects[0].value)
+    image.append(torch.tensor([1,0], dtype=torch.float32))
+
+    k=0
+
+    A = network.nodes[2].objects[0].value
+    A.requires_grad = True
+    
+    print(network.nodes[2].objects[0].value)
+    while k < 10000:
+        
+        network.updateGradFlag(True)
+        network.assignLabels(image[1])
+        network.nodes[1].objects[0].propagate(network.nodes[1].objects[0])
+        network.nodes[2].objects[0].propagate(network.nodes[2].objects[0])
+        network.nodes[3].objects[0].propagate(network.nodes[3].objects[0])
+        network.nodes[3].objects[0].value.backward()
+        network.updateGradFlag(False)
+        #network.Regularize_der()
         network.Acumulate_der(1)
         network.Update(dt)
-        #print("value of layer_f: ", layer_f.value)
-        #print("value of layer_f: ", layer_f.node.parents[0].objects[0].value)
-        #print("value_der nodo 3: ", network.nodes[3].objects[0].value_der)
-        k=k+1
+        network.Reset_der_total()
+        network.Reset_der()
+        network.Predict(image)
+        #print(network.nodes[2].objects[0].value)
+        k+=1
 
 def Test_modifyNetwork(network, data):
 
@@ -153,11 +183,7 @@ def Test_modifyNetwork(network, data):
 
 def Test_realImage(network, dataGen):
 
-    data=[]
-    data.append(dataGen.data[0])
-
-    print(data)
-    network.Training(data=data, dt=0.001, p=1000)
+    network.Training(data=dataGen.data, dt=0.1, p=1000)
     Inter.trakPytorch(network,'Net_folder_map', dataGen)
 
 
@@ -174,7 +200,7 @@ k = 12
 network = nw.Network([x,y,k])
 
 #Test_realImage(network, dataGen)
-Test_node_3(network)
+Test_realImage(network, dataGen)
 
 
 
