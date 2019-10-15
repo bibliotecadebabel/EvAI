@@ -28,7 +28,7 @@ class GeneratorFromImage(Generator):
 
         data.insert(0, imageTarget)
         
-        self.A = self.numpyToTorch(A)
+        self.A = A
         self.x = x
         self.data = data
         self.size = size

@@ -7,53 +7,6 @@ import torch
 import torch.nn as nn
 import torch.tensor as tensor
 
-
-def generateData(data, objects, n):
-
-        circulo = []
-        circulo.append(torch.zeros([1, objects[0], objects[1], 3], dtype=torch.float32))
-        circulo.append(generateCircle())
-
-        data.append(circulo)
-
-        for i in range(objects[0]//2):
-            for j in range(objects[1]):
-                #circulo[0][i][j] = [255, 255, 255]
-                circulo[0][0][i][j] = tensor([255,255, 255], dtype=torch.float32)
-
-        for i in range(objects[0]//2, objects[0]):
-            for j in range(objects[1]):
-                #circulo[0][i][j] = [1,1,1]
-                circulo[0][0][i][j] = tensor([1,1, 1], dtype=torch.float32)
-
-        circulo[0].transpose_(1, 3)
-        circulo[0].transpose_(2, 3)
-    
-        for i in range(n-1):
-            imagenRandom = []
-            imagenRandom.append(generateImageRandom(objects))
-            imagenRandom.append(generateNotCircle())
-
-            data.append(imagenRandom)
-        
-        #for elemnt in data:
-        #    elemnt[0] = elemnt[0] / 255
-
-
-def generateImageRandom(objects):
-    image = torch.zeros([1, objects[0], objects[1], 3], dtype=torch.float32)
-
-
-    for i in range(objects[0]):
-        for j in range(objects[1]):
-            image[0,i,j] = tensor([Functions.random.randint(1, 255),
-                Functions.random.randint(1, 255), 
-                Functions.random.randint(1, 255)], dtype=torch.float32)
-
-    image.transpose_(1, 3)
-    image.transpose_(2, 3)
-    return image
-
 def generateCircle():
         return tensor([0,1], dtype=torch.float32)
     
@@ -183,7 +136,7 @@ def Test_modifyNetwork(network, data):
 
 def Test_realImage(network, dataGen):
 
-    network.Training(data=dataGen.data, dt=0.1, p=1000)
+    network.Training(data=dataGen.data, dt=0.1, p=1500)
     Inter.trakPytorch(network,'Net_folder_map', dataGen)
 
 
