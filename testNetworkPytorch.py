@@ -1,5 +1,7 @@
 import children.pytorch.Network as nw
+import children.Interfaces as Inter
 import children.pytorch.Functions as Functions
+from DAO import GeneratorFromImage
 
 import torch
 import torch.nn as nn
@@ -58,24 +60,30 @@ def generateCircle():
 def generateNotCircle():
         return tensor([1,0], dtype=torch.float32)
 
-def Test_node_3(network,n=100,dt=0.001):
+def Test_node_3(network,n=100,dt=0.1):
     k=0
     layer_f=network.nodes[3].objects[0]
     #layer_i=network.nodes[2].objects[0]
 
-
+    image = []
+    image.append(network.nodes[0].objects[0].value)
+    image.append(torch.tensor([1,0], dtype=torch.float32))
     
-    while k<50000:
-        network.Reset_der_total()
-        #layer_f.propagate(layer_f)
-        Functions.Propagation(layer_f, 20)
+    while k<10000:
+        network.updateGradFlag(True)
+        Functions.Propagation(layer_f, 2)
         layer_f.value.backward()
+        network.updateGradFlag(False)
+        
         network.Regularize_der()
         network.Acumulate_der(n)
-        #layer_i.value+=-layer_i.value_der*dt
         network.Update(dt)
-        print("value of layer_f: ", layer_f.value)
+        network.Predict(image)
+        network.Reset_der_total()
+        network.Reset_der()
+        #print("value of layer_f: ", layer_f.value)
         k=k+1
+        
     
 
 def Test_node_2(network,label="c",n=5,dt=0.001):
@@ -143,42 +151,35 @@ def Test_modifyNetwork(network, data):
     print("Entrenando red \n")
     network.Training(data=data, dt=0.001, p=1000)
 
+def Test_realImage(network, dataGen):
 
-x = 4
-y = 5
+    data=[]
+    data.append(dataGen.data[0])
+
+    print(data)
+    network.Training(data=data, dt=0.001, p=1000)
+    Inter.trakPytorch(network,'Net_folder_map', dataGen)
+
+
+
+dataGen = GeneratorFromImage.GeneratorFromImage(2, 100)
+dataGen.dataConv2d()
+size = dataGen.data[0][0].shape
+print(size)
+
+x = size[2]
+y = size[3]
 k = 12
-
-
-
-objects = Functions.np.full((3), (x, y, k))
 
 network = nw.Network([x,y,k])
 
-data = []
-
-generateData(data, objects, 100)
-
-Test_modifyNetwork(network, data)
-
-#Test_node_3(network)
-"""
-
-print('testing node 3')
+#Test_realImage(network, dataGen)
 Test_node_3(network)
-print('testing node 2 label=c')
-Test_node_2(network)
-print('testing node 2 label=n')
-Test_node_2(network,"n")
-print('testing node 1')
-Test_node_1(network)
-print('testing node 1')
-
-"""
-#Test_node_0(network)
 
 
 
+#x = dataGen.data[0]
 
+#print(x[0])
 
-
-#network.Training(data=data, dt=0.05, p=10)
+#print(x[0][0:2, 1:1])

@@ -3,6 +3,7 @@ from PIL import Image
 import os
 import random
 import children.Net as Net0
+import torch
 
 def traking(Net,Name,Out_name):
     dir_path=os.path.dirname(os.path.realpath(__file__))
@@ -50,6 +51,40 @@ def trak(Net,Ima,Out_name):
         j=0
     Array2image(a,Out_name)
 
+def trakPytorch(Net,Out_name, dataGen):
+    #size=np.shape(Net.w_node.Value[0])
+    Ima = dataGen.A
+    labelNoCircle = dataGen.label[1]
+
+    size= np.shape(Net.nodes[0].objects[0].value)
+    sizeb=np.shape(Ima)
+
+    i=0
+    j=0
+    #a=torch.ones([1,3, size[2], size[3]], dtype=torch.float32)
+    a=np.zeros((sizeb[2], sizeb[3], 3), dtype=np.uint8)
+    while i<sizeb[2]-size[2]:
+        while j<sizeb[3]-size[3]:
+            x=Ima[0][0][i:i+size[2],j:j+size[3]]
+            x.unsqueeze_(0)
+            x.unsqueeze_(0)
+            x.resize_(1, 3, size[2], size[3])
+            #p=Net.pre(x)
+            image = []
+            image.append(x)
+            image.append(labelNoCircle)
+            p = Net.Predict(image)
+
+            a[i,j]=a[i,j]+p*255
+
+            j=j+1
+        i=i+1
+        if i % 10==0:
+            print(i/10)
+        j=0
+    print(a.shape)
+    Array2image(a,Out_name)  
+    
 
 def Image2array(Name,type=None):
     dir_path=os.path.dirname(os.path.realpath(__file__))
