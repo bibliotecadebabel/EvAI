@@ -3,7 +3,7 @@ import utilities.Quadrants as qu
 import utilities.Node as nd
 import utilities.P_trees as tr
 import Buttons as bu
-import Product_local as program
+import Product as program
 
 
 

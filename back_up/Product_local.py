@@ -12,7 +12,7 @@ import children.Interfaces as Inter
 import children.Operations as Op
 import children.net2.Network as nw
 import time
-
+from Transfer import TransferLocal, TransferRemote
 
 # Initialization of parameters
 class particle():

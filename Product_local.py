@@ -7,10 +7,11 @@ import TangentPlane as tplane
 import utilities.Graphs as gr
 import math
 import V_graphics as cd
-import children.Data_generator as dgen
-import children.Interfaces as Inter
-import children.Operations as Op
-import children.net2.Network as nw
+import Transfer.Transfer as tran
+
+#import children.Interfaces as Inter
+#import children.Operations as Op
+#import children.net2.Network as nw
 import time
 
 
@@ -42,21 +43,12 @@ class Status():
         self.mouse_frame2=[0]
         self.frame1=[]
         self.frame2=[]
-        self.Data_gen=None
+        self.Transfer=None
+#        self.Data_gen=None
         self.p=1
         self.display=None
         self.scale=None
         self.sectors=None
-
-def update_nets(status):
-    for node in status.objects:
-        p=node_plane(node)
-        particles=p.particles
-        for par in particles:
-            net=par.objects[0]
-            net.Training(status.Data_gen.Data,dt=status.tau,p=2)
-            plot(status,status.display,status.scale,status.sectors)
-    return
 
 def potential(x):
     return (x-50)**2
@@ -149,27 +141,10 @@ def update_gradient(status):
 
 
 def update(status):
-#    update_nets(status)
-    #time.sleep(10)
-    update_velocity(status)
-    for i in range(len(status.objects)):
-        q=status.objects[i].objects[0]
-        if q.objects[0].num_particles > 0:
-            for particle in q.objects[0].particles:
-                print(q.shape)
-                if not(particle.position[0]==particle.velocity[0]):
-                    a=particle.position[0]
-                    b=particle.velocity[0]
-                    particle.position=[]
-                    particle.velocity=[]
-                    q.objects[0].num_particles =q.objects[0].num_particles - 1
-                    particle.position.append(b)
-                    particle.velocity.append(b)
-                    qf=b.objects[0]
-                    qf.objects[0].num_particles=qf.objects[0].num_particles+1
-                    q.objects[0].particles.remove(particle)
-                    qf.objects[0].particles.append(particle)
-                    ##print(q.objects[0].num_particles," - ", qf.objects[0].num_particles, " || LONGITUD REAL ||  ", len(q.objects[0].particles)," - ", len(qf.objects[0].particles))
+    status.Transfer.status=status
+    status.Transfer.un_load()
+    status.Transfer.write()
+    print('update')
 
 def update_velocity(status):
     #update_divergence(status)
@@ -234,8 +209,12 @@ def initialize_parameters(self):
 # in position 1 the size of such list
 
 def create_objects(status):
-    status.Data_gen=dgen.Data_gen()
-    status.Data_gen.gen_data()
+    status.Transfer=tran.TransferLocal(status,
+        'local2remote.txt','remote2local.txt')
+    status.Transfer.un_load()
+    status.Transfer.write()
+    #status.Data_gen=dgen.Data_gen()
+    #status.Data_gen.gen_data()
     def add_node(g,i):
             node=nd.Node()
             q=qu.Quadrant(i)
@@ -262,8 +241,8 @@ def create_objects(status):
         par.position.append(node)
         par.velocity.append(node)
         #print(status.Data_gen.size)
-        par.objects.append(nw.Network([status.Data_gen.size[0],
-            status.Data_gen.size[1],2]))
+    #    par.objects.append(nw.Network([status.Data_gen.size[0],
+    #        status.Data_gen.size[1],2]))
         p.particles.append(par)
         p.num_particles+=1
         k=k+1
