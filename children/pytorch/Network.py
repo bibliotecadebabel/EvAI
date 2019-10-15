@@ -98,10 +98,20 @@ class Network(nn.Module):
             #    layer.object.zero_grad()
 
             if layer.getBiasDer() is not None:
-                layer.getBiasDer().data = layer.getBiasDer().data * 0
+                layer.getBiasDer().data.zero_()
             
             if layer.getFilterDer() is not None:
-                layer.getFilterDer().data = layer.getFilterDer().data * 0   
+                layer.getFilterDer().data.zero_()
+            
+        
+        for node in self.nodes:
+            layer = node.objects[0]
+
+            if layer.value is not None:
+                if layer.value.grad is not None:
+                    layer.value.grad.data.zero_()
+
+             
 
     def Reset_der_total(self):
 
@@ -139,6 +149,11 @@ class Network(nn.Module):
 
         functions.Propagation(self.nodes[3].objects[0])
 
+        return self.getProbability()
+
+
+    def getProbability(self):
+
         p = self.nodes[2].objects[0].value[0].item()
 
         if p < 0:
@@ -146,9 +161,7 @@ class Network(nn.Module):
         elif p > 1:
             p = 1
 
-        print("p: ",p)
         return p
-
 
     def Train(self, dataElement, peso, n):
         self.nodes[0].objects[0].value = dataElement[0]
@@ -156,9 +169,11 @@ class Network(nn.Module):
 
         self.assignLabels(dataElement[1])
 
+        self.updateGradFlag(True)
         functions.Propagation(self.nodes[3].objects[0])
         self.nodes[3].objects[0].value.backward()
-        #print("value nodo 3: ", self.nodes[3].objects[0].value)
+        self.updateGradFlag(False)
+
         self.Acumulate_der(n, peso)
         self.Reset_der()
 
@@ -168,18 +183,18 @@ class Network(nn.Module):
 
             i=0
             while i < p:
-                #if i % 10==0:
-                    #print(i)
-                    #print(self.nodes[3].objects[0].value)
-                self.Predict(data[0])
-                self.Reset_der_total()
+                if i % 10==0:
+                    print(i)
+                    print("prob: ", self.getProbability())
                 self.Train(data[0], peso, n)
 
                 for image in data[1:]:
                     self.Train(image, 1, n)
 
-                self.Regularize_der()
+                #self.Regularize_der()
                 self.Update(dt)
+                self.Reset_der_total()
+                self.Predict(data[0])
                 i=i+1
     
     def updateGradFlag(self, flag):
@@ -199,3 +214,12 @@ class Network(nn.Module):
             
             if layer.getFilterDer() is not None:
                 layer.getFilterDer().requires_grad = flag
+        
+        '''
+        for node in self.nodes:
+            layer = node.objects[0]
+
+            if layer.value is not None:
+                layer.value.requires_grad = flag
+
+        '''
