@@ -40,7 +40,7 @@ def conv2d_propagate(layer):
     
     parent = layer.node.parents[0].objects[0]
 
-    layer.value = layer.object(parent.value) / len(layer.getFilter())
+    layer.value = layer.object(parent.value) / len(layer.getFilter()) / 255
 
 def linear_propagate(layer):
 

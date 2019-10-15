@@ -28,7 +28,7 @@ class Network(nn.Module):
 
     def __createStructure(self):
         
-        graph = Graphs.Graph()
+        graph = Graphs.Graph(True)
 
         amount_of_nodes = 4
 
@@ -91,11 +91,17 @@ class Network(nn.Module):
 
     def Reset_der(self):
 
-        for node in self.nodes:
+        for node in self.nodes[:-1]:
             layer = node.objects[0]
 
-            if layer.object is not None:
-                layer.object.zero_grad()
+            #if layer.object is not None:
+            #    layer.object.zero_grad()
+
+            if layer.getBiasDer() is not None:
+                layer.getBiasDer().data = layer.getBiasDer().data * 0
+            
+            if layer.getFilterDer() is not None:
+                layer.getFilterDer().data = layer.getFilterDer().data * 0   
 
     def Reset_der_total(self):
 
@@ -128,12 +134,20 @@ class Network(nn.Module):
                 layer.getBias().data -= (layer.bias_der_total * dt)
         
     def Predict(self, image):
-        #self.assignLabels("c")
+        self.assignLabels(torch.tensor([1,0], dtype=torch.float32))
         self.nodes[0].objects[0].value = image[0]
 
         functions.Propagation(self.nodes[3].objects[0])
 
-        return self.nodes[3].objects[0].value
+        p = self.nodes[2].objects[0].value[0].item()
+
+        if p < 0:
+            p = 0
+        elif p > 1:
+            p = 1
+
+        print("p: ",p)
+        return p
 
 
     def Train(self, dataElement, peso, n):
@@ -154,9 +168,10 @@ class Network(nn.Module):
 
             i=0
             while i < p:
-                if i % 10==0:
-                    print(i)
-                    print(self.nodes[3].objects[0].value)
+                #if i % 10==0:
+                    #print(i)
+                    #print(self.nodes[3].objects[0].value)
+                self.Predict(data[0])
                 self.Reset_der_total()
                 self.Train(data[0], peso, n)
 
@@ -166,3 +181,21 @@ class Network(nn.Module):
                 self.Regularize_der()
                 self.Update(dt)
                 i=i+1
+    
+    def updateGradFlag(self, flag):
+
+        for node in self.nodes[:-1]:
+
+            layer = node.objects[0]
+
+            if layer.getBias() is not None:
+                layer.getBias().requires_grad = flag
+            
+            if layer.getBiasDer() is not None:
+                layer.getBiasDer().requires_grad = flag
+            
+            if layer.getFilter() is not None:
+                layer.getFilter().requires_grad = flag
+            
+            if layer.getFilterDer() is not None:
+                layer.getFilterDer().requires_grad = flag

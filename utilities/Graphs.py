@@ -3,11 +3,11 @@ import utilities.P_trees as tr
 from utilities.Safe import safe_append, safe_remove, safe_ope
 
 class Graph():
-    def __init__(self):
+    def __init__(self, directed=False):
         self.key2node={}
         self.node2key={}
         self.objects=[]
-        self.directed=False
+        self.directed=directed
     def add_node(self,key,node):
         if not(key in self.key2node.keys()):
             self.key2node.update({key : node})
