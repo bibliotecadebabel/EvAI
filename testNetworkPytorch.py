@@ -136,19 +136,19 @@ def Test_modifyNetwork(network, data):
 
 def Test_realImage(network, dataGen):
 
-    network.Training(data=dataGen.data, dt=0.1, p=1500)
+    network.Training(data=dataGen.data, dt=0.1, p=2000)
     Inter.trakPytorch(network,'Net_folder_map', dataGen)
 
 
 
-dataGen = GeneratorFromImage.GeneratorFromImage(2, 100)
+dataGen = GeneratorFromImage.GeneratorFromImage(2, 2000)
 dataGen.dataConv2d()
 size = dataGen.data[0][0].shape
 print(size)
 
 x = size[2]
 y = size[3]
-k = 12
+k = 10
 
 network = nw.Network([x,y,k])
 

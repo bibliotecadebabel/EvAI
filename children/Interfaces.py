@@ -3,7 +3,6 @@ from PIL import Image
 import os
 import random
 import children.Net as Net0
-import torch
 
 def traking(Net,Name,Out_name):
     dir_path=os.path.dirname(os.path.realpath(__file__))
