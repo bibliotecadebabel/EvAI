@@ -1,4 +1,4 @@
-import sys
+import sys, pygame
 import utilities.Quadrants as qu
 import utilities.Node as nd
 import utilities.P_trees as tr
@@ -8,20 +8,12 @@ import utilities.Graphs as gr
 import math
 import V_graphics as cd
 import Transfer.Transfer as tran
-#import children.Data_generator as dgen
+import children.Data_generator as dgen
 import children.Interfaces as Inter
-#import children.Operations as Op
-#import children.net2.Network as nw
+import children.Operations as Op
+import children.net2.Network as nw
 import time
 
-import children.net2.Network as nw
-import utilities.Data_generator as dataGen
-
-
-
-# Amount of Images
-S = 200
-comp = 2
 
 # Initialization of parameters
 class particle():
@@ -57,30 +49,6 @@ class Status():
         self.display=None
         self.scale=None
         self.sectors=None
-
-def TrainNetwork():
-
-    generator = dataGen.Data_gen() 
-
-    generator.gen_data()
-    
-    x = generator.size[0]
-    y = generator.size[1]
-    k = 10
-
-    network = nw.Network([x,y,k])
-
-    network.Training(data=generator.Data, dt=0.01, p=200)
-
-    return network
-
-def TrakNetwork(network):
-
-    generator = dataGen.Data_gen()
-
-    generator.gen_data()
-
-    Inter.trak(network, generator.A, "net_Product_Remote")
 
 
 def update_nets(status):
@@ -253,8 +221,8 @@ def update_velocity(status):
 def initialize_parameters(self):
     display_size=[1000,500]
     self.dt=0.1
-    self.n=100
-    self.dx=100
+    self.n=10
+    self.dx=10
     self.L=1
     self.beta=2
     self.alpha=2
@@ -328,7 +296,13 @@ def attach_balls(status,n_r):
 
             #print('Hi')
 
-
+def node_energy(node):
+    p=node_plane(node)
+    if p.num_particles==0:
+        p.energy=None
+    else:
+        pass
+    pass
 
 def plot(status,Display,size=None,tree=None):
     white = 255,255,255
@@ -367,7 +341,7 @@ def plot(status,Display,size=None,tree=None):
         py_f=Ly_o+status.objects[i+1].objects[0].objects[0].num_particles*ddy
         positions=[[px_o,py_o],[px_f,py_f]]
 #        print(positions)
-        #pygame.draw.aaline(Display,white,positions[0],positions[1],True)
+        pygame.draw.aaline(Display,white,positions[0],positions[1],True)
 
 status=Status()
 initialize_parameters(status)
@@ -386,11 +360,6 @@ while False:
     print(transfer.particles)
     k=k+1
     pass
-
-net = TrainNetwork()
-
-TrakNetwork(net)
-
 while True:
     status.Transfer.readLoad()
     if status.active:

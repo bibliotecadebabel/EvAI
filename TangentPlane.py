@@ -10,3 +10,4 @@ class tangent_plane():
         self.ball=None
         self.interaction_field=0
         self.distance=None
+        self.energy=None
