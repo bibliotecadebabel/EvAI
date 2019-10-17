@@ -13,32 +13,6 @@ def generateCircle():
 def generateNotCircle():
         return tensor([1,0], dtype=torch.float32)
 
-def Test_node_4(network,n=100,dt=0.1):
-    k=0
-    layer_f=network.nodes[3].objects[0]
-    #layer_i=network.nodes[2].objects[0]
-
-    image = []
-    image.append(network.nodes[0].objects[0].value)
-    image.append(torch.tensor([1,0], dtype=torch.float32))
-    
-    while k<10000:
-        network.updateGradFlag(True)
-        Functions.Propagation(layer_f, 20)
-        layer_f.value.backward()
-        network.updateGradFlag(False)
-        
-        #network.Regularize_der()
-        network.Acumulate_der(1)
-        network.Update(dt)
-        network.Predict(image)
-        network.Reset_der_total()
-        network.Reset_der()
-        #print("value of layer_f: ", layer_f.value)
-        k=k+1
-        
-    
-
 def Test_node_3(network,n=100,dt=0.1):
     k=0
     layer_f=network.nodes[3].objects[0]
@@ -49,7 +23,6 @@ def Test_node_3(network,n=100,dt=0.1):
     image.append(torch.tensor([1,0], dtype=torch.float32))
 
     k=0
-
     A = network.nodes[2].objects[0].value
     A.requires_grad = True
     while k < 100:
@@ -69,6 +42,8 @@ def Test_node_2(network,n=100,dt=0.1):
     k=0
     layer_f=network.nodes[3].objects[0]
     #layer_i=network.nodes[2].objects[0]
+
+    network.addFilters()
 
     image = []
     image.append(network.nodes[0].objects[0].value)
@@ -132,11 +107,11 @@ def Test_node_1(network,n=100,dt=0.1):
 def Test_modifyNetwork(network, data):
 
     print("Entrenando red \n")
-    network.Training(data=data, dt=0.1, p=1)
+    network.Training(data=data, dt=0.01, p=100)
     print("Agregando Filtro \n")
     network.addFilters()
     print("Entrenando Red modificada \n")
-    network.Training(data=data, dt=0.1, p=1)
+    network.Training(data=data, dt=0.01, p=100)
 
 def Test_realImage(network, dataGen):
 
@@ -158,7 +133,7 @@ network = nw.Network([x,y,k])
 
 #Test_realImage(network, dataGen)
 Test_modifyNetwork(network, dataGen.data)
-
+#Test_node_2(network)
 
 
 #x = dataGen.data[0]

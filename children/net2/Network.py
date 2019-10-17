@@ -128,8 +128,9 @@ class Network:
         i=0
         while i < p:
             if i % 10==0:
+                pass
                 #print(i)
-                print(self.nodes[3].objects[0].value)
+                #print(self.nodes[3].objects[0].value)
             self.Reset_der_total()
             self.Train(data[0], peso, n)
 

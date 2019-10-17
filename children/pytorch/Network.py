@@ -169,7 +169,7 @@ class Network(nn.Module):
 
         self.updateGradFlag(True)
         functions.Propagation(self.nodes[3].objects[0])
-        self.showParameters()
+        #self.showParameters()
         self.nodes[3].objects[0].value.backward()
         self.updateGradFlag(False)
 
@@ -264,12 +264,15 @@ class Network(nn.Module):
             
         layerConv2d.getFilter().resize_(shapeFilterConv2d[0]+1, 3, shapeFilterConv2d[2], shapeFilterConv2d[3])
         layerConv2d.getBias().resize_(shapeFilterConv2d[0]+1)
-        layerConv2d.filter_der_total.resize_(shapeFilterConv2d[0]+1, 3, shapeFilterConv2d[2], shapeFilterConv2d[3])
-        layerConv2d.bias_der_total.resize_(shapeFilterConv2d[0]+1)
+        #layerConv2d.filter_der_total.resize_(shapeFilterConv2d[0]+1, 3, shapeFilterConv2d[2], shapeFilterConv2d[3])
+        #layerConv2d.bias_der_total.resize_(shapeFilterConv2d[0]+1)
 
         layerLinear.getFilter().resize_(2, shapeFilterLinear[1]+1)
-        layerLinear.filter_der_total.resize_(2, shapeFilterLinear[1]+1)
-
+        #layerLinear.filter_der_total.resize_(2, shapeFilterLinear[1]+1)
+        layerLinear.filter_der_total = 0
+        layerLinear.bias_der_total = 0
+        layerConv2d.filter_der_total = 0
+        layerConv2d.bias_der_total = 0
         self.updateGradFlag(True)
        
 
