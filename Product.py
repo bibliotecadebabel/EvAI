@@ -25,7 +25,7 @@ class particle():
 class Status():
     def __init__(self, display_size=None):
         self.dt = 0.01
-        self.tau=0.005
+        self.tau=0.1
         self.n = 10
         self.r=3
         self.dx = 2
@@ -44,7 +44,9 @@ class Status():
         self.frame1=[]
         self.frame2=[]
         self.Transfer=None
-#        self.Data_gen=None
+        self.S=100
+        self.Comp=2
+        self.Data_gen=None
         self.p=1
         self.display=None
         self.scale=None
@@ -53,12 +55,13 @@ class Status():
 
 def update_nets(status):
     for node in status.objects:
+        node_energy(node)
         p=node_plane(node)
+        print(p.energy)
         particles=p.particles
         for par in particles:
             net=par.objects[0]
             net.Training(status.Data_gen.Data,dt=status.tau,p=2)
-            plot(status,status.display,status.scale,status.sectors)
     return
 
 def potential(x):
@@ -152,7 +155,7 @@ def update_gradient(status):
 
 
 def update(status):
-#    update_nets(status)
+    update_nets(status)
     #time.sleep(10)
     status.Transfer.status=status
     status.Transfer.update()
@@ -232,6 +235,8 @@ def initialize_parameters(self):
     self.Interaction=interaction
     self.display_size=display_size
 
+
+
 #Here the objects of status are a list of nodes
 #The objects of nodes are quadrants which have the physical Range
 # the objects of quadrants are:
@@ -239,8 +244,10 @@ def initialize_parameters(self):
 # in position 1 the size of such list
 
 def create_objects(status):
-    #status.Data_gen=dgen.Data_gen()
-    #status.Data_gen.gen_data()
+    status.Data_gen=dgen.Data_gen()
+    status.Data_gen.S=status.S
+    status.Data_gen.Comp=status.Comp
+    status.Data_gen.gen_data()
     def add_node(g,i):
             node=nd.Node()
             q=qu.Quadrant(i)
@@ -267,8 +274,8 @@ def create_objects(status):
         par.position.append(node)
         par.velocity.append(node)
         #print(status.Data_gen.size)
-        #par.objects.append(nw.Network([status.Data_gen.size[0],
-        #    status.Data_gen.size[1],2]))
+        par.objects.append(nw.Network([status.Data_gen.size[0],
+            status.Data_gen.size[1],2]))
         p.particles.append(par)
         p.num_particles+=1
         k=k+1
@@ -301,8 +308,12 @@ def node_energy(node):
     if p.num_particles==0:
         p.energy=None
     else:
-        pass
-    pass
+        p.energy=0
+        for par in p.particles:
+            net=par.objects[0]
+            p.energy+=net.total_value
+        p.energy=p.energy/p.num_particles
+
 
 def plot(status,Display,size=None,tree=None):
     white = 255,255,255
