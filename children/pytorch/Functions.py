@@ -40,14 +40,15 @@ def conv2d_propagate(layer):
     
     parent = layer.node.parents[0].objects[0]
 
-    layer.value = layer.object(parent.value) / len(layer.getFilter()) / 255
+    layer.value = layer.object(parent.value) / len(layer.getFilter()[0]) / 255
 
 def linear_propagate(layer):
 
     parent = layer.node.parents[0].objects[0]
 
-    layer.value = layer.object(parent.value.view(-1)) / len(layer.getFilter())
-
+    #print("shape: ", len(layer.getFilter()[1]))
+    layer.value = layer.object(parent.value.view(-1)) / len(layer.getFilter()[1])
+    #print("value linear: ", layer.value)
 def MSEloss_propagate(layer):
 
     parent = layer.node.parents[0].objects[0]

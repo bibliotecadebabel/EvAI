@@ -54,8 +54,8 @@ class Network(nn.Module):
 
         valueLayerA = torch.rand(1, 3, self.objects[0], self.objects[1], dtype=torch.float32)
         valueLayerA = valueLayerA
-        valueLayerConv2d = torch.rand(1, self.objects[2], 1, 1, dtype=torch.float32)
-        valueLayerLinear = torch.rand(2, dtype=torch.float32)
+        valueLayerConv2d = torch.rand(1, self.objects[2], 1, 1, dtype=torch.float32, requires_grad=True)
+        valueLayerLinear = torch.rand(2, dtype=torch.float32, requires_grad=True)
 
         self.nodes[0].objects.append(ly.Layer(node=self.nodes[0], value=valueLayerA, propagate=functions.Nothing))
         self.nodes[1].objects.append(ly.Layer(node=self.nodes[1], objectTorch=objectConv2d, propagate=functions.conv2d_propagate, value=valueLayerConv2d))
@@ -106,9 +106,9 @@ class Network(nn.Module):
         
         for node in self.nodes:
             layer = node.objects[0]
-
             if layer.value is not None:
                 if layer.value.grad is not None:
+                    #print("grad: ", layer.value.grad)
                     layer.value.grad.data.zero_()
 
              
@@ -259,20 +259,24 @@ class Network(nn.Module):
 
         shapeFilterConv2d = layerConv2d.getFilter().shape
         shapeFilterLinear = layerLinear.getFilter().shape
+        shapeValueConv2d = layerConv2d.value.shape
 
         self.updateGradFlag(False)
             
-        layerConv2d.getFilter().resize_(shapeFilterConv2d[0]+1, 3, shapeFilterConv2d[2], shapeFilterConv2d[3])
-        layerConv2d.getBias().resize_(shapeFilterConv2d[0]+1)
-        #layerConv2d.filter_der_total.resize_(shapeFilterConv2d[0]+1, 3, shapeFilterConv2d[2], shapeFilterConv2d[3])
-        #layerConv2d.bias_der_total.resize_(shapeFilterConv2d[0]+1)
+        layerConv2d.getFilter().resize_(shapeFilterConv2d[0]-1, 3, shapeFilterConv2d[2], shapeFilterConv2d[3])
+        layerConv2d.getBias().resize_(shapeFilterConv2d[0]-1)
+        
+        layerConv2d.value.requires_grad = False
+        layerConv2d.value.resize_(shapeValueConv2d[0], shapeValueConv2d[1]-1, shapeValueConv2d[2], shapeValueConv2d[3])
+        layerConv2d.value.requires_grad = True
 
-        layerLinear.getFilter().resize_(2, shapeFilterLinear[1]+1)
-        #layerLinear.filter_der_total.resize_(2, shapeFilterLinear[1]+1)
+        layerLinear.getFilter().resize_(2, shapeFilterLinear[1]-1)
+ 
         layerLinear.filter_der_total = 0
         layerLinear.bias_der_total = 0
         layerConv2d.filter_der_total = 0
         layerConv2d.bias_der_total = 0
+
         self.updateGradFlag(True)
        
 

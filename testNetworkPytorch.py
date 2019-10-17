@@ -25,7 +25,8 @@ def Test_node_3(network,n=100,dt=0.1):
     k=0
     A = network.nodes[2].objects[0].value
     A.requires_grad = True
-    while k < 100:
+    network.addFilters()
+    while k < 1000:
         
         #value = network.nodes[3].objects[0].object(A, image[1])
         network.assignLabels(image[1])
@@ -43,7 +44,7 @@ def Test_node_2(network,n=100,dt=0.1):
     layer_f=network.nodes[3].objects[0]
     #layer_i=network.nodes[2].objects[0]
 
-    network.addFilters()
+    #network.addFilters()
 
     image = []
     image.append(network.nodes[0].objects[0].value)
@@ -54,21 +55,30 @@ def Test_node_2(network,n=100,dt=0.1):
     A = network.nodes[2].objects[0].value
     A.requires_grad = True
     
-    print(network.nodes[2].objects[0].value)
+    #print(network.nodes[2].objects[0].value)
+
+    network.addFilters()
     while k < 1000:
         
+        print("iter: ", k)
         network.updateGradFlag(True)
+        network.nodes[1].objects[0].value.requires_grad = True
         network.assignLabels(image[1])
         network.nodes[2].objects[0].propagate(network.nodes[2].objects[0])
         network.nodes[3].objects[0].propagate(network.nodes[3].objects[0])
         network.nodes[3].objects[0].value.backward()
         network.updateGradFlag(False)
-        network.Regularize_der()
+        network.nodes[1].objects[0].value.requires_grad = False
+        #network.Regularize_der()
         network.Acumulate_der(1)
         network.Update(dt)
+
+        #network.nodes[1].objects[0].value -= network.nodes[1].objects[0].value.grad * dt 
+
         network.Reset_der_total()
         network.Reset_der()
-        print(network.nodes[2].objects[0].value)
+
+        print("Value Layer Linear:", network.nodes[2].objects[0].value)
         k+=1
 
 def Test_node_1(network,n=100,dt=0.1):
@@ -101,17 +111,17 @@ def Test_node_1(network,n=100,dt=0.1):
         network.Reset_der_total()
         network.Reset_der()
         network.Predict(image)
-        #print(network.nodes[2].objects[0].value)
+        print(network.getProbability())
         k+=1
 
 def Test_modifyNetwork(network, data):
 
     print("Entrenando red \n")
-    network.Training(data=data, dt=0.01, p=100)
-    print("Agregando Filtro \n")
+    network.Training(data=data, dt=100, p=10000)
+    print("Eliminando Filtro \n")
     network.addFilters()
     print("Entrenando Red modificada \n")
-    network.Training(data=data, dt=0.01, p=100)
+    network.Training(data=data, dt=100, p=10000)
 
 def Test_realImage(network, dataGen):
 
@@ -120,14 +130,14 @@ def Test_realImage(network, dataGen):
 
 
 
-dataGen = GeneratorFromImage.GeneratorFromImage(2, 50)
+dataGen = GeneratorFromImage.GeneratorFromImage(2, 2000)
 dataGen.dataConv2d()
 size = dataGen.data[0][0].shape
 
 
 x = size[2]
 y = size[3]
-k = 10
+k = 100
 
 network = nw.Network([x,y,k])
 
@@ -135,6 +145,7 @@ network = nw.Network([x,y,k])
 Test_modifyNetwork(network, dataGen.data)
 #Test_node_2(network)
 
+#Test_node_1(network)
 
 #x = dataGen.data[0]
 
