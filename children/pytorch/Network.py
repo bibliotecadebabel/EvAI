@@ -245,10 +245,58 @@ class Network(nn.Module):
             if layer.getFilterDer() is not None:
                 layer.getFilterDer().requires_grad = flag
 
+    def __removeGrad(self):
+
+        pass
+
     def addFilters(self):
+        layerConv2d = self.nodes[1].objects[0]
+        layerLinear = self.nodes[2].objects[0]
+
+        layerConv2d.getFilter().grad = None
+        layerConv2d.getBias().grad = None
+        layerLinear.getFilter().grad = None
+        layerLinear.getBias().grad = None
+
+        shapeFilterConv2d = layerConv2d.getFilter().shape
+        shapeFilterLinear = layerLinear.getFilter().shape
+        shapeValueConv2d = layerConv2d.value.shape
+
+        self.updateGradFlag(False)
+        layerConv2d.value.requires_grad = False 
+
+        layerConv2d.getFilter().resize_(shapeFilterConv2d[0]+1, 3, shapeFilterConv2d[2], shapeFilterConv2d[3])
+        layerConv2d.getBias().resize_(shapeFilterConv2d[0]+1)
         
+        layerConv2d.value.resize_(shapeValueConv2d[0], shapeValueConv2d[1]+1, shapeValueConv2d[2], shapeValueConv2d[3])
         
 
+        layerLinear.getFilter().resize_(2, shapeFilterLinear[1]+1)
+ 
+        layerLinear.filter_der_total = 0
+        layerLinear.bias_der_total = 0
+        layerConv2d.filter_der_total = 0
+        layerConv2d.bias_der_total = 0
+
+    
+        #layerConv2d.getFilter()[shapeFilterConv2d[0]] = torch.randint(5,10, (3, shapeValueConv2d[2], shapeValueConv2d[3]), dtype=torch.float32)
+        layerConv2d.getFilter()[shapeFilterConv2d[0]] = layerConv2d.getFilter()[shapeFilterConv2d[0]-1].clone()
+        
+        #layerConv2d.getBias()[shapeFilterConv2d[0]] = torch.ones([1])
+        layerConv2d.getBias()[shapeFilterConv2d[0]] = layerConv2d.getBias()[shapeFilterConv2d[0]-1].clone()
+        
+        #layerConv2d.value[shapeValueConv2d[0]-1][shapeValueConv2d[1]] = torch.ones([1])
+        layerConv2d.value[shapeValueConv2d[0]-1][shapeValueConv2d[1]] = layerConv2d.value[shapeValueConv2d[0]-1][shapeValueConv2d[1]-1].clone()
+
+        for i in range(layerLinear.getFilter().shape[0]):
+            #layerLinear.getFilter()[i][layerLinear.getFilter().shape[1]-1] = torch.ones([1])
+            layerLinear.getFilter()[i][layerLinear.getFilter().shape[1]-1] = layerLinear.getFilter()[i][layerLinear.getFilter().shape[1]-2].clone()
+
+        self.updateGradFlag(True)
+        layerConv2d.value.requires_grad = True
+
+    def removeFilter(self):
+        
         layerConv2d = self.nodes[1].objects[0]
         layerLinear = self.nodes[2].objects[0]
 
