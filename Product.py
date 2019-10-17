@@ -1,4 +1,4 @@
-import sys, pygame
+import sys
 import utilities.Quadrants as qu
 import utilities.Node as nd
 import utilities.P_trees as tr
@@ -9,11 +9,19 @@ import math
 import V_graphics as cd
 import Transfer.Transfer as tran
 #import children.Data_generator as dgen
-#import children.Interfaces as Inter
+import children.Interfaces as Inter
 #import children.Operations as Op
 #import children.net2.Network as nw
 import time
 
+import children.net2.Network as nw
+import utilities.Data_generator as dataGen
+
+
+
+# Amount of Images
+S = 200
+comp = 2
 
 # Initialization of parameters
 class particle():
@@ -49,6 +57,30 @@ class Status():
         self.display=None
         self.scale=None
         self.sectors=None
+
+def TrainNetwork():
+
+    generator = dataGen.Data_gen() 
+
+    generator.gen_data()
+    
+    x = generator.size[0]
+    y = generator.size[1]
+    k = 10
+
+    network = nw.Network([x,y,k])
+
+    network.Training(data=generator.Data, dt=0.01, p=200)
+
+    return network
+
+def TrakNetwork(network):
+
+    generator = dataGen.Data_gen()
+
+    generator.gen_data()
+
+    Inter.trak(network, generator.A, "net_Product_Remote")
 
 
 def update_nets(status):
@@ -335,7 +367,7 @@ def plot(status,Display,size=None,tree=None):
         py_f=Ly_o+status.objects[i+1].objects[0].objects[0].num_particles*ddy
         positions=[[px_o,py_o],[px_f,py_f]]
 #        print(positions)
-        pygame.draw.aaline(Display,white,positions[0],positions[1],True)
+        #pygame.draw.aaline(Display,white,positions[0],positions[1],True)
 
 status=Status()
 initialize_parameters(status)
@@ -354,6 +386,11 @@ while False:
     print(transfer.particles)
     k=k+1
     pass
+
+net = TrainNetwork()
+
+TrakNetwork(net)
+
 while True:
     status.Transfer.readLoad()
     if status.active:

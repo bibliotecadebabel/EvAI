@@ -23,6 +23,7 @@ class Generator(ABC):
         self.label[1] = torch.tensor([0,1], dtype=torch.float32)
         self.generateData()
         self.__convertDataToPytorch()
+        self.__generateSize()
 
 
     def dataConv3d(self):
@@ -30,11 +31,13 @@ class Generator(ABC):
         self.label[1] = torch.tensor([0,1], dtype=torch.float32)
         self.generateData()        
         self.__convertDataToPytorch(True)
+        self.__generateSize()
 
     def dataNumpy(self):
         self.label[0] = "c"
         self.label[1] = "n"
         self.generateData()
+        self.__generateSize()
 
     def __convertDataToPytorch(self, conv3d=False):
 
@@ -53,3 +56,7 @@ class Generator(ABC):
             data.resize_(1, 1, size[2], size[3])
         
         return data
+
+    def __generateSize(self):
+
+        self.size = self.data[0][0].shape 

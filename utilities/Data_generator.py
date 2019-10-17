@@ -9,7 +9,7 @@ print (sys.argv)
 
 class Data_gen():
     def __init__(self):
-        self.Comp = 5
+        self.Comp = 2
         self.S=100
         self.Image='btest'
         self.Target='folder'
@@ -27,6 +27,8 @@ class Data_gen():
         imageTarget.append("c")
         self.Data.insert(0, imageTarget)
         self.size=size
+        self.A = A
+        self.x = x
 
 
 """

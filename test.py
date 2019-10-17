@@ -1,6 +1,10 @@
 import children.net2.Network as nw
 import children.net2.Functions as Functions
+#from DAO import GeneratorFromImage
+from utilities import Data_generator
+import children.Interfaces as Inter
 import decimal
+
 
 decimal.getcontext().prec = 100
 
@@ -116,22 +120,50 @@ def Test_node_0(network,n=1000,dt=0.1):
         #print("value_der nodo 3: ", network.nodes[3].objects[0].value_der)
         k=k+1
 
+def Test_multipleNetworks():
+    networks = []
+
+    dataGen = Data_generator.Data_gen()
+    dataGen.gen_data()
+    size = dataGen.size
+    ks = [1, 3, 5, 8, 10]
+
+
+    for i in range(5):
+        networks.append(nw.Network([size[0], size[1], ks[i]]))
+
+    for k in range(1000):
+        for i in range(len(networks)):
+            networks[i].Training(data=dataGen.Data, dt=0.1, p=1)
+            print("value network #", str(i),": ", networks[i].total_value)
+    
+    for j in range(len(networks)):
+        networkName = "network-"+str(j)+"-map"
+        Inter.trak(networks[i], dataGen.A, networkName)
+    
+        
+
 def Test_modifyNetwork(network, data):
 
     print("Entrenando red \n")
-    #network.Training(data=data, dt=0.01, p=200)
+    network.Training(data=data, dt=0.01, p=200)
     print("mutando la red: Agregando Filtro \n")
-    #network.addFilters()
+    network.addFilters()
     print("Entrenando la red mutada \n")
     network.Training(data=data, dt=0.001, p=100)
     print("mutando la red: Eliminando Filtro \n")
     network.deleteFilters()
     print("Entrenando la red mutada \n")
-    network.Training(data=data, dt=0.001, p=1000)
+    network.Training(data=data, dt=0.001, p=100)
 
 
-x = 10
-y = 10
+dataGen = Data_generator.Data_gen()
+
+dataGen.gen_data()
+
+print(dataGen.size)
+x = dataGen.size[0]
+y = dataGen.size[1]
 k = 3
 
 
@@ -140,11 +172,13 @@ objects = Functions.np.full((3), (x, y, k))
 
 network = nw.Network([x,y,k])
 
-data = []
+Test_multipleNetworks()
+#Test_modifyNetwork(network, dataGen.Data)
+#data = []
 
-generateData(data, objects, 100)
+#generateData(data, objects, 100)
 
-Test_modifyNetwork(network, data)
+#Test_multipleNetworks()
 
 """
 

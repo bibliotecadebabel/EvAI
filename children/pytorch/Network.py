@@ -165,17 +165,47 @@ class Network(nn.Module):
 
     def Train(self, dataElement, peso, n):
         self.nodes[0].objects[0].value = dataElement[0]
-        #self.nodes[3].objects[0].label = dataElement[1]
-
         self.assignLabels(dataElement[1])
 
         self.updateGradFlag(True)
         functions.Propagation(self.nodes[3].objects[0])
+        #self.showParameters()
         self.nodes[3].objects[0].value.backward()
         self.updateGradFlag(False)
 
         self.Acumulate_der(n, peso)
         self.Reset_der()
+
+    def showParameters(self):
+
+        
+        layerCon2d = self.nodes[1].objects[0]
+        layerLinear = self.nodes[2].objects[0]
+
+        if layerCon2d.getFilterDer() is not None:
+            print("Conv2d Filter Der Shape: ", layerCon2d.getFilterDer().shape)
+            print("Conv2d Bias Der Shape: ", layerCon2d.getBiasDer().shape)
+        
+        if layerLinear.getFilterDer() is not None: 
+            print("Linear Filter Der Shape: ", layerLinear.getFilterDer().shape)            
+        
+        '''
+        k = 0
+        for node in self.nodes:
+            print("node #",k)
+
+            layer = node.objects[0]
+
+            if layer.object is not None:
+                for param in layer.object.parameters():
+                    print("shape param: ", param.shape)
+
+                    if param.grad is not None:
+                        print("shape der param: ", param.grad.shape)
+            k +=1
+        '''
+
+            
 
     def Training(self, data, dt=0.1, p=0.99):
             n = len(data) * 5/4
@@ -214,12 +244,39 @@ class Network(nn.Module):
             
             if layer.getFilterDer() is not None:
                 layer.getFilterDer().requires_grad = flag
+
+    def addFilters(self):
         
-        '''
-        for node in self.nodes:
-            layer = node.objects[0]
+        
 
-            if layer.value is not None:
-                layer.value.requires_grad = flag
+        layerConv2d = self.nodes[1].objects[0]
+        layerLinear = self.nodes[2].objects[0]
 
-        '''
+        layerConv2d.getFilter().grad = None
+        layerConv2d.getBias().grad = None
+        layerLinear.getFilter().grad = None
+        layerLinear.getBias().grad = None
+
+        shapeFilterConv2d = layerConv2d.getFilter().shape
+        shapeFilterLinear = layerLinear.getFilter().shape
+
+        self.updateGradFlag(False)
+            
+        layerConv2d.getFilter().resize_(shapeFilterConv2d[0]+1, 3, shapeFilterConv2d[2], shapeFilterConv2d[3])
+        layerConv2d.getBias().resize_(shapeFilterConv2d[0]+1)
+        #layerConv2d.filter_der_total.resize_(shapeFilterConv2d[0]+1, 3, shapeFilterConv2d[2], shapeFilterConv2d[3])
+        #layerConv2d.bias_der_total.resize_(shapeFilterConv2d[0]+1)
+
+        layerLinear.getFilter().resize_(2, shapeFilterLinear[1]+1)
+        #layerLinear.filter_der_total.resize_(2, shapeFilterLinear[1]+1)
+        layerLinear.filter_der_total = 0
+        layerLinear.bias_der_total = 0
+        layerConv2d.filter_der_total = 0
+        layerConv2d.bias_der_total = 0
+        self.updateGradFlag(True)
+       
+
+
+
+
+
