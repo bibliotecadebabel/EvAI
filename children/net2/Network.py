@@ -175,22 +175,24 @@ class Network:
 
         ly.addFilterNodeA(self.nodes[0].objects[0])
         ly.addFilterNodeB(self.nodes[1].objects[0])
+        self.objects[2]+=1
 
     def deleteFilters(self):
 
         ly.deleteFilterNodeA(self.nodes[0].objects[0])
         ly.deleteFilterNodeB(self.nodes[1].objects[0])
+        self.objects[2]-=1
 
     def clone(self):
 
         network = Network(self.objects)
 
-        
+
         for i in range(len(self.nodes)):
 
             layer = network.nodes[i].objects[0]
-            
+
             layer.bias = Functions.np.copy(self.nodes[i].objects[0].bias)
             layer.filters = Functions.np.copy(self.nodes[i].objects[0].filters)
-        
+
         return network

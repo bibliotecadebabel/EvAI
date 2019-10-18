@@ -53,6 +53,7 @@ class Status():
         self.sectors=None
 
 
+
 def update_nets(status):
     for node in status.objects:
         node_energy(node)
@@ -168,6 +169,15 @@ def update(status):
                 if not(particle.position[0]==particle.velocity[0]):
                     a=particle.position[0]
                     b=particle.velocity[0]
+                    a_key=node_shape(a)
+                    b_key=node_shape(b)
+                    net=particle.objects[0]
+                    if b_key>a_key:
+                        net.addFilters()
+                        print('U_Mutation')
+                    elif a_key>b_key:
+                        net.deleteFilters()
+                        print('D_Mutation')
                     particle.position=[]
                     particle.velocity=[]
                     q.objects[0].num_particles =q.objects[0].num_particles - 1
