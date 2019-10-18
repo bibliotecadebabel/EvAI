@@ -188,8 +188,8 @@ def update_velocity(status):
 
 def initialize_parameters(self):
     display_size=[1000,500]
-    self.dt=0.1
-    self.n=10
+    self.dt=0.05
+    self.n=20
     self.dx=10
     self.L=1
     self.beta=2
