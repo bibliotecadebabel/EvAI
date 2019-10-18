@@ -160,6 +160,12 @@ def Test_cloneNetwork(network, data):
 
     for i in range(100):
         network.Training(data=data, dt=0.01, p=200)
+        if i % 2 == 0:
+            print("agregando")
+            network.addFilters()
+        else:
+            print("eliminando")
+            network.deleteFilters()
         clone = network.clone()
         clone.Training(data=data, dt=0.01, p=200)
 
