@@ -214,7 +214,7 @@ class Network(nn.Module):
             i=0
             while i < p:
                 if i % 10==0:
-                    print(i)
+                    #print(i)
                     print("prob: ", self.getProbability())
                 self.Train(data[0], peso, n)
 
@@ -278,18 +278,13 @@ class Network(nn.Module):
         layerConv2d.filter_der_total = 0
         layerConv2d.bias_der_total = 0
 
-    
-        #layerConv2d.getFilter()[shapeFilterConv2d[0]] = torch.randint(5,10, (3, shapeValueConv2d[2], shapeValueConv2d[3]), dtype=torch.float32)
         layerConv2d.getFilter()[shapeFilterConv2d[0]] = layerConv2d.getFilter()[shapeFilterConv2d[0]-1].clone()
         
-        #layerConv2d.getBias()[shapeFilterConv2d[0]] = torch.ones([1])
         layerConv2d.getBias()[shapeFilterConv2d[0]] = layerConv2d.getBias()[shapeFilterConv2d[0]-1].clone()
-        
-        #layerConv2d.value[shapeValueConv2d[0]-1][shapeValueConv2d[1]] = torch.ones([1])
+
         layerConv2d.value[shapeValueConv2d[0]-1][shapeValueConv2d[1]] = layerConv2d.value[shapeValueConv2d[0]-1][shapeValueConv2d[1]-1].clone()
 
         for i in range(layerLinear.getFilter().shape[0]):
-            #layerLinear.getFilter()[i][layerLinear.getFilter().shape[1]-1] = torch.ones([1])
             layerLinear.getFilter()[i][layerLinear.getFilter().shape[1]-1] = layerLinear.getFilter()[i][layerLinear.getFilter().shape[1]-2].clone()
 
         self.updateGradFlag(True)

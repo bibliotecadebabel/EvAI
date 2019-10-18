@@ -116,16 +116,18 @@ def Test_node_1(network,n=100,dt=0.1):
 
 def Test_modifyNetwork(network, data):
 
-    print("Entrenando red \n")
-    network.Training(data=data, dt=1, p=100)
-    print("Agregando Filtro \n")
-    network.addFilters()
-    print("Entrenando Red modificada \n")
-    network.Training(data=data, dt=1, p=100)
-    print("Eliminando Filtro \n")
-    network.removeFilter()
-    print("Entrenando Red modificada \n")
-    network.Training(data=data, dt=1, p=100)
+    for i in range(10000):
+        #print("Entrenando red")
+        print("Sin mutaciones")
+        network.Training(data=data, dt=10, p=10)
+        print("Agregando Filtro")
+        network.addFilters()
+        #print("Entrenando Red modificada")
+        network.Training(data=data, dt=10, p=10)
+        print("Eliminando Filtro")
+        network.removeFilter()
+        #print("Entrenando Red modificada")
+        network.Training(data=data, dt=10, p=10)
 
 def Test_realImage(network, dataGen):
 
@@ -141,7 +143,7 @@ size = dataGen.data[0][0].shape
 
 x = size[2]
 y = size[3]
-k = 2
+k = 100
 
 network = nw.Network([x,y,k])
 

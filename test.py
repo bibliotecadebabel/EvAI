@@ -156,6 +156,12 @@ def Test_modifyNetwork(network, data):
     print("Entrenando la red mutada \n")
     network.Training(data=data, dt=0.001, p=100)
 
+def Test_cloneNetwork(network, data):
+
+    for i in range(100):
+        network.Training(data=data, dt=0.01, p=200)
+        clone = network.clone()
+        clone.Training(data=data, dt=0.01, p=200)
 
 dataGen = Data_generator.Data_gen()
 
@@ -172,7 +178,9 @@ objects = Functions.np.full((3), (x, y, k))
 
 network = nw.Network([x,y,k])
 
-Test_multipleNetworks()
+Test_cloneNetwork(network, dataGen.Data)
+
+#Test_multipleNetworks()
 #Test_modifyNetwork(network, dataGen.Data)
 #data = []
 
