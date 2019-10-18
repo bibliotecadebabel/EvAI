@@ -65,8 +65,46 @@ def update_nets(status):
             net.Training(status.Data_gen.Data,dt=status.tau,p=2)
     return
 
-def potential(x):
-    return (x-50)**2
+def potential(x,status=None):
+    return node_energy(status.objects[x])
+
+def d_potential(b,a,status=None):
+    plane_a=node_plane(status.objects[a])
+    plane_b=node_plane(status.objects[b])
+    print('particles')
+    print(plane_a.num_particles)
+    print(plane_b.num_particles)
+    a_key=a
+    b_key=b
+    u=0
+    if plane_b.num_particles==0 and plane_a.num_particles!=0:
+        par=plane_a.particles[0]
+        net=par.objects[0]
+        net_clone=net.clone()
+        if b_key>a_key:
+            print('filters')
+            print(net_clone.nodes[0].objects[0].filters.shape)
+            net_clone.addFilters()
+        elif a_key>b_key:
+            print('filters')
+            print(net_clone.nodes[0].objects[0].filters.shape)
+            net_clone.deleteFilters()
+        else:
+            print('ERROR')
+        net_clone.Training(status.Data_gen.Data,dt=status.tau,p=2)
+        print('razon')
+        print(net_clone.total_value)
+        plane_a=node_plane(status.objects[a])
+        print(plane_a.num_particles)
+        u=net_clone.total_value-potential(a_key,status)
+    else:
+        if plane_a.num_particles==0:
+            u=0
+        else:
+            u=potential(b_key,status)-potential(a_key,status)
+    return u
+
+
 
 def interaction(r,status):
     return (200*r/(2**status.dx))**(status.alpha)/abs(status.alpha-1)
@@ -140,8 +178,7 @@ def update_gradient(status):
         for kid in node.kids:
             qf=kid.objects[0]
             pf=qf.objects[0]
-            dE=dE+(potential(float(qf.shape))
-                -potential(float(q.shape)))
+            dE=dE+(d_potential(int(qf.shape),int(q.shape),status))
             dE=dE+100*status.beta*(
                 pf.density**(status.beta-1)
                     -p.density**(status.beta-1)
@@ -323,6 +360,7 @@ def node_energy(node):
             net=par.objects[0]
             p.energy+=net.total_value
         p.energy=p.energy/p.num_particles
+    return p.energy
 
 
 def plot(status,Display,size=None,tree=None):
