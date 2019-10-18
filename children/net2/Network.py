@@ -187,6 +187,7 @@ class Network:
 
         network = Network(self.objects)
 
+        print("new objects", self.objects)
 
         for i in range(len(self.nodes)):
 
