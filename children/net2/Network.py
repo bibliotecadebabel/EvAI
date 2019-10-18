@@ -185,9 +185,10 @@ class Network:
 
     def clone(self):
 
-        network = Network(self.objects)
+        newObjects = [self.objects[0], self.objects[1], self.objects[2]]
+        network = Network(newObjects)
 
-        print("new objects", self.objects)
+        print("new objects", newObjects)
 
         for i in range(len(self.nodes)):
 

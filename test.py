@@ -159,15 +159,19 @@ def Test_modifyNetwork(network, data):
 def Test_cloneNetwork(network, data):
 
     for i in range(100):
-        network.Training(data=data, dt=0.01, p=200)
-        if i % 2 == 0:
-            print("agregando")
-            network.addFilters()
-        else:
-            print("eliminando")
-            network.deleteFilters()
+        network.Training(data=data, dt=0.01, p=10)
+        #print("agregando")
+        network.addFilters()
+        network.addFilters()
+        network.deleteFilters()
+        
         clone = network.clone()
-        clone.Training(data=data, dt=0.01, p=200)
+        clone.Training(data=data, dt=0.01, p=10)
+        clone.addFilters()
+        clone.addFilters()
+        clone.addFilters()
+        clone.deleteFilters()
+        print("filters clone: ", clone.nodes[1].objects[0].filters.shape)
 
 dataGen = Data_generator.Data_gen()
 
@@ -176,7 +180,7 @@ dataGen.gen_data()
 print(dataGen.size)
 x = dataGen.size[0]
 y = dataGen.size[1]
-k = 3
+k = 4
 
 
 
