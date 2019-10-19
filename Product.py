@@ -24,11 +24,11 @@ class particle():
 
 class Status():
     def __init__(self, display_size=None):
-        self.dt = 0.01
-        self.tau=0.1
-        self.n = 10
+        self.dt = 0.1
+        self.tau=0.01
+        self.n = 20
         self.r=3
-        self.dx = 2
+        self.dx = 5
         self.L = 1
         self.beta = 2
         self.alpha = 1
@@ -167,19 +167,17 @@ def update_metric(status):
 
 def update_gradient(status):
     #update_interaction_field(status)
-    x0=status.mouse_frame2[0]
-    x0=0
     nodes=status.objects
-    dE=0
     for node in nodes:
         q=node.objects[0]
         p=q.objects[0]
         p.gradient=[]
         for kid in node.kids:
+            dE=0
             qf=kid.objects[0]
             pf=qf.objects[0]
             dE=dE+(d_potential(int(qf.shape),int(q.shape),status))
-            dE=dE+100*status.beta*(
+            dE=dE+1*status.beta*(
                 pf.density**(status.beta-1)
                     -p.density**(status.beta-1)
                     #/abs(status.beta-1)
@@ -270,9 +268,9 @@ def update_velocity(status):
 
 def initialize_parameters(self):
     display_size=[1000,500]
-    self.dt=0.05
+    self.dt=0.2
     self.n=20
-    self.dx=10
+    self.dx=5
     self.L=1
     self.beta=2
     self.alpha=2

@@ -8,10 +8,10 @@ import utilities.Graphs as gr
 import math
 import V_graphics as cd
 import Transfer.Transfer as tran
-
-#import children.Interfaces as Inter
-#import children.Operations as Op
-#import children.net2.Network as nw
+import children.Data_generator as dgen
+import children.Interfaces as Inter
+import children.Operations as Op
+import children.net2.Network as nw
 import time
 
 
@@ -24,11 +24,11 @@ class particle():
 
 class Status():
     def __init__(self, display_size=None):
-        self.dt = 0.1
-        self.tau=0.01
-        self.n = 20
+        self.dt = 0.01
+        self.tau=0.1
+        self.n = 10
         self.r=3
-        self.dx = 5
+        self.dx = 2
         self.L = 1
         self.beta = 2
         self.alpha = 1
@@ -44,14 +44,67 @@ class Status():
         self.frame1=[]
         self.frame2=[]
         self.Transfer=None
-#        self.Data_gen=None
+        self.S=100
+        self.Comp=2
+        self.Data_gen=None
         self.p=1
         self.display=None
         self.scale=None
         self.sectors=None
 
-def potential(x):
-    return (x-50)**2
+
+
+def update_nets(status):
+    for node in status.objects:
+        node_energy(node)
+        p=node_plane(node)
+        print(p.energy)
+        particles=p.particles
+        for par in particles:
+            net=par.objects[0]
+            net.Training(status.Data_gen.Data,dt=status.tau,p=2)
+    return
+
+def potential(x,status=None):
+    return node_energy(status.objects[x])
+
+def d_potential(b,a,status=None):
+    plane_a=node_plane(status.objects[a])
+    plane_b=node_plane(status.objects[b])
+    print('particles')
+    print(plane_a.num_particles)
+    print(plane_b.num_particles)
+    a_key=a
+    b_key=b
+    u=0
+    if plane_b.num_particles==0 and plane_a.num_particles!=0:
+        par=plane_a.particles[0]
+        net=par.objects[0]
+        net_clone=net.clone()
+        if b_key>a_key:
+            print('filters')
+            print(net_clone.nodes[0].objects[0].filters.shape)
+            net_clone.addFilters()
+        elif a_key>b_key:
+            print('filters')
+            print(net_clone.nodes[0].objects[0].filters.shape)
+            net_clone.deleteFilters()
+        else:
+            print('ERROR')
+        net_clone.Training(status.Data_gen.Data,dt=status.tau,p=2)
+        print('razon')
+        print(net_clone.total_value)
+        plane_a=node_plane(status.objects[a])
+        print(plane_a.num_particles)
+        u=net_clone.total_value-potential(a_key,status)
+    else:
+        if plane_a.num_particles==0:
+            u=0
+        else:
+            u=potential(b_key,status)-potential(a_key,status)
+    return u
+
+
 
 def interaction(r,status):
     return (200*r/(2**status.dx))**(status.alpha)/abs(status.alpha-1)
@@ -114,19 +167,16 @@ def update_metric(status):
 
 def update_gradient(status):
     #update_interaction_field(status)
-    x0=status.mouse_frame2[0]
-    x0=0
     nodes=status.objects
-    dE=0
     for node in nodes:
         q=node.objects[0]
         p=q.objects[0]
         p.gradient=[]
         for kid in node.kids:
+            dE=0
             qf=kid.objects[0]
             pf=qf.objects[0]
-            dE=dE+(potential(float(qf.shape))
-                -potential(float(q.shape)))
+            dE=dE+(d_potential(int(qf.shape),int(q.shape),status))
             dE=dE+100*status.beta*(
                 pf.density**(status.beta-1)
                     -p.density**(status.beta-1)
@@ -141,8 +191,38 @@ def update_gradient(status):
 
 
 def update(status):
+    update_nets(status)
+    #time.sleep(10)
     status.Transfer.status=status
     status.Transfer.update()
+    update_velocity(status)
+    for i in range(len(status.objects)):
+        q=status.objects[i].objects[0]
+        if q.objects[0].num_particles > 0:
+            for particle in q.objects[0].particles:
+                #print(q.shape)
+                if not(particle.position[0]==particle.velocity[0]):
+                    a=particle.position[0]
+                    b=particle.velocity[0]
+                    a_key=node_shape(a)
+                    b_key=node_shape(b)
+                    net=particle.objects[0]
+                    if b_key>a_key:
+                        net.addFilters()
+                        print('U_Mutation')
+                    elif a_key>b_key:
+                        net.deleteFilters()
+                        print('D_Mutation')
+                    particle.position=[]
+                    particle.velocity=[]
+                    q.objects[0].num_particles =q.objects[0].num_particles - 1
+                    particle.position.append(b)
+                    particle.velocity.append(b)
+                    qf=b.objects[0]
+                    qf.objects[0].num_particles=qf.objects[0].num_particles+1
+                    q.objects[0].particles.remove(particle)
+                    qf.objects[0].particles.append(particle)
+                    ##print(q.objects[0].num_particles," - ", qf.objects[0].num_particles, " || LONGITUD REAL ||  ", len(q.objects[0].particles)," - ", len(qf.objects[0].particles))
 
 def update_velocity(status):
     #update_divergence(status)
@@ -188,9 +268,9 @@ def update_velocity(status):
 
 def initialize_parameters(self):
     display_size=[1000,500]
-    self.dt=0.2
+    self.dt=0.05
     self.n=20
-    self.dx=5
+    self.dx=10
     self.L=1
     self.beta=2
     self.alpha=2
@@ -200,6 +280,8 @@ def initialize_parameters(self):
     self.Interaction=interaction
     self.display_size=display_size
 
+
+
 #Here the objects of status are a list of nodes
 #The objects of nodes are quadrants which have the physical Range
 # the objects of quadrants are:
@@ -207,12 +289,10 @@ def initialize_parameters(self):
 # in position 1 the size of such list
 
 def create_objects(status):
-    status.Transfer=tran.TransferLocal(status,
-        'local2remote.txt','remote2local.txt')
-    status.Transfer.un_load()
-    status.Transfer.write()
-    #status.Data_gen=dgen.Data_gen()
-    #status.Data_gen.gen_data()
+    status.Data_gen=dgen.Data_gen()
+    status.Data_gen.S=status.S
+    status.Data_gen.Comp=status.Comp
+    status.Data_gen.gen_data()
     def add_node(g,i):
             node=nd.Node()
             q=qu.Quadrant(i)
@@ -239,8 +319,8 @@ def create_objects(status):
         par.position.append(node)
         par.velocity.append(node)
         #print(status.Data_gen.size)
-    #    par.objects.append(nw.Network([status.Data_gen.size[0],
-    #        status.Data_gen.size[1],2]))
+        par.objects.append(nw.Network([status.Data_gen.size[0],
+            status.Data_gen.size[1],2]))
         p.particles.append(par)
         p.num_particles+=1
         k=k+1
@@ -268,6 +348,17 @@ def attach_balls(status,n_r):
 
             #print('Hi')
 
+def node_energy(node):
+    p=node_plane(node)
+    if p.num_particles==0:
+        p.energy=None
+    else:
+        p.energy=0
+        for par in p.particles:
+            net=par.objects[0]
+            p.energy+=net.total_value
+        p.energy=p.energy/p.num_particles
+    return p.energy
 
 
 def plot(status,Display,size=None,tree=None):
@@ -303,15 +394,37 @@ def plot(status,Display,size=None,tree=None):
     for i in range(len(status.objects)-1):
         px_o=Lx_o+i*ddx
         px_f=Lx_o+(i+1)*ddx
-        #print(status.objects[i].objects[0].objects[0].num_particles)
         py_o=Ly_o+status.objects[i].objects[0].objects[0].num_particles*ddy
         py_f=Ly_o+status.objects[i+1].objects[0].objects[0].num_particles*ddy
         positions=[[px_o,py_o],[px_f,py_f]]
 #        print(positions)
         pygame.draw.aaline(Display,white,positions[0],positions[1],True)
 
-
-
+status=Status()
+initialize_parameters(status)
+create_objects(status)
+status.Transfer=tran.TransferRemote(status,
+    'remote2local.txt','local2remote.txt')
+print('remote')
+status.Transfer.un_load()
+status.Transfer.write()
+k=0
+while False:
+    update(status)
+    status.Transfer.un_load()
+    status.Transfer.write()
+    transfer=status.Transfer.status_transfer
+    print(transfer.particles)
+    k=k+1
+    pass
+while True:
+    status.Transfer.readLoad()
+    if status.active:
+        update(status)
+#        time.sleep(0.5)
+    else:
+        print('inactive')
+    k=k+1
 
 """
 c=[]
