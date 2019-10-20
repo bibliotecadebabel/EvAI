@@ -129,10 +129,11 @@ class Network:
         while i < p:
             if i % 10==0:
                 pass
-                print(i)
                 print(self.nodes[3].objects[0].value)
             self.Reset_der_total()
             self.Train(data[0], peso, n)
+
+            self.Predict(data[0])
 
             for image in data[1:]:
                 self.Train(image, 1, n)
@@ -187,8 +188,6 @@ class Network:
 
         newObjects = [self.objects[0], self.objects[1], self.objects[2]]
         network = Network(newObjects)
-
-        print("new objects", newObjects)
 
         for i in range(len(self.nodes)):
 

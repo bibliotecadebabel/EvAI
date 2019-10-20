@@ -151,10 +151,12 @@ def createNewTensor(oldTensor, newShape):
 
     newFilter = createTensorRandom((newShape))
 
-    print("new FilterShape: ", newFilter.shape)
     # Conservo los valores del filtro viejo
     for i in range(len(oldTensor)):
         newFilter[i] = oldTensor[i]
+
+    # Copio el valor del ultimo filtro viejo al ultimo del nuevo filtro
+    newFilter[len(newFilter) - 1] = oldTensor[len(oldTensor)-1]
 
     return newFilter
 

@@ -132,7 +132,7 @@ def Test_multipleNetworks():
     for i in range(5):
         networks.append(nw.Network([size[0], size[1], ks[i]]))
 
-    for k in range(1000):
+    for k in range(500):
         for i in range(len(networks)):
             networks[i].Training(data=dataGen.Data, dt=0.1, p=1)
             print("value network #", str(i),": ", networks[i].total_value)
@@ -160,19 +160,21 @@ def Test_cloneNetwork(network, data):
 
     for i in range(100):
         network.Training(data=data, dt=0.01, p=10)
-        #print("agregando")
-        network.addFilters()
-        network.addFilters()
-        network.deleteFilters()
-        
         clone = network.clone()
+        print("entreno red clonada")
         clone.Training(data=data, dt=0.01, p=10)
+        print("prob clone network: ", clone.nodes[3].objects[0].value)
+        print("agrego filtro")
         clone.addFilters()
         clone.addFilters()
         clone.addFilters()
+        print("entreno red clonada")
+        clone.Training(data=data, dt=0.01, p=10)
+        print("prob clone network: ", clone.nodes[3].objects[0].value)
         clone.deleteFilters()
-        print("filters clone: ", clone.nodes[1].objects[0].filters.shape)
-
+        print("elimino filtro red clonada y entreno")
+        clone.Training(data=data, dt=0.01, p=10)
+        print("prob clone network: ", clone.nodes[3].objects[0].value)
 dataGen = Data_generator.Data_gen()
 
 dataGen.gen_data()
@@ -188,10 +190,10 @@ objects = Functions.np.full((3), (x, y, k))
 
 network = nw.Network([x,y,k])
 
-Test_cloneNetwork(network, dataGen.Data)
+#Test_cloneNetwork(network, dataGen.Data)
 
 #Test_multipleNetworks()
-#Test_modifyNetwork(network, dataGen.Data)
+Test_modifyNetwork(network, dataGen.Data)
 #data = []
 
 #generateData(data, objects, 100)
