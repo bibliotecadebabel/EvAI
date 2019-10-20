@@ -26,7 +26,7 @@ class particle():
 class Status():
     def __init__(self, display_size=None):
         self.dt = 0.1
-        self.tau=0.1
+        self.tau=0.001
         self.n = 20
         self.r=3
         self.dx = 5
@@ -54,13 +54,21 @@ class Status():
         self.sectors=None
         self.nets={}
 
+def print_nets(status):
+    if status is None:
+        print('IMPOSIBLE')
+    for node in status.objects:
+        key=node_shape(node)
+        net=status.nets.get(key)
+        if not(net==None):
+            print('The energy of ',key,' is:',net.total_value)
+
 
 
 def update_nets(status):
     for node in status.objects:
         node_energy(node,status)
         p=node_plane(node)
-        print(p.energy)
         particles=p.particles
         if not(p.num_particles==0):
             par=particles[0]
@@ -77,9 +85,6 @@ def r_potential(x):
 def d_potential(b,a,status=None):
     plane_a=node_plane(status.objects[a])
     plane_b=node_plane(status.objects[b])
-    print('particles')
-    print(plane_a.num_particles)
-    print(plane_b.num_particles)
     a_key=a
     b_key=b
     u=0
@@ -88,20 +93,13 @@ def d_potential(b,a,status=None):
         net=par.objects[0]
         net_clone=net.clone()
         if b_key>a_key:
-            print('filters')
-            print(net_clone.nodes[0].objects[0].filters.shape)
             net_clone.addFilters()
         elif a_key>b_key:
-            print('filters')
-            print(net_clone.nodes[0].objects[0].filters.shape)
             net_clone.deleteFilters()
         else:
             print('ERROR')
         net_clone.Training(status.Data_gen.Data,dt=status.tau,p=2)
-        print('razon')
-        print(net_clone.total_value)
         plane_a=node_plane(status.objects[a])
-        print(plane_a.num_particles)
         u=(r_potential(net_clone.total_value)
             -r_potential(potential(a_key,status)))
     else:
@@ -220,10 +218,8 @@ def update(status):
                         net_b=net.clone()
                         if b_key>a_key:
                             net_b.addFilters()
-                            print('U_Mutation')
                         elif a_key>b_key:
                             net_b.deleteFilters()
-                            print('D_Mutation')
                         sf.safe_update(status.nets,b_key,net_b)
                     particle.objects[0]=status.nets[b_key]
                     particle.position=[]
@@ -423,7 +419,6 @@ initialize_parameters(status)
 create_objects(status)
 status.Transfer=tran.TransferRemote(status,
     'remote2local.txt','local2remote.txt')
-print('remote')
 status.Transfer.un_load()
 status.Transfer.write()
 k=0
@@ -432,13 +427,13 @@ while False:
     status.Transfer.un_load()
     status.Transfer.write()
     transfer=status.Transfer.status_transfer
-    print(transfer.particles)
     k=k+1
     pass
 while True:
     status.Transfer.readLoad()
     if status.active:
         update(status)
+        print_nets(status)
 #        time.sleep(0.5)
     else:
         print('inactive')

@@ -156,7 +156,7 @@ def createNewTensor(oldTensor, newShape):
         newFilter[i] = oldTensor[i]
 
     # Copio el valor del ultimo filtro viejo al ultimo del nuevo filtro
-    newFilter[len(newFilter) - 1] = oldTensor[len(oldTensor)-1]
+    #newFilter[len(newFilter) - 1] = oldTensor[len(oldTensor)-1]
 
     return newFilter
 

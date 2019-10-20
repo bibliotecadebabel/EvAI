@@ -25,7 +25,7 @@ class particle():
 class Status():
     def __init__(self, display_size=None):
         self.dt = 0.1
-        self.tau=0.01
+        self.tau=0.001
         self.n = 20
         self.r=3
         self.dx = 5
