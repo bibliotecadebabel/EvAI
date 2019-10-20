@@ -17,6 +17,10 @@ def safe_ope(key,dict,ope,x=None):
         else:
             ope(key,dict,x)
 
+def safe_update(dict,key,value):
+    if not(key in dict.keys()):
+        dict.update({key : value})
+
 
 
 

@@ -1,6 +1,7 @@
 import sys, pygame
 import utilities.Quadrants as qu
 import utilities.Node as nd
+import utilities.Safe as sf
 import utilities.P_trees as tr
 import numpy as np
 import TangentPlane as tplane
@@ -25,7 +26,7 @@ class particle():
 class Status():
     def __init__(self, display_size=None):
         self.dt = 0.1
-        self.tau=0.01
+        self.tau=0.1
         self.n = 20
         self.r=3
         self.dx = 5
@@ -51,22 +52,27 @@ class Status():
         self.display=None
         self.scale=None
         self.sectors=None
+        self.nets={}
 
 
 
 def update_nets(status):
     for node in status.objects:
-        node_energy(node)
+        node_energy(node,status)
         p=node_plane(node)
         print(p.energy)
         particles=p.particles
-        for par in particles:
+        if not(p.num_particles==0):
+            par=particles[0]
             net=par.objects[0]
             net.Training(status.Data_gen.Data,dt=status.tau,p=2)
     return
 
 def potential(x,status=None):
-    return node_energy(status.objects[x])
+    return node_energy(status.objects[x],status)
+
+def r_potential(x):
+    return -1/x
 
 def d_potential(b,a,status=None):
     plane_a=node_plane(status.objects[a])
@@ -77,7 +83,7 @@ def d_potential(b,a,status=None):
     a_key=a
     b_key=b
     u=0
-    if plane_b.num_particles==0 and plane_a.num_particles!=0:
+    if not(b_key in status.nets.keys()) and plane_a.num_particles!=0:
         par=plane_a.particles[0]
         net=par.objects[0]
         net_clone=net.clone()
@@ -96,12 +102,14 @@ def d_potential(b,a,status=None):
         print(net_clone.total_value)
         plane_a=node_plane(status.objects[a])
         print(plane_a.num_particles)
-        u=net_clone.total_value-potential(a_key,status)
+        u=(r_potential(net_clone.total_value)
+            -r_potential(potential(a_key,status)))
     else:
         if plane_a.num_particles==0:
             u=0
         else:
-            u=potential(b_key,status)-potential(a_key,status)
+            u=(r_potential(potential(b_key,status))
+                -r_potential(potential(a_key,status)))
     return u
 
 
@@ -204,15 +212,20 @@ def update(status):
                 if not(particle.position[0]==particle.velocity[0]):
                     a=particle.position[0]
                     b=particle.velocity[0]
+                    net=particle.objects[0]
                     a_key=node_shape(a)
                     b_key=node_shape(b)
-                    net=particle.objects[0]
-                    if b_key>a_key:
-                        net.addFilters()
-                        print('U_Mutation')
-                    elif a_key>b_key:
-                        net.deleteFilters()
-                        print('D_Mutation')
+                    b_plane=node_plane(b)
+                    if not(b_key in status.nets.keys()):
+                        net_b=net.clone()
+                        if b_key>a_key:
+                            net_b.addFilters()
+                            print('U_Mutation')
+                        elif a_key>b_key:
+                            net_b.deleteFilters()
+                            print('D_Mutation')
+                        sf.safe_update(status.nets,b_key,net_b)
+                    particle.objects[0]=status.nets[b_key]
                     particle.position=[]
                     particle.velocity=[]
                     q.objects[0].num_particles =q.objects[0].num_particles - 1
@@ -269,7 +282,7 @@ def update_velocity(status):
 def initialize_parameters(self):
     display_size=[1000,500]
     self.dt=0.2
-    self.n=20
+    self.n=100
     self.dx=5
     self.L=1
     self.beta=2
@@ -312,6 +325,9 @@ def create_objects(status):
     k=0
     status.objects=list(g.key2node.values())
     node=status.objects[0]
+    sf.safe_update(status.nets,0,
+        nw.Network([status.Data_gen.size[0],
+            status.Data_gen.size[1],2]))
     p=node_plane(node)
     #Initializes particles
     while k<status.n:
@@ -319,8 +335,7 @@ def create_objects(status):
         par.position.append(node)
         par.velocity.append(node)
         #print(status.Data_gen.size)
-        par.objects.append(nw.Network([status.Data_gen.size[0],
-            status.Data_gen.size[1],2]))
+        par.objects.append(status.nets[0])
         p.particles.append(par)
         p.num_particles+=1
         k=k+1
@@ -348,16 +363,19 @@ def attach_balls(status,n_r):
 
             #print('Hi')
 
-def node_energy(node):
+def node_energy(node,status=None):
     p=node_plane(node)
     if p.num_particles==0:
-        p.energy=None
+        key=node_shape(node)
+        if not(key in status.nets.keys()):
+            p.energy=None
+        else:
+            net=status.nets[key]
+            p.energy=net.total_value
     else:
-        p.energy=0
-        for par in p.particles:
-            net=par.objects[0]
-            p.energy+=net.total_value
-        p.energy=p.energy/p.num_particles
+        par=p.particles[0]
+        net=par.objects[0]
+        p.energy=net.total_value
     return p.energy
 
 
