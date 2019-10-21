@@ -1,6 +1,7 @@
 import sys, pygame
 import utilities.Quadrants as qu
 import utilities.Node as nd
+import utilities.Safe as sf
 import utilities.P_trees as tr
 import numpy as np
 import TangentPlane as tplane
@@ -8,10 +9,10 @@ import utilities.Graphs as gr
 import math
 import V_graphics as cd
 import Transfer.Transfer as tran
-
-#import children.Interfaces as Inter
-#import children.Operations as Op
-#import children.net2.Network as nw
+import children.Data_generator as dgen
+import children.Interfaces as Inter
+import children.Operations as Op
+import children.net2.Network as nw
 import time
 
 
@@ -25,7 +26,7 @@ class particle():
 class Status():
     def __init__(self, display_size=None):
         self.dt = 0.1
-        self.tau=0.01
+        self.tau=0.001
         self.n = 20
         self.r=3
         self.dx = 5
@@ -44,14 +45,72 @@ class Status():
         self.frame1=[]
         self.frame2=[]
         self.Transfer=None
-#        self.Data_gen=None
+        self.S=100
+        self.Comp=2
+        self.Data_gen=None
         self.p=1
         self.display=None
         self.scale=None
         self.sectors=None
+        self.nets={}
 
-def potential(x):
-    return (x-50)**2
+def print_nets(status):
+    if status is None:
+        print('IMPOSIBLE')
+    for node in status.objects:
+        key=node_shape(node)
+        net=status.nets.get(key)
+        if not(net==None):
+            print('The energy of ',key,' is:',net.total_value)
+
+
+
+def update_nets(status):
+    for node in status.objects:
+        node_energy(node,status)
+        p=node_plane(node)
+        particles=p.particles
+        if not(p.num_particles==0):
+            par=particles[0]
+            net=par.objects[0]
+            net.Training(status.Data_gen.Data,dt=status.tau,p=2)
+    return
+
+def potential(x,status=None):
+    return node_energy(status.objects[x],status)
+
+def r_potential(x):
+    return -1/x
+
+def d_potential(b,a,status=None):
+    plane_a=node_plane(status.objects[a])
+    plane_b=node_plane(status.objects[b])
+    a_key=a
+    b_key=b
+    u=0
+    if not(b_key in status.nets.keys()) and plane_a.num_particles!=0:
+        par=plane_a.particles[0]
+        net=par.objects[0]
+        net_clone=net.clone()
+        if b_key>a_key:
+            net_clone.addFilters()
+        elif a_key>b_key:
+            net_clone.deleteFilters()
+        else:
+            print('ERROR')
+        net_clone.Training(status.Data_gen.Data,dt=status.tau,p=2)
+        plane_a=node_plane(status.objects[a])
+        u=(r_potential(net_clone.total_value)
+            -r_potential(potential(a_key,status)))
+    else:
+        if plane_a.num_particles==0:
+            u=0
+        else:
+            u=(r_potential(potential(b_key,status))
+                -r_potential(potential(a_key,status)))
+    return u
+
+
 
 def interaction(r,status):
     return (200*r/(2**status.dx))**(status.alpha)/abs(status.alpha-1)
@@ -114,20 +173,17 @@ def update_metric(status):
 
 def update_gradient(status):
     #update_interaction_field(status)
-    x0=status.mouse_frame2[0]
-    x0=0
     nodes=status.objects
-    dE=0
     for node in nodes:
         q=node.objects[0]
         p=q.objects[0]
         p.gradient=[]
         for kid in node.kids:
+            dE=0
             qf=kid.objects[0]
             pf=qf.objects[0]
-            dE=dE+(potential(float(qf.shape))
-                -potential(float(q.shape)))
-            dE=dE+100*status.beta*(
+            dE=dE+(d_potential(int(qf.shape),int(q.shape),status))
+            dE=dE+1*status.beta*(
                 pf.density**(status.beta-1)
                     -p.density**(status.beta-1)
                     #/abs(status.beta-1)
@@ -141,8 +197,41 @@ def update_gradient(status):
 
 
 def update(status):
+    update_nets(status)
+    #time.sleep(10)
     status.Transfer.status=status
     status.Transfer.update()
+    update_velocity(status)
+    for i in range(len(status.objects)):
+        q=status.objects[i].objects[0]
+        if q.objects[0].num_particles > 0:
+            for particle in q.objects[0].particles:
+                #print(q.shape)
+                if not(particle.position[0]==particle.velocity[0]):
+                    a=particle.position[0]
+                    b=particle.velocity[0]
+                    net=particle.objects[0]
+                    a_key=node_shape(a)
+                    b_key=node_shape(b)
+                    b_plane=node_plane(b)
+                    if not(b_key in status.nets.keys()):
+                        net_b=net.clone()
+                        if b_key>a_key:
+                            net_b.addFilters()
+                        elif a_key>b_key:
+                            net_b.deleteFilters()
+                        sf.safe_update(status.nets,b_key,net_b)
+                    particle.objects[0]=status.nets[b_key]
+                    particle.position=[]
+                    particle.velocity=[]
+                    q.objects[0].num_particles =q.objects[0].num_particles - 1
+                    particle.position.append(b)
+                    particle.velocity.append(b)
+                    qf=b.objects[0]
+                    qf.objects[0].num_particles=qf.objects[0].num_particles+1
+                    q.objects[0].particles.remove(particle)
+                    qf.objects[0].particles.append(particle)
+                    ##print(q.objects[0].num_particles," - ", qf.objects[0].num_particles, " || LONGITUD REAL ||  ", len(q.objects[0].particles)," - ", len(qf.objects[0].particles))
 
 def update_velocity(status):
     #update_divergence(status)
@@ -200,6 +289,8 @@ def initialize_parameters(self):
     self.Interaction=interaction
     self.display_size=display_size
 
+
+
 #Here the objects of status are a list of nodes
 #The objects of nodes are quadrants which have the physical Range
 # the objects of quadrants are:
@@ -207,12 +298,10 @@ def initialize_parameters(self):
 # in position 1 the size of such list
 
 def create_objects(status):
-    status.Transfer=tran.TransferLocal(status,
-        'local2remote.txt','remote2local.txt')
-    status.Transfer.un_load()
-    status.Transfer.write()
-    #status.Data_gen=dgen.Data_gen()
-    #status.Data_gen.gen_data()
+    status.Data_gen=dgen.Data_gen()
+    status.Data_gen.S=status.S
+    status.Data_gen.Comp=status.Comp
+    status.Data_gen.gen_data()
     def add_node(g,i):
             node=nd.Node()
             q=qu.Quadrant(i)
@@ -232,6 +321,9 @@ def create_objects(status):
     k=0
     status.objects=list(g.key2node.values())
     node=status.objects[0]
+    sf.safe_update(status.nets,0,
+        nw.Network([status.Data_gen.size[0],
+            status.Data_gen.size[1],2]))
     p=node_plane(node)
     #Initializes particles
     while k<status.n:
@@ -239,8 +331,7 @@ def create_objects(status):
         par.position.append(node)
         par.velocity.append(node)
         #print(status.Data_gen.size)
-    #    par.objects.append(nw.Network([status.Data_gen.size[0],
-    #        status.Data_gen.size[1],2]))
+        par.objects.append(status.nets[0])
         p.particles.append(par)
         p.num_particles+=1
         k=k+1
@@ -268,6 +359,20 @@ def attach_balls(status,n_r):
 
             #print('Hi')
 
+def node_energy(node,status=None):
+    p=node_plane(node)
+    if p.num_particles==0:
+        key=node_shape(node)
+        if not(key in status.nets.keys()):
+            p.energy=None
+        else:
+            net=status.nets[key]
+            p.energy=net.total_value
+    else:
+        par=p.particles[0]
+        net=par.objects[0]
+        p.energy=net.total_value
+    return p.energy
 
 
 def plot(status,Display,size=None,tree=None):
@@ -303,15 +408,36 @@ def plot(status,Display,size=None,tree=None):
     for i in range(len(status.objects)-1):
         px_o=Lx_o+i*ddx
         px_f=Lx_o+(i+1)*ddx
-        #print(status.objects[i].objects[0].objects[0].num_particles)
         py_o=Ly_o+status.objects[i].objects[0].objects[0].num_particles*ddy
         py_f=Ly_o+status.objects[i+1].objects[0].objects[0].num_particles*ddy
         positions=[[px_o,py_o],[px_f,py_f]]
 #        print(positions)
         pygame.draw.aaline(Display,white,positions[0],positions[1],True)
 
-
-
+status=Status()
+initialize_parameters(status)
+create_objects(status)
+status.Transfer=tran.TransferRemote(status,
+    'remote2local.txt','local2remote.txt')
+status.Transfer.un_load()
+status.Transfer.write()
+k=0
+while False:
+    update(status)
+    status.Transfer.un_load()
+    status.Transfer.write()
+    transfer=status.Transfer.status_transfer
+    k=k+1
+    pass
+while True:
+    status.Transfer.readLoad()
+    if status.active:
+        update(status)
+        print_nets(status)
+#        time.sleep(0.5)
+    else:
+        print('inactive')
+    k=k+1
 
 """
 c=[]

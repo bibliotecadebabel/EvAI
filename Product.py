@@ -26,7 +26,7 @@ class particle():
 class Status():
     def __init__(self, display_size=None):
         self.dt = 0.1
-        self.tau=0.001
+        self.tau=0.01
         self.n = 20
         self.r=3
         self.dx = 5
@@ -70,10 +70,15 @@ def update_nets(status):
         node_energy(node,status)
         p=node_plane(node)
         particles=p.particles
-        if not(p.num_particles==0):
-            par=particles[0]
-            net=par.objects[0]
-            net.Training(status.Data_gen.Data,dt=status.tau,p=2)
+        key=node_shape(node)
+        #if not(p.num_particles==0):
+        #    par=particles[0]
+        #    net=par.objects[0]
+        #    net.Training(status.Data_gen.Data,dt=status.tau,p=2)
+        if (key in status.nets.keys()):
+            net=status.nets.get(key)
+            if not(net==None):
+                net.Training(status.Data_gen.Data,dt=status.tau,p=2)
     return
 
 def potential(x,status=None):
@@ -108,7 +113,11 @@ def d_potential(b,a,status=None):
         else:
             u=(r_potential(potential(b_key,status))
                 -r_potential(potential(a_key,status)))
-    return u
+    if not(u==0):
+        print(1/u)
+        return(1/u)
+    else:
+        return(u)
 
 
 
