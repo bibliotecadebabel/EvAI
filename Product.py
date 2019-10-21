@@ -71,14 +71,14 @@ def update_nets(status):
         p=node_plane(node)
         particles=p.particles
         key=node_shape(node)
-        #if not(p.num_particles==0):
-        #    par=particles[0]
-        #    net=par.objects[0]
-        #    net.Training(status.Data_gen.Data,dt=status.tau,p=2)
-        if (key in status.nets.keys()):
-            net=status.nets.get(key)
-            if not(net==None):
-                net.Training(status.Data_gen.Data,dt=status.tau,p=2)
+        if not(p.num_particles==0):
+            par=particles[0]
+            net=par.objects[0]
+            net.Training(status.Data_gen.Data,dt=status.tau,p=2)
+        #if (key in status.nets.keys()):
+        #    net=status.nets.get(key)
+        #    if not(net==None):
+        #        net.Training(status.Data_gen.Data,dt=status.tau,p=2)
     return
 
 def potential(x,status=None):
@@ -114,7 +114,6 @@ def d_potential(b,a,status=None):
             u=(r_potential(potential(b_key,status))
                 -r_potential(potential(a_key,status)))
     if not(u==0):
-        print(1/u)
         return(1/u)
     else:
         return(u)
@@ -192,10 +191,15 @@ def update_gradient(status):
             qf=kid.objects[0]
             pf=qf.objects[0]
             dE=dE+(d_potential(int(qf.shape),int(q.shape),status))
-            dE=dE+1*status.beta*(
-                pf.density**(status.beta-1)
-                    -p.density**(status.beta-1)
-                    #/abs(status.beta-1)
+            if dE==0:
+                dE=dE+1*status.beta*(
+                    pf.density**(status.beta-1)
+                        -p.density**(status.beta-1)
+                        )
+            else:
+                dE=dE+(1+abs(dE))*status.beta*(
+                    pf.density**(status.beta-1)
+                        -p.density**(status.beta-1)
                         )
             """dE=dE+(pf.interaction_field
                 -p.interaction_field)"""
