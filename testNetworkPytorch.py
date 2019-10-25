@@ -194,21 +194,8 @@ def Test_Batch(dataGen):
 
     for _,a in enumerate(batch):
         print("Start Training")
-        networks[0].Training(data=a[0], p=20001, dt=0.01, labels=a[1])
+        networks[0].Training(data=a[0], p=4000, dt=0.01, labels=a[1])
         Inter.trakPytorch(networks[0], "pokemon-netmap", dataGen)
-        #k = 0
-        #while k < 10:
-            #print("K=", k)
-            #networks[0].Training(data=a[0], p=2001, dt=0.01, labels=a[1])
-            #networks[1].Training(data=a[0], p=2001, dt=0.01, labels=a[1])
-            #networks[2].Training(data=a[0], p=2001, dt=0.01, labels=a[1])       
-            #k += 1 
-
-        #for j in range(len(networks)):
-            #networkName = "network-"+str(j)+"-map"
-            #Inter.trakPytorch(networks[j], networkName, dataGen)
-        
-        #Inter.trakPytorch(network,'Net_folder_map', dataGen)
 
 def Test_pytorchNetwork(dataGen):
     batch = [dataGen.data]
