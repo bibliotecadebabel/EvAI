@@ -1,19 +1,25 @@
 import torch
 import children.pytorch.Layer as ly
 import children.pytorch.Functions as functions
+import Factory.AbstractFactory as AbstractFactory
 
-class LayerGenerator():
+class LayerGenerator(AbstractFactory.FactoryClass):
 
     def __init__( self, cuda=True ):
+        super().__init__()
         
         self.__cuda = cuda
-        self.__dictionary = {0: self.__createConv2d, 1: self.__createLinear, 2: self.__createCrossEntropyLoss}
 
+    def createDictionary(self):
+
+        self.dictionary[0] = self.__createConv2d
+        self.dictionary[1] = self.__createLinear
+        self.dictionary[2] = self.__createCrossEntropyLoss
 
     def findValue(self, tupleBody):
         key = tupleBody[0]
 
-        value = self.__dictionary[key]
+        value = self.dictionary[key]
 
         return value(tupleBody)
 
