@@ -5,21 +5,24 @@ import children.pytorch.Functions as functions
 import torch
 import torch.nn as nn
 import torch.tensor as tensor
+import Factory.LayerFactory as factory
 
 import utilities.Graphs as Graphs
 
 class Network(nn.Module):
 
-    def __init__(self, objects):
+    def __init__(self, adn, objects):
         super(Network, self).__init__()
         # objects [x, y, k]
         # x -> dimension x
         # y -> dimension y
         # k -> cantidad filtros
         self.objects = objects
+        self.adn = adn
         self.nodes = []
         self.label = tensor([1], dtype=torch.long).cuda()
 
+        self.factory = factory.LayerGenerator()
         self.foward_value = None
 
         self.__createStructure()
@@ -30,7 +33,7 @@ class Network(nn.Module):
         
         graph = Graphs.Graph(True)
 
-        amount_of_nodes = 4
+        amount_of_nodes = len(self.adn) + 1
 
         for i in range(0, amount_of_nodes):
             self.nodes.append(nd.Node())
@@ -44,23 +47,20 @@ class Network(nn.Module):
 
 
         self.nodes = list(graph.key2node.values())
+        print("nodes: ", len(self.nodes))
         self.__assignLayers()
 
     def __assignLayers(self):
 
-        objectConv2d = nn.Conv2d(3, self.objects[2], self.objects[0], self.objects[1]).cuda()
-        objectLinear = nn.Linear(self.objects[2], 2).cuda()
-        objectMSELoss = nn.CrossEntropyLoss().cuda()
-
         valueLayerA = torch.rand(1, 3, self.objects[0], self.objects[1], dtype=torch.float32).cuda()
-        valueLayerA = valueLayerA
-        valueLayerConv2d = torch.rand(1, self.objects[2], 1, 1, dtype=torch.float32, requires_grad=True).cuda()
-        valueLayerLinear = torch.rand(2, dtype=torch.float32, requires_grad=True).cuda()
-
         self.nodes[0].objects.append(ly.Layer(node=self.nodes[0], value=valueLayerA, propagate=functions.Nothing))
-        self.nodes[1].objects.append(ly.Layer(node=self.nodes[1], objectTorch=objectConv2d, propagate=functions.conv2d_propagate, value=valueLayerConv2d))
-        self.nodes[2].objects.append(ly.Layer(node=self.nodes[2], objectTorch=objectLinear, propagate=functions.linear_propagate, value=valueLayerLinear))
-        self.nodes[3].objects.append(ly.Layer(node=self.nodes[3], objectTorch=objectMSELoss, label=self.label, propagate=functions.MSEloss_propagate))
+
+        for i in range(len(self.adn)):
+            indexNode = i + 1
+            tupleBody = self.adn[i]
+            layer = self.factory.findValue(tupleBody)
+            layer.node = self.nodes[indexNode]
+            self.nodes[indexNode].objects.append(layer)
 
     def Acumulate_der(self, n, peso=1):
 

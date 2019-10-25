@@ -179,16 +179,18 @@ def Test_CrossEntry(dataGen):
     #print("prob: ", net.getProbability())
 
 
-def Test_Batch(network, dataGen):
+def Test_Batch(dataGen):
 
     batch = [dataGen.data]
     networks = []
     ks = [100, 153, 200, 5, 6]
     x = dataGen.size[1]
     y = dataGen.size[2]
+
     for i in range(1):
         print("creating networks")
-        networks.append(nw.Network([x, y, ks[i]]))
+        networkADN = ((0, 3, ks[i], x, y), (1, ks[i], 2), (2,))
+        networks.append(nw.Network(networkADN, [x, y, ks[i]]))
 
     for _,a in enumerate(batch):
         print("Start Training")
@@ -248,9 +250,9 @@ x = size[1]
 y = size[2]
 k = 2
 
-network = nw.Network([x,y,k])
+#network = nw.Network([x,y,k])
 
-Test_Batch(network, dataGen)
+Test_Batch(dataGen)
 
 #Test_pytorchNetwork(dataGen)
 

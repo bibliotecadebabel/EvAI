@@ -2,7 +2,7 @@ import torch
 
 class Layer():
 
-    def __init__(self, node, objectTorch=None, propagate=None, value=None, label=None):
+    def __init__(self, node=None, objectTorch=None, propagate=None, value=None, label=None):
         self.object = objectTorch
         self.node = node
         self.value =  value
