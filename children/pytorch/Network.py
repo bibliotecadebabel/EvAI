@@ -18,7 +18,7 @@ class Network(nn.Module):
         # k -> cantidad filtros
         self.objects = objects
         self.nodes = []
-        self.label = tensor([0,1], dtype=torch.float32)
+        self.label = tensor([1], dtype=torch.long).cuda()
 
         self.foward_value = None
 
@@ -48,14 +48,14 @@ class Network(nn.Module):
 
     def __assignLayers(self):
 
-        objectConv2d = nn.Conv2d(3, self.objects[2], self.objects[0], self.objects[1])
-        objectLinear = nn.Linear(self.objects[2], 2)
-        objectMSELoss = nn.MSELoss()
+        objectConv2d = nn.Conv2d(3, self.objects[2], self.objects[0], self.objects[1]).cuda()
+        objectLinear = nn.Linear(self.objects[2], 2).cuda()
+        objectMSELoss = nn.CrossEntropyLoss().cuda()
 
-        valueLayerA = torch.rand(1, 3, self.objects[0], self.objects[1], dtype=torch.float32)
+        valueLayerA = torch.rand(1, 3, self.objects[0], self.objects[1], dtype=torch.float32).cuda()
         valueLayerA = valueLayerA
-        valueLayerConv2d = torch.rand(1, self.objects[2], 1, 1, dtype=torch.float32, requires_grad=True)
-        valueLayerLinear = torch.rand(2, dtype=torch.float32, requires_grad=True)
+        valueLayerConv2d = torch.rand(1, self.objects[2], 1, 1, dtype=torch.float32, requires_grad=True).cuda()
+        valueLayerLinear = torch.rand(2, dtype=torch.float32, requires_grad=True).cuda()
 
         self.nodes[0].objects.append(ly.Layer(node=self.nodes[0], value=valueLayerA, propagate=functions.Nothing))
         self.nodes[1].objects.append(ly.Layer(node=self.nodes[1], objectTorch=objectConv2d, propagate=functions.conv2d_propagate, value=valueLayerConv2d))
@@ -74,7 +74,10 @@ class Network(nn.Module):
 
             if filterDer is not None:
                 layer.filter_der_total += (filterDer / n) * peso
-    
+
+        self.total_value += ((self.nodes[3].objects[0].value)/n).item()
+        #self.total_value += self.nodes[3].objects[0].value.item()
+
     def Regularize_der(self):
 
         for node in self.nodes[:-1]:
@@ -84,10 +87,10 @@ class Network(nn.Module):
             filters = layer.getFilter()
 
             if bias is not None and layer.bias_der_total is not None:
-                layer.bias_der_total = layer.bias_der_total + bias
+                layer.bias_der_total = layer.bias_der_total + (bias/1000)
 
             if filters is not None and layer.filter_der_total is not None:
-                layer.filter_der_total = layer.filter_der_total + filters
+                layer.filter_der_total = layer.filter_der_total + (filters/1000)
 
     def Reset_der(self):
 
@@ -123,6 +126,8 @@ class Network(nn.Module):
 
             if layer.filter_der_total is not None:
                 layer.filter_der_total = layer.filter_der_total * 0
+
+        self.total_value  = 0
     
 
     
@@ -143,30 +148,33 @@ class Network(nn.Module):
             if layer.getBias() is not None:
                 layer.getBias().data -= (layer.bias_der_total * dt)
         
-    def Predict(self, image):
-        self.assignLabels(torch.tensor([1,0], dtype=torch.float32))
-        self.nodes[0].objects[0].value = image[0]
+    def Predict(self, image, label):
+        #self.assignLabels(torch.tensor([0], dtype=torch.long))
+        
+        labelTensor = torch.tensor([label.item()]).long().cuda()
+        self.assignLabels(labelTensor)
+        self.nodes[0].objects[0].value = image.view(1, 3, self.objects[0], self.objects[1])
 
         functions.Propagation(self.nodes[3].objects[0])
 
+        #print("prob of filters#", self.objects[2],": ", self.getProbability())
         return self.getProbability()
 
 
     def getProbability(self):
 
-        p = self.nodes[2].objects[0].value[0].item()
+        value = self.nodes[2].objects[0].value
+        #print("output linear: ", value)
+        sc = value[0][0]
+        sn = value[0][1]
 
-        if p < 0:
-            p = 0
-        elif p > 1:
-            p = 1
+        p = torch.exp(sc)/(torch.exp(sc) + torch.exp(sn))
 
-        return p
+        return p.item()
 
     def Train(self, dataElement, peso, n):
-        self.nodes[0].objects[0].value = dataElement[0]
-        self.assignLabels(dataElement[1])
 
+        self.nodes[0].objects[0].value = dataElement
         self.updateGradFlag(True)
         functions.Propagation(self.nodes[3].objects[0])
         #self.showParameters()
@@ -176,55 +184,30 @@ class Network(nn.Module):
         self.Acumulate_der(n, peso)
         self.Reset_der()
 
-    def showParameters(self):
-
-        
-        layerCon2d = self.nodes[1].objects[0]
-        layerLinear = self.nodes[2].objects[0]
-
-        if layerCon2d.getFilterDer() is not None:
-            print("Conv2d Filter Der Shape: ", layerCon2d.getFilterDer().shape)
-            print("Conv2d Bias Der Shape: ", layerCon2d.getBiasDer().shape)
-        
-        if layerLinear.getFilterDer() is not None: 
-            print("Linear Filter Der Shape: ", layerLinear.getFilterDer().shape)            
-        
-        '''
-        k = 0
-        for node in self.nodes:
-            print("node #",k)
-
-            layer = node.objects[0]
-
-            if layer.object is not None:
-                for param in layer.object.parameters():
-                    print("shape param: ", param.shape)
-
-                    if param.grad is not None:
-                        print("shape der param: ", param.grad.shape)
-            k +=1
-        '''
-
-            
-
-    def Training(self, data, dt=0.1, p=0.99):
+    def Training(self, data, labels, dt=0.1, p=2):
             n = len(data) * 5/4
             peso = len(data) / 4
 
             i=0
             while i < p:
-                if i % 10==0:
-                    #print(i)
-                    print("prob: ", self.getProbability())
-                self.Train(data[0], peso, n)
+                if i % 2000 == 1999:
+                    print("i=", i+1)
+                    print("Energy of #",self.objects[2],": ", self.total_value )
+                    #self.total_value = 0
+                    #print("prob: ", self.Predict(data[0], labels[0]))
+                    #print("prob of filters #", self.objects[2], " :", self.getProbability())
+                    pass
+                
+                self.assignLabels(labels)
+                self.Reset_der_total()
+                self.Train(data, 1, 1)
 
-                for image in data[1:]:
-                    self.Train(image, 1, n)
+                #for image in data[1:]:
+                    #self.Train(image, 1, n)
 
                 #self.Regularize_der()
                 self.Update(dt)
-                self.Reset_der_total()
-                self.Predict(data[0])
+                #self.Predict(data[0])
                 i=i+1
     
     def updateGradFlag(self, flag):

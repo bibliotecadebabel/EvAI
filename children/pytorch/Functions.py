@@ -1,5 +1,6 @@
 import numpy as np
 import random
+import torch
 
 def Propagation(layer, n=None):
 
@@ -40,21 +41,38 @@ def conv2d_propagate(layer):
     
     parent = layer.node.parents[0].objects[0]
 
-    layer.value = layer.object(parent.value) / len(layer.getFilter()[0]) / 255
+    lenght = len(layer.getFilter()[0].view(-1))
+
+    value = layer.object(parent.value) / (lenght)
+    
+    sigmoid = torch.nn.Sigmoid()
+    layer.value = sigmoid(value) + torch.nn.functional.relu(value)
 
 def linear_propagate(layer):
 
     parent = layer.node.parents[0].objects[0]
 
-    #print("shape: ", len(layer.getFilter()[1]))
-    layer.value = layer.object(parent.value.view(-1)) / len(layer.getFilter()[1])
-    #print("value linear: ", layer.value)
+    shape = parent.value.shape[0]
+
+    #layer.value = layer.object(parent.value.view(shape, -1)) / len(layer.getFilter()[1])
+
+    layer.value = layer.object(parent.value.view(shape, -1))
+    
 def MSEloss_propagate(layer):
 
     parent = layer.node.parents[0].objects[0]
 
     layer.value = layer.object(parent.value, layer.label)
 
+    '''
+    if layer.label.item() != 0:
+        #print("SWAP: ", layer.label.item())
+        valueInvert = torch.torch.matmul(layer.swap, parent.value).view(1, -1)
+        layer.value = layer.object(valueInvert, layer.labelCircle)
+    else:
+        #print("NO SWAP: ", layer.label.item())
+        layer.value = layer.object(parent.value.view(1, -1), layer.labelCircle)
+    '''
 ############### FUNCIONES BACKPROPAGATE ###############
 
 def probability_der(layer):

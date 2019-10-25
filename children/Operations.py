@@ -58,12 +58,12 @@ def SampleVer2(size, A, N, l):
     sizeb = np.shape(A)
     k = 0
     while k<N:
-        imageRandom = []
+        #imageRandom = []
         i=random.randint(0,sizeb[0]-size[0]-1)
         j=random.randint(0,sizeb[1]-size[1]-1)
-        imageRandom.append(A[i:i+size[0],j:j+size[1]])
-        imageRandom.append(l)
-        images.append(imageRandom)
+        #imageRandom.append(A[i:i+size[0],j:j+size[1]])
+        #imageRandom.append(l)
+        images.append(A[i:i+size[0],j:j+size[1]])
         k=k+1
 
     return images

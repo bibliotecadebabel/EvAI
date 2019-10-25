@@ -66,10 +66,7 @@ def trakPytorch(Net,Out_name, dataGen):
         while j<sizeb[1]-size[3]:
             x=Ima[i:i+size[2],j:j+size[3]]
             x = dataGen.numpyToTorch(x)
-            image = []
-            image.append(x)
-            image.append(labelCircle)
-            p = Net.Predict(image)
+            p = Net.Predict(x, labelCircle)
             #print("prob traking: ",p)
             a[i,j]=a[i,j]+p*255
             j=j+1

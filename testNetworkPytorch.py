@@ -6,12 +6,22 @@ from DAO import GeneratorFromImage
 import torch
 import torch.nn as nn
 import torch.tensor as tensor
+import torch.optim as optim
 
-def generateCircle():
-        return tensor([0,1], dtype=torch.float32)
-    
-def generateNotCircle():
-        return tensor([1,0], dtype=torch.float32)
+class Net(nn.Module):
+    def __init__(self, objects):
+        super(Net, self).__init__()
+        self.conv1 = nn.Conv2d(3, objects[2], objects[0], objects[1])
+        self.fc3 = nn.Linear(objects[2] * 1 * 1, 2)
+
+    def forward(self, x):
+        x = self.conv1(x)
+        #print("output conv2d: ", x.shape)
+        x = x.view(-1, 16 * 1 * 1)
+        #print("input linear: ", x.shape)
+        x = self.fc3(x)
+        #print("output linear: ", x.shape)
+        return x
 
 def Test_node_3(network,n=100,dt=0.1):
     k=0
@@ -20,13 +30,13 @@ def Test_node_3(network,n=100,dt=0.1):
 
     image = []
     image.append(network.nodes[0].objects[0].value)
-    image.append(torch.tensor([1,0], dtype=torch.float32))
+    image.append(torch.tensor([0], dtype=torch.long))
 
     k=0
     A = network.nodes[2].objects[0].value
     A.requires_grad = True
     network.addFilters()
-    while k < 1000:
+    while k < 200:
         
         #value = network.nodes[3].objects[0].object(A, image[1])
         network.assignLabels(image[1])
@@ -37,7 +47,13 @@ def Test_node_3(network,n=100,dt=0.1):
         network.nodes[2].objects[0].value -= network.nodes[2].objects[0].value.grad * 0.1
         network.nodes[2].objects[0].value.grad.data.zero_()
         
-        print(network.nodes[2].objects[0].value)
+        value = network.nodes[2].objects[0].value
+
+        sc = value[0]
+        sn = value[1]
+
+        p = torch.exp(sc) / (torch.exp(sc) + torch.exp(sn))
+        print(p)
 
 def Test_node_2(network,n=100,dt=0.1):
     k=0
@@ -114,41 +130,139 @@ def Test_node_1(network,n=100,dt=0.1):
         print(network.getProbability())
         k+=1
 
-def Test_modifyNetwork(network, data):
-
-    for i in range(10000):
-        #print("Entrenando red")
-        print("Sin mutaciones")
-        network.Training(data=data, dt=10, p=10)
-        print("Agregando Filtro")
-        network.addFilters()
-        #print("Entrenando Red modificada")
-        network.Training(data=data, dt=10, p=10)
-        print("Eliminando Filtro")
-        network.removeFilter()
-        #print("Entrenando Red modificada")
-        network.Training(data=data, dt=10, p=10)
-
 def Test_realImage(network, dataGen):
 
-    network.Training(data=dataGen.data, dt=0.1, p=2000)
+    network.Training(data=dataGen.data, dt=10, p=2000)
     Inter.trakPytorch(network,'Net_folder_map', dataGen)
 
+def Test_multipleNetworks(dataGen, x, y):
+    networks = []
+    size = dataGen.size
+    ks = [2, 3, 4, 5, 6]
+
+
+    for i in range(2):
+        networks.append(nw.Network([x, y, ks[i]]))
+
+    k = 0
+    while True:
+        for i in range(len(networks)):
+            networks[i].Training(data=dataGen.data, dt=0.01, p=2)
+        
+        if k == 10:
+            k = 0
+            for i in range(len(networks)):
+                print("Energy network of filters #", str(networks[i].objects[2]),": ", networks[i].total_value, " (", networks[i].Predict(dataGen.data[0]),")")  
+        k +=1
+    for j in range(len(networks)):
+        networkName = "network-"+str(j)+"-map"
+        Inter.trakPytorch(networks[i], networkName, dataGen)
+    
+def Test_CrossEntry(dataGen):
+
+    net = nw.Network([dataGen.size[2], dataGen.size[3], 4])
+
+    dataSub = []
+    
+    k = 0
+    for data in dataGen.data:
+        if k == 0:
+            dataSub.append(data)
+        k +=1
+    #print("net: ",net.objects)
+    net.Training(data=dataGen.data, dt=0.1, p=50000)
+    #Inter.trakPytorch(net,'Net_folder_map', dataGen)
+    #net.Predict(dataGen.data[10])
+    #net.Predict(dataGen.data[0])
+    #print("prob: ", net.getProbability())
+    #net.Predict(dataGen.data[1])
+    #print("prob: ", net.getProbability())
+
+
+def Test_Batch(network, dataGen):
+
+    batch = [dataGen.data]
+    networks = []
+    ks = [100, 153, 200, 5, 6]
+    x = dataGen.size[1]
+    y = dataGen.size[2]
+    for i in range(1):
+        print("creating networks")
+        networks.append(nw.Network([x, y, ks[i]]))
+
+    for _,a in enumerate(batch):
+        print("Start Training")
+        networks[0].Training(data=a[0], p=20001, dt=0.01, labels=a[1])
+        Inter.trakPytorch(networks[0], "pokemon-netmap", dataGen)
+        #k = 0
+        #while k < 10:
+            #print("K=", k)
+            #networks[0].Training(data=a[0], p=2001, dt=0.01, labels=a[1])
+            #networks[1].Training(data=a[0], p=2001, dt=0.01, labels=a[1])
+            #networks[2].Training(data=a[0], p=2001, dt=0.01, labels=a[1])       
+            #k += 1 
+
+        #for j in range(len(networks)):
+            #networkName = "network-"+str(j)+"-map"
+            #Inter.trakPytorch(networks[j], networkName, dataGen)
+        
+        #Inter.trakPytorch(network,'Net_folder_map', dataGen)
+
+def Test_pytorchNetwork(dataGen):
+    batch = [dataGen.data]
+    k = 16
+    device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
+
+    net = Net([dataGen.size[1], dataGen.size[2], k]).to(device)
+    criterion = nn.CrossEntropyLoss()
+    optimizer = optim.SGD(net.parameters(), lr=0.001, momentum=0.9)
+    running_loss = 0.0
+    for _,a in enumerate(batch):
+        
+        inputs, labels = a[0] / 255, a[1]
+
+        for j in range(24000):
+            # zero the parameter gradients
+            optimizer.zero_grad()
+
+            # forward + backward + optimize
+            outputs = net(inputs)
+            loss = criterion(outputs, labels)
+            loss.backward()
+            optimizer.step()
+
+            # print statistics
+            running_loss += loss.item()
+
+            if j % 2000 == 1999:    # print every 2000 mini-batches
+                print("Energy: ", running_loss, "i = ", j+1)
+                running_loss = 0.0
 
 
 dataGen = GeneratorFromImage.GeneratorFromImage(2, 100)
 dataGen.dataConv2d()
-size = dataGen.data[0][0].shape
+size = dataGen.size
 
 
-x = size[2]
-y = size[3]
-k = 100
+x = size[1]
+y = size[2]
+k = 2
 
 network = nw.Network([x,y,k])
 
+Test_Batch(network, dataGen)
+
+#Test_pytorchNetwork(dataGen)
+
+#Test_node_3(network)
+#Test_CrossEntry(dataGen)
+
+
+#Test_multipleNetworks(dataGen, x, y)
+
+
 #Test_realImage(network, dataGen)
-Test_modifyNetwork(network, dataGen.data)
+#Test_modifyNetwork(network, dataGen.data)
 #Test_node_2(network)
 
 #Test_node_1(network)

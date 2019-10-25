@@ -1,3 +1,5 @@
+import torch
+
 class Layer():
 
     def __init__(self, node, objectTorch=None, propagate=None, value=None, label=None):
@@ -6,7 +8,9 @@ class Layer():
         self.value =  value
         self.propagate = propagate
         self.label = label
+        self.swap = torch.tensor([[0, 1], [1,0]], dtype=torch.float32, requires_grad=True).cuda()
 
+        self.labelCircle = torch.tensor([0], dtype=torch.long).cuda()
         self.bias_der_total = 0
         self.filter_der_total = 0
 
