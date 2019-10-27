@@ -149,6 +149,7 @@ class Network:
         print(self.nodes[3].objects[0].value)
 
     def Train(self, dataElement, peso, n):
+        self.Reset_der
         self.nodes[0].objects[0].value = dataElement[0]
         #self.nodes[3].objects[0].label = dataElement[1]
 

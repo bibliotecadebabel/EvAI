@@ -63,7 +63,7 @@ def SampleVer2(size, A, N, l):
         j=random.randint(0,sizeb[1]-size[1]-1)
         #imageRandom.append(A[i:i+size[0],j:j+size[1]])
         #imageRandom.append(l)
-        images.append(A[i:i+size[0],j:j+size[1]])
+        images.append([A[i:i+size[0],j:j+size[1]],l])
         k=k+1
 
     return images

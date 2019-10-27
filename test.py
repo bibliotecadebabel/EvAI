@@ -101,7 +101,7 @@ def Test_node_0(network,n=1000,dt=0.1):
     layer_f=network.nodes[4].objects[0]
     layer_i=network.nodes[0].objects[0]
     while k<n:
-        network.Predict(layer_i.value)
+        #network.Predict(layer_i.value)
         network.assignLabels("n")
         network.Reset_der_total()
         #j=1
@@ -115,15 +115,24 @@ def Test_node_0(network,n=1000,dt=0.1):
         Functions.BackPropagation(layer_i)
         network.Acumulate_der(1)
         network.Update(dt)
+        print(network.total_value)
         #print("value of layer_f: ", layer_f.value)
         #print("value of layer_f: ", layer_f.node.parents[0].objects[0].value)
         #print("value_der nodo 3: ", network.nodes[3].objects[0].value_der)
         k=k+1
 
+def Test_training(network,data):
+    print('The label is:')
+    print(dataGen.Data[1][1])
+    network.Training(data=dataGen.Data, dt=0.1, p=1)
+    print(network.total_value)
+    pass
+
 def Test_multipleNetworks():
     networks = []
 
     dataGen = Data_generator.Data_gen()
+    dataGen.S=200
     dataGen.gen_data()
     size = dataGen.size
     ks = [1, 3, 5, 8, 10]
@@ -134,14 +143,14 @@ def Test_multipleNetworks():
 
     for k in range(500):
         for i in range(len(networks)):
-            networks[i].Training(data=dataGen.Data, dt=0.1, p=1)
+            networks[i].Training(data=dataGen.Data, dt=0.001, p=1)
             print("value network #", str(i),": ", networks[i].total_value)
-    
+
     for j in range(len(networks)):
         networkName = "network-"+str(j)+"-map"
         Inter.trak(networks[i], dataGen.A, networkName)
-    
-        
+
+
 
 def Test_modifyNetwork(network, data):
 
@@ -175,7 +184,10 @@ def Test_cloneNetwork(network, data):
         print("elimino filtro red clonada y entreno")
         clone.Training(data=data, dt=0.01, p=10)
         print("prob clone network: ", clone.nodes[3].objects[0].value)
+
+
 dataGen = Data_generator.Data_gen()
+dataGen.S=200
 
 dataGen.gen_data()
 
@@ -192,8 +204,13 @@ network = nw.Network([x,y,k])
 
 #Test_cloneNetwork(network, dataGen.Data)
 
-#Test_multipleNetworks()
-Test_modifyNetwork(network, dataGen.Data)
+#Test_training(network,dataGen.Data)
+
+Test_multipleNetworks()
+
+#Test_node_0(network)
+
+#Test_modifyNetwork(network, dataGen.Data)
 #data = []
 
 #generateData(data, objects, 100)
