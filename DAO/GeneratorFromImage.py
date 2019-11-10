@@ -22,7 +22,7 @@ class GeneratorFromImage(Generator):
         x=Op.Pool(Inter.Image2array(self.target),self.Comp)
         size=np.shape(x)
         print('Sampling Image')
-        images = Op.SampleVer3((size[0],size[1]),A,self.S, self.label[1])
+        images = Op.SampleVer3((size[0],size[1]),A,self.S)
         #images.insert(0, x)
 
         copy_x = self.S // 4 

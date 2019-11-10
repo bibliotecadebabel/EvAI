@@ -130,78 +130,6 @@ def Test_node_1(network,n=100,dt=0.1):
         print(network.getProbability())
         k+=1
 
-def Test_realImage(network, dataGen):
-
-    network.Training(data=dataGen.data, dt=10, p=2000)
-    Inter.trakPytorch(network,'Net_folder_map', dataGen)
-
-def Test_multipleNetworks(dataGen, x, y):
-    networks = []
-    size = dataGen.size
-    ks = [2, 3, 4, 5, 6]
-
-
-    for i in range(2):
-        networks.append(nw.Network([x, y, ks[i]]))
-
-    k = 0
-    while True:
-        for i in range(len(networks)):
-            networks[i].Training(data=dataGen.data, dt=0.01, p=2)
-        
-        if k == 10:
-            k = 0
-            for i in range(len(networks)):
-                print("Energy network of filters #", str(networks[i].objects[2]),": ", networks[i].total_value, " (", networks[i].Predict(dataGen.data[0]),")")  
-        k +=1
-    for j in range(len(networks)):
-        networkName = "network-"+str(j)+"-map"
-        Inter.trakPytorch(networks[i], networkName, dataGen)
-    
-def Test_CrossEntry(dataGen):
-
-    net = nw.Network([dataGen.size[2], dataGen.size[3], 4])
-
-    dataSub = []
-    
-    k = 0
-    for data in dataGen.data:
-        if k == 0:
-            dataSub.append(data)
-        k +=1
-    #print("net: ",net.objects)
-    net.Training(data=dataGen.data, dt=0.1, p=50000)
-    #Inter.trakPytorch(net,'Net_folder_map', dataGen)
-    #net.Predict(dataGen.data[10])
-    #net.Predict(dataGen.data[0])
-    #print("prob: ", net.getProbability())
-    #net.Predict(dataGen.data[1])
-    #print("prob: ", net.getProbability())
-
-
-def Test_Batch(dataGen):
-
-    batch = [dataGen.data]
-    print("len data: ", len(dataGen.data[0]))
-    networks = []
-    ks = [100, 153, 200, 5, 6]
-    x = dataGen.size[1]
-    y = dataGen.size[2]
-    for i in range(1):
-        print("creating networks")
-        #(0, ks[i], len(dataGen.data[0]), 1, 1),
-
-        afterKernel = int(x/(x//6))
-        inputShapeLinear = ks[i]*afterKernel*afterKernel
-
-        networkADN = ((0, 3, 30, x//6, y//6),  (0, 30, ks[i], 1, 1), (1, inputShapeLinear, (inputShapeLinear//2) ), (1, (inputShapeLinear//2), 2 ), (2,))
-        networks.append(nw.Network(networkADN, [x, y, ks[i]]))
-
-    for _,a in enumerate(batch):
-        print("Start Training")
-        networks[0].Training(data=a[0], p=1000, dt=0.01, labels=a[1])
-        Inter.trakPytorch(networks[0], "pokemon-netmap", dataGen)
-
 def Test_pytorchNetwork(dataGen):
     batch = [dataGen.data]
     k = 16
@@ -232,8 +160,30 @@ def Test_pytorchNetwork(dataGen):
                 print("Energy: ", running_loss, "i = ", j+1)
                 running_loss = 0.0
 
+def Test_Batch(dataGen):
 
-dataGen = GeneratorFromImage.GeneratorFromImage(2, 10000)
+    batch = [dataGen.data]
+    print("len data: ", len(dataGen.data[0]))
+    networks = []
+    ks = [100]
+    x = dataGen.size[1]
+    y = dataGen.size[2]
+    for i in range(1):
+        print("creating networks")
+        #(0, ks[i], len(dataGen.data[0]), 1, 1),
+        networkADN = ((0, 3, ks[i], x, y), (1, ks[i], 2), (2,))
+        objects = [x, y, ks[i]]
+        networks.append(nw.Network(networkADN, objects))
+
+    for _,a in enumerate(batch):
+        print("Start Training")
+        networks[0].Training(data=a[0], p=10000, dt=0.01, labels=a[1])
+        print("Loss Array: ", networks[0].getLossArray())
+        Inter.trakPytorch(networks[0], "pokemon-netmap", dataGen)
+
+
+
+dataGen = GeneratorFromImage.GeneratorFromImage(2, 15000)
 dataGen.dataConv2d()
 size = dataGen.size
 
@@ -242,27 +192,6 @@ x = size[1]
 y = size[2]
 k = 2
 
-#network = nw.Network([x,y,k])
 
 Test_Batch(dataGen)
 
-#Test_pytorchNetwork(dataGen)
-
-#Test_node_3(network)
-#Test_CrossEntry(dataGen)
-
-
-#Test_multipleNetworks(dataGen, x, y)
-
-
-#Test_realImage(network, dataGen)
-#Test_modifyNetwork(network, dataGen.data)
-#Test_node_2(network)
-
-#Test_node_1(network)
-
-#x = dataGen.data[0]
-
-#print(x[0])
-
-#print(x[0][0:2, 1:1])

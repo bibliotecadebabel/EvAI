@@ -27,6 +27,7 @@ class Network(nn.Module):
 
         self.__createStructure()
         self.total_value = 0
+        self.history_loss = []
 
 
     def __createStructure(self):
@@ -208,6 +209,7 @@ class Network(nn.Module):
 
                 #self.Regularize_der()
                 self.Update(dt)
+                self.history_loss.append(self.total_value)
                 #self.Predict(data[0])
                 i=i+1
     
@@ -324,3 +326,6 @@ class Network(nn.Module):
         return self.nodes[len(self.nodes)-2].objects[0]
 
 
+    def getLossArray(self):
+        
+        return self.history_loss
