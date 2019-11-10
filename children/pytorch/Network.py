@@ -75,8 +75,8 @@ class Network(nn.Module):
             if filterDer is not None:
                 layer.filter_der_total += (filterDer / n) * peso
 
-        self.total_value += ((self.nodes[3].objects[0].value)/n).item()
-        #self.total_value += self.nodes[3].objects[0].value.item()
+        self.total_value += ((self.__getLossLayer().value)/n).item()
+
 
     def Regularize_der(self):
 
@@ -155,7 +155,7 @@ class Network(nn.Module):
         self.assignLabels(labelTensor)
         self.nodes[0].objects[0].value = image.view(1, 3, self.objects[0], self.objects[1])
 
-        functions.Propagation(self.nodes[3].objects[0])
+        self.__doFoward()
 
         #print("prob of filters#", self.objects[2],": ", self.getProbability())
         return self.getProbability()
@@ -163,7 +163,7 @@ class Network(nn.Module):
 
     def getProbability(self):
 
-        value = self.nodes[2].objects[0].value
+        value = self.__getLayerProbability().value
         #print("output linear: ", value)
         sc = value[0][0]
         sn = value[0][1]
@@ -176,9 +176,10 @@ class Network(nn.Module):
 
         self.nodes[0].objects[0].value = dataElement
         self.updateGradFlag(True)
-        functions.Propagation(self.nodes[3].objects[0])
+        #functions.Propagation(self.nodes[3].objects[0])
         #self.showParameters()
-        self.nodes[3].objects[0].value.backward()
+        self.__doFoward()
+        self.__doBackward()
         self.updateGradFlag(False)
 
         self.Acumulate_der(n, peso)
@@ -190,11 +191,11 @@ class Network(nn.Module):
 
             i=0
             while i < p:
-                if i % 2000 == 1999:
+                if i % 100 == 99:
                     print("i=", i+1)
                     print("Energy of #",self.objects[2],": ", self.total_value )
                     #self.total_value = 0
-                    #print("prob: ", self.Predict(data[0], labels[0]))
+                    print("prob: ", self.Predict(data[0], labels[0]))
                     #print("prob of filters #", self.objects[2], " :", self.getProbability())
                     pass
                 
@@ -305,8 +306,21 @@ class Network(nn.Module):
 
         self.updateGradFlag(True)
        
+    def __doFoward(self):
+        
+        functions.Propagation(self.__getLossLayer())
+
+    def __doBackward(self):
+
+        self.__getLossLayer().value.backward()
 
 
+    def __getLossLayer(self):
 
+        return self.nodes[len(self.nodes)-1].objects[0]
+    
+    def __getLayerProbability(self):
+
+        return self.nodes[len(self.nodes)-2].objects[0]
 
 

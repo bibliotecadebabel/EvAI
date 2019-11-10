@@ -182,19 +182,24 @@ def Test_CrossEntry(dataGen):
 def Test_Batch(dataGen):
 
     batch = [dataGen.data]
+    print("len data: ", len(dataGen.data[0]))
     networks = []
     ks = [100, 153, 200, 5, 6]
     x = dataGen.size[1]
     y = dataGen.size[2]
-
     for i in range(1):
         print("creating networks")
-        networkADN = ((0, 3, ks[i], x, y), (1, ks[i], 2), (2,))
+        #(0, ks[i], len(dataGen.data[0]), 1, 1),
+
+        afterKernel = int(x/(x//6))
+        inputShapeLinear = ks[i]*afterKernel*afterKernel
+
+        networkADN = ((0, 3, 30, x//6, y//6),  (0, 30, ks[i], 1, 1), (1, inputShapeLinear, (inputShapeLinear//2) ), (1, (inputShapeLinear//2), 2 ), (2,))
         networks.append(nw.Network(networkADN, [x, y, ks[i]]))
 
     for _,a in enumerate(batch):
         print("Start Training")
-        networks[0].Training(data=a[0], p=4000, dt=0.01, labels=a[1])
+        networks[0].Training(data=a[0], p=1000, dt=0.01, labels=a[1])
         Inter.trakPytorch(networks[0], "pokemon-netmap", dataGen)
 
 def Test_pytorchNetwork(dataGen):
@@ -228,7 +233,7 @@ def Test_pytorchNetwork(dataGen):
                 running_loss = 0.0
 
 
-dataGen = GeneratorFromImage.GeneratorFromImage(2, 100)
+dataGen = GeneratorFromImage.GeneratorFromImage(2, 10000)
 dataGen.dataConv2d()
 size = dataGen.size
 
