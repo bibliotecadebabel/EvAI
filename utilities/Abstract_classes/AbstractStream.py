@@ -16,7 +16,7 @@ class Stream(ABC):
 
     def charge_nodes(self,selector=None):
         keys = self.Graph.key2node.keys()
-        if selector==None:
+        if selector is None:
             for key in keys:
                 self.charge_node(key)
         if not(selector==None):
