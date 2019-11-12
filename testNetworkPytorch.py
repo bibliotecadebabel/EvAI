@@ -177,13 +177,41 @@ def Test_Batch(dataGen):
 
     for _,a in enumerate(batch):
         print("Start Training")
-        networks[0].Training(data=a[0], p=10000, dt=0.01, labels=a[1])
+        networks[0].Training(data=a[0], p=15000, dt=0.01, labels=a[1])
         print("Loss Array: ", networks[0].getLossArray())
         Inter.trakPytorch(networks[0], "pokemon-netmap", dataGen)
 
+def Test_Clone(dataGen):
+    batch = [dataGen.data]
+    print("len data: ", len(dataGen.data[0]))
+    ks = [100]
+    x = dataGen.size[1]
+    y = dataGen.size[2]
+
+    print("creating networks")
+    #(0, ks[i], len(dataGen.data[0]), 1, 1),
+    networkADN = ((0, 3, ks[0], x, y), (1, ks[0], 2), (2,))
+    objects = [x, y, ks[0]]
+    network = nw.Network(networkADN, objects)
+
+    for _,a in enumerate(batch):
+        for i in range(10):
+            #network.addFilters()
+            print("Start Training Original Network")
+            network.Training(data=a[0], p=1000, dt=0.01, labels=a[1])
+            network.addFilters()
+            print("Loss Original Network: ", network.total_value)
+            #networkCopy = network.clone()
+            #networkCopy.addFilters()
+            #networkCopy.addFilters()
+            #networkCopy.addFilters()
+            #print("Start Training copy Network")
+            #networkCopy.Training(data=a[0], p=2000, dt=0.01, labels=a[1])
+            #print("Loss copy Network: ", networkCopy.total_value)
 
 
-dataGen = GeneratorFromImage.GeneratorFromImage(2, 15000)
+
+dataGen = GeneratorFromImage.GeneratorFromImage(2, 2000)
 dataGen.dataConv2d()
 size = dataGen.size
 
@@ -193,5 +221,5 @@ y = size[2]
 k = 2
 
 
-Test_Batch(dataGen)
+Test_Clone(dataGen)
 

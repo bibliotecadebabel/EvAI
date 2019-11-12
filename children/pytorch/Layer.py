@@ -42,6 +42,11 @@ class Layer():
             value = self.object.weight
 
         return value
+    
+    def setFilter(self, value):
+
+        if self.object is not None:
+            self.object.weight = torch.nn.Parameter(value)
 
     def getBias(self):
 
@@ -51,6 +56,11 @@ class Layer():
             value = self.object.bias
 
         return value
+    
+    def setBias(self, value):
+
+        if self.object is not None:
+            self.object.bias = torch.nn.Parameter(value)
 
     def __getParamValue(self, index, grad):
 
