@@ -3,7 +3,10 @@ class Node():
         self.kids=[]
         self.parents=[]
         self.objects=[]
+    def attach(self,obj):
+        self.objects[0].append(obj)
 
+#print('Hi')
 
 
 
