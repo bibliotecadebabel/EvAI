@@ -48,7 +48,7 @@ class Network(nn.Module):
 
 
         self.nodes = list(graph.key2node.values())
-        print("nodes: ", len(self.nodes))
+        #print("nodes: ", len(self.nodes))
         self.__assignLayers()
 
     def __assignLayers(self):
@@ -236,9 +236,20 @@ class Network(nn.Module):
         pass
 
     def addFilters(self):
-        layerConv2d = self.nodes[1].objects[0]
-        layerLinear = self.nodes[2].objects[0]
+        
+        self.updateGradFlag(False)
+        networkClone = self.clone()
 
+        layerConv2d = networkClone.nodes[1].objects[0]
+        layerLinear = networkClone.nodes[2].objects[0]
+        
+        networkClone.updateGradFlag(False)
+        layerConv2d.value.requires_grad = False
+
+        networkClone.__modifyADN()
+
+
+        '''
         layerConv2d.getFilter().grad = None
         layerConv2d.getBias().grad = None
         layerLinear.getFilter().grad = None
@@ -248,49 +259,32 @@ class Network(nn.Module):
         layerLinear.bias_der_total = 0
         layerConv2d.filter_der_total = 0
         layerConv2d.bias_der_total = 0
+        '''
 
         shapeFilterConv2d = layerConv2d.getFilter().shape
         shapeFilterLinear = layerLinear.getFilter().shape
         shapeValueConv2d = layerConv2d.value.shape
 
-        #self.updateGradFlag(False)
-        #layerConv2d.value.requires_grad = False
+        layerConv2d.getFilter().resize_(shapeFilterConv2d[0]+1, 3, shapeFilterConv2d[2], shapeFilterConv2d[3])
+        layerConv2d.getBias().resize_(shapeFilterConv2d[0]+1)
+    
+        layerConv2d.value.resize_(shapeValueConv2d[0], shapeValueConv2d[1]+1, shapeValueConv2d[2], shapeValueConv2d[3])
 
-        #layerConv2d.getFilter().resize_(shapeFilterConv2d[0]+1, 3, shapeFilterConv2d[2], shapeFilterConv2d[3])
-        #layerConv2d.getBias().resize_(shapeFilterConv2d[0]+1)
+        layerLinear.getFilter().resize_(2, shapeFilterLinear[1]+1)
         
-        temp_conv2d_filter = layerConv2d.getFilter().clone()
-        temp_conv2d_filter.resize_(shapeFilterConv2d[0]+1, 3, shapeFilterConv2d[2], shapeFilterConv2d[3])
-        layerConv2d.setFilter(torch.nn.Parameter(temp_conv2d_filter))
-
-        temp_conv2d_bias = layerConv2d.getBias().clone()
-        temp_conv2d_bias.resize_(shapeFilterConv2d[0]+1)
-        layerConv2d.setBias(torch.nn.Parameter(temp_conv2d_bias))
-
-        temp_conv2d_value = torch.zeros((shapeValueConv2d[0], shapeValueConv2d[1]+1, shapeValueConv2d[2], shapeValueConv2d[3]), requires_grad=True).cuda()
-        temp_conv2d_value[0,:shapeValueConv2d[1],:,:] = layerConv2d.value[0, :, :, :]
-
-        #layerLinear.getFilter().resize_(2, shapeFilterLinear[1]+1)
-        temp_linear_filter = layerLinear.getFilter().clone()
-        temp_linear_filter.resize_(2, shapeFilterLinear[1]+1)
-        layerLinear.setFilter(torch.nn.Parameter(temp_linear_filter))
-
         layerConv2d.getFilter()[shapeFilterConv2d[0]] = layerConv2d.getFilter()[shapeFilterConv2d[0]-1].clone()
         
         layerConv2d.getBias()[shapeFilterConv2d[0]] = layerConv2d.getBias()[shapeFilterConv2d[0]-1].clone()
 
-        temp_conv2d_value[shapeValueConv2d[0]-1][shapeValueConv2d[1]] = layerConv2d.value[shapeValueConv2d[0]-1][shapeValueConv2d[1]-1].clone()
+        layerConv2d.value[shapeValueConv2d[0]-1][shapeValueConv2d[1]] = layerConv2d.value[shapeValueConv2d[0]-1][shapeValueConv2d[1]-1].clone()
 
         for i in range(layerLinear.getFilter().shape[0]):
             layerLinear.getFilter()[i][layerLinear.getFilter().shape[1]-1] = layerLinear.getFilter()[i][layerLinear.getFilter().shape[1]-2].clone()
 
-        self.__modifyADN()
+        #networkClone.updateGradFlag(True)
+        layerConv2d.value.requires_grad = True
 
-        layerConv2d.value = temp_conv2d_value.clone()
-
-        #self.updateGradFlag(True)
-        temp_conv2d_value = None
-        #layerConv2d.value.requires_grad = True
+        return networkClone
 
 
     def removeFilter(self):
@@ -380,7 +374,7 @@ class Network(nn.Module):
 
     def __modifyADN(self, Add=True):
 
-        print("old ADN: ", self.adn)
+        #print("old ADN: ", self.adn)
 
         modifyADN = list(self.adn)
         conv2d = list(modifyADN[0])
@@ -402,7 +396,7 @@ class Network(nn.Module):
 
         self.adn = tuple(modifyADN)
         
-        print("new ADN: ", self.adn)
+        #print("new ADN: ", self.adn)
     
     def __printGrad(self):
         if self.nodes[1].objects[0].getFilter().grad is not None:

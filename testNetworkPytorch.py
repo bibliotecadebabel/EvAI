@@ -181,7 +181,7 @@ def Test_Batch(dataGen):
         print("Loss Array: ", networks[0].getLossArray())
         Inter.trakPytorch(networks[0], "pokemon-netmap", dataGen)
 
-def Test_Clone(dataGen):
+def Test_Mutacion(dataGen):
     batch = [dataGen.data]
     print("len data: ", len(dataGen.data[0]))
     ks = [100]
@@ -193,22 +193,16 @@ def Test_Clone(dataGen):
     networkADN = ((0, 3, ks[0], x, y), (1, ks[0], 2), (2,))
     objects = [x, y, ks[0]]
     network = nw.Network(networkADN, objects)
+    network2 = nw.Network(((0, 3, ks[0], x, y), (1, ks[0], 2), (2,)), [x, y, ks[0]])
 
     for _,a in enumerate(batch):
-        for i in range(10):
-            #network.addFilters()
-            print("Start Training Original Network")
-            network.Training(data=a[0], p=1000, dt=0.01, labels=a[1])
-            network.addFilters()
-            print("Loss Original Network: ", network.total_value)
-            #networkCopy = network.clone()
-            #networkCopy.addFilters()
-            #networkCopy.addFilters()
-            #networkCopy.addFilters()
-            #print("Start Training copy Network")
-            #networkCopy.Training(data=a[0], p=2000, dt=0.01, labels=a[1])
-            #print("Loss copy Network: ", networkCopy.total_value)
-
+        for i in range(1, 80):
+            network.Training(data=a[0], p=200, dt=0.01, labels=a[1])
+            network2.Training(data=a[0], p=200, dt=0.01, labels=a[1])
+            print("Original Network: ", network.total_value," (Filtros=", network.objects[2],")")
+            print("Mutated Network: ", network2.total_value, " (Filtros=", network2.objects[2],")")
+            network2 = network2.addFilters()
+            network = network.clone()
 
 
 dataGen = GeneratorFromImage.GeneratorFromImage(2, 2000)
@@ -221,5 +215,5 @@ y = size[2]
 k = 2
 
 
-Test_Clone(dataGen)
+Test_Mutacion(dataGen)
 
