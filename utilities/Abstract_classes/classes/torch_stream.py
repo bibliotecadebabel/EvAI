@@ -1,31 +1,35 @@
-from utilities.Abstract_classes.AbstractStream import Stream
+from utilities.Abstract_classes.AbstractStream import Stream, Charge_log
 
 class TorchStream(Stream):
-    def __init__(self,nets,iterations,dt):
-        super().__init__()
-    Instruct=TorchInstruct(iterations,dt)
-    self.Selector=TorchSelector(Instruct,net)
-    def charge_node(self,key,charger=None):
-        net=charger[0]
-        Instruct=charger[1]
+    class Torch_log_creator(Charge_log):
+        def __init__(self):
+            super().__init__()
+            self.old_net=None
+            self.new_net=None
+            self.plane=None
+            self.log_size=None
+    def __init__(self,log_size):
+        super().__init__(self.Torch_log_creator)
+        self.log_size=log_size
+
+    def charge_node(self,key):
+        log=self.key2log(key)
+        log.charge([0]*self.log_size)
+
+    def link_node(self,key,plane,net=None):
+        log=self.key2log(key)
+        log.plane=plane
+        log.log_size=self.log_size
+        if net is not None:
+            log.old_net=net
+            log.new_net=net
+        return
+
+    def sync(self):
+        pass
+
+
+
+    """def charge_node(self,key,charger=None):
         node=self.Graph.key2node[key]
-        log=Instruct.net2energy(net)
-        node.objects.append(log)
-
-    class TorchSelector():
-        def __init__(self,Instruct,nets):
-            self.Instruct=Instrut
-            self.parents=nets
-        def key2charger(self,key):
-            u=[]
-            u.append(self.nets[key])
-            u.append(Instruct)
-            return u
-
-    class TorchInstruct():
-        def __init__(self,iterations,dt):
-            self.iterations=iterations
-            self.dt=dt
-        def net2energy(self,key):
-            u=None
-            return u
+        node.objects.append(0)"""

@@ -4,41 +4,72 @@ import utilities.P_trees as tr
 from utilities.Safe import safe_append, safe_remove, safe_ope
 import utilities.Graphs as gr
 
+class Charge_log(ABC):
+    def __init__(self):
+        self.log = []
+
+    def pop(self):
+        if self.log:
+            del self.log[0]
+
+    def Currentvalue(self):
+        return self.log[0] if self.log else None
+
+    def charge(self,charge):
+        self.log.extend(charge)
+
 class Stream(ABC):
 
-    def __init__(self):
+    def __init__(self, log_creator: Charge_log):
         self.Graph = gr.Graph()
-
+        self.log_creator=log_creator
 
     @abstractmethod
-    def charge_node(self,key,charger=None):
+    def charge_node(self,key):
         pass
 
-    def charge_nodes(self,selector=None):
+    @abstractmethod
+    def sync(self):
+        pass
+
+    def charge_nodes(self):
         keys = self.Graph.key2node.keys()
-        if selector is None:
-            for key in keys:
-                self.charge_node(key)
-        if not(selector==None):
-            for key in keys:
-                self.charge_node(key,selector(key))
+        for key in keys:
+            self.charge_node(key)
+        self.sync()
+
+    def key2node(self,key):
+        return self.Graph.key2node[key]
+
+    def node2key(self,key):
+        return self.Graph.node2key[key]
+
+    def key2log(self,key):
+        node = self.key2node(key)
+        return node.get_object()
+
+    def add_node(self, key):
+        node=nd.Node()
+        Graph=self.Graph
+        Graph.add_node(key,node)
+        node.attach(self.log_creator())
+
+    def remove_node(self, key):
+        self.Graph.remove_node(key)
+
+    def findCurrentvalue(self, key):
+        node=self.key2node(key)
+        log=node.get_object()
+        return log.Currentvalue()
 
     def pop_node(self,node):
-        if not node.objects==[]:
-            del node.objects[0]
-        pass
+        log=node.get_object()
+        if log.log:
+            log.pop()
+        else:
+            key=self.node2key(node)
+            self.remove_node(key)
 
     def pop(self):
         for node in list(self.Graph.key2node.values()):
             self.pop_node(node)
-        pass
-
-    def findCurrentvalue(self, key):
-        if not((self.Graph.key2node[key]).objects==[]):
-            return (self.Graph.key2node[key]).objects[0]
-
-    def add_node(self, key):
-        self.Graph.add_node(key,nd.Node())
-
-    def remove_node(self, key):
-        self.Graph.remove_node(key)

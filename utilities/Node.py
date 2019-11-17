@@ -4,7 +4,10 @@ class Node():
         self.parents=[]
         self.objects=[]
     def attach(self,obj):
-        self.objects[0].append(obj)
+        self.objects.append(obj)
+    def get_object(self):
+        return self.objects[0]
+
 
 #print('Hi')
 
