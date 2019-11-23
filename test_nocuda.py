@@ -1,6 +1,5 @@
 import children.pytorch.Network as nw
-import children.Interfaces as Inter
-import children.pytorch.Functions as Functions
+
 from DAO import GeneratorFromImage
 
 import torch
@@ -19,8 +18,8 @@ def Test_noCuda(dataGen):
     #(0, ks[i], len(dataGen.data[0]), 1, 1),
     networkADN = ((0, 3, ks[0], x, y), (1, ks[0], 2), (2,))
     objects = [x, y, ks[0]]
-    network = nw.Network(networkADN, objects,False)
-    network2 = nw.Network(((0, 3, ks[0], x, y), (1, ks[0], 2), (2,)), [x, y, ks[0]], False)
+    network = nw.Network(networkADN, objects, cudaFlag=False)
+    network2 = nw.Network(((0, 3, ks[0], x, y), (1, ks[0], 2), (2,)), [x, y, ks[0]], cudaFlag=False)
 
     for _,a in enumerate(batch):
         for i in range(1, 80):
@@ -31,7 +30,7 @@ def Test_noCuda(dataGen):
             network2 = network2.addFilters()
             network = network.clone()
 
-dataGen = GeneratorFromImage.GeneratorFromImage(2, 100,False)
+dataGen = GeneratorFromImage.GeneratorFromImage(2, 100, cuda=False)
 dataGen.dataConv2d()
 size = dataGen.size
 
