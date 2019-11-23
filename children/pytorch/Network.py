@@ -6,23 +6,26 @@ import torch
 import torch.nn as nn
 import torch.tensor as tensor
 import Factory.LayerFactory as factory
+import Factory.TensorFactory as tensorFactory
 
 import utilities.Graphs as Graphs
 
 class Network(nn.Module):
 
-    def __init__(self, adn, objects):
+    def __init__(self, adn, objects,cudaFlag=True):
         super(Network, self).__init__()
         # objects [x, y, k]
         # x -> dimension x
         # y -> dimension y
         # k -> cantidad filtros
         self.objects = objects
+        self.cudaFlag = cudaFlag
         self.adn = adn
         self.nodes = []
-        self.label = tensor([1], dtype=torch.long).cuda()
+        #self.label = tensor([1], dtype=torch.long).cuda()
+        self.label = tensorFactory.createTensor(body=[1], cuda=self.cudaFlag, requiresGrad=False)
 
-        self.factory = factory.LayerGenerator()
+        self.factory = factory.LayerGenerator(cuda=self.cudaFlag)
         self.foward_value = None
 
         self.__createStructure()
@@ -53,7 +56,8 @@ class Network(nn.Module):
 
     def __assignLayers(self):
 
-        valueLayerA = torch.rand(1, 3, self.objects[0], self.objects[1], dtype=torch.float32).cuda()
+        #valueLayerA = torch.rand(1, 3, self.objects[0], self.objects[1], dtype=torch.float32).cuda()
+        valueLayerA = tensorFactory.createTensorRand(tupleShape=(1, 3, self.objects[0], self.objects[1]), cuda=self.cudaFlag, requiresGrad=False)
         self.nodes[0].objects.append(ly.Layer(node=self.nodes[0], value=valueLayerA, propagate=functions.Nothing))
 
         for i in range(len(self.adn)):
@@ -152,7 +156,8 @@ class Network(nn.Module):
     def Predict(self, image, label):
         #self.assignLabels(torch.tensor([0], dtype=torch.long))
         
-        labelTensor = torch.tensor([label.item()]).long().cuda()
+        #labelTensor = torch.tensor([label.item()]).long().cuda()
+        labelTensor = tensorFactory.createTensor(body=[label.item()], cuda=self.cudaFlag, requiresGrad=False)
         self.assignLabels(labelTensor)
         self.nodes[0].objects[0].value = image.view(1, 3, self.objects[0], self.objects[1])
 
@@ -288,7 +293,8 @@ class Network(nn.Module):
 
 
     def removeFilter(self):
-        
+        pass
+        '''
         layerConv2d = self.nodes[1].objects[0]
         layerLinear = self.nodes[2].objects[0]
 
@@ -320,6 +326,7 @@ class Network(nn.Module):
         self.__modifyADN(False)
 
         self.updateGradFlag(True)
+        '''
        
     def __doFoward(self):
         

@@ -5,8 +5,8 @@ import numpy as np
 from DAO.Generator import Generator
 
 class GeneratorFromImage(Generator):
-    def __init__(self, comp, s):
-        super().__init__(comp, s, "btest", "folder")
+    def __init__(self, comp, s, cuda=True):
+        super().__init__(comp, s, "btest", "folder", cuda)
 
         self.A = None
         self.x = None

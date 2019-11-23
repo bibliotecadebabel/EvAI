@@ -192,8 +192,8 @@ def Test_Mutacion(dataGen):
     #(0, ks[i], len(dataGen.data[0]), 1, 1),
     networkADN = ((0, 3, ks[0], x, y), (1, ks[0], 2), (2,))
     objects = [x, y, ks[0]]
-    network = nw.Network(networkADN, objects)
-    network2 = nw.Network(((0, 3, ks[0], x, y), (1, ks[0], 2), (2,)), [x, y, ks[0]])
+    network = nw.Network(networkADN, objects, True)
+    network2 = nw.Network(((0, 3, ks[0], x, y), (1, ks[0], 2), (2,)), [x, y, ks[0]], True)
 
     for _,a in enumerate(batch):
         for i in range(1, 80):
@@ -205,7 +205,7 @@ def Test_Mutacion(dataGen):
             network = network.clone()
 
 
-dataGen = GeneratorFromImage.GeneratorFromImage(2, 2000)
+dataGen = GeneratorFromImage.GeneratorFromImage(2, 2000, True)
 dataGen.dataConv2d()
 size = dataGen.size
 
