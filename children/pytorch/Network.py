@@ -58,7 +58,7 @@ class Network(nn.Module):
 
         #valueLayerA = torch.rand(1, 3, self.objects[0], self.objects[1], dtype=torch.float32).cuda()
         valueLayerA = tensorFactory.createTensorRand(tupleShape=(1, 3, self.objects[0], self.objects[1]), cuda=self.cudaFlag, requiresGrad=False)
-        self.nodes[0].objects.append(ly.Layer(node=self.nodes[0], value=valueLayerA, propagate=functions.Nothing))
+        self.nodes[0].objects.append(ly.Layer(node=self.nodes[0], value=valueLayerA, propagate=functions.Nothing, cudaFlag=self.cudaFlag))
 
         for i in range(len(self.adn)):
             indexNode = i + 1

@@ -2,15 +2,24 @@ import torch
 
 class Layer():
 
-    def __init__(self, adn=None, node=None, objectTorch=None, propagate=None, value=None, label=None):
+    def __init__(self, adn=None, node=None, objectTorch=None, propagate=None, value=None, label=None, cudaFlag=True):
         self.object = objectTorch
         self.node = node
         self.value =  value
         self.propagate = propagate
         self.label = label
-        self.swap = torch.tensor([[0, 1], [1,0]], dtype=torch.float32, requires_grad=True).cuda()
+        self.cudaFlag = cudaFlag
 
-        self.labelCircle = torch.tensor([0], dtype=torch.long).cuda()
+        if self.cudaFlag == True:
+            self.swap = torch.tensor([[0, 1], [1,0]], dtype=torch.float32, requires_grad=True).cuda()
+        else:
+            self.swap = torch.tensor([[0, 1], [1,0]], dtype=torch.float32, requires_grad=True)
+
+        if self.cudaFlag == True:
+            self.labelCircle = torch.tensor([0], dtype=torch.long).cuda()
+        else:
+            self.labelCircle = torch.tensor([0], dtype=torch.long)
+            
         self.bias_der_total = 0
         self.filter_der_total = 0
         self.adn = adn
