@@ -358,7 +358,7 @@ class Network(nn.Module):
         for i in range(len(self.objects)):
             newObjects.append(self.objects[i])
         
-        network = Network(newADN, newObjects)
+        network = Network(newADN, newObjects,cudaFlag=self.cudaFlag)
         
         #network.updateGradFlag(False)
         #self.updateGradFlag(False)
