@@ -18,8 +18,12 @@ def Test_noCuda(dataGen):
     #(0, ks[i], len(dataGen.data[0]), 1, 1),
     networkADN = ((0, 3, ks[0], x, y), (1, ks[0], 2), (2,))
     objects = [x, y, ks[0]]
-    network = nw.Network(networkADN, objects, cudaFlag=False)
-    network2 = nw.Network(((0, 3, ks[0], x, y), (1, ks[0], 2), (2,)), [x, y, ks[0]], cudaFlag=False)
+    network = nw.Network(networkADN
+        , objects, cudaFlag=False)
+    network2 = nw.Network(((0, 3
+        , ks[0], x, y), (1, ks[0], 2)
+        , (2,)), [x, y, ks[0]]
+        , cudaFlag=False)
 
     for _,a in enumerate(batch):
         for i in range(1, 80):
@@ -35,9 +39,9 @@ dataGen.dataConv2d()
 size = dataGen.size
 
 
-x = size[1]
-y = size[2]
-k = 2
+#x = size[1]
+#y = size[2]
+#k = 2
 
 
 Test_noCuda(dataGen)
