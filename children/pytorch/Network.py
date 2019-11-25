@@ -348,7 +348,9 @@ class Network(nn.Module):
 
     def getLossArray(self):
         
-        return self.history_loss
+        value = self.history_loss.copy()
+        self.history_loss = []
+        return value
     
     def clone(self):
 
