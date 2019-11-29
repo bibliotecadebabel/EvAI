@@ -12,13 +12,9 @@ import utilities.Graphs as Graphs
 
 class Network(nn.Module):
 
-    def __init__(self, adn, objects,cudaFlag=True):
+    def __init__(self, adn,cudaFlag=True):
         super(Network, self).__init__()
-        # objects [x, y, k]
-        # x -> dimension x
-        # y -> dimension y
-        # k -> cantidad filtros
-        self.objects = objects
+
         self.cudaFlag = cudaFlag
         self.adn = adn
         self.nodes = []
@@ -56,9 +52,7 @@ class Network(nn.Module):
 
     def __assignLayers(self):
 
-        #valueLayerA = torch.rand(1, 3, self.objects[0], self.objects[1], dtype=torch.float32).cuda()
-        valueLayerA = tensorFactory.createTensorRand(tupleShape=(1, 3, self.objects[0], self.objects[1]), cuda=self.cudaFlag, requiresGrad=False)
-        self.nodes[0].objects.append(ly.Layer(node=self.nodes[0], value=valueLayerA, propagate=functions.Nothing, cudaFlag=self.cudaFlag))
+        self.nodes[0].objects.append(ly.Layer(node=self.nodes[0], value=None, propagate=functions.Nothing, cudaFlag=self.cudaFlag))
 
         for i in range(len(self.adn)):
             indexNode = i + 1
@@ -159,11 +153,12 @@ class Network(nn.Module):
         #labelTensor = torch.tensor([label.item()]).long().cuda()
         labelTensor = tensorFactory.createTensor(body=[label.item()], cuda=self.cudaFlag, requiresGrad=False)
         self.assignLabels(labelTensor)
-        self.nodes[0].objects[0].value = image.view(1, 3, self.objects[0], self.objects[1])
+
+        self.nodes[0].objects[0].value = image.view(1, 3, image.shape[1], image.shape[2])
+
 
         self.__doFoward()
 
-        #print("prob of filters#", self.objects[2],": ", self.getProbability())
         return self.getProbability()
 
 
@@ -198,11 +193,6 @@ class Network(nn.Module):
             i=0
             while i < p:
                 if i % 100 == 99:
-                    #print("i=", i+1)
-                    #print("Energy of #",self.objects[2],": ", self.total_value )
-                    #self.total_value = 0
-                    #print("prob: ", self.Predict(data[0], labels[0]))
-                    #print("prob of filters #", self.objects[2], " :", self.getProbability())
                     pass
                 
                 self.assignLabels(labels)
@@ -215,7 +205,6 @@ class Network(nn.Module):
                 #self.Regularize_der()
                 self.Update(dt)
                 self.history_loss.append(self.total_value)
-                #self.Predict(data[0])
                 i=i+1
     
     def updateGradFlag(self, flag):
@@ -356,11 +345,8 @@ class Network(nn.Module):
 
         newObjects = []
         newADN = tuple(list(self.adn))
-
-        for i in range(len(self.objects)):
-            newObjects.append(self.objects[i])
         
-        network = Network(newADN, newObjects,cudaFlag=self.cudaFlag)
+        network = Network(newADN,cudaFlag=self.cudaFlag)
         
         #network.updateGradFlag(False)
         #self.updateGradFlag(False)
@@ -392,11 +378,9 @@ class Network(nn.Module):
         if Add == True:
             conv2d[2] += 1
             linear[1] += 1
-            self.objects[2] += 1
         else:
             conv2d[2] -= 1
             linear[1] -= 1
-            self.objects[2] -= 1
         
         modifyADN[0] = tuple(conv2d)
         modifyADN[1] = tuple(linear)

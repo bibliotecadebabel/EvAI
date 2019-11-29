@@ -17,20 +17,17 @@ def Test_noCuda(dataGen):
     print("creating networks")
     #(0, ks[i], len(dataGen.data[0]), 1, 1),
     networkADN = ((0, 3, ks[0], x, y), (1, ks[0], 2), (2,))
-    objects = [x, y, ks[0]]
-    network = nw.Network(networkADN
-        , objects, cudaFlag=False)
+    network = nw.Network(networkADN, cudaFlag=False)
     network2 = nw.Network(((0, 3
         , ks[0], x, y), (1, ks[0], 2)
-        , (2,)), [x, y, ks[0]]
-        , cudaFlag=False)
+        , (2,)), cudaFlag=False)
 
     for _,a in enumerate(batch):
         for i in range(1, 80):
             network.Training(data=a[0], p=200, dt=0.01, labels=a[1])
             network2.Training(data=a[0], p=200, dt=0.01, labels=a[1])
-            print("Original Network: ", network.total_value," (Filtros=", network.objects[2],")")
-            print("Mutated Network: ", network2.total_value, " (Filtros=", network2.objects[2],")")
+            print("Original Network: ", network.total_value," (Filtros=", network.adn[0][2],")")
+            print("Mutated Network: ", network2.total_value, " (Filtros=", network2.adn[0][2],")")
             network2 = network2.addFilters()
             network = network.clone()
 
