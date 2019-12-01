@@ -17,9 +17,8 @@ def create_network(filters,dataGen):
     x = dataGen.size[1]
     y = dataGen.size[2]
     networkADN = ((0, 3, ks[0], x, y), (1, ks[0], 2), (2,))
-    objects = [x, y, ks[0]]
-    network = nw.Network(networkADN
-        , objects, cudaFlag=False)
+    network = nw.Network(networkADN,
+                         cudaFlag=False)
     return network
 
 def create_DNA(filters,dataGen):
@@ -28,15 +27,6 @@ def create_DNA(filters,dataGen):
     y = dataGen.size[2]
     networkADN = ((0, 3, ks[0], x, y), (1, ks[0], 2), (2,))
     return networkADN
-
-def create_DNAobject(filters,dataGen):
-    ks=[filters]
-    x = dataGen.size[1]
-    y = dataGen.size[2]
-    networkADN = ((0, 3, ks[0], x, y), (1, ks[0], 2), (2,))
-    objects = [x, y, ks[0]]
-    return objects
-
 
 def torch_stream_add():
     log_size=2
@@ -71,19 +61,52 @@ def test_charge():
     x = stream.dataGen.size[1]
     y = stream.dataGen.size[2]
     DNA=create_DNA(2,dataGen)
-    DNAobject=create_DNAobject(2,dataGen)
     network=create_network(2,dataGen)
     stream.add_node(DNA)
     stream.link_node(DNA,network)
-    print('Here')
     log=stream.key2log(DNA)
     stream.charge_nodes()
     i=0
     while i<100:
+        print('With signal on')
         print(log.log)
         stream.charge_nodes()
         stream.pop()
         i=i+1
+    stream.remove_node(DNA)
+    network=create_network(2,dataGen)
+    stream.add_node(DNA)
+    stream.link_node(DNA,network)
+    log=stream.key2log(DNA)
+    stream.charge_nodes()
+    log.signal=False
+    i=0
+    while i<100:
+        print(log.log)
+        print('With signal off')
+        print(len(stream.Graph.key2node))
+        stream.charge_nodes()
+        stream.pop()
+        i=i+1
 
-
-test_charge()
+def test_get_net():
+    dataGen = GeneratorFromImage.GeneratorFromImage(2, 100, cuda=False)
+    dataGen.dataConv2d()
+    stream=TorchStream(dataGen,10)
+    x = stream.dataGen.size[1]
+    y = stream.dataGen.size[2]
+    DNA=create_DNA(2,dataGen)
+    network=create_network(2,dataGen)
+    stream.add_node(DNA)
+    stream.link_node(DNA,network)
+    log=stream.key2log(DNA)
+    stream.charge_nodes()
+    i=0
+    while i<100:
+        stream.charge_nodes()
+        print(stream.get_net(DNA))
+        stream.pop()
+        i=i+1
+        
+test_get_net()
+#torch_stream_add()

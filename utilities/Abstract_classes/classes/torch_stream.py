@@ -9,6 +9,17 @@ class TorchStream(Stream):
             self.signal=False
             self.log_size=None
             self.dataGen=None
+            self.dt=0
+        def get_net(self):
+            p=self.log_size-len(self.log)
+            out_net=self.old_net.clone()
+            a=self.dataGen.data
+            out_net.Training(data=a[0],
+                p=p,
+                dt=self.dt,
+                labels=a[1])
+            out_net.history_loss=[]
+            return out_net
 
     def __init__(self,dataGen,log_size=200,dt=0.01):
         super().__init__(self.Torch_log_creator)
@@ -36,10 +47,15 @@ class TorchStream(Stream):
         log.signal=True
         log.dataGen=self.dataGen
         log.log_size=self.log_size
+        log.dt=self.dt
         if net is not None:
             log.old_net=net
             log.new_net=net
         return
+
+    def get_net(self,key):
+        log=self.key2log(key)
+        return log.get_net()
 
     def sync(self):
         pass
