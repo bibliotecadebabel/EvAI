@@ -1,1 +1,1 @@
-{"dt": null, "tau": null, "n": null, "r": null, "dx": null, "L": null, "beta": null, "alpha": null, "active": null, "particles": []}
+{"dt": null, "tau": null, "n": null, "r": null, "dx": null, "L": null, "beta": null, "alpha": null, "active": null, "particles": [1000, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]}

@@ -447,11 +447,7 @@ def plot(status,Display,size=None,tree=None):
         pygame.draw.aaline(Display,white,positions[0],positions[1],True)
 
 
-status=Status()
-create_objects(status)
-print('Done')
 
-"""
 status=Status()
 initialize_parameters(status)
 create_objects(status)
@@ -460,6 +456,7 @@ status.Transfer=tran.TransferRemote(status,
 status.Transfer.un_load()
 status.Transfer.write()
 k=0
+#update(status)
 while False:
     update(status)
     status.Transfer.un_load()
@@ -476,7 +473,6 @@ while True:
     else:
         print('inactive')
     k=k+1
-"""
 
 
 """
