@@ -44,8 +44,6 @@ class MutationsDictionary():
         layerType = oldAdn[0]
         operation = self.__getOperation(oldAdn, newAdn)
 
-        print(operation)
-
         mutationDict = self.__layerType[layerType]
 
         return mutationDict[operation]
