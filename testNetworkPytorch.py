@@ -11,16 +11,40 @@ import torch.optim as optim
 class Net(nn.Module):
     def __init__(self, objects):
         super(Net, self).__init__()
-        self.conv1 = nn.Conv2d(3, objects[2], objects[0], objects[1])
-        self.fc3 = nn.Linear(objects[2] * 1 * 1, 2)
+        self.conv1 = nn.Conv2d(3, 50, 2, 2)
+        self.conv2 = nn.Conv2d(50, 25, 2, 2)
+        self.conv3 = nn.Conv2d(25, 12, 2, 2)
+        self.fc1 = nn.Linear(12 * 1 * 1, 10)
+        self.fc2 = nn.Linear(10 * 1 * 1, 2)
 
     def forward(self, x):
-        x = self.conv1(x)
-        #print("output conv2d: ", x.shape)
-        x = x.view(-1, 16 * 1 * 1)
-        #print("input linear: ", x.shape)
-        x = self.fc3(x)
-        #print("output linear: ", x.shape)
+
+        lenght = len(self.conv1.weight[0].view(-1))
+        #print("len1=", lenght)
+        x = self.conv1(x) / lenght
+
+        sigmoid = torch.nn.Sigmoid()
+        x = sigmoid(x) + torch.nn.functional.relu(x)
+
+        lenght = len(self.conv2.weight[0].view(-1))
+        #print("len2=", lenght)
+        x = self.conv2(x) / lenght
+        
+        sigmoid = torch.nn.Sigmoid()
+        x = sigmoid(x) + torch.nn.functional.relu(x)
+        
+        lenght = len(self.conv3.weight[0].view(-1))
+        #print("len3=", lenght)
+        x = self.conv3(x) / lenght
+
+        sigmoid = torch.nn.Sigmoid()
+        x = sigmoid(x) + torch.nn.functional.relu(x)
+
+        x = x.view(-1, 12 * 1 * 1)
+
+        x = self.fc1(x)
+        x = self.fc2(x)
+
         return x
 
 def Test_node_3(network,n=100,dt=0.1):
@@ -132,7 +156,7 @@ def Test_node_1(network,n=100,dt=0.1):
 
 def Test_pytorchNetwork(dataGen):
     batch = [dataGen.data]
-    k = 16
+    k = 50
     device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
 
     net = Net([dataGen.size[1], dataGen.size[2], k]).to(device)
@@ -204,7 +228,7 @@ def Test_Mutacion(dataGen):
             network = network.clone()
 
 
-dataGen = GeneratorFromImage.GeneratorFromImage(2, 2000, cuda=True)
+dataGen = GeneratorFromImage.GeneratorFromImage(2, 100, cuda=True)
 dataGen.dataConv2d()
 size = dataGen.size
 
@@ -213,6 +237,8 @@ x = size[1]
 y = size[2]
 k = 2
 
+Test_pytorchNetwork(dataGen)
 
-Test_Mutacion(dataGen)
+
+#Test_Mutacion(dataGen)
 
