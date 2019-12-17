@@ -22,15 +22,29 @@ class MutationsDictionary():
 
     def __generateMutationsConv2d(self):
 
-        self.__mutationsConv2d[-1] = Conv2dMutations.RemoveFilterMutation()
-        self.__mutationsConv2d[1] = Conv2dMutations.AddFilterMutation()
+        self.__mutationsConv2d[(0, 0, -1, 0, 0)] = Conv2dMutations.RemoveFilterMutation()
+        self.__mutationsConv2d[(0, 0, 1, 0, 0)] = Conv2dMutations.AddFilterMutation()
 
     def __generateMutationsLinear(self):
 
-        self.__mutationsLinear[-1] = LinearMutations.RemoveFilterMutation()
-        self.__mutationsLinear[1] = LinearMutations.AddFilterMutation()
+        self.__mutationsLinear[(0, -1, 0)] = LinearMutations.RemoveFilterMutation()
+        self.__mutationsLinear[(0, 1, 0)] = LinearMutations.AddFilterMutation()
 
-    def getMutation(self, layerType, operation):
+    def __getOperation(self, oldAdn, newAdn):
+
+        result = list(oldAdn).copy()
+
+        for i in range(len(oldAdn)):
+            result[i] = newAdn[i] - oldAdn[i]
+
+        return tuple(result)    
+            
+    def getMutation(self, oldAdn, newAdn):
+
+        layerType = oldAdn[0]
+        operation = self.__getOperation(oldAdn, newAdn)
+
+        print(operation)
 
         mutationDict = self.__layerType[layerType]
 
