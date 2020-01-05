@@ -19,23 +19,23 @@ class Net(nn.Module):
 
     def forward(self, x):
 
-        lenght = len(self.conv1.weight[0].view(-1))
+        #lenght = len(self.conv1.weight[0].view(-1))
         #print("len1=", lenght)
-        x = self.conv1(x) / lenght
+        x = self.conv1(x) 
 
         sigmoid = torch.nn.Sigmoid()
         x = sigmoid(x) + torch.nn.functional.relu(x)
 
-        lenght = len(self.conv2.weight[0].view(-1))
+        #lenght = len(self.conv2.weight[0].view(-1))
         #print("len2=", lenght)
-        x = self.conv2(x) / lenght
+        x = self.conv2(x) 
         
         sigmoid = torch.nn.Sigmoid()
         x = sigmoid(x) + torch.nn.functional.relu(x)
         
-        lenght = len(self.conv3.weight[0].view(-1))
+        #lenght = len(self.conv3.weight[0].view(-1))
         #print("len3=", lenght)
-        x = self.conv3(x) / lenght
+        x = self.conv3(x) 
 
         sigmoid = torch.nn.Sigmoid()
         x = sigmoid(x) + torch.nn.functional.relu(x)
