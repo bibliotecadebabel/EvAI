@@ -11,6 +11,7 @@ import torch.optim as optim
 class Net(nn.Module):
     def __init__(self, objects):
         super(Net, self).__init__()
+        self.objects = objects
 
     def setAttribute(self, name, value):
         setattr(self,name,value)
@@ -50,38 +51,24 @@ class Net(nn.Module):
         sigmoid = torch.nn.Sigmoid()
         x = sigmoid(x) + torch.nn.functional.relu(x)
 
-        x = self.executeLayer("conv2", x)
-        
-        sigmoid = torch.nn.Sigmoid()
-        x = sigmoid(x) + torch.nn.functional.relu(x)
-        
-        x = self.executeLayer("conv3", x)
-
-        sigmoid = torch.nn.Sigmoid()
-        x = sigmoid(x) + torch.nn.functional.relu(x)
-
-        x = x.view(-1, 12 * 1 * 1)
-
+        x = x.view(-1, 100 * 1 * 1)
         x = self.executeLayer("fc1", x)
-        x = self.executeLayer("fc2", x)
 
         return x
 
 def Test_dynamicNetwork(dataGen):
     batch = [dataGen.data]
-    k = 50
+    k = 100
     device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
 
-    net = Net([dataGen.size[1], dataGen.size[2], k]).to(device)
+    objects = [dataGen.size[1], dataGen.size[2],k]
+    net = Net(objects).to(device)
 
-    net.setAttribute("conv1", nn.Conv2d(3, 50, 2, 2).cuda())
-    net.setAttribute("conv2", nn.Conv2d(50, 25, 2, 2).cuda())
-    net.setAttribute("conv3", nn.Conv2d(25, 12, 2, 2).cuda())
-    net.setAttribute("fc1", nn.Linear(12 * 1 * 1, 10).cuda())
-    net.setAttribute("fc2", nn.Linear(10 * 1 * 1, 2).cuda())
+    net.setAttribute("conv1", nn.Conv2d(3, objects[2], objects[0], objects[1]).cuda())
+    net.setAttribute("fc1", nn.Linear(objects[2] * 1 * 1, 2).cuda())
 
     criterion = nn.CrossEntropyLoss()
-    optimizer = optim.SGD(net.parameters(), lr=0.001, momentum=0.9)
+    optimizer = optim.SGD(net.parameters(), lr=0.01, momentum=0.1)
     running_loss = 0.0
     for _,a in enumerate(batch):
         
@@ -106,7 +93,7 @@ def Test_dynamicNetwork(dataGen):
                 running_loss = 0.0
 
 
-dataGen = GeneratorFromImage.GeneratorFromImage(2, 100, cuda=True)
+dataGen = GeneratorFromImage.GeneratorFromImage(2, 15000, cuda=True)
 dataGen.dataConv2d()
 size = dataGen.size
 
