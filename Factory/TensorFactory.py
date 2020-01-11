@@ -2,10 +2,10 @@ import torch
 
 def createTensor(body, cuda=True, requiresGrad=False):
 
+    value = torch.tensor(body, dtype=torch.long, requires_grad=requiresGrad)
+
     if cuda == True:
-        value = torch.tensor(body, dtype=torch.long, requires_grad=requiresGrad).cuda()
-    else:
-        value = torch.tensor(body, dtype=torch.long, requires_grad=requiresGrad)
+        value.cuda()
 
     return value
 
