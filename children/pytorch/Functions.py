@@ -43,7 +43,7 @@ def conv2d_propagate(layer):
 
     lenght = len(layer.getFilter()[0].view(-1))
   
-    value = layer.object(parent.value) / (lenght)
+    value = layer.object(parent.value)
     
     sigmoid = torch.nn.Sigmoid()
     
