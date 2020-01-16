@@ -19,23 +19,23 @@ class Net(nn.Module):
 
     def forward(self, x):
 
-        lenght = len(self.conv1.weight[0].view(-1))
+        #lenght = len(self.conv1.weight[0].view(-1))
         #print("len1=", lenght)
-        x = self.conv1(x) / lenght
+        x = self.conv1(x) 
 
         sigmoid = torch.nn.Sigmoid()
         x = sigmoid(x) + torch.nn.functional.relu(x)
 
-        lenght = len(self.conv2.weight[0].view(-1))
+        #lenght = len(self.conv2.weight[0].view(-1))
         #print("len2=", lenght)
-        x = self.conv2(x) / lenght
+        x = self.conv2(x) 
         
         sigmoid = torch.nn.Sigmoid()
         x = sigmoid(x) + torch.nn.functional.relu(x)
         
-        lenght = len(self.conv3.weight[0].view(-1))
+        #lenght = len(self.conv3.weight[0].view(-1))
         #print("len3=", lenght)
-        x = self.conv3(x) / lenght
+        x = self.conv3(x) 
 
         sigmoid = torch.nn.Sigmoid()
         x = sigmoid(x) + torch.nn.functional.relu(x)
@@ -196,39 +196,44 @@ def Test_Batch(dataGen):
         print("creating networks")
         #(0, ks[i], len(dataGen.data[0]), 1, 1),
         networkADN = ((0, 3, ks[i], x, y), (1, ks[i], 2), (2,))
-        objects = [x, y, ks[i]]
-        networks.append(nw.Network(networkADN, objects))
+        networks.append(nw.Network(networkADN, cudaFlag=True))
 
     for _,a in enumerate(batch):
         print("Start Training")
         networks[0].Training(data=a[0], p=15000, dt=0.01, labels=a[1])
-        print("Loss Array: ", networks[0].getLossArray())
+        #print("Loss Array: ", networks[0].getLossArray())
         Inter.trakPytorch(networks[0], "pokemon-netmap", dataGen)
 
 def Test_Mutacion(dataGen):
     batch = [dataGen.data]
     print("len data: ", len(dataGen.data[0]))
-    ks = [100]
+    ks = [10]
     x = dataGen.size[1]
     y = dataGen.size[2]
 
     print("creating networks")
     #(0, ks[i], len(dataGen.data[0]), 1, 1),
     networkADN = ((0, 3, ks[0], x, y), (1, ks[0], 2), (2,))
-    network = nw.Network(networkADN, cudaFlag=True)
     network2 = nw.Network(((0, 3, ks[0], x, y), (1, ks[0], 2), (2,)), cudaFlag=True)
 
     for _,a in enumerate(batch):
-        for i in range(1, 80):
-            network.Training(data=a[0], p=200, dt=0.01, labels=a[1])
-            network2.Training(data=a[0], p=200, dt=0.01, labels=a[1])
-            print("Original Network: ", network.total_value," (Filtros=", network.adn[0][2],")")
-            print("Mutated Network: ", network2.total_value, " (Filtros=", network2.adn[0][2],")")
-            network2 = network2.addFilters()
-            network = network.clone()
+        print("red original k=", *network2.adn)
+        network2.Training(data=a[0], p=6000, dt=0.01, labels=a[1])
+        print("mutando")
+        network = network2.addFilters()
+        print("entrando red mutada: ", *network.adn)
+        network.Training(data=a[0],p=10000, dt=0.01, labels=a[1])
+        Inter.trakPytorch(network, "pokemon-netmap", dataGen)
+        #for i in range(1, 80):
+            #network.Training(data=a[0], p=200, dt=0.01, labels=a[1])
+            #network2.Training(data=a[0], p=200, dt=0.01, labels=a[1])
+            #print("Original Network: ", network.total_value," (Filtros=", network.adn[0][2],")")
+            #print("Mutated Network: ", network2.total_value, " (Filtros=", network2.adn[0][2],")")
+            #network2 = network2.addFilters()
+            #network = network.clone()
 
 
-dataGen = GeneratorFromImage.GeneratorFromImage(2, 100, cuda=True)
+dataGen = GeneratorFromImage.GeneratorFromImage(2, 25000, cuda=True)
 dataGen.dataConv2d()
 size = dataGen.size
 
@@ -237,8 +242,8 @@ x = size[1]
 y = size[2]
 k = 2
 
-Test_pytorchNetwork(dataGen)
+#Test_pytorchNetwork(dataGen)
 
-
-#Test_Mutacion(dataGen)
+#Test_Batch(dataGen)
+Test_Mutacion(dataGen)
 

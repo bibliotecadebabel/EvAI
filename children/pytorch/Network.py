@@ -9,6 +9,7 @@ import Factory.LayerFactory as factory
 import Factory.TensorFactory as tensorFactory
 
 import utilities.Graphs as Graphs
+import torch.optim as optim
 
 class Network(nn.Module):
 
@@ -28,6 +29,36 @@ class Network(nn.Module):
         self.total_value = 0
         self.history_loss = []
 
+    def setAttribute(self, name, value):
+        setattr(self,name,value)
+    
+    def __getAttribute(self, name):
+
+        attribute = None
+        try:
+            attribute = getattr(self, name)
+        except AttributeError:
+            pass
+
+        return attribute
+    
+    def deleteAttribute(self, name):
+        try:
+            delattr(self, name)
+        except AttributeError:
+            pass
+    
+    def executeLayer(self, layerName, x):
+
+        layer = self.__getAttribute(layerName)
+
+        if layer is not None:
+            
+            return layer(x)
+        
+        else:
+
+            return x
 
     def __createStructure(self):
         
@@ -60,6 +91,8 @@ class Network(nn.Module):
             layer = self.factory.findValue(tupleBody)
             layer.node = self.nodes[indexNode]
             self.nodes[indexNode].objects.append(layer)
+            attributeName = "layer"+str(indexNode)
+            self.setAttribute(attributeName, layer.object)
 
     def Acumulate_der(self, n, peso=1):
 
@@ -151,13 +184,14 @@ class Network(nn.Module):
         #self.assignLabels(torch.tensor([0], dtype=torch.long))
         
         #labelTensor = torch.tensor([label.item()]).long().cuda()
+        
         labelTensor = tensorFactory.createTensor(body=[label.item()], cuda=self.cudaFlag, requiresGrad=False)
         self.assignLabels(labelTensor)
 
         self.nodes[0].objects[0].value = image.view(1, 3, image.shape[1], image.shape[2])
 
 
-        self.__doFoward()
+        self(self.nodes[0].objects[0].value)
 
         return self.getProbability()
 
@@ -177,33 +211,38 @@ class Network(nn.Module):
 
         self.nodes[0].objects[0].value = dataElement
         self.updateGradFlag(True)
-        #functions.Propagation(self.nodes[3].objects[0])
-        #self.showParameters()
-        self.__doFoward()
+        self(dataElement)
+        #self.__doFoward()
         self.__doBackward()
         self.updateGradFlag(False)
-
-        self.Acumulate_der(n, peso)
-        self.Reset_der()
+        
+        self.total_value += ((self.__getLossLayer().value)/n).item()
+        #self.Acumulate_der(n, peso)
+        #self.Reset_der()
 
     def Training(self, data, labels, dt=0.1, p=2):
+
+            self.optimizer = optim.SGD(self.parameters(), lr=0.01, momentum=0.1)
             n = len(data) * 5/4
             peso = len(data) / 4
 
             i=0
             while i < p:
-                if i % 100 == 99:
-                    pass
+                if i % 2000 == 1999:
+                    print("L="+str(self.total_value)+" - i="+str(i+1))
+                
                 
                 self.assignLabels(labels)
-                self.Reset_der_total()
+                #self.Reset_der_total()
+                self.total_value = 0
+                self.optimizer.zero_grad()
                 self.Train(data, 1, 1)
 
                 #for image in data[1:]:
                     #self.Train(image, 1, n)
 
-                #self.Regularize_der()
-                self.Update(dt)
+                self.optimizer.step()
+                #self.Update(dt)
                 self.history_loss.append(self.total_value)
                 i=i+1
     
@@ -275,7 +314,7 @@ class Network(nn.Module):
         for i in range(layerLinear.getFilter().shape[0]):
             layerLinear.getFilter()[i][layerLinear.getFilter().shape[1]-1] = layerLinear.getFilter()[i][layerLinear.getFilter().shape[1]-2].clone()
 
-        #networkClone.updateGradFlag(True)
+        networkClone.updateGradFlag(True)
         layerConv2d.value.requires_grad = True
 
         return networkClone
@@ -317,6 +356,9 @@ class Network(nn.Module):
         self.updateGradFlag(True)
         '''
        
+    def forward(self, x):
+        self.__doFoward()
+
     def __doFoward(self):
         
         functions.Propagation(self.__getLossLayer())
@@ -348,9 +390,6 @@ class Network(nn.Module):
         
         network = Network(newADN,cudaFlag=self.cudaFlag)
         
-        #network.updateGradFlag(False)
-        #self.updateGradFlag(False)
-        
         for i in range(len(self.nodes) - 1):
             layerToClone = self.nodes[i].objects[0]
             layer = network.nodes[i].objects[0]
@@ -360,9 +399,6 @@ class Network(nn.Module):
             
             if layerToClone.getFilter() is not None:
                 layer.setFilter(layerToClone.getFilter().clone())
-        
-        #network.updateGradFlag(True)
-        #self.updateGradFlag(True)
 
         return network
 
