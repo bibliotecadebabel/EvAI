@@ -451,6 +451,7 @@ def plot(status,Display,size=None,tree=None):
 status=Status()
 initialize_parameters(status)
 create_objects(status)
+print("objects created")
 status.Transfer=tran.TransferRemote(status,
     'remote2local.txt','local2remote.txt')
 status.Transfer.un_load()
@@ -464,7 +465,7 @@ while False:
     transfer=status.Transfer.status_transfer
     k=k+1
     pass
-while True:
+while False:
     status.Transfer.readLoad()
     if status.active:
         update(status)
