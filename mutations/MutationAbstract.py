@@ -3,6 +3,6 @@ from abc import ABC, abstractmethod
 class Mutation(ABC):
 
     @abstractmethod
-    def doMutate(self, network, newAdn):
+    def doMutate(self, oldFilter, oldBias, newNode):
         pass
 

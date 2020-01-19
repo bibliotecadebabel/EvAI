@@ -22,13 +22,20 @@ class MutationsDictionary():
 
     def __generateMutationsConv2d(self):
 
-        self.__mutationsConv2d[(0, 0, -1, 0, 0)] = Conv2dMutations.RemoveFilterMutation()
-        self.__mutationsConv2d[(0, 0, 1, 0, 0)] = Conv2dMutations.AddFilterMutation()
+        self.__mutationsConv2d[(0, 0, 1, 0, 0)] = Conv2dMutations.AddExitFilterMutation()
+        self.__mutationsConv2d[(0, 0, -1, 0, 0)] = Conv2dMutations.RemoveExitFilterMutation()
+
+        self.__mutationsConv2d[(0, 1, 0, 0, 0)] = Conv2dMutations.AddEntryFilterMutation()
+        self.__mutationsConv2d[(0, -1, 0, 0, 0)] = Conv2dMutations.RemoveEntryFilterMutation()
+        
 
     def __generateMutationsLinear(self):
+        
+        self.__mutationsLinear[(0, 0, 1)] = LinearMutations.AddExitFilterMutation()
+        self.__mutationsLinear[(0, 0, -1)] = LinearMutations.RemoveExitFilterMutation()
 
-        self.__mutationsLinear[(0, -1, 0)] = LinearMutations.RemoveFilterMutation()
-        self.__mutationsLinear[(0, 1, 0)] = LinearMutations.AddFilterMutation()
+        self.__mutationsLinear[(0, 1, 0)] = LinearMutations.AddEntryFilterMutation()
+        self.__mutationsLinear[(0, -1, 0)] = LinearMutations.RemoveEntryFilterMutation()
 
     def __getOperation(self, oldAdn, newAdn):
 
@@ -44,6 +51,8 @@ class MutationsDictionary():
         layerType = oldAdn[0]
         operation = self.__getOperation(oldAdn, newAdn)
 
-        mutationDict = self.__layerType[layerType]
+        mutationDict = self.__layerType.get(layerType)
 
-        return mutationDict[operation]
+        mutationValue = mutationDict.get(operation)
+
+        return mutationValue

@@ -1,6 +1,7 @@
 import children.pytorch.Network as nw
 import children.Interfaces as Inter
 import children.pytorch.Functions as Functions
+import children.pytorch.MutateNetwork as MutateNetwork
 from DAO import GeneratorFromImage
 
 import torch
@@ -213,27 +214,29 @@ def Test_Mutacion(dataGen):
 
     print("creating networks")
     #(0, ks[i], len(dataGen.data[0]), 1, 1),
-    networkADN = ((0, 3, ks[0], x, y), (1, ks[0], 2), (2,))
-    mutationADN = ((0, 3, ks[0]+1, x, y), (1, ks[0]+1, 2), (2,))
-    network2 = nw.Network(networkADN, cudaFlag=True)
+    networkADN = ((0, 3, 10, x, y), (0, 10, 20, 1, 1), (1, 20, 10), (1, 10, 2), (2,))
+    mutationADN = ((0, 3, 10, x, y), (0, 10, 21, 1, 1), (1, 21, 10), (1, 10, 2), (2,))
+    mutationADN3 = ((0, 3, 10, x, y), (0, 10, 19, 1, 1), (1, 19, 10), (1, 10, 2), (2,))
+    network = nw.Network(networkADN, cudaFlag=True)
 
     for _,a in enumerate(batch):
-        print("red original k=", *network2.adn)
-        network2.Training(data=a[0], p=6000, dt=0.01, labels=a[1])
+        print("red original (network) k=", *network.adn)
+        network.Training(data=a[0], p=6000, dt=0.01, labels=a[1])
         print("mutando")
-        network = network2.addFilter2(mutationADN)
-        print("entrando red mutada: ", *network.adn)
-        network.Training(data=a[0],p=10000, dt=0.01, labels=a[1])
-        print("entrenando de nuevo red original")
+        network2 = MutateNetwork.executeMutation(network, mutationADN)
+        print("entrando red mutada (network2): ", *network2.adn)
+        network2.Training(data=a[0],p=6000, dt=0.01, labels=a[1])
+        print("entrenando de nuevo red original (network)")
+        network.Training(data=a[0], p=6000, dt=0.01, labels=a[1])
+        print("mutando segunda vez")
+        network3 = MutateNetwork.executeMutation(network, mutationADN3)
+        print("entrando red mutada (network3): ", *network3.adn)
+        network3.Training(data=a[0],p=6000, dt=0.01, labels=a[1])
+        print("entrenando de nuevo red anterior (network2)")
         network2.Training(data=a[0], p=6000, dt=0.01, labels=a[1])
-        Inter.trakPytorch(network, "pokemon-netmap", dataGen)
-        #for i in range(1, 80):
-            #network.Training(data=a[0], p=200, dt=0.01, labels=a[1])
-            #network2.Training(data=a[0], p=200, dt=0.01, labels=a[1])
-            #print("Original Network: ", network.total_value," (Filtros=", network.adn[0][2],")")
-            #print("Mutated Network: ", network2.total_value, " (Filtros=", network2.adn[0][2],")")
-            #network2 = network2.addFilters()
-            #network = network.clone()
+        print("entrenando de nuevo red original (network)")
+        network.Training(data=a[0], p=6000, dt=0.01, labels=a[1])
+        #Inter.trakPytorch(network, "pokemon-netmap", dataGen)
 
 
 dataGen = GeneratorFromImage.GeneratorFromImage(2, 100, cuda=True)
