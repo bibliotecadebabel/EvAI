@@ -214,15 +214,18 @@ def Test_Mutacion(dataGen):
     print("creating networks")
     #(0, ks[i], len(dataGen.data[0]), 1, 1),
     networkADN = ((0, 3, ks[0], x, y), (1, ks[0], 2), (2,))
-    network2 = nw.Network(((0, 3, ks[0], x, y), (1, ks[0], 2), (2,)), cudaFlag=True)
+    mutationADN = ((0, 3, ks[0]+1, x, y), (1, ks[0]+1, 2), (2,))
+    network2 = nw.Network(networkADN, cudaFlag=True)
 
     for _,a in enumerate(batch):
         print("red original k=", *network2.adn)
         network2.Training(data=a[0], p=6000, dt=0.01, labels=a[1])
         print("mutando")
-        network = network2.addFilters()
+        network = network2.addFilter2(mutationADN)
         print("entrando red mutada: ", *network.adn)
         network.Training(data=a[0],p=10000, dt=0.01, labels=a[1])
+        print("entrenando de nuevo red original")
+        network2.Training(data=a[0], p=6000, dt=0.01, labels=a[1])
         Inter.trakPytorch(network, "pokemon-netmap", dataGen)
         #for i in range(1, 80):
             #network.Training(data=a[0], p=200, dt=0.01, labels=a[1])
@@ -233,7 +236,7 @@ def Test_Mutacion(dataGen):
             #network = network.clone()
 
 
-dataGen = GeneratorFromImage.GeneratorFromImage(2, 25000, cuda=True)
+dataGen = GeneratorFromImage.GeneratorFromImage(2, 100, cuda=True)
 dataGen.dataConv2d()
 size = dataGen.size
 

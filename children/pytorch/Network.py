@@ -228,6 +228,8 @@ class Network(nn.Module):
 
             i=0
             while i < p:
+                if i == 2:
+                    print("i=2 | ", self.nodes[1].objects[0].getFilter().shape, " | L=", str(self.total_value))
                 if i % 2000 == 1999:
                     print("L="+str(self.total_value)+" - i="+str(i+1))
                 
@@ -318,6 +320,48 @@ class Network(nn.Module):
         layerConv2d.value.requires_grad = True
 
         return networkClone
+
+
+    def addFilter2(self, newAdn):
+
+        self.updateGradFlag(False)
+
+        newNetwork = Network(newAdn, cudaFlag=self.cudaFlag)
+
+        layerConv2d = self.nodes[1].objects[0]
+        layerLinear = self.nodes[2].objects[0]
+           
+        shapeFilterConv2d = layerConv2d.getFilter().shape
+        shapeFilterLinear = layerLinear.getFilter().shape
+
+        cloneConv2dFilter = layerConv2d.getFilter().clone()
+        cloneConv2dBias = layerConv2d.getBias().clone()
+        cloneLinearFilter = layerLinear.getFilter().clone()
+        cloneLinearBias = layerLinear.getBias().clone()
+
+
+
+        cloneConv2dFilter.resize_(shapeFilterConv2d[0]+1, 3, shapeFilterConv2d[2], shapeFilterConv2d[3])
+        cloneConv2dBias.resize_(shapeFilterConv2d[0]+1)
+    
+        cloneLinearFilter.resize_(2, shapeFilterLinear[1]+1)
+        
+        cloneConv2dFilter[shapeFilterConv2d[0]] = cloneConv2dFilter[shapeFilterConv2d[0]-1].clone()
+        
+        cloneConv2dBias[shapeFilterConv2d[0]] = cloneConv2dBias[shapeFilterConv2d[0]-1].clone()
+
+        for i in range(cloneLinearFilter.shape[0]):
+            cloneLinearFilter[i][cloneLinearFilter.shape[1]-1] = cloneLinearFilter[i][cloneLinearFilter.shape[1]-2].clone()
+
+        
+        newNetwork.nodes[1].objects[0].setFilter(cloneConv2dFilter)
+        newNetwork.nodes[1].objects[0].setBias(cloneConv2dBias)
+        newNetwork.nodes[2].objects[0].setFilter(cloneLinearFilter)
+        newNetwork.nodes[2].objects[0].setBias(cloneLinearBias)
+
+        self.updateGradFlag(True)
+
+        return newNetwork
 
 
     def removeFilter(self):
