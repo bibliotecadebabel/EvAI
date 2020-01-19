@@ -42,7 +42,7 @@ def Test_LongNetwork(dataGen):
     kernel_1 = 2
     kernel_2 = 2
     kernel_3 = 2
-    
+
     networkADN = ((0, 3, ks[0], kernel_1, kernel_1), (0,ks[0], ks[0]//2, kernel_2,kernel_2), (0,ks[0]//2, ks[0]//4, kernel_3,kernel_3), (1, ks[0]//4, 10), (1, 10, 2), (2,))
     network = nw.Network(networkADN, cudaFlag=False)
 
