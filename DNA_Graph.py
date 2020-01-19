@@ -2,50 +2,41 @@ import utilities.Quadrants as qu
 import utilities.Node as nd
 import utilities.Graphs as gr
 import TangentPlane as tplane
+from DNA_creators import Directions
 
 class DNA_Graph():
+
     def key2node(self,key):
         return self.graph.key2node[key]
 
-    def __init__(self,center,size):
-        self.type = (0,(1,0,0,0))
+    def node2key(self,node):
+        q=node.objects[0]
+        return q.shape
+
+    def imprimir(self):
+        for node in self.objects:
+            print('The kid(s) of')
+            print(self.node2key(node))
+            print('are(is):')
+            for nodek in node.kids:
+                print(self.node2key(nodek))
+
+
+    def __init__(self,center,size,dim,type=(0,(1,0,0,0))):
+        self.type = type
         self.center=center
-        self.x_dim=self.center[0][3]
-        self.y_dim=self.center[0][4]
+        self.x_dim=dim[0]
+        self.y_dim=dim[1]
         self.size=size
         self.objects=None
         self.graph=None
 
+        creator=Directions.get(type)
+        g=creator(self)
+        self.graph=g
+        self.objects=list(g.key2node.values())
 
-        if self.type==(0,(1,0,0,0)):
-            def create_DNA(filters):
-                k_0=self.center[0][2]
-                ks=[filters+k_0]
-                x = self.x_dim
-                y = self.y_dim
-                networkADN = ((0, 3, ks[0], x, y), (1, ks[0], 2), (2,))
-                return networkADN
-            def add_node(g,i):
-                DNA=create_DNA(i)
-                node=nd.Node()
-                q=qu.Quadrant(DNA)
-                p=tplane.tangent_plane()
-                node.objects.append(q)
-                q.objects.append(p)
-                g.add_node(DNA,node)
-            g=gr.Graph()
-            add_node(g,0)
-            k=0
-            k=0
-            while k<self.size:
-                add_node(g,k+1)
-                g.add_edges(create_DNA(k),[create_DNA(k+1)])
-                k=k+1
-            self.objects=list(g.key2node.values())
-            self.graph=g
 
-            print('hello')
-            print(create_DNA(0))
 
 
 
