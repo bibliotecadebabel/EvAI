@@ -226,12 +226,12 @@ class Network(nn.Module):
             n = len(data) * 5/4
             peso = len(data) / 4
 
+            showEnergy = p//3
             i=0
             while i < p:
-                if i == 2:
-                    print("i=2 | ", self.nodes[1].objects[0].getFilter().shape, " | L=", str(self.total_value))
-                if i % 2000 == 1999:
-                    print("L="+str(self.total_value)+" - i="+str(i+1))
+              
+                if i % showEnergy == (showEnergy-1):
+                    print("i=",str(i+1)," | L=", str(self.total_value))
                 
                 
                 self.assignLabels(labels)

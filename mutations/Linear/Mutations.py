@@ -7,7 +7,7 @@ class AddExitFilterMutation(Mutation):
     
     def doMutate(self, oldFilter, oldBias, newNode):
 
-        print("Mutate AddExitFilterMutation Linear")
+        #print("Mutate AddExitFilterMutation Linear")
         
         shape = oldFilter.shape
         
@@ -27,7 +27,7 @@ class AddEntryFilterMutation(Mutation):
     
     def doMutate(self, oldFilter, oldBias, newNode):
 
-        print("Mutate AddEntryFilterMutation Linear")
+        #print("Mutate AddEntryFilterMutation Linear")
         
         shape = oldFilter.shape
         oldFilter.resize_(shape[0], shape[1]+1)
@@ -45,7 +45,7 @@ class RemoveExitFilterMutation(Mutation):
     
     def doMutate(self, oldFilter, oldBias, newNode):
 
-        print("Mutate RemoveExitFilterMutation Linear")
+        #print("Mutate RemoveExitFilterMutation Linear")
         
         shape = oldFilter.shape
         
@@ -63,7 +63,7 @@ class RemoveEntryFilterMutation(Mutation):
     
     def doMutate(self, oldFilter, oldBias, newNode):
         
-        print("Mutate RemoveEntryFilterMutation Linear")
+        #print("Mutate RemoveEntryFilterMutation Linear")
 
         shape = oldFilter.shape
         oldFilter.resize_(shape[0], shape[1]-1)

@@ -1,12 +1,41 @@
-from mutations.Dictionary import MutationsDictionary
+from DAO import GeneratorFromImage
+from DNA_Graph import DNA_Graph
+import children.pytorch.MutateNetwork as MutateNetwork
+import children.pytorch.Network as nw
 
-redVieja = "redVieja"
-adnViejo = ((0, 3, 100, 2, 3), (1, 100, 2), (2,))
-adnNuevo = ((0, 3, 101, 2, 3), (1, 101, 2), (2,))
+CUDA = False
 
-dictionaryMutation = MutationsDictionary()
+def Test(dataGen, space):
+    
+    global CUDA
+    for node in space.objects:
+        parentADN = space.node2key(node)
+
+        parentNetwork = nw.Network(parentADN, cudaFlag=CUDA)
+
+        print("Training PARENT Network | ADN = ", parentNetwork.adn)
+        parentNetwork.Training(data=dataGen.data[0], labels=dataGen.data[1], dt=0.01, p=600)
+
+        for nodeKid in node.kids:
+
+            kidADN = space.node2key(nodeKid)
+
+            kidNetwork = MutateNetwork.executeMutation(parentNetwork, kidADN)
+
+            print("Training KID Network | ADN = ", kidNetwork.adn)
+            kidNetwork.Training(data=dataGen.data[0], labels=dataGen.data[1], dt=0.01, p=600)
 
 
-for i in range(2):
-    mutation = dictionaryMutation.getMutation(adnViejo[i], adnNuevo[i])
-    mutation.doMutate(redVieja, adnNuevo)
+S=100
+Comp=2
+dataGen=GeneratorFromImage.GeneratorFromImage(Comp, S, cuda=CUDA)
+dataGen.dataConv2d()
+
+x = dataGen.size[1]
+y = dataGen.size[2]
+ks=[2]
+
+center=((0, 3, ks[0], x, y), (1, ks[0], 2), (2,))
+space=DNA_Graph(center,5,(x,y))
+
+Test(dataGen, space)

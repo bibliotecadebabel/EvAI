@@ -6,7 +6,8 @@ class AddExitFilterMutation(Mutation):
         super().__init__()
     
     def doMutate(self, oldFilter, oldBias, newNode):
-        print("Mutate AddExitFilterMutation Conv2d")
+        
+        #print("Mutate AddExitFilterMutation Conv2d")
 
         shape = oldFilter.shape
 
@@ -25,7 +26,8 @@ class AddEntryFilterMutation(Mutation):
         super().__init__()
     
     def doMutate(self, oldFilter, oldBias, newNode):
-        print("Mutate AddEntryFilterMutation Conv2d")
+        
+        #print("Mutate AddEntryFilterMutation Conv2d")
 
         shape = oldFilter.shape
 
@@ -43,7 +45,7 @@ class RemoveExitFilterMutation(Mutation):
     
     def doMutate(self, oldFilter, oldBias, newNode):
 
-        print("Mutate RemoveExitFilterMutation Conv2d")
+        #print("Mutate RemoveExitFilterMutation Conv2d")
 
         shape = oldFilter.shape
 
@@ -60,7 +62,7 @@ class RemoveEntryFilterMutation(Mutation):
     
     def doMutate(self, oldFilter, oldBias, newNode):
         
-        print("Mutate RemoveEntryFilterMutation Conv2d")
+        #print("Mutate RemoveEntryFilterMutation Conv2d")
 
         shape = oldFilter.shape
 
