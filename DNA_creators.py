@@ -22,7 +22,7 @@ def increase_kernel_width(DNA_graph):
         x = DNA_graph.x_dim
         y = DNA_graph.y_dim
         networkADN = ((0, 3, filters, k_0, k_0),
-            (0, 3, int(filters/2), x-k_0+1,y-k_0+1),
+            (0, 1, int(filters/2), x-k_0+1,y-k_0+1),
             (1, int(filters/2), 2), (2,))
         return networkADN
     def add_node(g,i):

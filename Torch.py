@@ -5,8 +5,8 @@ import torch.nn.functional as F
 from torch.autograd import Variable
 import torch.nn.modules.pooling as P
 
-N = 20
-M = 4
+N = 11
+M = 2
 A = Variable(torch.randn(1,1,N,N))
 M = Variable(torch.ones(1,1, M, M))
 #print(A)
