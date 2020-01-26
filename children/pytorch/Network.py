@@ -230,6 +230,8 @@ class Network(nn.Module):
             i=0
             while i < p:
               
+                if i == 1:
+                    print("i=",str(i+1)," | L=", str(self.total_value), "conv2d_1=", self.nodes[1].objects[0].getFilter().shape, "conv2d_2=",self.nodes[2].objects[0].getFilter().shape)
                 if i % showEnergy == (showEnergy-1):
                     print("i=",str(i+1)," | L=", str(self.total_value))
                 

@@ -6,7 +6,7 @@ import children.pytorch.Network as nw
 CUDA = False
 
 def Test(dataGen, space):
-    
+    print("type=",space.type)
     global CUDA
     for node in space.objects:
         parentADN = space.node2key(node)
@@ -35,7 +35,9 @@ x = dataGen.size[1]
 y = dataGen.size[2]
 ks=[2]
 
-center=((0, 3, ks[0], x, y), (1, ks[0], 2), (2,))
-space=DNA_Graph(center,5,(x,y))
+center_filters= ((0, 3, ks[0], x, y), (1, ks[0], 2), (2,))
+center_kernel = ((0, 3, int(2*ks[0]), 2, 2),(0, int(2*ks[0]),ks[0], x-1, y-1), (1, ks[0], 2), (2,))
+space_filters=DNA_Graph(center_filters,5,(x,y))
+space_kernel=DNA_Graph(center_kernel,5,(x,y),(0,(0,1,0,0)))
 
-Test(dataGen, space)
+Test(dataGen, space_filters)

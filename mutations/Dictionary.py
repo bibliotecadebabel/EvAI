@@ -27,6 +27,9 @@ class MutationsDictionary():
 
         self.__mutationsConv2d[(0, 1, 0, 0, 0)] = Conv2dMutations.AddEntryFilterMutation()
         self.__mutationsConv2d[(0, -1, 0, 0, 0)] = Conv2dMutations.RemoveEntryFilterMutation()
+
+        self.__mutationsConv2d[(0, 0, 0, 1, 1)] = Conv2dMutations.AddDimensionKernel()
+        self.__mutationsConv2d[(0, 0, 0, -1, -1)] = Conv2dMutations.RemoveDimensionKernel()
         
 
     def __generateMutationsLinear(self):

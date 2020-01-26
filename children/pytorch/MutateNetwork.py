@@ -2,6 +2,7 @@ import children.pytorch.Network as nw
 import children.Interfaces as Inter
 import children.pytorch.Functions as Functions
 from mutations.Dictionary import MutationsDictionary
+import torch as torch
 
 ############### MUTACIONES ###############
 
@@ -32,11 +33,13 @@ def executeMutation(oldNetwork, newAdn):
                 oldFilter = oldLayer.getFilter().clone()
 
                 if mutation is not None:
-                    mutation.doMutate(oldFilter, oldBias, newLayer)
+                    mutation.doMutate(oldFilter, oldBias, newLayer, cuda=network.cudaFlag)
                 else:
                     newLayer.setFilter(oldFilter)
                     newLayer.setBias(oldBias)
 
+                if network.cudaFlag == True:
+                    torch.cuda.empty_cache()
 
     else:
 
@@ -44,6 +47,7 @@ def executeMutation(oldNetwork, newAdn):
 
     oldNetwork.updateGradFlag(True)
     network.updateGradFlag(True)
+
 
     #showParameters(network)
     return network

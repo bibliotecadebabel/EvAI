@@ -38,7 +38,7 @@ def linear_kernel_width():
     #print(space.key2node(center))
     return space
 
-linear_filter()
+#linear_filter()
 linear_kernel_width()
 
 #We have dictionary of types of

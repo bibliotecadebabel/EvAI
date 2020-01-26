@@ -57,10 +57,9 @@ def linear_propagate(layer):
 
     shape = parent.value.shape
     
-    #layer.value = layer.object(parent.value.view(shape, -1)) / len(layer.getFilter()[1])
+    #print("value last conv2d= ", shape)
 
     layer.value = layer.object(parent.value.view(shape[0], -1 ))
-    #print("output Linear: ", layer.value.shape)
 
 def MSEloss_propagate(layer):
 
