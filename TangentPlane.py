@@ -8,6 +8,7 @@ class tangent_plane():
         self.gradient=[]
         self.reg_density=[]
         self.ball=None
-        self.interaction_field=0
+        self.interaction_field=[]
+        self.difussion_field=[]
         self.distance=None
         self.energy=None

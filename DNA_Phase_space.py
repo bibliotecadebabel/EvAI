@@ -50,6 +50,32 @@ class DNA_Phase_space():
                 p.divergence=p.divergence+(
                     pf.num_particles-p.num_particles)/N
 
+    def update_diffussion_field(self):
+        nodes=self.objects
+        beta=self.beta
+        for node in nodes:
+            p=self.node2plane(node)
+            difussion_field=[]
+            for kid in node.kids:
+                pf=self.node2plane(kid)
+                dU=beta*(pf.density**(beta-1)
+                    -p.density**(beta-1))
+                difussion_field.append(dU)
+            p.diffussion_field=difussion_field
+
+    def update_external_field(self):
+        nodes=self.objects
+        for node in nodes:
+            p=self.node2plane(node)
+            external_field=[]
+            for kid in node.kids:
+                pf=self.node2plane(kid)
+                dV=beta*(pf.density**(beta-1)
+                    -p.density**(beta-1))
+                external_field.append(dV)
+            p.external_fieldd=external_field
+
+
     #It seems the current version cannot handle regularization and negarive
     #Pourus medium exponent
 
@@ -58,6 +84,8 @@ class DNA_Phase_space():
         self.DNA_graph =DNA_graph
         self.objects=DNA_graph.objects
         self.num_particles=None
+        self.beta=None
+
         print('Hi')
 
 

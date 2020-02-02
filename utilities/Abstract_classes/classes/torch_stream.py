@@ -14,6 +14,8 @@ class TorchStream(Stream):
             p=self.log_size-len(self.log)
             out_net=self.old_net.clone()
             a=self.dataGen.data
+            print('the value of p is')
+            print(p)
             out_net.Training(data=a[0],
                 p=p,
                 dt=self.dt,

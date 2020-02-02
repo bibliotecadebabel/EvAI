@@ -12,7 +12,7 @@ def initialize():
     y = dataGen.size[2]
     ks=[2]
     center=((0, 3, ks[0], x, y), (1, ks[0], 2), (2,))
-    space=DNA_Graph(center,5)
+    space=DNA_Graph(center,5,(x,y))
     Phase_space=DNA_Phase_space(space)
     Phase_space.create_particles(100)
     return Phase_space
@@ -35,11 +35,26 @@ def update_divergence():
     Phase_space.update_divergence()
     print('update_divergence: done')
 
+def update_diffussion_field():
+    Phase_space=initialize()
+    Phase_space.create_particles(100)
+    Phase_space.update_density()
+    Phase_space.beta=1.5
+    Phase_space.update_diffussion_field()
+    print('update_diffussion_field: done')
+    pass
+
+def update_external_field():
+    pass
+
+def update_external_field():
+    pass
 
 
 #create_particles()
 #update_density()
-update_divergence()
+#update_divergence()
+update_diffussion_field()
 
 
 
