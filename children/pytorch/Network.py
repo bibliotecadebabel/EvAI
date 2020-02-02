@@ -220,24 +220,15 @@ class Network(nn.Module):
         #self.Acumulate_der(n, peso)
         #self.Reset_der()
 
-    def Training(self, data, labels, dt=0.1, p=2):
+    def Training(self, data, labels, dt=0.1, p=1):
 
             self.optimizer = optim.SGD(self.parameters(), lr=0.01, momentum=0.1)
             n = len(data) * 5/4
             peso = len(data) / 4
 
-            showEnergy = p//3
             i=0
             while i < p:
-              
-                if i == 1:
-                    pass
-                    #print("i=",str(i+1)," | L=", str(self.total_value), "conv2d_1=", self.nodes[1].objects[0].getFilter().shape, "conv2d_2=",self.nodes[2].objects[0].getFilter().shape)
-                if i % showEnergy == (showEnergy-1):
-                    pass
-                    #print("i=",str(i+1)," | L=", str(self.total_value))
-                
-                
+            
                 self.assignLabels(labels)
                 #self.Reset_der_total()
                 self.total_value = 0
