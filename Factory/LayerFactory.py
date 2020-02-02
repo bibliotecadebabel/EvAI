@@ -12,7 +12,7 @@ class LayerGenerator(AbstractFactory.FactoryClass):
 
     def createDictionary(self):
 
-        self.dictionary[0] = self.__createConv2d
+        self.dictionary[0] = self.__createConv3d
         self.dictionary[1] = self.__createLinear
         self.dictionary[2] = self.__createCrossEntropyLoss
 
@@ -32,6 +32,18 @@ class LayerGenerator(AbstractFactory.FactoryClass):
         self.__verifyCuda(valueLayerConv2d)
         
         value = ly.Layer(objectTorch=layer, propagate=functions.conv2d_propagate, value=valueLayerConv2d, adn=tupleBody, cudaFlag=self.__cuda)
+        
+        return value
+    
+    def __createConv3d(self, tupleBody):
+
+        layer = torch.nn.Conv3d(tupleBody[1], tupleBody[2], (tupleBody[3], tupleBody[4], tupleBody[5]))
+        valueLayerConv2d = torch.rand(1, tupleBody[2], 1, 1, dtype=torch.float32, requires_grad=True)
+        
+        self.__verifyCuda(layer)
+        self.__verifyCuda(valueLayerConv2d)
+        
+        value = ly.Layer(objectTorch=layer, propagate=functions.conv3d_propagate, value=valueLayerConv2d, adn=tupleBody, cudaFlag=self.__cuda)
         
         return value
 

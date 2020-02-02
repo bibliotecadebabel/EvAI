@@ -1,4 +1,4 @@
-import mutations.Convolution2d.Mutations as Conv2dMutations
+import mutations.Convolution.Mutations as ConvMutations
 import mutations.Linear.Mutations as LinearMutations
 
 class MutationsDictionary():
@@ -22,14 +22,14 @@ class MutationsDictionary():
 
     def __generateMutationsConv2d(self):
 
-        self.__mutationsConv2d[(0, 0, 1, 0, 0)] = Conv2dMutations.AddExitFilterMutation()
-        self.__mutationsConv2d[(0, 0, -1, 0, 0)] = Conv2dMutations.RemoveExitFilterMutation()
+        self.__mutationsConv2d[(0, 0, 1, 0, 0, 0)] = ConvMutations.AddExitFilterMutation()
+        self.__mutationsConv2d[(0, 0, -1, 0, 0, 0)] = ConvMutations.RemoveExitFilterMutation()
 
-        self.__mutationsConv2d[(0, 1, 0, 0, 0)] = Conv2dMutations.AddEntryFilterMutation()
-        self.__mutationsConv2d[(0, -1, 0, 0, 0)] = Conv2dMutations.RemoveEntryFilterMutation()
+        self.__mutationsConv2d[(0, 1, 0, 0, 0, 0)] = ConvMutations.AddEntryFilterMutation()
+        self.__mutationsConv2d[(0, -1, 0, 0, 0, 0)] = ConvMutations.RemoveEntryFilterMutation()
 
-        self.__mutationsConv2d[(0, 0, 0, 1, 1)] = Conv2dMutations.AddDimensionKernel()
-        self.__mutationsConv2d[(0, 0, 0, -1, -1)] = Conv2dMutations.RemoveDimensionKernel()
+        self.__mutationsConv2d[(0, 0, 0, 0, 1, 1)] = ConvMutations.AddDimensionKernel()
+        self.__mutationsConv2d[(0, 0, 0, 0, -1, -1)] = ConvMutations.RemoveDimensionKernel()
         
 
     def __generateMutationsLinear(self):

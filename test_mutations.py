@@ -40,4 +40,4 @@ center_kernel = ((0, 3, int(2*ks[0]), 2, 2),(0, int(2*ks[0]),ks[0], x-1, y-1), (
 space_filters=DNA_Graph(center_filters,5,(x,y))
 space_kernel=DNA_Graph(center_kernel,5,(x,y),(0,(0,1,0,0)))
 
-Test(dataGen, space_filters)
+Test(dataGen, space_kernel)
