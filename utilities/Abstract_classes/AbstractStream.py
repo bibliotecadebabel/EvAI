@@ -39,14 +39,17 @@ class Stream(ABC):
         self.sync()
 
     def key2node(self,key):
-        return self.Graph.key2node[key]
+        return self.Graph.key2node.get(key)
 
     def node2key(self,key):
-        return self.Graph.node2key[key]
+        return self.Graph.node2key.get(key)
 
     def key2log(self,key):
         node = self.key2node(key)
-        return node.get_object()
+        if node:
+            return node.get_object()
+        else:
+            return node 
 
     def add_node(self, key):
         node=nd.Node()
@@ -59,8 +62,11 @@ class Stream(ABC):
 
     def findCurrentvalue(self, key):
         node=self.key2node(key)
-        log=node.get_object()
-        return log.Currentvalue()
+        if not(node):
+            return node
+        else:
+            log=node.get_object()
+            return log.Currentvalue()
 
     def pop_node(self,node):
         log=node.get_object()

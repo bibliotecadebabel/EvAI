@@ -14,7 +14,6 @@ def initialize():
     center=((0, 3, ks[0], x, y), (1, ks[0], 2), (2,))
     space=DNA_Graph(center,5,(x,y))
     Phase_space=DNA_Phase_space(space)
-    Phase_space.create_particles(100)
     return Phase_space
 
 def create_particles():
@@ -45,16 +44,19 @@ def update_diffussion_field():
     pass
 
 def update_external_field():
+    Phase_space=initialize()
+    Phase_space.create_particles(100)
+    Phase_space.update_density()
+    Phase_space.update_external_field()
     pass
 
-def update_external_field():
-    pass
 
 
 #create_particles()
 #update_density()
 #update_divergence()
-update_diffussion_field()
+#update_diffussion_field()
+update_external_field()
 
 
 
