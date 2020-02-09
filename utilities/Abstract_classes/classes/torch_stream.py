@@ -12,7 +12,6 @@ class TorchStream(Stream):
             super().__init__()
             self.old_net=None
             self.new_net=None
-            self.signal=False
             self.log_size=None
             self.dataGen=None
             self.dt=0
