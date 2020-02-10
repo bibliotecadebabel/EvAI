@@ -104,9 +104,25 @@ def test_get_net():
     i=0
     while i<100:
         stream.charge_nodes()
+        print(stream.findCurrentvalue(DNA))
         print(stream.get_net(DNA))
         stream.pop()
         i=i+1
-        
-test_get_net()
+
+def test_get_energy():
+    dataGen = GeneratorFromImage.GeneratorFromImage(2, 100, cuda=False)
+    dataGen.dataConv2d()
+    stream=TorchStream(dataGen,10)
+    stream.findCurrentvalue((0,0,0))
+
+def test_add_net():
+    dataGen = GeneratorFromImage.GeneratorFromImage(2, 100, cuda=False)
+    dataGen.dataConv2d()
+    stream=TorchStream(dataGen,10)
+    DNA=create_DNA(2,dataGen)
+    stream.add_net(DNA)
+
+#test_get_energy()
+#test_get_net()
+test_add_net()
 #torch_stream_add()
