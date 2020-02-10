@@ -69,9 +69,9 @@ def conv3d_propagate(layer):
 
     normalize = shapeFilter[2] * shapeFilter[3] * shapeFilter[4]
 
-    #value = layer.object(parent.value) / (normalize)
+    value = layer.object(parent.value) / (normalize)
     
-    value = layer.object(parent.value)
+    #value = layer.object(parent.value)
 
     sigmoid = torch.nn.Sigmoid()
     
