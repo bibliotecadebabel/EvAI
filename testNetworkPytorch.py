@@ -216,8 +216,8 @@ def Test_Mutacion(dataGen):
     #(0, ks[i], len(dataGen.data[0]), 1, 1),
 
     
-    networkADN = ((0, 3, 10, 1, 2, 2), (0, 10, 20, 1, 10, 10), (1, 20, 10), (1, 10, 2), (2,))
-    mutationADN = ((0, 3, 10, 1, 3, 3), (0, 10, 20, 1, 9, 9), (1, 20, 10), (1, 10, 2), (2,))
+    networkADN = ((0, 3, 9, 1, 2, 2), (0, 1, 5, 3, 10, 10), (0, 7, 20, 5, 1, 1), (1, 20, 10), (1, 10, 2), (2,))
+    mutationADN = ((0, 3, 9, 1, 2, 2), (0, 1, 5, 2, 10, 10), (0, 8, 20, 5, 1, 1), (1, 20, 10), (1, 10, 2), (2,))
     network = nw.Network(networkADN, cudaFlag=True)
 
     for _,a in enumerate(batch):

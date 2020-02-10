@@ -60,28 +60,28 @@ def conv3d_propagate(layer):
     
     
     parent = layer.node.parents[0].objects[0]
-    ##lenght = len(layer.getFilter()[0].view(-1))
+
+    if parent.adn is not None and parent.adn[0] == 0:
+        parent.value.transpose_(1, 2)
+
 
     shapeFilter = layer.getFilter().shape
 
     normalize = shapeFilter[2] * shapeFilter[3] * shapeFilter[4]
-    #print("length=", normalize)
 
-    value = layer.object(parent.value) / (normalize)
+    #value = layer.object(parent.value) / (normalize)
     
+    value = layer.object(parent.value)
+
     sigmoid = torch.nn.Sigmoid()
     
     layer.value = sigmoid(value) + torch.nn.functional.relu(value)
-
-    #print("output conv2d: ", layer.value.shape)
 
 def linear_propagate(layer):
 
     parent = layer.node.parents[0].objects[0]
 
     shape = parent.value.shape
-    
-    #print("value last conv2d= ", shape)
 
     layer.value = layer.object(parent.value.view(shape[0], -1 ))
 

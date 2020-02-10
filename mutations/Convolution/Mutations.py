@@ -152,3 +152,52 @@ class RemoveDimensionKernel(Mutation):
 
         newNode.setFilter(resized)
         newNode.setBias(oldBias)
+
+class AddDepthKernel(Mutation):
+
+    def __init__(self):
+        super().__init__()
+    
+    def doMutate(self, oldFilter, oldBias, newNode, cuda):
+        
+        shape = oldFilter.shape
+
+        if cuda == True:
+            resized_1 = torch.zeros(shape[0], shape[1], 1, shape[3], shape[4]).cuda()
+        else:
+            resized_1 = torch.zeros(shape[0], shape[1], 1, shape[3], shape[4])
+
+        oldFilter = torch.cat((oldFilter, resized_1), dim=2)
+        
+        del resized_1
+
+        for out_channel in range(shape[0]):
+            for in_channel in range(shape[1]):
+                oldFilter[out_channel][in_channel][shape[2]] = oldFilter[out_channel][in_channel][shape[2]-1].clone() 
+
+        newNode.setFilter(oldFilter)
+        newNode.setBias(oldBias)
+    
+class RemoveDepthKernel(Mutation):
+
+    def __init__(self):
+        super().__init__()
+    
+    def doMutate(self, oldFilter, oldBias, newNode, cuda):
+        
+        shape = oldFilter.shape
+
+        if cuda == True:
+            resized = torch.zeros(shape[0], shape[1], shape[2]-1, shape[3], shape[4]).cuda()
+        else:
+            resized = torch.zeros(shape[0], shape[1], shape[2]-1, shape[3], shape[4])
+        
+        for out_channel in range(shape[0]):
+            for in_channel in range(shape[1]):
+                for kernel_depth in range(shape[2]-1):
+                    resized[out_channel][in_channel][kernel_depth] = oldFilter[out_channel][in_channel][kernel_depth].clone()
+
+        del oldFilter
+
+        newNode.setFilter(resized)
+        newNode.setBias(oldBias)

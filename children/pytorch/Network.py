@@ -229,6 +229,15 @@ class Network(nn.Module):
             i=0
             while i < p: 
                 
+                '''
+                if i == 1:
+                    print("L=", self.total_value, " | i=",i)
+
+                if i % 200 == 199:
+                    print("L=", self.total_value, " | i=",i)
+
+                '''
+                
                 self.assignLabels(labels)
 
                 self.total_value = 0

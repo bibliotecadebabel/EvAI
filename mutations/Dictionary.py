@@ -30,6 +30,9 @@ class MutationsDictionary():
 
         self.__mutationsConv2d[(0, 0, 0, 0, 1, 1)] = ConvMutations.AddDimensionKernel()
         self.__mutationsConv2d[(0, 0, 0, 0, -1, -1)] = ConvMutations.RemoveDimensionKernel()
+
+        self.__mutationsConv2d[(0, 0, 0, 1, 0, 0)] = ConvMutations.AddDepthKernel()
+        self.__mutationsConv2d[(0, 0, 0, -1, 0, 0)] = ConvMutations.RemoveDepthKernel()
         
 
     def __generateMutationsLinear(self):
