@@ -213,23 +213,21 @@ def Test_Mutacion(dataGen):
     y = dataGen.size[2]
 
     print("creating networks")
-    #(0, ks[i], len(dataGen.data[0]), 1, 1),
 
-    
-    networkADN = ((0, 3, 9, 1, 2, 2), (0, 1, 5, 3, 10, 10), (0, 7, 20, 5, 1, 1), (1, 20, 10), (1, 10, 2), (2,))
-    mutationADN = ((0, 3, 9, 1, 2, 2), (0, 1, 5, 2, 10, 10), (0, 8, 20, 5, 1, 1), (1, 20, 10), (1, 10, 2), (2,))
+    networkADN = ((0, 3, 20, 1, 2, 2), (0, 1, 8, 6, 10, 10), (0, 15, 5, 8, 1, 1), (1, 5, 2), (2,))
+    mutationADN = ((0, 3, 20, 1, 2, 2), (0, 1, 8, 5, 10, 10), (0, 16, 5, 8, 1, 1), (1, 5, 2), (2,))
     network = nw.Network(networkADN, cudaFlag=True)
-
     for _,a in enumerate(batch):
         print("red original (network) k=", *network.adn)
-        network.Training(data=a[0], p=200, dt=0.01, labels=a[1])
-        print("mutando")
-        network2 = MutateNetwork.executeMutation(network, mutationADN)
-        print("entrando red mutada (network2): ", *network2.adn)
-        network2.Training(data=a[0],p=200, dt=0.01, labels=a[1])
-        print("entrenando de nuevo red original (network)")
-        network.Training(data=a[0], p=200, dt=0.01, labels=a[1])
-        #Inter.trakPytorch(network, "pokemon-netmap", dataGen)
+        print("example=", a[0].shape)
+        network.Training(data=a[0], p=200, dt=0.1, labels=a[1])
+        #print("mutando")
+        #network2 = MutateNetwork.executeMutation(network, mutationADN)
+        #print("entrando red mutada (network2): ", *network2.adn)
+        #network2.Training(data=a[0],p=10000, dt=0.1, labels=a[1])
+        #print("entrenando de nuevo red original (network)")
+        #network.Training(data=a[0], p=10000, dt=0.1, labels=a[1])
+        Inter.trakPytorch(network, "pokemon-netmap", dataGen)
 
 
 dataGen = GeneratorFromImage.GeneratorFromImage(2, 100, cuda=True)

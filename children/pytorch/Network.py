@@ -188,8 +188,9 @@ class Network(nn.Module):
         labelTensor = tensorFactory.createTensor(body=[label.item()], cuda=self.cudaFlag, requiresGrad=False)
         self.assignLabels(labelTensor)
 
-        self.nodes[0].objects[0].value = image.view(1, 3, image.shape[1], image.shape[2])
-
+        #print("image=", image.shape)
+        #self.nodes[0].objects[0].value = image.view(1, 3, image.shape[1], image.shape[2])
+        self.nodes[0].objects[0].value = image.view(1, 3, 1, image.shape[2], image.shape[3])
 
         self(self.nodes[0].objects[0].value)
 
@@ -229,14 +230,14 @@ class Network(nn.Module):
             i=0
             while i < p: 
                 
-                '''
+                
                 if i == 1:
                     print("L=", self.total_value, " | i=",i)
 
                 if i % 200 == 199:
                     print("L=", self.total_value, " | i=",i)
 
-                '''
+                
                 
                 self.assignLabels(labels)
 

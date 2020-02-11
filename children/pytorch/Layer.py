@@ -84,3 +84,17 @@ class Layer():
                 value = paramList[index].grad.data
 
         return value
+
+    def upgradeGradientFlag(self, flag):
+    
+        if self.getBias() is not None:
+            self.getBias().requires_grad = flag
+        
+        if self.getBiasDer() is not None:
+            self.getBiasDer().requires_grad = flag
+        
+        if self.getFilter() is not None:
+            self.getFilter().requires_grad = flag
+        
+        if self.getFilterDer() is not None:
+            self.getFilterDer().requires_grad = flag

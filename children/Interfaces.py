@@ -54,7 +54,6 @@ def trakPytorch(Net,Out_name, dataGen):
     #size=np.shape(Net.w_node.Value[0])
     Ima = dataGen.A
     labelCircle = dataGen.label[0]
-
     size= np.shape(Net.nodes[0].objects[0].value)
     sizeb=np.shape(Ima)
 
@@ -62,10 +61,10 @@ def trakPytorch(Net,Out_name, dataGen):
     j=0
     #a=torch.ones([1,3, size[2], size[3]], dtype=torch.float32)
     a=np.zeros((sizeb[0], sizeb[1], 3), dtype=np.uint8)
-    while i<sizeb[0]-size[2]:
-        while j<sizeb[1]-size[3]:
-            x=Ima[i:i+size[2],j:j+size[3]]
-            x = dataGen.numpyToTorch(x)
+    while i<sizeb[0]-size[3]:
+        while j<sizeb[1]-size[4]:
+            x=Ima[i:i+size[3],j:j+size[4]]
+            x = dataGen.numpyToTorch(x, True)
             p = Net.Predict(x, labelCircle)
             #print("prob traking: ",p)
             a[i,j]=a[i,j]+p*255
