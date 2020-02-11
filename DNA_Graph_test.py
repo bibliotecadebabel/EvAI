@@ -1,17 +1,37 @@
-from DAO import GeneratorFromImage
 from DNA_Graph import DNA_Graph
 
 
 
+def linear_kernel_depth(x,y):
+    center=((0, 3, 10, 1,3, 3),(0, 1, 10, 3,x-2, y-2),(0,0, 5,8,x-4, y-4),(1, 5, 2), (2,))
+    print('linear_kernel_width_new: done')
+    space=DNA_Graph(center,5,(x,y),(0,(0,0,1,0,0)))
+    print(space.type)
+    space.imprimir()
+    #print(space.key2node(center))
+    return space
 
-def linear_filter():
-    S=100
-    Comp=2
-    dataGen=GeneratorFromImage.GeneratorFromImage(
-    Comp, S, cuda=False)
-    dataGen.dataConv2d()
-    x = dataGen.size[1]
-    y = dataGen.size[2]
+def linear_kernel_width_new(x,y):
+    ks=[2]
+    center=((0, 3, int(2*ks[0]), 1,2, 2),(0, int(2*ks[0]),ks[0], 1,x-1, y-1), (1, ks[0], 2), (2,))
+    print('linear_kernel_width_new: done')
+    space=DNA_Graph(center,5,(x,y),(0,(0,0,0,1,1)))
+    print(space.type)
+    space.imprimir()
+    #print(space.key2node(center))
+    return space
+
+def linear_filter_new(x,y):
+    ks=[2]
+    center=((0, 3,ks[0], 1,x, y), (1, ks[0], 2), (2,))
+    space=DNA_Graph(center,5,(x,y),(0,(0,1,0,0,0)))
+    print('linear_filter_new: done')
+    space.imprimir()
+    print(space.type)
+    return space
+
+
+def linear_filter(x,y):
     ks=[2]
     center=((0, 3, ks[0], x, y), (1, ks[0], 2), (2,))
     space=DNA_Graph(center,5,(x,y))
@@ -21,14 +41,7 @@ def linear_filter():
     return space
     #print(space.key2node(center))
 
-def linear_kernel_width():
-    S=100
-    Comp=2
-    dataGen=GeneratorFromImage.GeneratorFromImage(
-    Comp, S, cuda=False)
-    dataGen.dataConv2d()
-    x = dataGen.size[1]
-    y = dataGen.size[2]
+def linear_kernel_width(x,y):
     ks=[2]
     center=((0, 3, int(2*ks[0]), 2, 2),(0, int(2*ks[0]),ks[0], x-1, y-1), (1, ks[0], 2), (2,))
     print('linear_kernel_width: done')
@@ -38,8 +51,12 @@ def linear_kernel_width():
     #print(space.key2node(center))
     return space
 
-#linear_filter()
-linear_kernel_width()
+
+linear_kernel_depth(11,11)
+#linear_filter_new(11,11)
+#linear_kernel_width_new(11,11)
+#linear_filter(11,11)
+#linear_kernel_width(11,11)
 
 #We have dictionary of types of
 #DNA that select the creator
