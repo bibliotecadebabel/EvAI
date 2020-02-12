@@ -3,7 +3,7 @@ from DNA_Graph import DNA_Graph
 
 
 def linear_kernel_depth(x,y):
-    center=((0, 3, 10, 1,3, 3),(0,10,20, 3,3,3),(0,20,1,1,1, 1),(1, 160, 2), (2,))
+    center=((0, 3, 10, 1,3, 3),(0,10,20, 3,3,3),(0,20,1,8,7, 7),(1, 20, 2), (2,))
     print('linear_kernel_depth: done')
     space=DNA_Graph(center,5,(x,y),(0,(0,0,1,0,0)))
     print(space.type)
