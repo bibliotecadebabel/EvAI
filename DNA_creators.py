@@ -54,8 +54,9 @@ type=(0,(0,0,0,1,1))
 
 
 def increase_kernel_width(DNA_graph):
+    print('Accesssed createor')
     def create_DNA(width):
-        k_0=DNA_graph.center[0][3]+width
+        k_0=DNA_graph.center[0][3]+width+1
         filters=DNA_graph.center[0][2]
         x = DNA_graph.x_dim
         y = DNA_graph.y_dim
@@ -80,20 +81,24 @@ def increase_kernel_width(DNA_graph):
         k=k+1
     return g
 
-type=(0,(0,0,1,0,0))
 creator=increase_kernel_width
 Mutations.append(Direction(type,creator))
 
+
+type=(0,(0,0,1,0,0))
+
 def increase_kernel_depth(DNA_graph):
     def create_DNA(width):
-        k_0=DNA_graph.center[0][3]+width
+        width=width+1
+        k_0=DNA_graph.center[0][4]
+        out_filters=DNA_graph.center[1][2]
         filters=DNA_graph.center[0][2]
         x = DNA_graph.x_dim
         y = DNA_graph.y_dim
         networkADN = ((0, 3, filters,1, k_0, k_0),
-            (0, 1, filters-width+1,width,x-k_0+1,y-k_0+1),
-            (0, 10, 2,filters-width+1,x-2*k_0+2,y-2*k_0+2)
-            (1, int(filters/2), 2), (2,))
+            (0,filters,out_filters,width,3,3),
+            (0,out_filters,1,filters-width+1,x-2*k_0+2,x-2*k_0+2),
+            (1,out_filters, 2), (2,))
         return networkADN
     def add_node(g,i):
         DNA=create_DNA(i)
@@ -112,7 +117,7 @@ def increase_kernel_depth(DNA_graph):
         k=k+1
     return g
 
-creator=increase_kernel_width
+creator=increase_kernel_depth
 Mutations.append(Direction(type,creator))
 
 
