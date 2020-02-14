@@ -62,10 +62,9 @@ def conv3d_propagate(layer):
     parent = layer.node.parents[0].objects[0]
 
     if parent.adn is not None and parent.adn[0] == 0:
-        parent.value.transpose_(1, 2)
-        #print("layer=", parent.adn)
+        shape = parent.value.shape
+        parent.value =  parent.value.view(shape[0], 1, shape[1]*shape[2], shape[3], shape[4]).clone()
         #print("output=", parent.value.shape)
-
 
     shapeFilter = layer.getFilter().shape
 
