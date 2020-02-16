@@ -2,6 +2,7 @@ import torch
 import children.pytorch.Layer as ly
 import children.pytorch.Functions as functions
 import Factory.AbstractFactory as AbstractFactory
+import math
 
 class LayerGenerator(AbstractFactory.FactoryClass):
 
@@ -38,11 +39,9 @@ class LayerGenerator(AbstractFactory.FactoryClass):
     def __createConv3d(self, tupleBody):
 
         layer = torch.nn.Conv3d(tupleBody[1], tupleBody[2], (tupleBody[3], tupleBody[4], tupleBody[5]))
-        torch.nn.init.uniform_(layer.weight, a=0.1, b=0.3)
-        torch.nn.init.uniform_(layer.bias, a=0.1, b=0.3)
+        self.__initConv3d(layer, (tupleBody[3], tupleBody[4], tupleBody[5]))
         #torch.nn.init.constant_(layer.bias, 0)
         #valueLayerConv2d = torch.rand(1, tupleBody[2], 1, 1, dtype=torch.float32, requires_grad=True)
-        
         self.__verifyCuda(layer)
         #self.__verifyCuda(valueLayerConv2d)
         
@@ -53,8 +52,7 @@ class LayerGenerator(AbstractFactory.FactoryClass):
     def __createLinear(self, tupleBody):
         
         layer = torch.nn.Linear(tupleBody[1], tupleBody[2])
-        torch.nn.init.uniform_(layer.weight, a=0.1, b=0.3)
-        torch.nn.init.uniform_(layer.bias, a=0.1, b=0.3)
+        self.__initLinear(layer, tupleBody[1])
         #torch.nn.init.constant_(layer.bias, 0)
         #valueLayerLinear = torch.rand(2, dtype=torch.float32, requires_grad=True)
 
@@ -80,3 +78,24 @@ class LayerGenerator(AbstractFactory.FactoryClass):
 
         if self.__cuda == True:
             layer.cuda()
+
+    def __initConv3d(self, layer, kernel_shape):
+
+        kernel_product = math.sqrt(kernel_shape[0] * kernel_shape[1] * kernel_shape[2])
+
+        with torch.no_grad():
+            torch.nn.init.normal_(layer.weight, mean=0.0, std=1.0)
+            torch.nn.init.normal_(layer.bias, mean=0.0, std=1.0)
+            layer.weight = torch.nn.Parameter(torch.div(torch.mul(layer.weight, math.sqrt(2)), kernel_product).clone())
+            layer.bias = torch.nn.Parameter(torch.div(torch.mul(layer.bias, math.sqrt(2)), kernel_product).clone())
+        
+    def __initLinear(self, layer, entrys):
+
+        entry_product = math.sqrt(entrys)
+    
+        with torch.no_grad():
+            torch.nn.init.normal_(layer.weight, mean=0.0, std=1.0)
+            torch.nn.init.normal_(layer.bias, mean=0.0, std=1.0)
+            layer.weight = torch.nn.Parameter(torch.div(torch.mul(layer.weight, math.sqrt(2)), entry_product).clone())
+            layer.bias = torch.nn.Parameter(torch.div(torch.mul(layer.bias, math.sqrt(2)), entry_product).clone())
+

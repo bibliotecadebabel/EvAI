@@ -230,7 +230,7 @@ def Test_Mutacion(dataGen):
         Inter.trakPytorch(network, "pokemon-netmap", dataGen)
 
 
-dataGen = GeneratorFromImage.GeneratorFromImage(2, 100, cuda=True)
+dataGen = GeneratorFromImage.GeneratorFromImage(2, 15000, cuda=True)
 dataGen.dataConv3d()
 size = dataGen.size
 
