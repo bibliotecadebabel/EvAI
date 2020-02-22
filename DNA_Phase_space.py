@@ -132,7 +132,7 @@ class DNA_Phase_space():
         self.DNA_graph =DNA_graph
         self.objects=DNA_graph.objects
         self.num_particles=None
-        self.beta=None
+        self.beta=2
         self.support=[]
         dataGen = GeneratorFromImage.GeneratorFromImage(2, 100, cuda=False)
         dataGen.dataConv2d()
