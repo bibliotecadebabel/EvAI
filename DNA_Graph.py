@@ -21,6 +21,9 @@ class DNA_Graph():
             for nodek in node.kids:
                 print(self.node2key(nodek))
 
+    def update(self):
+        pass
+
 
     def __init__(self,center,size,dim,type=(0,(1,0,0,0))):
         self.type = type
