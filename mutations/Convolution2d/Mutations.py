@@ -35,7 +35,7 @@ class AddEntryFilterMutation(Mutation):
     def doMutate(self, oldFilter, oldBias, newNode, cuda):
         
         shape = oldFilter.shape
-
+        
         if cuda == True:
             resized = torch.zeros(shape[0], 1, shape[2], shape[3]).cuda()
         else:
@@ -43,12 +43,13 @@ class AddEntryFilterMutation(Mutation):
 
         oldFilter = torch.cat((oldFilter, resized), dim=1)
 
+
         for i in range(shape[0]):
             oldFilter[i][shape[1]] = oldFilter[i][shape[1]-1].clone()
 
         newNode.setFilter(oldFilter)
         newNode.setBias(oldBias)
-
+        
         del resized
 
 class RemoveExitFilterMutation(Mutation):
@@ -75,9 +76,18 @@ class RemoveEntryFilterMutation(Mutation):
 
         shape = oldFilter.shape
 
-        oldFilter.resize_(shape[0], shape[1]-1, shape[2], shape[3])
+        if cuda == True:
+            resized = torch.zeros(shape[0], shape[1]-1, shape[2], shape[3]).cuda()
+        else:
+            resized = torch.zeros(shape[0], shape[1]-1, shape[2], shape[3])
 
-        newNode.setFilter(oldFilter)
+        for out_channel in range(shape[0]):
+            for in_channel in range(shape[1]-1):
+                resized[out_channel][in_channel] = oldFilter[out_channel][in_channel].clone()
+
+        del oldFilter
+
+        newNode.setFilter(resized)
         newNode.setBias(oldBias)
 
 class AddDimensionKernel(Mutation):
@@ -102,11 +112,11 @@ class AddDimensionKernel(Mutation):
         del resized_1
         del resized_2
 
-        for i in range(shape[0]):
-            for j in range(shape[1]):
-                oldFilter[i][j][shape[2]] = oldFilter[i][j][shape[2]-1].clone() 
-                for k in range(shape[2]+1):
-                    oldFilter[i][j][k][shape[3]] = oldFilter[i][j][k][shape[3]-1].clone()
+        for out_channel in range(shape[0]):
+            for in_channel in range(shape[1]):
+                oldFilter[out_channel][in_channel][shape[2]] = oldFilter[out_channel][in_channel][shape[2]-1].clone() 
+                for x in range(shape[2]+1):
+                    oldFilter[out_channel][in_channel][x][shape[3]] = oldFilter[out_channel][in_channel][x][shape[3]-1].clone()
 
         newNode.setFilter(oldFilter)
         newNode.setBias(oldBias)
@@ -120,7 +130,23 @@ class RemoveDimensionKernel(Mutation):
         
         shape = oldFilter.shape
 
-        oldFilter.resize_(shape[0], shape[1], shape[2]-1, shape[3]-1)
+        if cuda == True:
+            resized = torch.zeros(shape[0], shape[1], shape[2]-1, shape[3]-1).cuda()
+        else:
+            resized = torch.zeros(shape[0], shape[1], shape[2]-1, shape[3]-1)
+        
+        #oldFilter.resize_(shape[0], shape[1], shape[2], shape[3]-1, shape[4]-1)
 
-        newNode.setFilter(oldFilter)
+        
+        for out_channel in range(shape[0]):
+            for in_channel in range(shape[1]):
+                for kernel_x in range(shape[2]-1):
+                    for kernel_y in range(shape[3]-1):
+                        resized[out_channel][in_channel][kernel_x][kernel_y] = oldFilter[out_channel][in_channel][kernel_x][kernel_y].clone()
+    
+
+
+        del oldFilter
+
+        newNode.setFilter(resized)
         newNode.setBias(oldBias)

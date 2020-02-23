@@ -222,13 +222,18 @@ class Network(nn.Module):
 
     def Training(self, data, labels, dt=0.1, p=1):
 
-            self.optimizer = optim.SGD(self.parameters(), lr=0.01, momentum=0.1)
+            self.optimizer = optim.SGD(self.parameters(), lr=dt, momentum=0.1)
             n = len(data) * 5/4
             peso = len(data) / 4
 
             i=0
             while i < p:
-            
+
+                if i == 1:
+                    print("L=", self.total_value, " i=", str(i)) 
+
+                if i % 200 == 199:
+                    print("L=", self.total_value, " i=", str(i))
                 self.assignLabels(labels)
                 #self.Reset_der_total()
                 self.total_value = 0
