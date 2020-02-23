@@ -229,11 +229,13 @@ class Network(nn.Module):
             i=0
             while i < p:
 
+                '''
                 if i == 1:
-                    print("L=", self.total_value, " i=", str(i)) 
+                    print("L=", self.total_value, " i=", str(i), "adn=", self.nodes[1].objects[0].adn," - ", self.nodes[2].objects[0].adn) 
 
                 if i % 200 == 199:
                     print("L=", self.total_value, " i=", str(i))
+                '''
                 self.assignLabels(labels)
                 #self.Reset_der_total()
                 self.total_value = 0
