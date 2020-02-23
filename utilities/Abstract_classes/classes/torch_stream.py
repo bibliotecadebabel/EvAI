@@ -19,8 +19,6 @@ class TorchStream(Stream):
             p=self.log_size-len(self.log)
             out_net=self.old_net.clone()
             a=self.dataGen.data
-            print('the value of p is')
-            print(p)
             out_net.Training(data=a[0],
                 p=p,
                 dt=self.dt,
@@ -48,6 +46,7 @@ class TorchStream(Stream):
                 labels=a[1])
             log.charge(net.history_loss)
             net.history_loss=[]
+            log.signal=False
 
     def link_node(self,key,net=None):
         log=self.key2log(key)
@@ -77,6 +76,16 @@ class TorchStream(Stream):
         else:
             return log
 
+    def imprimir(self):
+        Graph=self.Graph
+        dict=Graph.key2node
+        k=0
+        for item in dict.items():
+            key=item[0]
+            node=item[1]
+            log=node.get_object()
+            print('The energy of {} is {}'.format(key, log.Currentvalue()))
+            k += 1
 
     def sync(self):
         pass

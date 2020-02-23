@@ -53,6 +53,15 @@ class Status():
         self.stream=None
         self.Graph=None
         self.Dynamics=None
+    def print_DNA(self):
+        phase_space=self.Dynamics.phase_space
+        DNA_graph=phase_space.DNA_graph
+        DNA_graph.imprimir()
+    def print_energy(self):
+        phase_space=self.Dynamics.phase_space
+        stream=phase_space.Stream
+        stream.imprimir()
+
 
 def potential(x,status=None):
     return node_energy(status.objects[x],status)
@@ -136,6 +145,7 @@ create_objects(status)
 print("objects created")
 status.Transfer=tran.TransferRemote(status,
     'remote2local.txt','local2remote.txt')
+status.print_DNA()
 status.Transfer.un_load()
 status.Transfer.write()
 k=0
@@ -147,14 +157,16 @@ while False:
     transfer=status.Transfer.status_transfer
     k=k+1
     pass
-while False:
+while True:
     status.Transfer.readLoad()
     if status.active:
         update(status)
+        status.print_energy()
 #        print_nets(status)
 #        time.sleep(0.5)
     else:
-        print('inactive')
+        #print('inactive')
+        pass
     k=k+1
 
 

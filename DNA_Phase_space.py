@@ -32,6 +32,8 @@ class DNA_Phase_space():
         stream=self.Stream
         k_o=self.node2key(node)
         V_o=stream.findCurrentvalue(k_o)
+        #log=stream.key2log(k_o)
+        #log.signal=True
         return V_o
 
     def node2net(self,node):
@@ -101,24 +103,15 @@ class DNA_Phase_space():
         stream=self.Stream
         nodes=self.objects
         for node in self.support:
-            print('The size of the support is')
-            print(len(self.support))
-            print('scaning node')
             V_o=self.node2V(node)
             if V_o:
-                print('node was not empty')
                 p=self.node2plane(node)
                 external_field=[]
                 for kid in node.kids:
-                    print('scaning kid')
-                    print('The value of Vf is')
                     V_f=self.node2V(kid)
                     if not(V_f):
-                        print('kid was empty')
                         self.mutate(node,kid)
                         V_f=self.node2V(kid)
-                        print('The value of Vf is')
-                        print(V_f)
                     dV=V_f-V_o
                     external_field.append(dV)
                 p.external_field=external_field
@@ -127,11 +120,14 @@ class DNA_Phase_space():
         pass
 
     def update(self):
+        #stream=self.Stream
+        #stream.charge_nodes()
         self.DNA_graph.update()
         self.update_density()
         self.update_diffussion_field()
         self.update_external_field()
         self.update_interation_field()
+        #stream.pop()
 
 
 
