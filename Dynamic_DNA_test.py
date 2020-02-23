@@ -58,10 +58,19 @@ def update_particles():
     Dynamics.update_particles()
     print('particles updated')
 
+def update():
+    Dynamics=initialize()
+    Phase_space=Dynamics.phase_space
+    Phase_space.create_particles(100)
+    Phase_space.beta=2
+    Dynamics.update()
+    print('Dynamics updated')
+
 #initialize()
 #update_external_field()
 #update_velocity()
-update_particles()
+#update_particles()
+update()
 #create_particles()
 #update_density()
 #update_divergence()

@@ -123,6 +123,18 @@ class DNA_Phase_space():
                     external_field.append(dV)
                 p.external_field=external_field
 
+    def update_interation_field(self):
+        pass
+
+    def update(self):
+        self.DNA_graph.update()
+        self.update_density()
+        self.update_diffussion_field()
+        self.update_external_field()
+        self.update_interation_field()
+
+
+
 
     #It seems the current version cannot handle regularization and negarive
     #Pourus medium exponent

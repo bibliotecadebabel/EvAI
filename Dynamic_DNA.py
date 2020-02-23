@@ -96,6 +96,14 @@ class Dynamic_DNA():
                     if p.num_particles==0:
                         self.support.remove(node)
 
+    def update(self):
+        self.phase_space.update()
+        self.update_force_field()
+        self.update_velocity()
+        self.update_particles()
+
+
+
 
 
 
