@@ -13,37 +13,48 @@ def executeMutation(oldNetwork, newAdn):
     length_newadn = len(newAdn)
     length_oldadn = len(oldNetwork.adn)
 
-    dictionaryMutation = MutationsDictionary()
-
     oldNetwork.updateGradFlag(False)
     network.updateGradFlag(False)
 
-    if length_newadn == length_oldadn:
-    
-        for i in range(length_oldadn):
+    addLayer = False
+    RemoveLayer = False
 
-            oldLayer = oldNetwork.nodes[i+1].objects[0]
-            newLayer = network.nodes[i+1].objects[0]
+    if length_newadn > length_oldadn:
+        addLayer = True
+    elif length_oldadn > length_newadn:
+        RemoveLayer = True
+    
+
+    for i in range(1, length_newadn+1):
+
+        if addLayer == False and RemoveLayer == False:
+
+            oldLayer = oldNetwork.nodes[i].objects[0]
+            newLayer = network.nodes[i].objects[0]
 
             if oldLayer.getFilter() is not None:
-                
-                mutation = dictionaryMutation.getMutation(oldLayer.adn, newLayer.adn)
-                
-                oldBias = oldLayer.getBias().clone()
-                oldFilter = oldLayer.getFilter().clone()
+                traditionalMutation(oldLayer, newLayer, network.cudaFlag)
 
-                if mutation is not None:
-                    mutation.doMutate(oldFilter, oldBias, newLayer, cuda=network.cudaFlag)
+        elif addLayer == True:
+            
+            if i < length_newadn:
+                oldLayer = oldNetwork.nodes[i].objects[0]
+
+            newLayer = network.nodes[i].objects[0]
+
+            if oldLayer is not None and oldLayer.getFilter() is not None:
+
+                if oldLayer.adn[0] == newLayer.adn[0]:
+                    traditionalMutation(oldLayer, newLayer, network.cudaFlag)
+
                 else:
-                    newLayer.setFilter(oldFilter)
-                    newLayer.setBias(oldBias)
+                    initNewConvolution(newLayer)
+                    newLinear = network.nodes[i+1].objects[0]
+                    traditionalMutation(oldLayer, newLinear, network.cudaFlag)
+            
 
-                if network.cudaFlag == True:
-                    torch.cuda.empty_cache()
-
-    else:
-
-        print("add or remove layer mutations")
+        if network.cudaFlag == True:
+            torch.cuda.empty_cache()
 
     oldNetwork.updateGradFlag(True)
     network.updateGradFlag(True)
@@ -53,13 +64,33 @@ def executeMutation(oldNetwork, newAdn):
     return network
 
 
-def showParameters(network):
+def traditionalMutation(oldLayer, newLayer, flagCuda):
     
-    for node in network.nodes:
+    dictionaryMutation = MutationsDictionary()
 
-        layer = node.objects[0]
-        print("adn layer: ", layer.adn)
-        
-        if layer.getFilter() is not None:
-            print("Filter shape: ", layer.getFilter().shape)
-            print("Bias shape: ", layer.getBias().shape)
+    mutation = dictionaryMutation.getMutation(oldLayer.adn, newLayer.adn)
+    
+    oldBias = oldLayer.getBias().clone()
+    oldFilter = oldLayer.getFilter().clone()
+
+    if mutation is not None:
+        #print("mutation=", mutation)
+        mutation.doMutate(oldFilter, oldBias, newLayer, cuda=flagCuda)
+    else:
+        #print("sending parameters=", newLayer.adn)
+        newLayer.setFilter(oldFilter)
+        newLayer.setBias(oldBias)
+
+def initNewConvolution(newConvolution):
+    factor_n = 0.25
+    entries = newConvolution.adn[1]
+
+    torch.nn.init.constant_(newConvolution.object.weight, factor_n / entries)
+    torch.nn.init.constant_(newConvolution.object.bias, 0)
+
+    '''
+    print("new conv2d filter")
+    print(newConvolution.object.weight)
+    print("new conv2d bias")
+    print(newConvolution.object.bias)
+    '''
