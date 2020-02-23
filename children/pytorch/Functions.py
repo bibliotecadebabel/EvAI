@@ -40,10 +40,15 @@ def Nothing(layer):
 def conv2d_propagate(layer):
     
     parent = layer.node.parents[0].objects[0]
+    ##lenght = len(layer.getFilter()[0].view(-1))
 
-    lenght = len(layer.getFilter()[0].view(-1))
-  
-    value = layer.object(parent.value) / (lenght)
+    shapeFilter = layer.getFilter().shape
+
+    #print("shape filter=", shapeFilter)
+    
+    normalize = shapeFilter[2] * shapeFilter[3]
+
+    value = layer.object(parent.value) / normalize
     
     sigmoid = torch.nn.Sigmoid()
     
