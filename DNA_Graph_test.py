@@ -51,8 +51,8 @@ def linear_kernel_width(x,y):
     #print(space.key2node(center))
     return space
 
-
-linear_kernel_depth(11,11)
+linear_filter(11,11)
+#linear_kernel_depth(11,11)
 #linear_filter_new(11,11)
 #linear_kernel_width_new(11,11)
 #linear_filter(11,11)

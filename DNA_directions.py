@@ -1,0 +1,111 @@
+import utilities.Quadrants as qu
+import utilities.Node as nd
+import utilities.Graphs as gr
+import TangentPlane as tplane
+from copy import deepcopy
+
+class Direction():
+    def __init__(self,type,creator):
+        self.type=type
+        self.creator=creator
+
+
+Directions={}
+Mutations=[]
+
+#linear graph that changes value increases x,y dimension of kernel
+
+type=(0,1,0,0)
+def increase_filters(num_layer,source_DNA):
+    total_layers=len(source_DNA)
+    if num_layer>len(source_DNA)-3:
+        return None
+    else:
+        out_DNA=list(source_DNA)
+        layer=list(out_DNA[num_layer])
+        layer_f=list(out_DNA[num_layer+1])
+        layer[2]=layer[2]+1
+        layer_f[1]=layer_f[1]+1
+        out_DNA[num_layer]=tuple(layer)
+        out_DNA[num_layer+1]=tuple(layer_f)
+        return tuple(out_DNA)
+
+creator=increase_filters
+Mutations.append(Direction(type,creator))
+
+type=(0,-1,0,0)
+def decrease_filters(num_layer,source_DNA):
+    total_layers=len(source_DNA)
+    if num_layer>len(source_DNA)-3:
+        return None
+    else:
+        out_DNA=list(source_DNA)
+        layer=list(out_DNA[num_layer])
+        layer_f=list(out_DNA[num_layer+1])
+        if layer[2]-1<2:
+            return None
+        else:
+            layer[2]=layer[2]-1
+            layer_f[1]=layer_f[1]-1
+            out_DNA[num_layer]=tuple(layer)
+            out_DNA[num_layer+1]=tuple(layer_f)
+            return tuple(out_DNA)
+
+creator=decrease_filters
+Mutations.append(Direction(type,creator))
+
+def modify_layer_kernel(layer_DNA,num):
+    out_DNA=list(layer_DNA)
+    if out_DNA[3]+num<2:
+        return None
+    else:
+        out_DNA[3]=out_DNA[3]+num
+        out_DNA[4]=out_DNA[4]+num
+        return tuple(out_DNA)
+
+type=(0,0,1,1)
+
+def increase_kernel(num_layer,source_DNA):
+    total_layers=len(source_DNA)
+    if num_layer>len(source_DNA)-2:
+        return None
+    else:
+        out_DNA=list(source_DNA)
+        layer=list(out_DNA[num_layer])
+        layer_f=list(out_DNA[num_layer+1])
+        if len(layer_f) == 3:
+            return None
+        else:
+            out_DNA[num_layer]=modify_layer_kernel(layer,1)
+            out_DNA[num_layer+1]=modify_layer_kernel(layer_f,-1)
+            return tuple(out_DNA)
+
+creator=increase_kernel
+Mutations.append(Direction(type,creator))
+
+def decrease_kernel(num_layer,source_DNA):
+    total_layers=len(source_DNA)
+    if num_layer>len(source_DNA)-2:
+        return None
+    else:
+        out_DNA=list(source_DNA)
+        layer=list(out_DNA[num_layer])
+        layer_f=list(out_DNA[num_layer+1])
+        if len(layer_f) == 3:
+            return None
+        else:
+            new_layer=modify_layer_kernel(layer,-1)
+            if not(new_layer):
+                return None
+            else:
+                out_DNA[num_layer]=new_layer
+                out_DNA[num_layer+1]=modify_layer_kernel(layer_f,1)
+                return tuple(out_DNA)
+
+
+creator=decrease_kernel
+Mutations.append(Direction(type,creator))
+
+
+for mutation in Mutations:
+    Directions.update({mutation.type : mutation.creator})
