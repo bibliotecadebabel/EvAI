@@ -136,7 +136,6 @@ class RemoveDimensionKernel(Mutation):
             resized = torch.zeros(shape[0], shape[1], shape[2]-1, shape[3]-1)
         
         #oldFilter.resize_(shape[0], shape[1], shape[2], shape[3]-1, shape[4]-1)
-
         
         for out_channel in range(shape[0]):
             for in_channel in range(shape[1]):
