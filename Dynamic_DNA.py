@@ -16,14 +16,6 @@ class Dynamic_DNA():
         q=node.objects[0]
         return q.shape
 
-    def imprimir(self):
-        for node in self.objects:
-            print('The kid(s) of')
-            print(self.node2key(node))
-            print('are(is):')
-            for nodek in node.kids:
-                print(self.node2key(nodek))
-
     def update_space_default(self):
         pass
 
@@ -66,7 +58,7 @@ class Dynamic_DNA():
                     while par_dE<prob**2 and j+1<len(node.kids):
                         j=j+1
                         if force_field[j]<=0:
-                            par_dE=force_field**2
+                            par_dE=force_field[j]**2
                     particle.position=[]
                     particle.position.append(node)
                     particle.velocity=[]
