@@ -83,6 +83,8 @@ def increase_kernel(num_layer,source_DNA):
 creator=increase_kernel
 Mutations.append(Direction(type,creator))
 
+
+type=(0,0,-1,-1)
 def decrease_kernel(num_layer,source_DNA):
     total_layers=len(source_DNA)
     if num_layer>len(source_DNA)-2:
@@ -104,6 +106,30 @@ def decrease_kernel(num_layer,source_DNA):
 
 
 creator=decrease_kernel
+Mutations.append(Direction(type,creator))
+
+type=(1,0,0,0)
+def add_layer(num_layer,source_DNA):
+    total_layers=len(source_DNA)
+    if not(num_layer == len(source_DNA)-3):
+        return None
+    else:
+        out_DNA=list(source_DNA)
+        layer=list(out_DNA[num_layer])
+        num_filters=layer[2]
+        new_layer_o=modify_layer_kernel(layer,-1)
+        if not(new_layer_o):
+            return None
+        else:
+            new_layer_f=list(new_layer_o)
+            new_layer_f[1]=num_filters
+            new_layer_f[3]=2
+            new_layer_f[4]=2
+            out_DNA[num_layer]=new_layer_o
+            out_DNA.insert(len(source_DNA)-2,tuple(new_layer_f))
+            return tuple(out_DNA)
+
+creator=add_layer
 Mutations.append(Direction(type,creator))
 
 

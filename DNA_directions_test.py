@@ -44,7 +44,18 @@ def kernel_decrease(x,y):
     print(dir.decrease_kernel(1,center))
     return
 
+def add_layer(x,y):
+    center=((0, 3, 4, 6,6),(0, 4,5, x-5, y-5), (1, 5, 2), (2,))
+    print('linear_filter: done')
+    print(center)
+    print('has mutated to')
+    print(dir.add_layer(0,center))
+    print('and')
+    print(dir.add_layer(1,center))
+    return
+
 #linear_filter_add(11,11)
 #linear_filter_remove(11,11)
 #kernel_increase(11,11)
-kernel_decrease(11,11)
+#kernel_decrease(11,11)
+add_layer(11,11)

@@ -2,6 +2,52 @@ import utilities.Quadrants as qu
 import utilities.Node as nd
 import utilities.Graphs as gr
 import TangentPlane as tplane
+from DNA_conditions import Mutations
+
+class creator(types,condition):
+    self.types=types
+    self.condition=condition
+    self.directions=[]
+    for type in types:
+        direction=Mutations.get(type)
+        if direction:
+            self.directions.append(direction)
+            type=tuple(i * (-1) for i in type)
+            direction=Mutations.get(type)
+            if direction:
+                self.directions.append(direction)
+
+    def add_node(g,DNA):
+        node=nd.Node()
+        q=qu.Quadrant(DNA)
+        p=tplane.tangent_plane()
+        node.objects.append(q)
+        q.objects.append(p)
+        g.add_node(DNA,node)
+
+    def create(self,center,size,g=None):
+        if not(size<0):
+            if type(center) == tuple:
+                g=gr.Graph()
+                add_node(g,center)
+                center=g.key2node.get(center)
+                create(self,center,size,g)
+            else:
+                q=center.objects[0]
+                DNA_o=q.shape
+                node_o=center
+                for direction in self.directions:
+                    DNA_f=condition(direction(DNA_o))
+                    if DNA_f:
+                        add_node(g,DNA_f)
+                        node_f=g.key2node.get(DNA_f)
+                        g.add_edge(DNA_o,DNA_f)
+                for kid in center.kids:
+                    create(self,kid,size-1,g)
+        return g
+
+
+
 
 class Direction():
     def __init__(self,type,creator):
