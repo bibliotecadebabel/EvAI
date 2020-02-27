@@ -4,7 +4,7 @@ import utilities.Graphs as gr
 
 
 def max_layer(DNA,max):
-    if DNA or  len(DNA)-2>max = None:
+    if (DNA== None) or  (len(DNA)-2>max) :
         return False
     else:
-        return True
+        return DNA

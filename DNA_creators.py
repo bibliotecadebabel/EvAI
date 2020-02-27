@@ -2,22 +2,34 @@ import utilities.Quadrants as qu
 import utilities.Node as nd
 import utilities.Graphs as gr
 import TangentPlane as tplane
-from DNA_conditions import Mutations
+from DNA_directions import directions
 
-class creator(types,condition):
-    self.types=types
-    self.condition=condition
-    self.directions=[]
-    for type in types:
-        direction=Mutations.get(type)
-        if direction:
-            self.directions.append(direction)
-            type=tuple(i * (-1) for i in type)
-            direction=Mutations.get(type)
+class Creator():
+
+    def __init__(self,typos,condition):
+        self.typos=typos
+        self.condition=condition
+        self.directions=[]
+        for typo in typos:
+            direction=directions.get(typo)
+            print('the initial value of typo is')
+            print(typo)
             if direction:
                 self.directions.append(direction)
+                typo=tuple(i * (-1) for i in typo)
+                print('the final value of typo is')
+                print(typo)
+                direction=directions.get(typo)
+                print('the final value of direction is')
+                print(direction)
+                if direction:
+                    self.directions.append(direction)
+        print('The number of directions is')
+        print(len(self.directions))
+        print('The value of typos is:')
+        print(self.typos)
 
-    def add_node(g,DNA):
+    def add_node(self,g,DNA):
         node=nd.Node()
         q=qu.Quadrant(DNA)
         p=tplane.tangent_plane()
@@ -26,24 +38,26 @@ class creator(types,condition):
         g.add_node(DNA,node)
 
     def create(self,center,size,g=None):
-        if not(size<0):
-            if type(center) == tuple:
+        condition=self.condition
+        if size>0:
+            if isinstance(center,tuple):
                 g=gr.Graph()
-                add_node(g,center)
+                self.add_node(g,center)
                 center=g.key2node.get(center)
-                create(self,center,size,g)
+                self.create(center,size,g)
             else:
                 q=center.objects[0]
                 DNA_o=q.shape
                 node_o=center
                 for direction in self.directions:
-                    DNA_f=condition(direction(DNA_o))
-                    if DNA_f:
-                        add_node(g,DNA_f)
-                        node_f=g.key2node.get(DNA_f)
-                        g.add_edge(DNA_o,DNA_f)
+                    for k in range (len(DNA_o)-2):
+                        DNA_f=condition(direction(k,DNA_o))
+                        if DNA_f:
+                            self.add_node(g,DNA_f)
+                            node_f=g.key2node.get(DNA_f)
+                            g.add_edges(DNA_o,[DNA_f])
                 for kid in center.kids:
-                    create(self,kid,size-1,g)
+                    self.create(kid,size-1,g)
         return g
 
 
