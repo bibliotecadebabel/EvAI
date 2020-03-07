@@ -111,39 +111,6 @@ def create_objects(status):
     status.Dynamics=Dynamics
     status.objects=Dynamics.objects
 
-def plot(status,Display,size=None,tree=None):
-    white = 255,255,255
-    yellow = 180,180,0
-    i=0
-    q=tree
-    p=tree
-    width=p.objects[0].shape[0][1]
-    Height=q.objects[0].shape[1][1]
-    scale=size[2]
-    while i<scale:
-        q=q.kids[0]
-        i=i+1
-    lx=q.objects[0].shape[0][1]-q.objects[0].shape[0][0]
-    ly=q.objects[0].shape[1][1]-q.objects[0].shape[1][0]
-    Lx_o=lx*size[0][0]
-    Lx_f=lx*size[0][1]
-    Ly_o=p.objects[0].shape[1][1]-ly*size[1][0]
-    Ly_f=p.objects[0].shape[1][1]-ly*size[1][1]
-    ddx=(Lx_f-Lx_o)/(status.dx)
-    ddy=(Ly_f-Ly_o)/status.n*2
-    status.frame1=[[0,Height],[1,0],[0,-1]]
-    status.frame2=[[Lx_o+(Lx_f-Lx_o)/2,Ly_o/2*4/5],[(Lx_f-Lx_o)/2,0],[0,Ly_f-Ly_o/2*4/5]]
-    frame1=status.frame1
-    frame2=status.frame2
-    for i in range(len(status.objects)-1):
-        px_o=Lx_o+i*ddx
-        px_f=Lx_o+(i+1)*ddx
-        py_o=Ly_o+status.objects[i].objects[0].objects[0].num_particles*ddy
-        py_f=Ly_o+status.objects[i+1].objects[0].objects[0].num_particles*ddy
-        positions=[[px_o,py_o],[px_f,py_f]]
-#        print(positions)
-        pygame.draw.aaline(Display,white,positions[0],positions[1],True)
-
 status=Status()
 initialize_parameters(status)
 create_objects(status)

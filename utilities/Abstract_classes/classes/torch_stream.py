@@ -38,10 +38,22 @@ class TorchStream(Stream):
         p=self.log_size
         if log.signal and not(log.log):
             net=log.new_net
-            log.old_net=net.clone()
+            log.old_net=net.clone()     
             log.old_net.history_loss=[]
             net.Training(data=a[0],
                 p=self.log_size,
+                dt=self.dt,
+                labels=a[1])
+            log.charge(net.history_loss)
+            net.history_loss=[]
+            log.signal=False
+            #log.signal=False
+        elif log.signal and (len(log.log) <5):
+            net=log.get_net()
+            log.old_net=net.clone()
+            log.old_net.history_loss=[]
+            net.Training(data=a[0],
+                p=self.log_size-5,
                 dt=self.dt,
                 labels=a[1])
             log.charge(net.history_loss)

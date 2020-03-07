@@ -21,7 +21,6 @@ class Charge_log(ABC):
             return  None
 
     def charge(self,charge):
-        self.signal=False
         self.log.extend(charge)
 
 class Stream(ABC):

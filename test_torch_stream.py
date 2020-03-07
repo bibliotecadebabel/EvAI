@@ -65,12 +65,15 @@ def test_charge():
     stream.add_node(DNA)
     stream.link_node(DNA,network)
     log=stream.key2log(DNA)
-    stream.charge_nodes()
+    log.signal=True
+    stream.charge_node(DNA)
     i=0
     while i<100:
-        print('With signal on')
-        print(log.log)
         stream.charge_nodes()
+        print(log.log)
+        print('With signal on')
+        print(len(stream.Graph.key2node))
+        stream.key2signal_on(DNA)
         stream.pop()
         i=i+1
     stream.remove_node(DNA)
@@ -122,7 +125,10 @@ def test_add_net():
     DNA=create_DNA(2,dataGen)
     stream.add_net(DNA)
 
+
+
+test_charge()
 #test_get_energy()
 #test_get_net()
-test_add_net()
+#test_add_net()
 #torch_stream_add()
