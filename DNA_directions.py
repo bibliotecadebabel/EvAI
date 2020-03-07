@@ -27,6 +27,17 @@ def increase_filters(num_layer,source_DNA):
 creator=increase_filters
 directions.update({type:creator})
 
+type=(1,1,0,0)
+def increase_filters_first(num_layer,source_DNA):
+    total_layers=len(source_DNA)
+    if not(num_layer == 0):
+        return None
+    else:
+        return increase_filters(0,source_DNA)
+
+creator=increase_filters_first
+directions.update({type:creator})
+
 type=(0,-1,0,0)
 def decrease_filters(num_layer,source_DNA):
     total_layers=len(source_DNA)

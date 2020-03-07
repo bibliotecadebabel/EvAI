@@ -24,25 +24,23 @@ class DNA_Phase_space():
         return q.objects[0]
 
     def add_net(self,key):
-        stream=self.Stream
+        stream=self.stream
         stream.add_net(key)
         pass
 
     def node2V(self,node):
-        stream=self.Stream
+        stream=self.stream
         k_o=self.node2key(node)
         V_o=stream.findCurrentvalue(k_o)
-        #log=stream.key2log(k_o)
-        #log.signal=True
         return V_o
 
     def node2net(self,node):
-        stream=self.Stream
+        stream=self.stream
         return stream.get_net(self.node2key(node))
 
     def mutate(self,node_o,node_f):
         k_f=self.node2key(node_f)
-        stream=self.Stream
+        stream=self.stream
         if not(stream.get_net(k_f)):
             net=self.node2net(node_o)
             net_f=Mutate.executeMutation(net,k_f)
@@ -100,7 +98,7 @@ class DNA_Phase_space():
             p.diffussion_field=difussion_field
 
     def update_external_field(self):
-        stream=self.Stream
+        stream=self.stream
         nodes=self.objects
         for node in self.support:
             V_o=self.node2V(node)
@@ -113,7 +111,11 @@ class DNA_Phase_space():
                         self.mutate(node,kid)
                         V_f=self.node2V(kid)
                     dV=V_f-V_o
+                    key_f=self.node2key(kid)
+                    stream.key2signal_on(key_f)
                     external_field.append(dV)
+                key_o=key_f=self.node2key(node)
+                stream.key2signal_on(key_o)
                 p.external_field=external_field
 
     def update_interation_field(self):
@@ -127,7 +129,7 @@ class DNA_Phase_space():
         self.update_diffussion_field()
         self.update_external_field()
         self.update_interation_field()
-        #stream.pop()
+        self.stream.pop()
 
 
 
@@ -144,7 +146,7 @@ class DNA_Phase_space():
         self.support=[]
         dataGen = GeneratorFromImage.GeneratorFromImage(2, 100, cuda=False)
         dataGen.dataConv2d()
-        self.Stream=TorchStream(dataGen,10)
+        self.stream=TorchStream(dataGen,10)
 
 
 

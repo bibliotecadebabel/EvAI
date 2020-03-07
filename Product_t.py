@@ -18,6 +18,8 @@ from DNA_Phase_space import DNA_Phase_space
 from Dynamic_DNA import Dynamic_DNA
 from utilities.Abstract_classes.classes.torch_stream import TorchStream
 import children.pytorch.Network as nw
+from DNA_conditions import max_layer
+from DNA_creators import Creator
 import time
 
 class Status():
@@ -97,8 +99,11 @@ def create_objects(status):
     x = dataGen.size[1]
     y = dataGen.size[2]
     ks=[2]
+    def condition(DNA):
+        return max_layer(DNA,10)
+    creator=Creator((0,(1,1,0,0)),condition)
     center=((0, 3, ks[0], x, y), (1, ks[0], 2), (2,))
-    space=DNA_Graph(center,status.dx,(x,y))
+    space=DNA_Graph(center,status.dx,(x,y),condition,(0,(1,1,0,0)))
     Phase_space=DNA_Phase_space(space)
     Dynamics=Dynamic_DNA(space,Phase_space)
     Phase_space.create_particles(100)
@@ -161,7 +166,7 @@ while True:
     status.Transfer.readLoad()
     if status.active:
         update(status)
-        status.print_energy()
+        #status.print_energy()
 #        print_nets(status)
 #        time.sleep(0.5)
     else:

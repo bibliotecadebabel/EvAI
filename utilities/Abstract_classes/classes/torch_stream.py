@@ -48,6 +48,18 @@ class TorchStream(Stream):
             net.history_loss=[]
             log.signal=False
 
+    def key2signal_on(self,key):
+        log=self.key2log(key)
+        if log:
+            log.signal=True
+        pass
+
+    def key2signal_off(self,key):
+        log=stream.key2log(key)
+        if log:
+            log.signal=False
+        pass
+
     def link_node(self,key,net=None):
         log=self.key2log(key)
         log.signal=True
