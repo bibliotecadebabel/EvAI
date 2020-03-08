@@ -31,7 +31,7 @@ class Network(nn.Module):
 
     def setAttribute(self, name, value):
         setattr(self,name,value)
-    
+
     def __getAttribute(self, name):
 
         attribute = None
@@ -41,27 +41,27 @@ class Network(nn.Module):
             pass
 
         return attribute
-    
+
     def deleteAttribute(self, name):
         try:
             delattr(self, name)
         except AttributeError:
             pass
-    
+
     def executeLayer(self, layerName, x):
 
         layer = self.__getAttribute(layerName)
 
         if layer is not None:
-            
+
             return layer(x)
-        
+
         else:
 
             return x
 
     def __createStructure(self):
-        
+
         graph = Graphs.Graph(True)
 
         amount_of_nodes = len(self.adn) + 1
@@ -100,7 +100,7 @@ class Network(nn.Module):
             layer = self.nodes[i].objects[0]
             biasDer = layer.getBiasDer()
             filterDer = layer.getFilterDer()
-                
+
             if biasDer is not None:
                 layer.bias_der_total += (biasDer / n) * peso
 
@@ -134,11 +134,11 @@ class Network(nn.Module):
 
             if layer.getBiasDer() is not None:
                 layer.getBiasDer().data.zero_()
-            
+
             if layer.getFilterDer() is not None:
                 layer.getFilterDer().data.zero_()
-            
-        
+
+
         for node in self.nodes:
             layer = node.objects[0]
             if layer.value is not None:
@@ -146,7 +146,7 @@ class Network(nn.Module):
                     #print("grad: ", layer.value.grad)
                     layer.value.grad.data.zero_()
 
-             
+
 
     def Reset_der_total(self):
 
@@ -160,9 +160,9 @@ class Network(nn.Module):
                 layer.filter_der_total = layer.filter_der_total * 0
 
         self.total_value  = 0
-    
 
-    
+
+
     def assignLabels(self, label):
 
         for node in self.nodes:
@@ -170,7 +170,7 @@ class Network(nn.Module):
 
     def Update(self, dt):
 
-        
+
         for node in self.nodes[:-1]:
             layer = node.objects[0]
 
@@ -179,12 +179,12 @@ class Network(nn.Module):
 
             if layer.getBias() is not None:
                 layer.getBias().data -= (layer.bias_der_total * dt)
-        
+
     def Predict(self, image, label):
         #self.assignLabels(torch.tensor([0], dtype=torch.long))
-        
+
         #labelTensor = torch.tensor([label.item()]).long().cuda()
-        
+
         labelTensor = tensorFactory.createTensor(body=[label.item()], cuda=self.cudaFlag, requiresGrad=False)
         self.assignLabels(labelTensor)
 
@@ -215,14 +215,14 @@ class Network(nn.Module):
         #self.__doFoward()
         self.__doBackward()
         self.updateGradFlag(False)
-        
+
         self.total_value += ((self.__getLossLayer().value)/n).item()
         #self.Acumulate_der(n, peso)
         #self.Reset_der()
 
     def Training(self, data, labels, dt=0.1, p=1):
 
-            self.optimizer = optim.SGD(self.parameters(), lr=dt, momentum=0.1)
+            self.optimizer = optim.SGD(self.parameters(), lr=dt, momentum=0)
             n = len(data) * 5/4
             peso = len(data) / 4
 
@@ -231,12 +231,12 @@ class Network(nn.Module):
 
                 '''
                 if i == 1:
-                    print("L=", self.total_value, " i=", str(i), "adn=", self.nodes[2].objects[0].adn," - ", self.nodes[3].objects[0].adn) 
+                    print("L=", self.total_value, " i=", str(i), "adn=", self.nodes[2].objects[0].adn," - ", self.nodes[3].objects[0].adn)
 
                 if i % 200 == 199:
                     print("L=", self.total_value, " i=", str(i))
                 '''
-                
+
                 self.assignLabels(labels)
                 #self.Reset_der_total()
                 self.total_value = 0
@@ -250,7 +250,7 @@ class Network(nn.Module):
                 #self.Update(dt)
                 self.history_loss.append(self.total_value)
                 i=i+1
-    
+
     def updateGradFlag(self, flag):
 
         for node in self.nodes[:-1]:
@@ -259,13 +259,13 @@ class Network(nn.Module):
 
             if layer.getBias() is not None:
                 layer.getBias().requires_grad = flag
-            
+
             if layer.getBiasDer() is not None:
                 layer.getBiasDer().requires_grad = flag
-            
+
             if layer.getFilter() is not None:
                 layer.getFilter().requires_grad = flag
-            
+
             if layer.getFilterDer() is not None:
                 layer.getFilterDer().requires_grad = flag
 
@@ -274,13 +274,13 @@ class Network(nn.Module):
         pass
 
     def addFilters(self):
-        
+
         self.updateGradFlag(False)
         networkClone = self.clone()
 
         layerConv2d = networkClone.nodes[1].objects[0]
         layerLinear = networkClone.nodes[2].objects[0]
-        
+
         networkClone.updateGradFlag(False)
         layerConv2d.value.requires_grad = False
 
@@ -305,13 +305,13 @@ class Network(nn.Module):
 
         layerConv2d.getFilter().resize_(shapeFilterConv2d[0]+1, 3, shapeFilterConv2d[2], shapeFilterConv2d[3])
         layerConv2d.getBias().resize_(shapeFilterConv2d[0]+1)
-    
+
         layerConv2d.value.resize_(shapeValueConv2d[0], shapeValueConv2d[1]+1, shapeValueConv2d[2], shapeValueConv2d[3])
 
         layerLinear.getFilter().resize_(2, shapeFilterLinear[1]+1)
-        
+
         layerConv2d.getFilter()[shapeFilterConv2d[0]] = layerConv2d.getFilter()[shapeFilterConv2d[0]-1].clone()
-        
+
         layerConv2d.getBias()[shapeFilterConv2d[0]] = layerConv2d.getBias()[shapeFilterConv2d[0]-1].clone()
 
         layerConv2d.value[shapeValueConv2d[0]-1][shapeValueConv2d[1]] = layerConv2d.value[shapeValueConv2d[0]-1][shapeValueConv2d[1]-1].clone()
@@ -333,7 +333,7 @@ class Network(nn.Module):
 
         layerConv2d = self.nodes[1].objects[0]
         layerLinear = self.nodes[2].objects[0]
-           
+
         shapeFilterConv2d = layerConv2d.getFilter().shape
         shapeFilterLinear = layerLinear.getFilter().shape
 
@@ -346,17 +346,17 @@ class Network(nn.Module):
 
         cloneConv2dFilter.resize_(shapeFilterConv2d[0]+1, 3, shapeFilterConv2d[2], shapeFilterConv2d[3])
         cloneConv2dBias.resize_(shapeFilterConv2d[0]+1)
-    
+
         cloneLinearFilter.resize_(2, shapeFilterLinear[1]+1)
-        
+
         cloneConv2dFilter[shapeFilterConv2d[0]] = cloneConv2dFilter[shapeFilterConv2d[0]-1].clone()
-        
+
         cloneConv2dBias[shapeFilterConv2d[0]] = cloneConv2dBias[shapeFilterConv2d[0]-1].clone()
 
         for i in range(cloneLinearFilter.shape[0]):
             cloneLinearFilter[i][cloneLinearFilter.shape[1]-1] = cloneLinearFilter[i][cloneLinearFilter.shape[1]-2].clone()
 
-        
+
         newNetwork.nodes[1].objects[0].setFilter(cloneConv2dFilter)
         newNetwork.nodes[1].objects[0].setBias(cloneConv2dBias)
         newNetwork.nodes[2].objects[0].setFilter(cloneLinearFilter)
@@ -383,16 +383,16 @@ class Network(nn.Module):
         shapeValueConv2d = layerConv2d.value.shape
 
         self.updateGradFlag(False)
-            
+
         layerConv2d.getFilter().resize_(shapeFilterConv2d[0]-1, 3, shapeFilterConv2d[2], shapeFilterConv2d[3])
         layerConv2d.getBias().resize_(shapeFilterConv2d[0]-1)
-        
+
         layerConv2d.value.requires_grad = False
         layerConv2d.value.resize_(shapeValueConv2d[0], shapeValueConv2d[1]-1, shapeValueConv2d[2], shapeValueConv2d[3])
         layerConv2d.value.requires_grad = True
 
         layerLinear.getFilter().resize_(2, shapeFilterLinear[1]-1)
- 
+
         layerLinear.filter_der_total = 0
         layerLinear.bias_der_total = 0
         layerConv2d.filter_der_total = 0
@@ -402,12 +402,12 @@ class Network(nn.Module):
 
         self.updateGradFlag(True)
         '''
-       
+
     def forward(self, x):
         self.__doFoward()
 
     def __doFoward(self):
-        
+
         functions.Propagation(self.__getLossLayer())
 
     def __doBackward(self):
@@ -418,32 +418,32 @@ class Network(nn.Module):
     def __getLossLayer(self):
 
         return self.nodes[len(self.nodes)-1].objects[0]
-    
+
     def __getLayerProbability(self):
 
         return self.nodes[len(self.nodes)-2].objects[0]
 
 
     def getLossArray(self):
-        
+
         value = self.history_loss.copy()
         self.history_loss = []
         return value
-    
+
     def clone(self):
 
         newObjects = []
         newADN = tuple(list(self.adn))
-        
+
         network = Network(newADN,cudaFlag=self.cudaFlag)
-        
+
         for i in range(len(self.nodes) - 1):
             layerToClone = self.nodes[i].objects[0]
             layer = network.nodes[i].objects[0]
 
             if layerToClone.getBias() is not None:
                 layer.setBias(layerToClone.getBias().clone())
-            
+
             if layerToClone.getFilter() is not None:
                 layer.setFilter(layerToClone.getFilter().clone())
 
@@ -464,16 +464,16 @@ class Network(nn.Module):
         else:
             conv2d[2] -= 1
             linear[1] -= 1
-        
+
         modifyADN[0] = tuple(conv2d)
         modifyADN[1] = tuple(linear)
 
 
 
         self.adn = tuple(modifyADN)
-        
+
         #print("new ADN: ", self.adn)
-    
+
     def __printGrad(self):
         if self.nodes[1].objects[0].getFilter().grad is not None:
             layer1 = self.nodes[1].objects[0]

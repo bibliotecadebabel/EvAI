@@ -26,7 +26,7 @@ class TorchStream(Stream):
             out_net.history_loss=[]
             return out_net
 
-    def __init__(self,dataGen,log_size=200,dt=0.01):
+    def __init__(self,dataGen,log_size=200,dt=0.001):
         super().__init__(self.Torch_log_creator)
         self.log_size=log_size
         self.dataGen=dataGen
