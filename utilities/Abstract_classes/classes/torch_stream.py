@@ -38,7 +38,7 @@ class TorchStream(Stream):
         p=self.log_size
         if log.signal and not(log.log):
             net=log.new_net
-            log.old_net=net.clone()     
+            log.old_net=net.clone()
             log.old_net.history_loss=[]
             net.Training(data=a[0],
                 p=self.log_size,
@@ -46,8 +46,6 @@ class TorchStream(Stream):
                 labels=a[1])
             log.charge(net.history_loss)
             net.history_loss=[]
-            log.signal=False
-            #log.signal=False
         elif log.signal and (len(log.log) <5):
             net=log.get_net()
             log.old_net=net.clone()
@@ -58,6 +56,7 @@ class TorchStream(Stream):
                 labels=a[1])
             log.charge(net.history_loss)
             net.history_loss=[]
+        if log:
             log.signal=False
 
     def key2signal_on(self,key):
@@ -109,6 +108,16 @@ class TorchStream(Stream):
             node=item[1]
             log=node.get_object()
             print('The energy of {} is {}'.format(key, log.Currentvalue()))
+            k += 1
+    def print_signal(self):
+        Graph=self.Graph
+        dict=Graph.key2node
+        k=0
+        for item in dict.items():
+            key=item[0]
+            node=item[1]
+            log=node.get_object()
+            print('The signal of {} is {}'.format(key, log.signal))
             k += 1
 
     def sync(self):

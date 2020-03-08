@@ -122,8 +122,8 @@ class DNA_Phase_space():
         pass
 
     def update(self):
-        #stream=self.Stream
-        #stream.charge_nodes()
+        stream=self.stream
+        stream.charge_nodes()
         self.DNA_graph.update()
         self.update_density()
         self.update_diffussion_field()
@@ -146,7 +146,7 @@ class DNA_Phase_space():
         self.support=[]
         dataGen = GeneratorFromImage.GeneratorFromImage(2, 100, cuda=False)
         dataGen.dataConv2d()
-        self.stream=TorchStream(dataGen,10)
+        self.stream=TorchStream(dataGen,1000)
 
 
 

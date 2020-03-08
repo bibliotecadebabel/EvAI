@@ -61,8 +61,12 @@ class Status():
         DNA_graph.imprimir()
     def print_energy(self):
         phase_space=self.Dynamics.phase_space
-        stream=phase_space.Stream
+        stream=phase_space.stream
         stream.imprimir()
+    def print_signal(self):
+        phase_space=self.Dynamics.phase_space
+        stream=phase_space.stream
+        stream.print_signal()
 
 
 def potential(x,status=None):
@@ -133,7 +137,8 @@ while True:
     status.Transfer.readLoad()
     if status.active:
         update(status)
-        #status.print_energy()
+        status.print_energy()
+        #status.print_signal()
 #        print_nets(status)
 #        time.sleep(0.5)
     else:
