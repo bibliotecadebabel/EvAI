@@ -67,6 +67,9 @@ class Status():
         phase_space=self.Dynamics.phase_space
         stream=phase_space.stream
         stream.print_signal()
+    def print_particles(self):
+        Dynamics=self.Dynamics
+        Dynamics.print_particles()
 
 
 def potential(x,status=None):
@@ -137,7 +140,8 @@ while True:
     status.Transfer.readLoad()
     if status.active:
         update(status)
-        status.print_energy()
+        #status.print_energy()
+        status.print_particles()
         #status.print_signal()
 #        print_nets(status)
 #        time.sleep(0.5)

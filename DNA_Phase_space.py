@@ -121,6 +121,67 @@ class DNA_Phase_space():
     def update_interation_field(self):
         pass
 
+    def print_diffussion_field(self):
+        for node in self.objects:
+            print('The diffusion field between')
+            print(self.node2key(node))
+            print('and')
+            k=0
+            for nodek in node.kids:
+                print(self.node2key(nodek))
+                print('is')
+                p=self.node2plane(node)
+                print(p.diffussion_field[k])
+                k=k+1
+
+    def print_external_field(self):
+        for node in self.objects:
+            print('The diffusion field between')
+            print(self.node2key(node))
+            print('and')
+            k=0
+            for nodek in node.kids:
+                print(self.node2key(nodek))
+                print('is')
+                p=self.node2plane(node)
+                if p.external_field:
+                    print(p.external_field[k])
+                else:
+                    print(None)
+                k=k+1
+
+    def print_external_field(self):
+        for node in self.objects:
+            print('The diffusion field between')
+            print(self.node2key(node))
+            print('and')
+            k=0
+            for nodek in node.kids:
+                print(self.node2key(nodek))
+                print('is')
+                p=self.node2plane(node)
+                if p.external_field:
+                    print(p.external_field[k])
+                else:
+                    print(None)
+                k=k+1
+
+    def print_force_field(self):
+        for node in self.objects:
+            print('The force between')
+            print(self.node2key(node))
+            print('and')
+            k=0
+            for nodek in node.kids:
+                print(self.node2key(nodek))
+                print('is')
+                p=self.node2plane(node)
+                if p.force_field:
+                    print(p.force_field[k])
+                else:
+                    print(None)
+                k=k+1
+
     def update(self):
         stream=self.stream
         stream.charge_nodes()

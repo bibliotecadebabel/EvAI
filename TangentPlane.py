@@ -10,6 +10,7 @@ class tangent_plane():
         self.ball=None
         self.interaction_field=[]
         self.difussion_field=[]
+        self.external_field=[]
         self.force_field=[]
         self.distance=None
         self.energy=None

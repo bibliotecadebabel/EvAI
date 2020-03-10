@@ -35,7 +35,7 @@ class Dynamic_DNA():
                     component=component+p.external_field[k]*c_l
                 if p.interaction_field:
                     component=component+p.interaction_field[k]*c_i
-                p.force_field.append(component)
+                p.force_field.append(-component)
                 k=k+1
 
     def update_velocity(self):
@@ -88,6 +88,18 @@ class Dynamic_DNA():
                     if p.num_particles==0:
                         self.support.remove(node)
 
+    def print_particles(self):
+        Graph=self.Graph
+        dict=Graph.graph.key2node
+        for item in dict.items():
+            key=item[0]
+            node=item[1]
+            space=self.phase_space
+            plane=space.node2plane(node)
+            log=node.get_object()
+            print('The particles of {} are {}'.format(key, plane.num_particles))
+
+
     def update(self):
         self.phase_space.update()
         self.update_force_field()
@@ -108,10 +120,11 @@ class Dynamic_DNA():
             self.update_space=update_space
         else:
             self.update_space=self.update_space_default
-        self.diffusion_coefficient=1
+        self.diffusion_coefficient=100
         self.lost_coefficient=1
         self.interaction_coefficient=1
         self.dt=0.01
+        self.Graph=phase_space.DNA_graph
 
 
 
