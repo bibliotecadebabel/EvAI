@@ -20,6 +20,7 @@ class Dynamic_DNA():
         pass
 
     def update_force_field(self):
+        c_k=self.mutation_coefficient
         for node in self.support:
             p=self.node2plane(node)
             p.force_field=[]
@@ -35,7 +36,7 @@ class Dynamic_DNA():
                     component=component+p.external_field[k]*c_l
                 if p.interaction_field:
                     component=component+p.interaction_field[k]*c_i
-                p.force_field.append(-component)
+                p.force_field.append(-c_k*component)
                 k=k+1
 
     def update_velocity(self):
@@ -120,11 +121,13 @@ class Dynamic_DNA():
             self.update_space=update_space
         else:
             self.update_space=self.update_space_default
-        self.diffusion_coefficient=100
+        self.diffusion_coefficient=1
         self.lost_coefficient=1
         self.interaction_coefficient=1
         self.dt=0.01
+        self.mutation_coefficient=10000
         self.Graph=phase_space.DNA_graph
+
 
 
 

@@ -49,6 +49,23 @@ class Status():
         self.display=None
         self.scale=None
         self.sectors=None
+    def print_particles(self):
+        k=0
+        for node in self.objects:
+            p=node2plane(node)
+            print('The particels in')
+            print(k)
+            print('are')
+            print(p.num_particles)
+            k=k+1
+
+
+def node2quadrant(node):
+    return node.get_object()
+
+def node2plane(node):
+    quadrant=node2quadrant(node)
+    return quadrant.objects[0]
 
 def potential(x):
     return (x-50)**2

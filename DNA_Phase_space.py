@@ -1,11 +1,9 @@
-#import utilities.Quadrants as qu
-#import utilities.Node as nd
-#import utilities.Graphs as gr
-#import TangentPlane as tplane
 from Particle import particle as particle
 from utilities.Abstract_classes.classes.torch_stream import TorchStream
 from DAO import GeneratorFromImage
 import children.pytorch.MutateNetwork as Mutate
+import utilities.Graphs as gr
+import utilities.P_trees as tr
 
 
 class DNA_Phase_space():
@@ -182,6 +180,12 @@ class DNA_Phase_space():
                     print(None)
                 k=k+1
 
+    def attach_balls(self):
+        for node in self.objects:
+            p=self.node2plane(node)
+            p.ball=gr.spanning_tree(node,n=self.radius)
+            p.distance=tr.tree_distances(p.ball)
+
     def update(self):
         stream=self.stream
         stream.charge_nodes()
@@ -200,14 +204,16 @@ class DNA_Phase_space():
 
     def __init__(self,DNA_graph,
             Potential=None,Interaction=None,External=None):
-        self.DNA_graph =DNA_graph
-        self.objects=DNA_graph.objects
-        self.num_particles=None
+        self.DNA_graph = DNA_graph
+        self.objects = DNA_graph.objects
+        self.num_particles = None
         self.beta=2
         self.support=[]
         dataGen = GeneratorFromImage.GeneratorFromImage(2, 100, cuda=False)
         dataGen.dataConv2d()
         self.stream=TorchStream(dataGen,1000)
+        self.radius=3
+        self.attach_balls()
 
 
 

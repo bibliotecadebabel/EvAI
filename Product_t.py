@@ -70,6 +70,11 @@ class Status():
     def print_particles(self):
         Dynamics=self.Dynamics
         Dynamics.print_particles()
+    def print_difussion_filed(self):
+        Dynamics=self.Dynamics
+        phase_space=Dynamics.phase_space
+        phase_space.print_diffussion_field()
+
 
 
 def potential(x,status=None):
@@ -83,6 +88,8 @@ def interaction(r,status):
 
 def update(status):
     status.Dynamics.update()
+    status.Transfer.status=status
+    status.Transfer.update()
 
 def initialize_parameters(self):
     display_size=[1000,500]
@@ -113,7 +120,7 @@ def create_objects(status):
     space=DNA_Graph(center,status.dx,(x,y),condition,(0,(1,1,0,0)))
     Phase_space=DNA_Phase_space(space)
     Dynamics=Dynamic_DNA(space,Phase_space)
-    Phase_space.create_particles(100)
+    Phase_space.create_particles(status.n)
     Phase_space.beta=status.beta
     status.Dynamics=Dynamics
     status.objects=Dynamics.objects
@@ -143,6 +150,7 @@ while True:
         #status.print_energy()
         status.print_particles()
         #status.print_signal()
+        #status.print_difussion_filed()
 #        print_nets(status)
 #        time.sleep(0.5)
     else:
