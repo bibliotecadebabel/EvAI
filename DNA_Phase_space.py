@@ -46,6 +46,10 @@ class DNA_Phase_space():
             stream.link_node(k_f,net_f)
             stream.charge_node(k_f)
 
+    def interction_kernel(self,r):
+        alpha=self.alpha
+        return  r**(alpha)/(abs(alpha-1))
+
     def create_particles(self,N,key=None):
         if key == None:
             key=self.center()
@@ -97,7 +101,6 @@ class DNA_Phase_space():
 
     def update_external_field(self):
         stream=self.stream
-        nodes=self.objects
         for node in self.support:
             V_o=self.node2V(node)
             if V_o:
@@ -116,8 +119,30 @@ class DNA_Phase_space():
                 stream.key2signal_on(key_o)
                 p.external_field=external_field
 
-    def update_interation_field(self):
-        pass
+    def update_interaction_potential(self):
+        alpha=self.alpha
+        for node in self.objects:
+            p=self.node2plane(node)
+            distance=p.distance
+            p.interaction_potential=0
+            for key in distance.keys():
+                node_k=key.objects[0]
+                p_k=self.node2plane(node_k)
+                p.interaction_field=(p.interaction_potential
+                    +p_k.density
+                        *self.interction_kernel(distance[key]))
+
+    def update_interaction_field(self):
+        self.update_interaction_potential()
+        for node in self.support:
+            p_o=self.node2plane(node)
+            W_o=p_o.interaction_potential
+            interaction_field=[]
+            for kid in node.kids:
+                p_f=self.node2plane(node)
+                W_f=p_f.interaction_potential
+                interaction_field.append(W_f-W_o)
+
 
     def print_diffussion_field(self):
         for node in self.objects:
@@ -208,6 +233,7 @@ class DNA_Phase_space():
         self.objects = DNA_graph.objects
         self.num_particles = None
         self.beta=2
+        self.alpha=2
         self.support=[]
         dataGen = GeneratorFromImage.GeneratorFromImage(2, 100, cuda=False)
         dataGen.dataConv2d()

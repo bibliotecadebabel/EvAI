@@ -14,3 +14,4 @@ class tangent_plane():
         self.force_field=[]
         self.distance=None
         self.energy=None
+        self.interaction_potential=0

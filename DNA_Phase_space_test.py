@@ -46,7 +46,15 @@ def update_diffussion_field():
     Phase_space.update_diffussion_field()
     print('update_diffussion_field: done')
     Phase_space.print_diffussion_field()
-    pass
+
+def update_interaction_field():
+    Phase_space=initialize()
+    Phase_space.create_particles(100)
+    Phase_space.update_density()
+    Phase_space.alpha=1.5
+    Phase_space.update_interaction_field()
+    print('update_diffussion_field: done')
+    #Phase_space.print_diffussion_field()
 
 def update_external_field():
     Phase_space=initialize()
@@ -55,15 +63,15 @@ def update_external_field():
     Phase_space.update_external_field()
     print('update_external_field: done')
     Phase_space.print_external_field()
-    pass
 
 
 
 #create_particles()
 #update_density()
 #update_divergence()
-update_diffussion_field()
+#update_diffussion_field()
 #update_external_field()
+update_interaction_field()
 
 
 
