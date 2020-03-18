@@ -184,7 +184,7 @@ def Test_cloneNetwork(network, data):
         print("elimino filtro red clonada y entreno")
         clone.Training(data=data, dt=0.01, p=10)
         print("prob clone network: ", clone.nodes[3].objects[0].value)
-
+z
 
 dataGen = Data_generator.Data_gen()
 dataGen.S=200
