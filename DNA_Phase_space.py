@@ -48,7 +48,7 @@ class DNA_Phase_space():
 
     def interction_kernel(self,r):
         alpha=self.alpha
-        return  r**(alpha)/(abs(alpha-1))
+        return  -1*(r/1.5)**(alpha)
 
     def create_particles(self,N,key=None):
         if key == None:
@@ -120,7 +120,6 @@ class DNA_Phase_space():
                 p.external_field=external_field
 
     def update_interaction_potential(self):
-        alpha=self.alpha
         for node in self.objects:
             p=self.node2plane(node)
             distance=p.distance
@@ -128,20 +127,23 @@ class DNA_Phase_space():
             for key in distance.keys():
                 node_k=key.objects[0]
                 p_k=self.node2plane(node_k)
-                p.interaction_field=(p.interaction_potential
+                p.interaction_potential=(p.interaction_potential
                     +p_k.density
                         *self.interction_kernel(distance[key]))
 
     def update_interaction_field(self):
         self.update_interaction_potential()
-        for node in self.support:
+        for node in self.objects:
             p_o=self.node2plane(node)
             W_o=p_o.interaction_potential
             interaction_field=[]
+            k=0
             for kid in node.kids:
-                p_f=self.node2plane(node)
+                p_f=self.node2plane(kid)
                 W_f=p_f.interaction_potential
                 interaction_field.append(W_f-W_o)
+                k=k+1
+            p_o.interaction_field=interaction_field
 
 
     def print_diffussion_field(self):
@@ -173,9 +175,9 @@ class DNA_Phase_space():
                     print(None)
                 k=k+1
 
-    def print_external_field(self):
+    def print_interaction_field(self):
         for node in self.objects:
-            print('The diffusion field between')
+            print('The interaction field between')
             print(self.node2key(node))
             print('and')
             k=0
@@ -183,8 +185,8 @@ class DNA_Phase_space():
                 print(self.node2key(nodek))
                 print('is')
                 p=self.node2plane(node)
-                if p.external_field:
-                    print(p.external_field[k])
+                if p.interaction_field:
+                    print(p.interaction_field[k])
                 else:
                     print(None)
                 k=k+1
@@ -218,7 +220,7 @@ class DNA_Phase_space():
         self.update_density()
         self.update_diffussion_field()
         self.update_external_field()
-        self.update_interation_field()
+        self.update_interaction_field()
         self.stream.pop()
 
 
@@ -233,12 +235,12 @@ class DNA_Phase_space():
         self.objects = DNA_graph.objects
         self.num_particles = None
         self.beta=2
-        self.alpha=2
+        self.alpha=4
         self.support=[]
         dataGen = GeneratorFromImage.GeneratorFromImage(2, 100, cuda=False)
         dataGen.dataConv2d()
         self.stream=TorchStream(dataGen,1000)
-        self.radius=3
+        self.radius=10
         self.attach_balls()
 
 

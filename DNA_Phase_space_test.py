@@ -16,7 +16,7 @@ def initialize():
     def condition(DNA):
         return max_layer(DNA,10)
     center=((0, 3, ks[0], x, y), (1, ks[0], 2), (2,))
-    space=DNA_Graph(center,2,(x,y),condition,(0,(1,1,0,0)))
+    space=DNA_Graph(center,10,(x,y),condition,(0,(1,1,0,0)))
     Phase_space=DNA_Phase_space(space)
     return Phase_space
 
@@ -51,9 +51,10 @@ def update_interaction_field():
     Phase_space=initialize()
     Phase_space.create_particles(100)
     Phase_space.update_density()
-    Phase_space.alpha=1.5
+    Phase_space.alpha=5
     Phase_space.update_interaction_field()
     print('update_diffussion_field: done')
+    Phase_space.print_interaction_field()
     #Phase_space.print_diffussion_field()
 
 def update_external_field():
