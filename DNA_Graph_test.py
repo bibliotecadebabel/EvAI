@@ -18,7 +18,7 @@ def kernel_height_creator(x,y):
         return max_layer(DNA,10)
     creator=Creator(((0,1,0,0),(0,0,1,1)),condition)
     center=((0, 3, 4, 2, 2),(0, 4,5, x-1, y-1), (1, 5, 2), (2,))
-    space=space=DNA_Graph(center,8,(x,y),condition,(0,(0,0,1,1)))
+    space=space=DNA_Graph(center,20,(x,y),condition,(0,(0,0,1,1)))
     print('linear_filter: done')
     space.imprimir()
     print(space.length())
@@ -37,7 +37,7 @@ def linear_kernel_width_new(x,y):
     ks=[2]
     center=((0, 3, int(2*ks[0]), 1,2, 2),(0, int(2*ks[0]),ks[0], 1,x-1, y-1), (1, ks[0], 2), (2,))
     print('linear_kernel_width_new: done')
-    space=DNA_Graph(center,5,(x,y),(0,(0,0,0,1,1)))
+    space=DNA_Graph(center,2,(x,y),(0,(0,0,0,1,1)))
     print(space.type)
     space.imprimir()
     #print(space.key2node(center))

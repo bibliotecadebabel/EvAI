@@ -81,9 +81,12 @@ def increase_kernel(num_layer,source_DNA):
         if len(layer_f) == 3:
             return None
         else:
-            out_DNA[num_layer]=modify_layer_kernel(layer,1)
-            out_DNA[num_layer+1]=modify_layer_kernel(layer_f,-1)
-            return tuple(out_DNA)
+            if modify_layer_kernel(layer,1) and modify_layer_kernel(layer_f,-1):
+                out_DNA[num_layer]=modify_layer_kernel(layer,1)
+                out_DNA[num_layer+1]=modify_layer_kernel(layer_f,-1)
+                return tuple(out_DNA)
+            else:
+                return None
 
 creator=increase_kernel
 directions.update({type:creator})

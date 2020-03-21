@@ -51,13 +51,18 @@ class Creator():
                 node_o=center
                 for direction in self.directions:
                     for k in range (len(DNA_o)-2):
+#                        print('The value of k is')
+#                        print(k)
+#                        print('The value of DNA_o is:')
+#                        print(DNA_o)
                         DNA_f=condition(direction(k,DNA_o))
                         if DNA_f:
                             self.add_node(g,DNA_f)
                             node_f=g.key2node.get(DNA_f)
                             g.add_edges(DNA_o,[DNA_f])
-                for kid in center.kids:
-                    self.create(kid,size-1,g)
+                if center.kids:
+                    for kid in center.kids:
+                        self.create(kid,size-1,g)
         return g
 
 
