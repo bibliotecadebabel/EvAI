@@ -48,7 +48,7 @@ class DNA_Phase_space():
 
     def interction_kernel(self,r):
         alpha=self.alpha
-        return  -1*(r/1.5)**(alpha)
+        return  -1*(r/2.5)**(alpha)
 
     def create_particles(self,N,key=None):
         if key == None:
@@ -235,7 +235,7 @@ class DNA_Phase_space():
         self.objects = DNA_graph.objects
         self.num_particles = None
         self.beta=2
-        self.alpha=4
+        self.alpha=50
         self.support=[]
         dataGen = GeneratorFromImage.GeneratorFromImage(2, 100, cuda=False)
         dataGen.dataConv2d()
