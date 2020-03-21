@@ -95,7 +95,7 @@ def initialize_parameters(self):
     display_size=[1000,500]
     self.dt=0.01
     self.n=1000
-    self.dx=20
+    self.dx=8
     self.L=1
     self.beta=2
     self.alpha=2
@@ -116,8 +116,12 @@ def create_objects(status):
     def condition(DNA):
         return max_layer(DNA,10)
     creator=Creator((0,(1,1,0,0)),condition)
-    center=((0, 3, ks[0], x, y), (1, ks[0], 2), (2,))
-    space=DNA_Graph(center,status.dx,(x,y),condition,(0,(1,1,0,0)))
+    #Number of filters
+    #center=((0, 3, ks[0], x, y), (1, ks[0], 2), (2,))
+    #space=DNA_Graph(center,status.dx,(x,y),condition,(0,(1,1,0,0)))
+    #Dimension of kernel
+    center=((0, 3, 4, 2, 2),(0, 4,5, x-1, y-1), (1, 5, 2), (2,))
+    space=DNA_Graph(center,status.dx,(x,y),condition,(0,(0,0,1,1)))
     Phase_space=DNA_Phase_space(space)
     Dynamics=Dynamic_DNA(space,Phase_space)
     Phase_space.create_particles(status.n)

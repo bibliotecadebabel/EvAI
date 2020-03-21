@@ -28,7 +28,7 @@ class Status():
         self.tau=0.01
         self.n = 1000
         self.r=3
-        self.dx = 20
+        self.dx = 8
         self.L = 1
         self.beta = 2
         self.alpha = 1
@@ -207,7 +207,7 @@ def initialize_parameters(self):
     display_size=[1000,500]
     self.dt=0.01
     self.n=1000
-    self.dx=20
+    self.dx=8
     self.L=1
     self.beta=2
     self.alpha=2

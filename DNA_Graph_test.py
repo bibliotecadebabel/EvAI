@@ -13,13 +13,24 @@ def linear_filter_creator(x,y):
     space.imprimir()
     print(space.length())
 
+def kernel_height_creator(x,y):
+    def condition(DNA):
+        return max_layer(DNA,10)
+    creator=Creator(((0,1,0,0),(0,0,1,1)),condition)
+    center=((0, 3, 4, 2, 2),(0, 4,5, x-1, y-1), (1, 5, 2), (2,))
+    space=space=DNA_Graph(center,8,(x,y),condition,(0,(0,0,1,1)))
+    print('linear_filter: done')
+    space.imprimir()
+    print(space.length())
+
 def linear_kernel_depth(x,y):
+    def condition(DNA):
+        return max_layer(DNA,10)
     center=((0, 3, 10, 1,3, 3),(0,1,20, 3,3,3),(0,1,20,160,7, 7),(1,20 , 2), (2,))
     print('linear_kernel_depth: done')
-    space=DNA_Graph(center,5,(x,y),condition,(0,(0,0,1,0,0)))
-    print(space.type)
+    space=DNA_Graph(center,5,(x,y),condition,(0,(0,0,1,1)))
     space.imprimir()
-    #print(space.key2node(center))
+    print(space.length())
     return space
 
 def linear_kernel_width_new(x,y):
@@ -63,9 +74,10 @@ def linear_kernel_width(x,y):
     return space
 
 
-linear_filter_creator(11,11)
+#linear_filter_creator(11,11)
 #linear_filter(11,11)
-#linear_kernel_depth(11,11)
+#   linear_kernel_depth(11,11)
+kernel_height_creator(11,11)
 #linear_filter_new(11,11)
 #linear_kernel_width_new(11,11)
 #linear_filter(11,11)
