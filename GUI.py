@@ -98,7 +98,7 @@ while True:
     if Status.active:
         program.update(Status)
         program.plot(Status,gameDisplay,[[6,28],[8,14],5],sectors)
-        Status.print_particles()
+        #Status.print_particles()
 #        Status.mouse_frame1=pygame.mouse.get_pos()
     else:
         Status.Transfer.un_load()

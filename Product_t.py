@@ -131,10 +131,11 @@ def create_objects(status):
 
 status=Status()
 initialize_parameters(status)
-create_objects(status)
-print("objects created")
 status.Transfer=tran.TransferRemote(status,
     'remote2local.txt','local2remote.txt')
+status.Transfer.readLoad()
+create_objects(status)
+print("objects created")
 status.print_DNA()
 status.Transfer.un_load()
 status.Transfer.write()
