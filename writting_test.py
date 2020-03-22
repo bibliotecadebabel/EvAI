@@ -74,5 +74,9 @@ def update_external_field():
 
 space = update_interaction_field()
 controller = FileController.Controller(space)
-controller.imprimir(2, "TESTING-DNA")
+controller.writeTangent(2, "TESTING-DNA")
+controller.writeGraphShape(3,"TESTING-SHAPE")
 
+graph = controller.loadGraphShape(3, "TESTING-SHAPE")
+
+print(graph)
