@@ -77,7 +77,7 @@ class DNA_Phase_space():
 
     def interction_kernel(self,r):
         alpha=self.alpha
-        return  -1*(r/2.5)**(alpha)
+        return  -1*(r/self.influence)**(alpha)
 
     def create_particles(self,N,key=None):
         if key == None:
@@ -271,6 +271,7 @@ class DNA_Phase_space():
         dataGen.dataConv2d()
         self.stream=TorchStream(dataGen,1000)
         self.radius=10
+        self.influence=2
         self.node_max_particles=None
         self.attach_balls()
 

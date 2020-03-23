@@ -55,7 +55,8 @@ class Status():
         self.stream=None
         self.Graph=None
         self.Dynamics=None
-        self.typos=(0,(0,0,1,1))
+        self.typos=(0,(1,1,0,0))
+        self.influence=2
     def print_DNA(self):
         phase_space=self.Dynamics.phase_space
         DNA_graph=phase_space.DNA_graph
@@ -104,6 +105,7 @@ def initialize_parameters(self):
     self.L=1
     self.beta=2
     self.alpha=50
+    status.influence=2.5
     self.center=.5
     self.std_deviation=1
     self.Potantial=potential
@@ -119,7 +121,7 @@ def create_objects(status):
     y = dataGen.size[2]
     def condition(DNA):
         return max_layer(DNA,10)
-    creator=Creator((0,(1,1,0,0)),condition)
+    creator=Creator((0,(1,1,0,0),(0,0,1,1)),condition)
     typos=[]
     print('The value of typos is')
     print(status.typos)
@@ -139,6 +141,8 @@ def create_objects(status):
     Dynamics=Dynamic_DNA(space,Phase_space)
     Phase_space.create_particles(status.n)
     Phase_space.beta=status.beta
+    Phase_space.alpha=status.alpha
+    Phase_space.influence=status.influence
     status.Dynamics=Dynamics
     status.objects=Dynamics.objects
 
@@ -174,6 +178,8 @@ while True:
         update(status)
         #status.print_energy()
         #status.print_particles()
+        print('The iteration number is:')
+        print(k)
         status.print_max_particles()
         #print(status.typos)
         #status.print_signal()
