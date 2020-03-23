@@ -21,6 +21,10 @@ class DNA_Phase_space():
         q=node.objects[0]
         return q.objects[0]
 
+    def node2particles(self,node):
+        p=self.node2plane(node)
+        return p.num_particles
+
     def add_net(self,key):
         stream=self.stream
         stream.add_net(key)
@@ -30,7 +34,32 @@ class DNA_Phase_space():
         stream=self.stream
         k_o=self.node2key(node)
         V_o=stream.findCurrentvalue(k_o)
+        p=self.node2plane(node)
+        p.energy=V_o
         return V_o
+
+    def update_max_particles(self):
+        if self.support:
+            node_M=self.support[0]
+            max=self.node2particles(node_M)
+            for node in self.support:
+                if  self.node2particles(node)>max:
+                    node_M=node
+            self.node_max_particles=node_M
+        else:
+            self.node_max_particles=None
+
+    def print_max_particles(self):
+        node=self.node_max_particles
+        key=self.node2key(node)
+        plane=self.node2plane(node)
+        print('The particles of {} are {}'.format(key, plane.num_particles))
+        print('and its kid(s) ha(ve)(s):')
+        for nodek in node.kids:
+            key=self.node2key(nodek)
+            plane=self.node2plane(nodek)
+            print('The particles of {} are {}'.format(key, plane.num_particles))
+
 
     def node2net(self,node):
         stream=self.stream
@@ -221,6 +250,7 @@ class DNA_Phase_space():
         self.update_diffussion_field()
         self.update_external_field()
         self.update_interaction_field()
+        self.update_max_particles()
         self.stream.pop()
 
 
@@ -241,6 +271,7 @@ class DNA_Phase_space():
         dataGen.dataConv2d()
         self.stream=TorchStream(dataGen,1000)
         self.radius=10
+        self.node_max_particles=None
         self.attach_balls()
 
 

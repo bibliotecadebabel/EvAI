@@ -65,6 +65,13 @@ def update_external_field():
     print('update_external_field: done')
     Phase_space.print_external_field()
 
+def update():
+    Phase_space=initialize()
+    Phase_space.create_particles(100)
+    Phase_space.update()
+    print('update: done, max particles are:')
+    Phase_space.print_max_particles()
+
 
 
 #create_particles()
@@ -72,8 +79,8 @@ def update_external_field():
 #update_divergence()
 #update_diffussion_field()
 #update_external_field()
-update_interaction_field()
-
+#update_interaction_field()
+update()
 
 
 

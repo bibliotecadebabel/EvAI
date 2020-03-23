@@ -75,6 +75,10 @@ class Status():
         Dynamics=self.Dynamics
         phase_space=Dynamics.phase_space
         phase_space.print_diffussion_field()
+    def print_max_particles(self):
+        Dynamics=self.Dynamics
+        phase_space=Dynamics.phase_space
+        phase_space.print_max_particles()
 
 
 
@@ -169,7 +173,8 @@ while True:
     if status.active:
         update(status)
         #status.print_energy()
-        status.print_particles()
+        #status.print_particles()
+        status.print_max_particles()
         #print(status.typos)
         #status.print_signal()
         #status.print_difussion_filed()
