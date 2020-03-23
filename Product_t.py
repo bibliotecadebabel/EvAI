@@ -28,10 +28,10 @@ class Status():
         self.tau=0.01
         self.n = 1000
         self.r=3
-        self.dx = 20
+        self.dx = 8
         self.L = 1
         self.beta = 2
-        self.alpha = 1
+        self.alpha = 50
         self.Potantial = potential
         self.Interaction = interaction
         self.objects = []
@@ -55,6 +55,7 @@ class Status():
         self.stream=None
         self.Graph=None
         self.Dynamics=None
+        self.typos=(0,(0,0,1,1))
     def print_DNA(self):
         phase_space=self.Dynamics.phase_space
         DNA_graph=phase_space.DNA_graph
@@ -98,7 +99,7 @@ def initialize_parameters(self):
     self.dx=8
     self.L=1
     self.beta=2
-    self.alpha=2
+    self.alpha=50
     self.center=.5
     self.std_deviation=1
     self.Potantial=potential
@@ -112,16 +113,24 @@ def create_objects(status):
     dataGen=status.Data_gen
     x = dataGen.size[1]
     y = dataGen.size[2]
-    ks=[2]
     def condition(DNA):
         return max_layer(DNA,10)
     creator=Creator((0,(1,1,0,0)),condition)
+    typos=[]
+    print('The value of typos is')
+    print(status.typos)
+    #for element in status.typos:
+    #    if type(element) == list:
+    #        typos.append(tuple(element))
+    #    else:
+    #        typos.append(element)
+    #status.typos=tuple(typos)
     #Number of filters
-    #center=((0, 3, ks[0], x, y), (1, ks[0], 2), (2,))
+    #center=((0, 3, 2, x, y), (1, 2, 2), (2,))
     #space=DNA_Graph(center,status.dx,(x,y),condition,(0,(1,1,0,0)))
     #Dimension of kernel
     center=((0, 3, 4, 2, 2),(0, 4,5, x-1, y-1), (1, 5, 2), (2,))
-    space=DNA_Graph(center,status.dx,(x,y),condition,(0,(0,0,1,1)))
+    space=DNA_Graph(center,status.dx,(x,y),condition,status.typos)
     Phase_space=DNA_Phase_space(space)
     Dynamics=Dynamic_DNA(space,Phase_space)
     Phase_space.create_particles(status.n)
@@ -133,8 +142,10 @@ status=Status()
 initialize_parameters(status)
 status.Transfer=tran.TransferRemote(status,
     'remote2local.txt','local2remote.txt')
-status.Transfer.readLoad()
+#status.Transfer.readLoad()
 create_objects(status)
+print('The value of typos after loading is')
+print(status.typos)
 print("objects created")
 status.print_DNA()
 status.Transfer.un_load()
@@ -149,11 +160,17 @@ while False:
     k=k+1
     pass
 while True:
-    status.Transfer.readLoad()
+    #\begin{with gui}
+    #status.Transfer.readLoad()
+    #\end{with gui}
+    #\begin{wituhout gui}
+    status.active=True
+    #\end{without gui}
     if status.active:
         update(status)
         #status.print_energy()
         status.print_particles()
+        #print(status.typos)
         #status.print_signal()
         #status.print_difussion_filed()
 #        print_nets(status)

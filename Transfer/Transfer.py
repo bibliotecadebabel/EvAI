@@ -12,6 +12,7 @@ class TransferLocal(Transfer):
         transfer.dx=status.dx
         transfer.beta=status.beta
         transfer.active = status.active
+        transfer.typos = status.typos
     def load(self):
         i=0
         transfer=self.status_transfer
@@ -49,6 +50,7 @@ class TransferRemote(Transfer):
         status.dx=transfer.dx
         status.beta=transfer.beta
         status.active = transfer.active
+        status.typos = transfer.typos 
 
 
 

@@ -63,6 +63,7 @@ class status_transfer:
         self.alpha = None
         self.active = None
         self.particles= None
+        self.typos = None
 
     def jsonToObject(self, body):
         self.dt = body['dt']
@@ -75,6 +76,7 @@ class status_transfer:
         self.alpha = body['alpha']
         self.active = body['active']
         self.particles = body['particles']
+        self.typos = body['typos']
 
 
 
