@@ -4,6 +4,7 @@ from DAO import GeneratorFromImage
 import children.pytorch.MutateNetwork as Mutate
 import utilities.Graphs as gr
 import utilities.P_trees as tr
+from timing import timing
 
 
 class DNA_Phase_space():
@@ -247,9 +248,12 @@ class DNA_Phase_space():
         stream.charge_nodes()
         self.DNA_graph.update()
         self.update_density()
-        self.update_diffussion_field()
-        self.update_external_field()
-        self.update_interaction_field()
+        print('Computing the diffusion field took:')
+        timing(self.update_diffussion_field)
+        print('Computing the external field took:')
+        timing(self.update_external_field)
+        print('Computing the interaction field took:')
+        timing(self.update_interaction_field)
         self.update_max_particles()
         self.stream.pop()
 

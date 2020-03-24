@@ -46,6 +46,9 @@ class TorchStream(Stream):
                 labels=a[1])
             log.charge(net.history_loss)
             net.history_loss=[]
+            print('The net')
+            print(key)
+            print('is charging')
         elif log.signal and (len(log.log) <5):
             net=log.get_net()
             log.old_net=net.clone()
@@ -54,8 +57,16 @@ class TorchStream(Stream):
                 p=self.log_size-5,
                 dt=self.dt,
                 labels=a[1])
+            print('The net')
+            print(key)
+            print('is charging')
             log.charge(net.history_loss)
             net.history_loss=[]
+        print('The net')
+        print(key)
+        print('is not charging')
+        print('The size of its log is')
+        print(len(log.log))
         if log:
             log.signal=False
 
