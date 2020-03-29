@@ -1,6 +1,7 @@
 from DAO import GeneratorFromImage
 from DNA_Graph import DNA_Graph
 from DNA_Phase_space import DNA_Phase_space
+from timing import timing
 import numpy as np
 
 class Dynamic_DNA():
@@ -75,7 +76,7 @@ class Dynamic_DNA():
                 node_f=particle.velocity[0]
                 if not(node==node_f):
                     plane_f=self.node2plane(node_f)
-                    phase_space.mutate(node,node_f)
+                    #phase_space.mutate(node,node_f)
                     particle.position=[]
                     particle.velocity=[]
                     particle.position.append(node_f)
@@ -102,10 +103,13 @@ class Dynamic_DNA():
 
 
     def update(self):
-        self.phase_space.update()
-        self.update_force_field()
-        self.update_velocity()
-        self.update_particles()
+        timing(self.phase_space.update)
+        print('updating force field took:')
+        timing(self.update_force_field)
+        print('updating velocity took:')
+        timing(self.update_velocity)
+        print('Moving particles took:')
+        timing(self.update_particles)
 
 
 
@@ -125,7 +129,7 @@ class Dynamic_DNA():
         self.lost_coefficient=1
         self.interaction_coefficient=1
         self.dt=0.01
-        self.mutation_coefficient=10000
+        self.mutation_coefficient=1000
         self.Graph=phase_space.DNA_graph
 
 

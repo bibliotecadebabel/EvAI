@@ -245,7 +245,8 @@ class DNA_Phase_space():
 
     def update(self):
         stream=self.stream
-        stream.charge_nodes()
+        print('Charting took:')
+        timing(stream.charge_nodes)
         self.DNA_graph.update()
         self.update_density()
         print('Computing the diffusion field took:')
@@ -254,7 +255,8 @@ class DNA_Phase_space():
         timing(self.update_external_field)
         print('Computing the interaction field took:')
         timing(self.update_interaction_field)
-        self.update_max_particles()
+        print('Computing maximum took:')
+        timing(self.update_max_particles)
         self.stream.pop()
 
 
