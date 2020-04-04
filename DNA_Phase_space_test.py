@@ -72,15 +72,20 @@ def update():
     print('update: done, max particles are:')
     Phase_space.print_max_particles()
 
+def print_balls():
+    Phase_space=initialize()
+    Phase_space.create_particles(100)
+    Phase_space.print_balls()
 
 
+print_balls()
 #create_particles()
 #update_density()
 #update_divergence()
 #update_diffussion_field()
 #update_external_field()
 #update_interaction_field()
-update()
+#update()
 
 
 

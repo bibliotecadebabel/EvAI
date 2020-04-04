@@ -176,11 +176,11 @@ while True:
     #\end{without gui}
     if status.active:
         update(status)
-        #status.print_energy()
-        #status.print_particles()
         print('The iteration number is:')
         print(k)
+        status.print_energy()
         status.print_particles()
+        #status.print_particles()
         #status.print_max_particles()
         #print(status.typos)
         #status.print_signal()

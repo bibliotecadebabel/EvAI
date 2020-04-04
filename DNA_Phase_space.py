@@ -243,6 +243,21 @@ class DNA_Phase_space():
             p.ball=gr.spanning_tree(node,n=self.radius)
             p.distance=tr.tree_distances(p.ball)
 
+    def print_balls(self):
+        for node in self.objects:
+            key = self.node2key(node)
+            p = self.node2plane(node)
+            distance=p.distance
+            print('The distances from' )
+            print(key)
+            print('are')
+            for key in distance.keys():
+                print('To node')
+                print(self.node2key(key.objects[0]))
+                print('is')
+                print(distance.get(key))
+
+
     def update(self):
         stream=self.stream
         print('Charting took:')
