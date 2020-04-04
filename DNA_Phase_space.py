@@ -257,22 +257,36 @@ class DNA_Phase_space():
                 print('is')
                 print(distance.get(key))
 
+    def print_support(self):
+        for node in self.support:
+            key = self.node2key(node)
+            print(key)
+
 
     def update(self):
+        print('The support is')
+        self.print_support()
         stream=self.stream
+        print('The signals are')
+        stream.print_signal()
         print('Charting took:')
         timing(stream.charge_nodes)
+        stream.signals_off()
         self.DNA_graph.update()
         self.update_density()
         print('Computing the diffusion field took:')
         timing(self.update_diffussion_field)
         print('Computing the external field took:')
         timing(self.update_external_field)
+        print('After external field, the signals are')
+        stream.print_signal()
         print('Computing the interaction field took:')
         timing(self.update_interaction_field)
         print('Computing maximum took:')
         timing(self.update_max_particles)
-        self.stream.pop()
+        stream.pop()
+        #print('After pop, the signals are')
+
 
 
 

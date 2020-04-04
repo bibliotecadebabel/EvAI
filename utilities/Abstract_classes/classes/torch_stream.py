@@ -62,13 +62,12 @@ class TorchStream(Stream):
                 labels=a[1])
             log.charge(net.history_loss)
             net.history_loss=[]
-        print('The net')
-        print(key)
-        print('is not charging')
-        print('The size of its log is')
-        print(len(log.log))
-        if log:
-            log.signal=False
+        else:
+            print('The net')
+            print(key)
+            print('is not charging')
+            print('The size of its log is')
+            print(len(log.log))
 
     def key2signal_on(self,key):
         log=self.key2log(key)
@@ -111,38 +110,33 @@ class TorchStream(Stream):
             return log
 
     def imprimir(self):
-        Graph=self.Graph
-        dict=Graph.key2node
-        k=0
-        for item in dict.items():
-            key=item[0]
-            node=item[1]
-            log=node.get_object()
+        Graph = self.Graph
+        graph_dict = Graph.key2node
+        k = 0
+        for key, node in graph_dict.items():
+            log = node.get_object()
             print('The energy of {} is {}'.format(key, log.Currentvalue()))
             k += 1
     def print_signal(self):
-        Graph=self.Graph
-        dict=Graph.key2node
-        k=0
-        for item in dict.items():
-            key=item[0]
-            node=item[1]
-            log=node.get_object()
+        Graph = self.Graph
+        graph_dict = Graph.key2node
+        k = 0
+        for key, node in graph_dict.items():
+            log = node.get_object()
             print('The signal of {} is {}'.format(key, log.signal))
             k += 1
 
     def sync(self):
         pass
 
-    def signals_off(self,key):
-        for item in dict.items():
-            key=item[0]
-            node=item[1]
-            log=node.get_object()
-        log=stream.key2log(key)
-        if log:
-            log.signal=False
-        pass
+    def signals_off(self):
+        Graph = self.Graph
+        graph_dict = Graph.key2node
+        for key, node in graph_dict.items():
+            log = node.get_object()
+            log = self.key2log(key)
+            if log:
+                log.signal = False
 
 
 

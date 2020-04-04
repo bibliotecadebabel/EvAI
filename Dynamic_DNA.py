@@ -116,6 +116,7 @@ class Dynamic_DNA():
 
 
 
+
     def __init__(self,space,phase_space,update_space=None):
         self.space = space
         self.phase_space= phase_space
@@ -129,7 +130,7 @@ class Dynamic_DNA():
         self.lost_coefficient=1
         self.interaction_coefficient=1
         self.dt=0.01
-        self.mutation_coefficient=1000
+        self.mutation_coefficient=10000
         self.Graph=phase_space.DNA_graph
         self.epsilon=0.01
 
