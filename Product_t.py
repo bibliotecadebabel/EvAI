@@ -55,7 +55,8 @@ class Status():
         self.stream=None
         self.Graph=None
         self.Dynamics=None
-        self.typos=(0,(1,1,0,0))
+        self.typos=(0,(0,1,0,0))
+        #self.typos=(0,(0,0,1,1))
         self.influence=2
     def print_DNA(self):
         phase_space=self.Dynamics.phase_space
@@ -178,8 +179,8 @@ while True:
         update(status)
         print('The iteration number is:')
         print(k)
-        status.print_energy()
-        status.print_particles()
+        #status.print_energy()
+        #status.print_particles()
         #status.print_particles()
         #status.print_max_particles()
         #print(status.typos)

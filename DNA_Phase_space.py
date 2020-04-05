@@ -55,15 +55,17 @@ class DNA_Phase_space():
             self.node_max_particles=None
 
     def print_max_particles(self):
-        node=self.node_max_particles
-        key=self.node2key(node)
-        plane=self.node2plane(node)
-        print('The particles of {} are {}'.format(key, plane.num_particles))
-        print('and its kid(s) ha(ve)(s):')
-        for nodek in node.kids:
-            key=self.node2key(nodek)
-            plane=self.node2plane(nodek)
+        if self.node_max_particles:
+            node=self.node_max_particles
+            key=self.node2key(node)
+            plane=self.node2plane(node)
             print('The particles of {} are {}'.format(key, plane.num_particles))
+            print('and its kid(s) ha(ve)(s):')
+            for nodek in node.kids:
+                key=self.node2key(nodek)
+                plane=self.node2plane(nodek)
+                if plane.num_particles>0:
+                    print('The particles of {} are {}'.format(key, plane.num_particles))
 
 
     def node2net(self,node):
@@ -266,15 +268,22 @@ class DNA_Phase_space():
             key = self.node2key(node)
             print(key)
 
+    def print_center(self):
+        print(self.center())
+        print('and its energy is')
+        node = self.key2node(self.center())
+        if node:
+            print(self.node2V(node))
+
 
     def update(self):
         print('The center is')
-        print(self.center())
+        self.print_center()
         print('The support is')
         self.print_support()
         stream=self.stream
-        print('The signals are')
-        stream.print_signal()
+        #print('The signals are')
+        #stream.print_signal()
         print('Charging took:')
         timing(stream.charge_nodes)
         stream.signals_off()
@@ -284,14 +293,14 @@ class DNA_Phase_space():
         timing(self.update_diffussion_field)
         print('Computing the external field took:')
         timing(self.update_external_field)
-        print('After external field, the signals are')
-        stream.print_signal()
+        #print('After external field, the signals are')
+        #stream.print_signal()
         print('Computing the interaction field took:')
         timing(self.update_interaction_field)
         print('Computing maximum took:')
         timing(self.update_max_particles)
-        print('The maximum node is')
-        print(self.node2key(self.node_max_particles))
+        #print('The maximum node is')
+        #print(self.node2key(self.node_max_particles))
         stream.pop()
         #print('After pop, the signals are')
 
@@ -312,7 +321,7 @@ class DNA_Phase_space():
         self.support=[]
         dataGen = GeneratorFromImage.GeneratorFromImage(2, 100, cuda=False)
         dataGen.dataConv2d()
-        self.stream=TorchStream(dataGen,1000)
+        self.stream=TorchStream(dataGen,200)
         self.radius=10
         self.influence=2
         self.node_max_particles=None

@@ -37,9 +37,9 @@ class TorchStream(Stream):
         a=self.dataGen.data
         p=self.log_size
         if log.signal and not(log.log):
-            print('The net')
-            print(key)
-            print('is charging')
+#            print('The net')
+#            print(key)
+#            print('is charging')
             net=log.new_net
             log.old_net=net.clone()
             log.old_net.history_loss=[]
@@ -50,9 +50,9 @@ class TorchStream(Stream):
             log.charge(net.history_loss)
             net.history_loss=[]
         elif log.signal and (len(log.log) <5):
-            print('The net')
-            print(key)
-            print('is charging')
+#            print('The net')
+#            print(key)
+#            print('is charging')
             net=log.get_net()
             log.old_net=net.clone()
             log.old_net.history_loss=[]
@@ -62,12 +62,12 @@ class TorchStream(Stream):
                 labels=a[1])
             log.charge(net.history_loss)
             net.history_loss=[]
-        else:
-            print('The net')
-            print(key)
-            print('is not charging')
-            print('The size of its log is')
-            print(len(log.log))
+#        else:
+#            print('The net')
+#            print(key)
+#            print('is not charging')
+#            print('The size of its log is')
+#            print(len(log.log))
 
     def key2signal_on(self,key):
         log=self.key2log(key)
