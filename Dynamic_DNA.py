@@ -18,7 +18,32 @@ class Dynamic_DNA():
         return q.shape
 
     def update_space_default(self):
-        pass
+        phase_space=self.phase_space
+        if phase_space.max_changed:
+            num_particles = phase_space.num_particles
+            old_graph = phase_space.DNA_graph
+            condition = old_graph.condition
+            typos = old_graph.typos
+            node_max = phase_space.node_max_particles
+            center = phase_space.node2key(node_max)
+            x = old_graph.x_dim
+            y = old_graph.y_dim
+            space=DNA_Graph(center,3,(x,y),condition,typos)
+            #Phase_space = DNA_Phase_space(space)
+            phase_space.DNA_graph = space
+            phase_space.objects = space.objects
+            phase_space.support=[]
+            phase_space.create_particles(num_particles+1)
+            phase_space.attach_balls()
+            phase_space.max_changed = False
+            phase_space.node_max_particles = None
+            self.space = space
+            self.phase_space= phase_space
+            self.objects=phase_space.objects
+            self.support=phase_space.support
+            self.Graph=phase_space.DNA_graph
+
+
 
     def update_force_field(self):
         c_k=self.mutation_coefficient
@@ -103,6 +128,7 @@ class Dynamic_DNA():
 
 
     def update(self):
+        print('updating phase space field took:')
         timing(self.phase_space.update)
         print('updating force field took:')
         timing(self.update_force_field)
@@ -110,6 +136,8 @@ class Dynamic_DNA():
         timing(self.update_velocity)
         print('Moving particles took:')
         timing(self.update_particles)
+        print('Updating space took:')
+        timing(self.update_space)
 
 
 
@@ -127,10 +155,10 @@ class Dynamic_DNA():
         else:
             self.update_space=self.update_space_default
         self.diffusion_coefficient=1
-        self.lost_coefficient=1
+        self.lost_coefficient=10
         self.interaction_coefficient=1
         self.dt=0.01
-        self.mutation_coefficient=10000
+        self.mutation_coefficient=1000
         self.Graph=phase_space.DNA_graph
         self.epsilon=0.01
 

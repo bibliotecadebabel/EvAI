@@ -40,13 +40,17 @@ class DNA_Phase_space():
         return V_o
 
     def update_max_particles(self):
+        old_max=self.node_max_particles
         if self.support:
             node_M=self.support[0]
             max=self.node2particles(node_M)
             for node in self.support:
                 if  self.node2particles(node)>max:
                     node_M=node
+            if old_max and not(old_max == node_M):
+                self.max_changed = True
             self.node_max_particles=node_M
+
         else:
             self.node_max_particles=None
 
@@ -264,12 +268,14 @@ class DNA_Phase_space():
 
 
     def update(self):
+        print('The center is')
+        print(self.center())
         print('The support is')
         self.print_support()
         stream=self.stream
         print('The signals are')
         stream.print_signal()
-        print('Charting took:')
+        print('Charging took:')
         timing(stream.charge_nodes)
         stream.signals_off()
         self.DNA_graph.update()
@@ -284,6 +290,8 @@ class DNA_Phase_space():
         timing(self.update_interaction_field)
         print('Computing maximum took:')
         timing(self.update_max_particles)
+        print('The maximum node is')
+        print(self.node2key(self.node_max_particles))
         stream.pop()
         #print('After pop, the signals are')
 
@@ -308,6 +316,7 @@ class DNA_Phase_space():
         self.radius=10
         self.influence=2
         self.node_max_particles=None
+        self.max_changed=False
         self.attach_balls()
 
 

@@ -36,6 +36,7 @@ class DNA_Graph():
         self.size=size
         self.objects=None
         self.graph=None
+        self.condition=condition    
         self.creator=Creator(self.typos,condition)
         g=self.creator.create(self.center,size)
         self.graph=g
