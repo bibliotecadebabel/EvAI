@@ -25,7 +25,7 @@ def Test_numpy_energy():
 
     x = dataGen.size[0]
     y = dataGen.size[1]
-    k = 2
+    k = 3
 
     network = nw.Network([x,y,k])
 
@@ -45,7 +45,7 @@ def Test_numpy_energy():
 
         i += 1
 
-        if energy_3_filters < energy_2_filters:
+        if energy_3_filters < energy_2_filters and i > 20:
             stop = True
 
         if i % 10 == 0:
@@ -77,8 +77,9 @@ def Test_pytorch_energy():
     y = dataGen.size[2]
 
     
-    networkADN = ((0, 3, 2, x, y), (1, 2, 2), (2,))
-    mutationADN = ((0, 3, 3, x, y), (1, 3, 2), (2,))
+    networkADN = ((0, 3, 3, x, y), (1, 3, 2), (2,))
+    mutationADN = ((0, 3, 3, x-1, y-1), (0, 6, 3, x, y), (1, 3, 2), (2,))
+    #mutationADN = ((0, 3, 4, x, y), (1, 4, 2), (2,))
     network = nw_p.Network(networkADN, cudaFlag=True)
     clone = MutateNetwork.executeMutation(network, mutationADN)
 
@@ -89,25 +90,25 @@ def Test_pytorch_energy():
     for _,a in enumerate(batch):
 
         while stop == False:
-            network.Training(data=a[0], p=1, dt=0.01, labels=a[1])
-            clone.Training(data=a[0], p=1, dt=0.01, labels=a[1])
+            network.Training(data=a[0], p=10, dt=0.01, labels=a[1])
+            clone.Training(data=a[0], p=10, dt=0.01, labels=a[1])
             energy_2_filters = network.total_value
             energy_3_filters = clone.total_value
             i += 1
 
-            if energy_3_filters < energy_2_filters:
+            if energy_3_filters < energy_2_filters and i > 5:
                 stop = True
 
             if i % 10 == 0:
                 print("Iteration #",i)
-                print("energy 2 filters network=", energy_2_filters)
-                print("energy 3 filters network=", energy_3_filters)
+                print("energy network 1=", energy_2_filters)
+                print("energy network 2=", energy_3_filters)
     
     print("last Iteration=", i)
-    print("energy 2 filters network=", energy_2_filters)
-    print("energy 3 filters network=", energy_3_filters)
+    print("energy network 1=", energy_2_filters)
+    print("energy network 2=", energy_3_filters)
 
 
 
-Test_numpy_energy()
+#Test_numpy_energy()
 Test_pytorch_energy()

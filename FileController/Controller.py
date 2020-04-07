@@ -1,4 +1,5 @@
 import json
+from DNA_Graph import DNA_Graph
 
 class Controller:
 

@@ -216,28 +216,49 @@ def Test_Mutacion(dataGen):
     #(0, ks[i], len(dataGen.data[0]), 1, 1),
 
     
-    networkADN = ((0, 3, 5, 8, 8), (0, 5, 3, 4, 4), (1, 3, 2), (2,))
+    #networkADN = ((0, 3, 5, 8, 8), (0, 5, 3, 4, 4), (1, 3, 2), (2,))
     #mutationADN = ((0, 3, 10, 2, 2), (0, 10, 20, 10, 10), (1, 20, 2), (2,))
-    mutationADN = ((0, 3, 5, 8, 8), (0, 5, 3, 3, 3), (0, 3, 3, 2, 2), (1, 3, 2), (2,))
-    network = nw.Network(networkADN, cudaFlag=False)
+    #mutationADN = ((0, 3, 5, 8, 8), (0, 5, 3, 3, 3), (0, 3, 3, 2, 2), (1, 3, 2), (2,))
+    networkADN = ((0, 3, 3, x, y), (1, 3, 2), (2,)) #original network
+    mutation1= ((0, 3, 3, x-1, y-1), (0, 6, 3, x, y), (1, 3, 2), (2,)) # add conv2d
+    mutation2 = ((0, 3, 3, x-1, y-1), (0, 6, 4, x, y), (1, 4, 2), (2,)) # add new filter
+    mutation3 = ((0, 3, 3, x-1, y-1), (0, 6, 4, x-1, y-1), (0, 10, 4, x, y), (1, 4, 2), (2,)) # add conv2d
+    mutation4 = ((0, 3, 3, x-1, y-1), (0, 6, 4, x, y), (1, 4, 2), (2,)) # remove conv2d
+    mutation5 = ((0, 3, 2, x-1, y-1), (0, 5, 4, x, y), (1, 4, 2), (2,)) # remove filter
+    mutation6 = ((0, 3, 2, x-1, y-1), (0, 5, 4, x-1, y-1), (0, 9, 4, x, y), (1, 4, 2), (2,)) # add conv2d
+    network = nw.Network(networkADN, cudaFlag=True)
 
     for _,a in enumerate(batch):
         print("red original (network): ", *network.adn)
-        network.Training(data=a[0], p=800, dt=0.01, labels=a[1])
+        network.Training(data=a[0], p=500, dt=0.01, labels=a[1])
         print("mutando")
-        network2 = MutateNetwork.executeMutation(network, mutationADN)
-        print("entrando red mutada (network2): ", *network2.adn)
-        network2.Training(data=a[0],p=800, dt=0.01, labels=a[1])
-        print("volviendo a mutar red mutada (creando network 3 con adn original)")
-        network3 = MutateNetwork.executeMutation(network2, networkADN)
-        print("entrnando red mutada2 (network3): ", *network3.adn )
-        network3.Training(data=a[0],p=800, dt=0.01, labels=a[1])
-        print("entrnando red original (network): ", *network.adn)
-        network.Training(data=a[0], p=800, dt=0.01, labels=a[1])
-        Inter.trakPytorch(network3, "pokemon-netmap", dataGen)
+        netwokMutated = MutateNetwork.executeMutation(network, mutation1)
+        print("entrando red mutada #1 (mutation1): ", *netwokMutated.adn)
+        netwokMutated.Training(data=a[0],p=500, dt=0.01, labels=a[1])
+        print("mutando")
+        netwokMutated_2 = MutateNetwork.executeMutation(netwokMutated, mutation2)
+        print("entrando red mutada #2 (mutation2): ", *netwokMutated_2.adn)
+        netwokMutated_2.Training(data=a[0],p=500, dt=0.01, labels=a[1])
+        print("mutando")
+        netwokMutated_3 = MutateNetwork.executeMutation(netwokMutated_2, mutation3)
+        print("entrando red mutada #3 (mutation3): ", *netwokMutated_3.adn)
+        netwokMutated_3.Training(data=a[0],p=500, dt=0.01, labels=a[1])
+        print("mutando")
+        netwokMutated_4 = MutateNetwork.executeMutation(netwokMutated_3, mutation4)
+        print("entrando red mutada #4 (mutation4): ", *netwokMutated_4.adn)
+        netwokMutated_4.Training(data=a[0],p=500, dt=0.01, labels=a[1])
+        print("mutando")
+        netwokMutated_5 = MutateNetwork.executeMutation(netwokMutated_4, mutation5)
+        print("entrando red mutada #5 (mutation5): ", *netwokMutated_5.adn)
+        netwokMutated_5.Training(data=a[0],p=500, dt=0.01, labels=a[1])
+        print("mutando")
+        netwokMutated_6 = MutateNetwork.executeMutation(netwokMutated_5, mutation6)
+        print("entrando red mutada #6 (mutation6): ", *netwokMutated_5.adn)
+        netwokMutated_6.Training(data=a[0],p=2000, dt=0.01, labels=a[1])
+        Inter.trakPytorch(netwokMutated_6, "pokemon-netmap", dataGen)
 
 
-dataGen = GeneratorFromImage.GeneratorFromImage(2, 100, cuda=False)
+dataGen = GeneratorFromImage.GeneratorFromImage(2,  200, cuda=True)
 dataGen.dataConv2d()
 size = dataGen.size
 

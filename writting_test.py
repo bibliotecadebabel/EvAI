@@ -4,8 +4,6 @@ from DAO import GeneratorFromImage
 from DNA_Graph import DNA_Graph
 from DNA_Phase_space import DNA_Phase_space
 from DNA_conditions import max_layer
-from DNA_creators import Creator
-
 
 
 def initialize():

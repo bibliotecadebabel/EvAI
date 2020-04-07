@@ -40,20 +40,52 @@ def Nothing(layer):
 def conv2d_propagate(layer):
     
     parent = layer.node.parents[0].objects[0]
-    ##lenght = len(layer.getFilter()[0].view(-1))
+
+    kid = layer.node.kids[0].objects[0]
 
     shapeFilter = layer.getFilter().shape
-
-    #print("shape filter=", shapeFilter)
     
     normalize = shapeFilter[2] * shapeFilter[3]
 
+    #print("input shape")
+    #print(parent.value.shape)
     value = layer.object(parent.value) / normalize
     
     sigmoid = torch.nn.Sigmoid()
     
     layer.value = sigmoid(value) + torch.nn.functional.relu(value)
+    #print("output shape")
+    #print(layer.value.shape)
 
+    if kid.adn is not None and kid.adn[0] == 0: #Check if is conv2d
+
+        inputShape = parent.value.shape
+        outputShape = layer.value.shape
+        #print("inputShape=", inputShape)
+        #print("outputShape=", outputShape)
+        diff_kernel = abs(inputShape[2] - outputShape[2])
+        
+        if inputShape[2] >= outputShape[2]:
+            
+            #print("input=")
+            #print(parent.value)
+            newValue = layer.value.data.clone()
+            newValue = torch.nn.functional.pad(newValue,(0, diff_kernel, 0, diff_kernel),"constant", 0)
+
+            #print("output=")
+            #print(newValue)
+            #print("newValueShape=", newValue.shape)
+            #print("parent value Shape=", parent.value.shape)
+            layer.value = torch.cat((parent.value, newValue), dim=1)
+
+            #print("concat input output")
+            #print(layer.value)
+            #print("output shape concat")
+            #print(layer.value.shape)
+
+            #print(layer.value)
+            #print(layer.value.shape)
+        
     #print("output conv2d: ", layer.value.shape)
 
 def linear_propagate(layer):
