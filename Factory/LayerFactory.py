@@ -28,24 +28,10 @@ class LayerGenerator(AbstractFactory.FactoryClass):
 
         layer = torch.nn.Conv2d(tupleBody[1], tupleBody[2], (tupleBody[3], tupleBody[4]))
         self.__initConv2d(layer, (tupleBody[3], tupleBody[4]))
-        #valueLayerConv2d = torch.rand(1, tupleBody[2], 1, 1, dtype=torch.float32, requires_grad=True)
         
         self.__verifyCuda(layer)
-        #self.__verifyCuda(valueLayerConv2d)
         
         value = ly.Layer(objectTorch=layer, propagate=functions.conv2d_propagate, value=None, adn=tupleBody, cudaFlag=self.__cuda)
-        
-        return value
-    
-    def __createConv3d(self, tupleBody):
-
-        layer = torch.nn.Conv3d(tupleBody[1], tupleBody[2], (tupleBody[3], tupleBody[4], tupleBody[5]))
-        #torch.nn.init.constant_(layer.bias, 0)
-        #valueLayerConv2d = torch.rand(1, tupleBody[2], 1, 1, dtype=torch.float32, requires_grad=True)
-        self.__verifyCuda(layer)
-        #self.__verifyCuda(valueLayerConv2d)
-        
-        value = ly.Layer(objectTorch=layer, propagate=functions.conv3d_propagate, value=None, adn=tupleBody, cudaFlag=self.__cuda)
         
         return value
 
@@ -53,11 +39,8 @@ class LayerGenerator(AbstractFactory.FactoryClass):
         
         layer = torch.nn.Linear(tupleBody[1], tupleBody[2])
         self.__initLinear(layer, tupleBody[1])
-        #torch.nn.init.constant_(layer.bias, 0)
-        #valueLayerLinear = torch.rand(2, dtype=torch.float32, requires_grad=True)
 
         self.__verifyCuda(layer)
-        #self.__verifyCuda(valueLayerLinear)
         
         value = ly.Layer(objectTorch=layer, adn=tupleBody,propagate=functions.linear_propagate, value=None, cudaFlag=self.__cuda)
 
