@@ -19,15 +19,15 @@ class NetPytorch(nn.Module):
     def __init__(self, typeNet):
         super(NetPytorch, self).__init__()
         self.typeNet = typeNet
-        if typeNet == 1:
-            self.conv1 = nn.Conv2d(3, 1, (3, 3))
-            self.conv2 = nn.Conv2d(4, 3, (11, 11))
-            self.fc1 = nn.Linear(3 * 1 * 1, 2)
-        else:
-            self.conv1 = nn.Conv2d(3, 1, (3, 3))
-            self.conv2 = nn.Conv2d(4, 1, (3, 3))
-            self.conv3 = nn.Conv2d(4, 3, (11, 11))
-            self.fc1 = nn.Linear(3 * 1 * 1, 2)
+        if typeNet == 1: # Red Original
+            self.conv1 = nn.Conv2d(3, 5, (3, 3)) # nuevo conv2d
+            self.conv2 = nn.Conv2d(8, 10, (11, 11)) #anterior conv2d
+            self.fc1 = nn.Linear(10 * 1 * 1, 2)
+        else: # Mutacion agregar conv2d
+            self.conv1 = nn.Conv2d(3, 5, (3, 3)) # nuevo conv2d
+            self.conv2 = nn.Conv2d(8, 5, (3, 3)) # anterior conv2d
+            self.conv3 = nn.Conv2d(8, 10, (11, 11)) # anterior conv2d
+            self.fc1 = nn.Linear(10 * 1 * 1, 2)
 
     def upgradeFlag(self, flag):
 
@@ -87,14 +87,17 @@ class NetPytorch(nn.Module):
         oldBias = oldConv2d.bias.clone()
 
         shape = oldConv2d.weight.shape
-        
-        resized = torch.zeros(shape[0], 1, shape[2], shape[3]).cuda()
+        new_shape = newConv2d.weight.shape
+
+        diff_entries = new_shape[1] - shape[1]
+        resized = torch.zeros(shape[0], diff_entries, shape[2], shape[3]).cuda()
 
         oldFilter = torch.cat((oldFilter, resized), dim=1)
-
+        resized_shape = oldFilter.shape
 
         for i in range(shape[0]):
-            oldFilter[i][shape[1]] = oldFilter[i][shape[1]-1].clone()
+            for j in range(3, resized_shape[1]):
+                oldFilter[i][j] = oldFilter[i][2].clone()
 
         newConv2d.weight = torch.nn.Parameter(oldFilter)
         newConv2d.bias = torch.nn.Parameter(oldBias)
@@ -273,8 +276,8 @@ def Test_pytorch_energy(batch, x, y, n_images):
 
     print("###### TEST #2 ######")
     
-    networkADN = ((0, 3, 3, x-1, y-1), (0, 6, 3, x, y), (1, 3, 2), (2,))
-    mutationADN = ((0, 3, 3, x-1, y-1), (0, 6, 3, x-1, y-1) , (0, 9, 3, x, y), (1, 3, 2), (2,))
+    networkADN = ((0, 3, 5, x-1, y-1), (0, 8, 10, x, y), (1, 10, 2), (2,))
+    mutationADN = ((0, 3, 5, x-1, y-1), (0, 8, 10, x-1, y-1) , (0, 18, 10, x, y), (1, 10, 2), (2,))
     #mutationADN = ((0, 3, 4, x, y), (1, 4, 2), (2,))
     network = nw_p.Network(networkADN, cudaFlag=True)
     clone = MutateNetwork.executeMutation(network, mutationADN)
@@ -309,7 +312,7 @@ def Test_pytorch_energy(batch, x, y, n_images):
 
 
 
-dataGen = GeneratorFromImage.GeneratorFromImage(2, 160, cuda=True)
+dataGen = GeneratorFromImage.GeneratorFromImage(2, 200, cuda=True)
 dataGen.dataConv2d()
 size = dataGen.size
 
