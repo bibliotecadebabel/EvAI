@@ -2,11 +2,15 @@ import utilities.Quadrants as qu
 import utilities.Node as nd
 import utilities.Graphs as gr
 import TangentPlane as tplane
-from DNA_directions import directions
+
 
 class Creator():
 
-    def __init__(self,typos,condition):
+    def __init__(self,typos,condition,type_add_layer=None):
+        if type_add_layer==None:
+            from DNA_directions import directions
+        else:
+            from DNA_directions_i import directions
         self.typos=typos
         self.condition=condition
         self.directions=[]
@@ -50,16 +54,17 @@ class Creator():
                 DNA_o=q.shape
                 node_o=center
                 for direction in self.directions:
-                    for k in range (len(DNA_o)-2):
-#                        print('The value of k is')
-#                        print(k)
-#                        print('The value of DNA_o is:')
-#                        print(DNA_o)
-                        DNA_f=condition(direction(k,DNA_o))
-                        if DNA_f:
-                            self.add_node(g,DNA_f)
-                            node_f=g.key2node.get(DNA_f)
-                            g.add_edges(DNA_o,[DNA_f])
+                    if DNA_o:
+                        for k in range (len(DNA_o)-2):
+    #                        print('The value of k is')
+    #                        print(k)
+    #                        print('The value of DNA_o is:')
+    #                        print(DNA_o)
+                            DNA_f=condition(direction(k,DNA_o))
+                            if DNA_f:
+                                self.add_node(g,DNA_f)
+                                node_f=g.key2node.get(DNA_f)
+                                g.add_edges(DNA_o,[DNA_f])
                 if center.kids:
                     for kid in center.kids:
                         self.create(kid,size-1,g)
