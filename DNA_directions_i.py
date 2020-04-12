@@ -120,23 +120,32 @@ directions.update({type:creator})
 type=(1,0,0,0)
 def add_layer(num_layer,source_DNA):
     total_layers=len(source_DNA)
-    if not(num_layer == len(source_DNA)-3):
+    if not(num_layer == 0):
         return None
     else:
         out_DNA=list(source_DNA)
-        layer=list(out_DNA[num_layer])
-        num_filters=layer[2]
-        new_layer_o=modify_layer_kernel(layer,-1)
-        if not(new_layer_o):
-            return None
-        else:
-            new_layer_f=list(new_layer_o)
-            new_layer_f[1]=num_filters
-            new_layer_f[3]=2
-            new_layer_f[4]=2
-            out_DNA[num_layer]=new_layer_o
-            out_DNA.insert(len(source_DNA)-2,tuple(new_layer_f))
-            return tuple(out_DNA)
+        new_layer_f=list(out_DNA[num_layer])
+        new_layer_f[1]=new_layer_f[1]+5
+        new_layer_o=(0,3,5,3,3)
+        out_DNA[num_layer]=tuple(new_layer_f)
+        out_DNA.insert(0,tuple(new_layer_o))
+        return tuple(out_DNA)
 
 creator=add_layer
+directions.update({type:creator})
+
+type=(-1,0,0,0)
+def remove_layer(num_layer,source_DNA):
+    total_layers=len(source_DNA)
+    if total_layers<4 or not(num_layer==0):
+        return None
+    else:
+        out_DNA=list(source_DNA)
+        out_DNA.pop(0)
+        new_layer_f=list(out_DNA[num_layer])
+        new_layer_f[1]=new_layer_f[1]-5
+        out_DNA[num_layer]=tuple(new_layer_f)
+        return tuple(out_DNA)
+
+creator=remove_layer
 directions.update({type:creator})
