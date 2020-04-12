@@ -1,93 +1,105 @@
 from mutations.MutationAbstract import Mutation
 import torch as torch
 
-class AddExitFilterMutation(Mutation):
+class AlterExitFilterMutation(Mutation):
 
     def __init__(self):
         super().__init__()
     
+    _value = 0
+    
+    def value_getter(self):
+        return self._value
+
+    def value_setter(self, newvalue):
+        self._value = newvalue
+
+    value = property(value_getter, value_setter)
+
     def doMutate(self, oldFilter, oldBias, newNode, cuda):
 
-        shape = oldFilter.shape
-    
-        if cuda == True:
-            resized = torch.zeros(1, shape[1]).cuda()
-        else:
-            resized = torch.zeros(1, shape[1])
+        if self._value > 0:
 
+            shape = oldFilter.shape
         
-        oldFilter = torch.cat((oldFilter, resized), dim=0)
-        oldBias.resize_(shape[0]+1)
+            if cuda == True:
+                resized = torch.zeros(1, shape[1]).cuda()
+            else:
+                resized = torch.zeros(1, shape[1])
+
+            
+            oldFilter = torch.cat((oldFilter, resized), dim=0)
+            oldBias.resize_(shape[0]+1)
+            
+            oldFilter[shape[0]] = oldFilter[shape[0]-1].clone()
+            oldBias[shape[0]] = oldBias[shape[0]-1].clone()
+
+            newNode.setFilter(oldFilter)
+            newNode.setBias(oldBias) 
+
+            del resized
         
-        oldFilter[shape[0]] = oldFilter[shape[0]-1].clone()
-        oldBias[shape[0]] = oldBias[shape[0]-1].clone()
+        elif self._value < 0:
 
-        newNode.setFilter(oldFilter)
-        newNode.setBias(oldBias) 
+            shape = oldFilter.shape
 
-        del resized
+            oldFilter.resize_(shape[0]-1, shape[1])
+            oldBias.resize_(shape[0]-1)
 
-class AddEntryFilterMutation(Mutation):
+            newNode.setFilter(oldFilter)
+            newNode.setBias(oldBias)
+
+class AlterEntryFilterMutation(Mutation):
 
     def __init__(self):
         super().__init__()
+
+    _value = 0
     
-    def doMutate(self, oldFilter, oldBias, newNode, cuda):
-      
-        shape = oldFilter.shape
+    def value_getter(self):
+        return self._value
 
-        if cuda == True:
-            resized = torch.zeros(shape[0], 1).cuda()
-        else:
-            resized = torch.zeros(shape[0], 1)
+    def value_setter(self, newvalue):
+        self._value = newvalue
 
-        oldFilter = torch.cat((oldFilter, resized), dim=1)
-
-        for i in range(oldFilter.shape[0]):
-            oldFilter[i][oldFilter.shape[1]-1] = oldFilter[i][oldFilter.shape[1]-2].clone()
-
-        newNode.setFilter(oldFilter)
-        newNode.setBias(oldBias)
-
-        del resized
-
-
-class RemoveExitFilterMutation(Mutation):
-
-    def __init__(self):
-        super().__init__()
+    value = property(value_getter, value_setter)
     
     def doMutate(self, oldFilter, oldBias, newNode, cuda):
 
-        shape = oldFilter.shape
+        if self._value > 0:
 
-        oldFilter.resize_(shape[0]-1, shape[1])
-        oldBias.resize_(shape[0]-1)
+            shape = oldFilter.shape
 
-        newNode.setFilter(oldFilter)
-        newNode.setBias(oldBias)
+            if cuda == True:
+                resized = torch.zeros(shape[0], 1).cuda()
+            else:
+                resized = torch.zeros(shape[0], 1)
 
-class RemoveEntryFilterMutation(Mutation):
+            oldFilter = torch.cat((oldFilter, resized), dim=1)
 
-    def __init__(self):
-        super().__init__()
-    
-    def doMutate(self, oldFilter, oldBias, newNode, cuda):
+            for i in range(oldFilter.shape[0]):
+                oldFilter[i][oldFilter.shape[1]-1] = oldFilter[i][oldFilter.shape[1]-2].clone()
+
+            newNode.setFilter(oldFilter)
+            newNode.setBias(oldBias)
+
+            del resized
         
-        shape = oldFilter.shape
-    
-        #oldFilter.resize_(shape[0], shape[1]-1)
+        elif self._value < 0:
 
-        if cuda == True:
-            resized = torch.zeros(shape[0], shape[1]-1).cuda()
-        else:
-            resized = torch.zeros(shape[0], shape[1]-1)
-        
-        for out_channel in range(shape[0]):
-            for in_channel in range(shape[1]-1):
-                resized[out_channel][in_channel] = oldFilter[out_channel][in_channel].clone()
-        
-        del oldFilter
+            shape = oldFilter.shape
 
-        newNode.setFilter(resized)
-        newNode.setBias(oldBias)
+            if cuda == True:
+                resized = torch.zeros(shape[0], shape[1]-1).cuda()
+            else:
+                resized = torch.zeros(shape[0], shape[1]-1)
+            
+            for out_channel in range(shape[0]):
+                for in_channel in range(shape[1]-1):
+                    resized[out_channel][in_channel] = oldFilter[out_channel][in_channel].clone()
+            
+            del oldFilter
+
+            newNode.setFilter(resized)
+            newNode.setBias(oldBias)
+        

@@ -42,27 +42,28 @@ def conv2d_propagate(layer):
     
     parent = layer.node.parents[0].objects[0]
 
+    if parent.adn is None:
+        layer.image = parent.value
+    else:
+        layer.image = parent.image
+
     kid = layer.node.kids[0].objects[0]
 
     shapeFilter = layer.getFilter().shape
     
     normalize = shapeFilter[2] * shapeFilter[3]
 
-    #print("input shape")
-    #print(parent.value.shape)
     value = layer.object(parent.value) / normalize
     
     sigmoid = torch.nn.Sigmoid()
     
     layer.value = sigmoid(value) + torch.nn.functional.relu(value)
-    #print("output shape")
-    #print(layer.value.shape)
 
     if kid.adn is not None and kid.adn[0] == 0: #Check if is conv2d
 
-        inputShape = parent.value.shape
+        inputShape = layer.image.shape
         outputShape = layer.value.shape
-
+        
         diff_kernel = abs(inputShape[2] - outputShape[2])
         
         if inputShape[2] >= outputShape[2]:
@@ -70,7 +71,10 @@ def conv2d_propagate(layer):
             newValue = layer.value.data.clone()
             newValue = torch.nn.functional.pad(newValue,(0, diff_kernel, 0, diff_kernel),"constant", 0)
 
-            layer.value = torch.cat((parent.value, newValue), dim=1)
+            layer.value = torch.cat((layer.image, newValue), dim=1)
+        else:
+            print("OUTPUT LARGER THAN INPUTS")
+        
 
 def linear_propagate(layer):
 

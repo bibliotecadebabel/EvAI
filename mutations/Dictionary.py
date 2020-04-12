@@ -22,23 +22,18 @@ class MutationsDictionary():
 
     def __generateMutationsConv2d(self):
 
-        self.__mutationsConv2d[(0, 0, 1, 0, 0)] = Conv2dMutations.AddExitFilterMutation()
-        self.__mutationsConv2d[(0, 0, -1, 0, 0)] = Conv2dMutations.RemoveExitFilterMutation()
-
-        self.__mutationsConv2d[(0, 1, 0, 0, 0)] = Conv2dMutations.AddEntryFilterMutation()
-        self.__mutationsConv2d[(0, -1, 0, 0, 0)] = Conv2dMutations.RemoveEntryFilterMutation()
-
-        self.__mutationsConv2d[(0, 0, 0, 1, 1)] = Conv2dMutations.AddDimensionKernel()
-        self.__mutationsConv2d[(0, 0, 0, -1, -1)] = Conv2dMutations.RemoveDimensionKernel()
+        self.__mutationsConv2d[1] = Conv2dMutations.AlterEntryFilterMutation()
+        self.__mutationsConv2d[2] = Conv2dMutations.AlterExitFilterMutation()
+        self.__mutationsConv2d[4] = Conv2dMutations.AlterDimensionKernel()
+        #self.__mutationsConv2d[(0, 0, -1, 0, 0)] = Conv2dMutations.RemoveExitFilterMutation()
+        #self.__mutationsConv2d[(0, -1, 0, 0, 0)] = Conv2dMutations.RemoveEntryFilterMutation()
+        #self.__mutationsConv2d[(0, 0, 0, -1, -1)] = Conv2dMutations.RemoveDimensionKernel()
         
 
     def __generateMutationsLinear(self):
         
-        self.__mutationsLinear[(0, 0, 1)] = LinearMutations.AddExitFilterMutation()
-        self.__mutationsLinear[(0, 0, -1)] = LinearMutations.RemoveExitFilterMutation()
-
-        self.__mutationsLinear[(0, 1, 0)] = LinearMutations.AddEntryFilterMutation()
-        self.__mutationsLinear[(0, -1, 0)] = LinearMutations.RemoveEntryFilterMutation()
+        self.__mutationsLinear[1] = LinearMutations.AlterEntryFilterMutation()
+        self.__mutationsLinear[2] = LinearMutations.AlterExitFilterMutation()
 
     def __getOperation(self, oldAdn, newAdn):
 
@@ -48,6 +43,15 @@ class MutationsDictionary():
             result[i] = newAdn[i] - oldAdn[i]
 
         return tuple(result)    
+    
+    def __getMutationKey(self, operation):
+        
+        index = 0
+        for i in range(len(operation)):
+            if operation[i] != 0:
+                index = i
+
+        return index
             
     def getMutation(self, oldAdn, newAdn):
 
@@ -56,6 +60,11 @@ class MutationsDictionary():
 
         mutationDict = self.__layerType.get(layerType)
 
-        mutationValue = mutationDict.get(operation)
+        key = self.__getMutationKey(operation)
+
+        mutationValue = mutationDict.get(key)
+
+        if mutationValue is not None:
+            mutationValue.value = operation[key]
 
         return mutationValue

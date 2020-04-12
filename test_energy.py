@@ -20,13 +20,13 @@ class NetPytorch(nn.Module):
         super(NetPytorch, self).__init__()
         self.typeNet = typeNet
         if typeNet == 1: # Red Original
-            self.conv1 = nn.Conv2d(3, 5, (3, 3)) # nuevo conv2d
-            self.conv2 = nn.Conv2d(8, 10, (11, 11)) #anterior conv2d
+            self.conv1 = nn.Conv2d(3, 15, (3, 3)) # nuevo conv2d
+            self.conv2 = nn.Conv2d(18, 10, (11, 11)) #anterior conv2d
             self.fc1 = nn.Linear(10 * 1 * 1, 2)
         else: # Mutacion agregar conv2d
-            self.conv1 = nn.Conv2d(3, 5, (3, 3)) # nuevo conv2d
-            self.conv2 = nn.Conv2d(8, 5, (3, 3)) # anterior conv2d
-            self.conv3 = nn.Conv2d(8, 10, (11, 11)) # anterior conv2d
+            self.conv1 = nn.Conv2d(3, 15, (3, 3)) # nuevo conv2d
+            self.conv2 = nn.Conv2d(18, 15, (3, 3)) # anterior conv2d
+            self.conv3 = nn.Conv2d(18, 10, (11, 11)) # anterior conv2d
             self.fc1 = nn.Linear(10 * 1 * 1, 2)
 
     def upgradeFlag(self, flag):
@@ -261,7 +261,7 @@ def Test_pytorchNetwork(batch, x, y, n_images):
 
             i += 1
 
-            if energy_2 < energy_1:
+            if energy_2 < energy_1 and i > 1000:
                 stop = True
             
             if i % 100 == 99:   
@@ -276,8 +276,8 @@ def Test_pytorch_energy(batch, x, y, n_images):
 
     print("###### TEST #2 ######")
     
-    networkADN = ((0, 3, 5, x-1, y-1), (0, 8, 10, x, y), (1, 10, 2), (2,))
-    mutationADN = ((0, 3, 5, x-1, y-1), (0, 8, 10, x-1, y-1) , (0, 18, 10, x, y), (1, 10, 2), (2,))
+    networkADN = ((0, 3, 15, 3, 3), (0, 18, 10, x, y), (1, 10, 2), (2,))
+    mutationADN = ((0, 3, 15, 3, 3), (0, 18, 15, 3, 3), (0, 18, 10, x, y), (1, 10, 2), (2,))
     #mutationADN = ((0, 3, 4, x, y), (1, 4, 2), (2,))
     network = nw_p.Network(networkADN, cudaFlag=True)
     clone = MutateNetwork.executeMutation(network, mutationADN)
@@ -298,12 +298,12 @@ def Test_pytorch_energy(batch, x, y, n_images):
             energy_3_filters = clone.total_value
             i += 1
 
-            if energy_3_filters < energy_2_filters:
+            if energy_3_filters < energy_2_filters and i > 1000:
                 stop = True
 
             if i % 100 == 99:
-                print("energy network 1=", energy_2_filters)
-                print("energy network 2=", energy_3_filters)
+                print("energy network 1=", energy_2_filters, "i = ", i)
+                print("energy network 2=", energy_3_filters, "i = ", i)
         
     
     print("last Iteration=", i)
