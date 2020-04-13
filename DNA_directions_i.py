@@ -141,9 +141,10 @@ def remove_layer(num_layer,source_DNA):
         return None
     else:
         out_DNA=list(source_DNA)
+        m1_filters=out_DNA[0][2]
         out_DNA.pop(0)
         new_layer_f=list(out_DNA[num_layer])
-        new_layer_f[1]=new_layer_f[1]-5
+        new_layer_f[1]=new_layer_f[1]-m1_filters
         out_DNA[num_layer]=tuple(new_layer_f)
         return tuple(out_DNA)
 
