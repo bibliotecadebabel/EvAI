@@ -21,7 +21,6 @@ class InternalModule():
         self.convOt = nn.Conv1d(inChannels, outChannels, self.kernelSize)
 
         if self.cudaFlag == True:
-            print("CUDA")
             self.convFt.cuda()
             self.convIt.cuda()
             self.convCand.cuda()
@@ -31,7 +30,7 @@ class InternalModule():
         
         currentInput = None
         if last_ht is not None:
-            currentInput = torch.cat((last_ht, xt), dim=0)
+            currentInput = torch.cat((last_ht, xt), dim=1)
         else:
             currentInput = xt
         
@@ -72,6 +71,8 @@ class InternalModule():
         a = tanh_ct(self.ct)
 
         self.ht = ot * a
+
+        self.ht.transpose_(1, 2)
 
 
         

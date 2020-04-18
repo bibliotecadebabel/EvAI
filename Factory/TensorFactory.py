@@ -17,3 +17,21 @@ def createTensorRand(tupleShape, cuda=True, requiresGrad=False):
         value.cuda()
 
     return value
+
+def createTensorZeros(tupleShape, cuda=True, requiresGrad=False):
+
+    value = torch.zeros((tupleShape), dtype=torch.float32, requires_grad=requiresGrad)
+
+    if cuda == True:
+        value = value.cuda()
+
+    return value
+
+def createTensorValues(values, cuda=True, requiresGrad=False):
+
+    value = torch.tensor(values, dtype=torch.float32, requires_grad=requiresGrad)
+
+    if cuda == True:
+        value = value.cuda()
+    
+    return value

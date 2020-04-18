@@ -1,25 +1,26 @@
-import LSTM.InternalModule as IM
+import LSTM.NetworkLSTM as netLSTM
 import torch
 import torch.nn as nn
 import torch.tensor as tensor
+import Factory.WordsConverter as WordsConverter
 
-
-
-batch = 1
-words = 10
-word_size = 6
-output_size = 6
 CUDA = False
 
-xt = torch.rand(batch, words, word_size)
+wordsConverter = WordsConverter.WordsConverter(cuda=CUDA)
 
-if CUDA == True:
-    xt = xt.cuda()
+words = ["hola ", "como ", "paralelepipedo ", "estas"]
+
+words_tensor = wordsConverter.convertWordsToTensor(words)
+
+word_amount = words_tensor.shape[0]
+letters_max = words_tensor.shape[1]
+kernel_size = words_tensor.shape[2]
 
 
-module = IM.InternalModule(kernelSize=word_size, inChannels=words, outChannels=output_size, cudaFlag=CUDA)
-module.compute(xt)
+network = netLSTM.NetworkLSTM(max_letters=letters_max, inChannels=1, outChannels=kernel_size, kernelSize=kernel_size)
 
-print("ct size=", module.ct.size())
-print("ht size=", module.ht.size())
+network.Training(data=words_tensor, dt=0.01, p=1)
+
+
+
 
