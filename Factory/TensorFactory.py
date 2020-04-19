@@ -35,3 +35,11 @@ def createTensorValues(values, cuda=True, requiresGrad=False):
         value = value.cuda()
     
     return value
+
+def createTensorOnes(tupleShape, cuda=True, requiresGrad=False):
+    value = torch.ones((tupleShape), dtype=torch.float32, requires_grad=requiresGrad)
+
+    if cuda == True:
+        value = value.cuda()
+
+    return value

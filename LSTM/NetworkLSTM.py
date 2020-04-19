@@ -1,9 +1,10 @@
-import torch
+import torch as torch
 import torch.nn as nn
 import torch.tensor as tensor
 
 import torch.optim as optim
 import LSTM.InternalModule as InternalModule
+import LSTM.InternalModuleVariant as InternalModuleVariant
 import Factory.TensorFactory as TensorFactory
 
 
@@ -50,9 +51,9 @@ class NetworkLSTM(nn.Module):
             inchannels = self.inChannels
 
             if i > 0:
-                inchannels += 1
+                inchannels += 2
             
-            internal = InternalModule.InternalModule(kernelSize=self.kernelSize, inChannels=inchannels, outChannels=self.outChannels, cudaFlag=self.cudaFlag)
+            internal = InternalModuleVariant.InternalModuleVariant(kernelSize=self.kernelSize, inChannels=inchannels, outChannels=self.outChannels, cudaFlag=self.cudaFlag)
             self.internalModules.append(internal)
             
             attr_1 = "internal_"+str(i)+"_convFT"
@@ -66,9 +67,12 @@ class NetworkLSTM(nn.Module):
             self.setAttribute(attr_4, internal.convOt)
     
     def Train(self, dataElement):
-        
+    
+        self.updateGradFlag(True)
         self(dataElement)
+        self.__generateEnergy()
         self.__doBackward()
+        self.updateGradFlag(False)
 
         #self.total_value += ((self.__getLossLayer().value)).item()
 
@@ -77,17 +81,23 @@ class NetworkLSTM(nn.Module):
         for indexModule in range(self.lenModules):
             self.modulesXT.append(self.__getInputModule(indexModule, data))
 
+        self.modulesXT.append(self.__getInputModule(self.lenModules, data))
+
     def Training(self, data, dt=0.1, p=1):
         
         self.optimizer = optim.SGD(self.parameters(), lr=dt, momentum=0)
+        self.backwardTensor = TensorFactory.createTensorOnes(tupleShape=(data.shape[0], 1, data.shape[2]), cuda=self.cudaFlag,requiresGrad=False)
         self.__createModulesXT(data)
         i = 0
         
         while i < p:
-            self.total_value = 0
+            self.energy = 0
             self.optimizer.zero_grad()
             self.Train(data)
             self.optimizer.step()
+
+            if i % 100 == 0:
+                print("L=", self.energy, "i=", i)
             i += 1
         
 
@@ -105,6 +115,18 @@ class NetworkLSTM(nn.Module):
         return value
             
 
+    def __generateEnergy(self):
+
+        indexModule = 0
+        energy = 0
+        for module in self.internalModules:
+            value = module.ht - self.modulesXT[indexModule+1]
+            value = torch.mul(value, value)
+            energy += value
+            indexModule += 1
+        
+        self.energy = torch.div(energy, self.lenModules+1).sum()
+        self.energy = self.energy*1000
 
     def forward(self, wordsTensor):
         last_ht = None
@@ -119,9 +141,36 @@ class NetworkLSTM(nn.Module):
 
             moduleIndex += 1
 
-        print("moduleIndex=", moduleIndex)
-        extra_xt = self.__getInputModule(moduleIndex, wordsTensor)
-        print(extra_xt)
     def __doBackward(self):
-        pass
+        self.energy.backward()
 
+    def updateGradFlag(self, flag):
+
+        for module in self.internalModules:
+
+            module.updateGradFlag(flag)
+    
+    def predict(self, x):
+    
+        indexModule = 0
+        last_ht = None
+        last_ct = None
+
+        for letter in x[0]:
+            
+            xt = self.__getInputModule(moduleIndex=indexModule, wordsTensor=x)
+            
+            module = self.internalModules[indexModule]
+
+            module.compute(xt=xt, last_ht=last_ht, last_ct=last_ct)
+
+            last_ht = module.ht
+            last_ct = module.ct
+
+            print("module# ", indexModule)
+            print(module.ht)
+            indexModule += 1
+
+                
+
+            

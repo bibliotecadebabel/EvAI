@@ -3,7 +3,7 @@ import torch.nn as nn
 import torch.tensor as tensor
 
 
-class InternalModule():
+class InternalModuleVariant():
 
     def __init__(self, kernelSize, inChannels, outChannels, cudaFlag=True):
 
@@ -28,14 +28,33 @@ class InternalModule():
 
     def compute(self, xt, last_ht=None, last_ct=None):
         
-        currentInput = None
+        currentInput_ct = None
+        currentInput_ht = None
+
+        clone_ht = None
+        clone_ct = None
+
         if last_ht is not None:
-            currentInput = torch.cat((last_ht, xt), dim=1)
+
+            clone_ct = last_ct.clone()
+            clone_ct.transpose_(1,2)
+
+            currentInput_ht = torch.cat((clone_ct, last_ht, xt), dim=1)
         else:
-            currentInput = xt
+            currentInput_ht = xt
         
-        self.__computeCt(currentInput, last_ct)
-        self.__computeHt(currentInput)
+        self.__computeCt(currentInput_ht, last_ct)
+
+        if last_ht is not None:
+            
+            clone_ct = self.ct.clone()
+            clone_ct.transpose_(1,2)
+
+            currentInput_ct = torch.cat((clone_ct, last_ht, xt), dim=1)
+        else:
+            currentInput_ct = xt
+
+        self.__computeHt(currentInput_ct)
 
     
     def __computeCt(self, currentInput, last_ct=None):
@@ -71,7 +90,6 @@ class InternalModule():
         a = tanh_ct(self.ct)
 
         self.ht = ot * a
-
         self.ht.transpose_(1, 2)
 
     def updateGradFlag(self, flag):
