@@ -12,7 +12,7 @@ def DNA_test_i(x,y):
                 y_l=layer[4]
                 output=output and (x_l<x) and (y_l<y)
         if output:
-            return max_layer(DNA,10)
+            return max_layer(DNA,3)
     center=((0, 3, 5, 3, 3),(0, 8, 8, 3,3),(0,11,5, x, y), (1, 5, 2), (2,))
     version='inclusion'
     space=space=DNA_Graph(center,2,(x,y),condition,(0,(0,0,1,1),(0,1,0,0),(1,0,0,0)),version)
