@@ -41,6 +41,7 @@ class DNA_Graph():
         g=self.creator.create(self.center,size)
         self.graph=g
         self.objects=list(g.key2node.values())
+        self.version = type_add_layer
 
 
 
