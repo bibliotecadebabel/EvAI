@@ -10,10 +10,12 @@ class Creator():
         if type_add_layer==None:
             from DNA_directions import directions
         else:
-            from DNA_directions_i import directions
+            from DNA_directions_i import directions,directions_labels
+            self.directions_labels=directions_labels
         self.typos=typos
         self.condition=condition
         self.directions=[]
+        self.type_add_layer=type_add_layer
         for typo in typos:
             direction=directions.get(typo)
             print('the initial value of typo is')
@@ -41,6 +43,11 @@ class Creator():
         q.objects.append(p)
         g.add_node(DNA,node)
 
+    def node2plane(self,node):
+        q=node.objects[0]
+        p=q.objects[0]
+        return p
+
     def create(self,center,size,g=None):
         condition=self.condition
         if size>0:
@@ -65,6 +72,12 @@ class Creator():
                                 self.add_node(g,DNA_f)
                                 node_f=g.key2node.get(DNA_f)
                                 g.add_edges(DNA_o,[DNA_f])
+                                if self.type_add_layer:
+                                    label=self.directions_labels.get(direction)
+                                    node=g.key2node.get(DNA_f)
+                                    p=self.node2plane(node)
+                                    if not (p.direction):
+                                        p.direction=(k,label)
                 if center.kids:
                     for kid in center.kids:
                         self.create(kid,size-1,g)

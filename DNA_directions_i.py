@@ -6,6 +6,7 @@ import TangentPlane as tplane
 
 
 directions={}
+directions_labels={}
 
 #linear graph that changes value increases x,y dimension of kernel
 
@@ -26,6 +27,8 @@ def increase_filters(num_layer,source_DNA):
 
 creator=increase_filters
 directions.update({type:creator})
+directions_labels.update({creator:type})
+
 
 type=(1,1,0,0)
 def increase_filters_first(num_layer,source_DNA):
@@ -37,6 +40,7 @@ def increase_filters_first(num_layer,source_DNA):
 
 creator=increase_filters_first
 directions.update({type:creator})
+directions_labels.update({creator:type})
 
 type=(0,-1,0,0)
 def decrease_filters(num_layer,source_DNA):
@@ -58,6 +62,7 @@ def decrease_filters(num_layer,source_DNA):
 
 creator=decrease_filters
 directions.update({type:creator})
+directions_labels.update({creator:type})
 
 def modify_layer_kernel(layer_DNA,num):
     out_DNA=list(layer_DNA)
@@ -90,6 +95,7 @@ def increase_kernel(num_layer,source_DNA):
 
 creator=increase_kernel
 directions.update({type:creator})
+directions_labels.update({creator:type})
 
 
 
@@ -116,6 +122,7 @@ def decrease_kernel(num_layer,source_DNA):
 
 creator=decrease_kernel
 directions.update({type:creator})
+directions_labels.update({creator:type})
 
 type=(1,0,0,0)
 def add_layer(num_layer,source_DNA):
@@ -133,6 +140,7 @@ def add_layer(num_layer,source_DNA):
 
 creator=add_layer
 directions.update({type:creator})
+directions_labels.update({creator:type})
 
 type=(-1,0,0,0)
 def remove_layer(num_layer,source_DNA):
@@ -150,3 +158,4 @@ def remove_layer(num_layer,source_DNA):
 
 creator=remove_layer
 directions.update({type:creator})
+directions_labels.update({creator:type})
