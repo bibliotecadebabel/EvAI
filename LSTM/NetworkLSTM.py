@@ -77,16 +77,20 @@ class NetworkLSTM(nn.Module):
         #self.total_value += ((self.__getLossLayer().value)).item()
 
     def __createModulesXT(self, data):
-
+        
         for indexModule in range(self.lenModules):
             self.modulesXT.append(self.__getInputModule(indexModule, data))
 
         self.modulesXT.append(self.__getInputModule(self.lenModules, data))
+    
+    def __createModulesXTPredict(self, data, length):
+        
+        for indexModule in range(length):
+            self.modulesXT.append(self.__getInputModule(indexModule, data))
 
     def Training(self, data, dt=0.1, p=1):
         
         self.optimizer = optim.SGD(self.parameters(), lr=dt, momentum=0)
-        self.backwardTensor = TensorFactory.createTensorOnes(tupleShape=(data.shape[0], 1, data.shape[2]), cuda=self.cudaFlag,requiresGrad=False)
         self.__createModulesXT(data)
         i = 0
         
@@ -96,8 +100,10 @@ class NetworkLSTM(nn.Module):
             self.Train(data)
             self.optimizer.step()
 
-            if i % 100 == 0:
+            
+            if i % 10 == 0:
                 print("L=", self.energy, "i=", i)
+            
             i += 1
         
 
@@ -156,21 +162,23 @@ class NetworkLSTM(nn.Module):
         last_ht = None
         last_ct = None
 
-        for letter in x[0]:
-            
-            xt = self.__getInputModule(moduleIndex=indexModule, wordsTensor=x)
-            
-            module = self.internalModules[indexModule]
+        modules = x.shape[1]
 
+        self.modulesXT = []
+        self.__createModulesXTPredict(x, modules)
+
+        for moduleIndex in range(modules):
+            xt = self.modulesXT[moduleIndex]
+            module = self.internalModules[moduleIndex]
             module.compute(xt=xt, last_ht=last_ht, last_ct=last_ct)
-
+            
             last_ht = module.ht
             last_ct = module.ct
+        
+        ht = self.internalModules[modules-1].ht
 
-            print("module# ", indexModule)
-            print(module.ht)
-            indexModule += 1
+        index = torch.argmax(ht, dim=2)
 
-                
+        return index.item()
 
             

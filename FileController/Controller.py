@@ -174,6 +174,8 @@ class TangentPlaneDTO():
         self.force_field=tangentPlane.force_field
         self.energy=tangentPlane.energy
         self.interaction_potential=tangentPlane.interaction_potential
+        self.velocity_potential=tangentPlane.velocity_potential
+        self.direction=tangentPlane.direction
 
 class DataFile():
 

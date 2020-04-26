@@ -36,6 +36,7 @@ class WordsConverter():
         self.letter_dictionary["y"] = 24
         self.letter_dictionary["z"] = 25
         self.letter_dictionary[" "] = 26
+        self.letter_dictionary["#"] = 27
 
         self.array = []
         for i in range(len(self.letter_dictionary)):
@@ -66,13 +67,6 @@ class WordsConverter():
                 tensorValue[i][j] = self.getTensor(letter)
                 j += 1
             i += 1
-        '''
-        i = 0
-        for word in wordsArray:
-            print("string=", word)
-            print("tensor=", tensorValue[i])
-            i += 1
-        '''
         
         return tensorValue
 
@@ -96,4 +90,14 @@ class WordsConverter():
         value = TensorFactory.createTensorValues(self.array, cuda=self.cuda)
         self.array[index] = 0
 
+        return value
+    
+    def indexToLetter(self, index):
+        
+        value = None
+        for key in self.letter_dictionary.keys():
+            compare = self.letter_dictionary.get(key)
+            if self.letter_dictionary.get(key) == index:
+                value = key
+        
         return value
