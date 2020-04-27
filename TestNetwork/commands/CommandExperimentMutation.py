@@ -95,20 +95,41 @@ class CommandExperimentMutation():
                 self.__testResultDao.insert(idTest=self.__testId, iteration=j, dna_graph=self.__space)
         
             if j % periodNewSpace == 0:
-                self.__setBestNetwork()
-                self.__generateNewSpace()
-                self.__generateNetworks()
+
+                if self.__defineNewCenter() == True:
+                    self.__generateNewSpace()
+                    self.__generateNetworks()
 
     
-    def __setBestNetwork(self):
+    def __getBestNetwork(self):
         lowestEnergy = 10000
-
+        bestNetwork = None
         for network in self.__networks:
 
             if network.total_value <= lowestEnergy:
-                self.__bestNetwork = network
+                bestNetwork = network
                 lowestEnergy = network.total_value
+
+        return bestNetwork
     
+    def __defineNewCenter(self):
+
+        value = False
+        newBestNetwork = self.__getBestNetwork()
+
+        if self.__bestNetwork is None:
+            
+            value = True
+            self.__bestNetwork = newBestNetwork
+        
+        else:
+
+            if str(newBestNetwork.adn) != str(self.__bestNetwork.adn):
+                value = True
+                self.__bestNetwork = newBestNetwork
+        
+        return value
+
     def __generateNewSpace(self):
         oldSpace = self.__space
 
