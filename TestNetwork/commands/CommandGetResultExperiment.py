@@ -11,15 +11,11 @@ class CommandGetResultExperiment():
         self.__testResultDao = TestResultDAO.TestResultDAO()
         self.__value = None
         
-    # totalIteration = 0 => Get all results
-    def execute(self, periodIteration, totalIteration=0):
+    def execute(self, periodIteration, minRange, maxRange):
         results = []
         self.__value = []
-        
-        if totalIteration == 0:
-            results = self.__testResultDao.find(idTest=self.__testId)
-        else:
-            results = self.__testResultDao.findByLimitIteration(idTest=self.__testId, limitIteration=totalIteration)
+
+        results = self.__testResultDao.findByLimitIteration(idTest=self.__testId, minRange=minRange, maxRange=maxRange)
         
         for result in results:
 

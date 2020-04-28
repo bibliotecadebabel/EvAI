@@ -2,14 +2,7 @@ from TestNetwork.commands import CommandGetResultExperiment, CommandGetAllTest
 import matplotlib.pyplot as plt
 import matplotlib.ticker
 import numpy as np
-###### EXPERIMENT RESULT SETTINGS ######
-
-# "axis" X
-PERIOD_ITERATION = 200
-
-
-
-
+import matplotlib.backends.backend_pdf as pdf_manager
 
 
 print("############ TEST LIST ############")
@@ -18,40 +11,122 @@ getTestsCommand = CommandGetAllTest.CommandGetAllTest()
 
 getTestsCommand.execute()
 
-print("ID || NAME || TOTAL_ITERATIONS || ITERATION_PERIOD || DT")
-for test in getTestsCommand.getReturnParam():
+test_list = getTestsCommand.getReturnParam()
+for test in test_list:
 
-    print(test.id," || ", test.name, " || ", test.total_iteration," || ",test.period," || ", test.dt)
+    print("id:", test.id," || name:", test.name, " || iterations:", test.total_iteration," || period:", test.period," || period new center:", test.period_center," || dt:", test.dt)
 
 print("")  
 print("############ SELECT TEST ############")
 TEST_ID = int(input("Select test id: "))
-TOTAL_ITERATIONS = int(input("Select #totalIterations (0 -> ALL): "))
-PERIOD_ITERATION = int(input("Select #iteration period (minium -> selected test's period): ", ))
+MIN_RANGE = int(input("Select min range iteration: "))
+MAX_RANGE = int(input("Select max range iteration: "))
+PERIOD_ITERATION = int(input("Select iteration period (recommended -> center period): ", ))
 
+test_name = ""
+for test in test_list:
+    
+    if test.id == TEST_ID:
+        test_name = test.name
+    
 command = CommandGetResultExperiment.CommandGetResultExperiment(testId=TEST_ID)
 
-command.execute(periodIteration=PERIOD_ITERATION, totalIteration=TOTAL_ITERATIONS)
+command.execute(periodIteration=PERIOD_ITERATION, minRange=MIN_RANGE, maxRange=MAX_RANGE)
 
 results = command.getReturnParam()
 
 axis_x = []
 axis_y = []
+table_data_energy = []
+table_data_dna = []
 for result in results:
     axis_x.append(result.iteration)
-    axis_y.append(result.tangentPlane.energy*1000)
+    axis_y.append(result.tangentPlane.energy)
+    table_data_energy.append([result.iteration, result.tangentPlane.energy])
+    table_data_dna.append([result.iteration, result.dna])
 
 
 fig, ax = plt.subplots()
-ax.plot(axis_x,axis_y)
+ax.plot(axis_x,axis_y, '.-')
 
 ax.yaxis.set_major_formatter(matplotlib.ticker.StrMethodFormatter("{x:.8f}"))
-ax.autoscale(enable=True, axis="y", tight=False)
-#plt.plot(axis_x, axis_y, color='lightblue', linewidth=2)
-#plt.axis([axis_x[0], axis_x[-1], axis_y[-1], axis_y[0]])
+ax.title.set_text(test_name+' Graph (Epoch - Energy)')
 
-y_ticks = np.arange(axis_y[-1], axis_y[0], 0.05)
-x_ticks = np.arange(0, axis_x[-1]+1, PERIOD_ITERATION)
-plt.yticks(y_ticks)
-plt.xticks(x_ticks)
-plt.show()
+#y_ticks = np.arange(axis_y[-1], axis_y[0], abs(axis_y[len(axis_y)//2-1] - axis_y[len(axis_y)-1]))
+#x_ticks = np.arange(axis_x[0], axis_x[-1]+1, PERIOD_ITERATION)
+
+#plt.yticks(y_ticks)
+#plt.xticks(x_ticks)
+ax.grid()
+
+for i,j in zip(axis_x,axis_y):
+    ax.text(i, j, "{:.10f}".format(j), rotation=45, rotation_mode='anchor', fontsize=8)
+
+fig.set_figheight(8)
+fig.set_figwidth(12)
+
+FILE_LOCATION = "reports/"+test_name+".pdf" 
+pdf = pdf_manager.PdfPages(FILE_LOCATION)
+
+pdf.savefig(fig, orientation='landscape' )
+
+plt.close()
+
+
+table = plt.table(cellText=table_data_energy,
+                      colLabels=("# Epoch", "Energy"),
+                      loc='top', cellLoc='center')
+
+
+plt.axis('off')
+plt.grid('off')
+
+fig = table.figure
+
+#prepare for saving:
+
+# draw canvas once
+plt.gcf().canvas.draw()
+# get bounding box of table
+points = table.get_window_extent(plt.gcf()._cachedRenderer).get_points()
+# add 10 pixel spacing
+points[0,:] -= 10; points[1,:] += 10
+# get new bounding box in inches
+nbbox = matplotlib.transforms.Bbox.from_extents(points/plt.gcf().dpi)
+
+pdf.savefig(table.figure, orientation='landscape', bbox_inches=nbbox,)
+
+plt.close()
+
+table = plt.table(cellText=table_data_dna,
+                      colLabels=("# Epoch", "DNA"),
+                      loc='top', cellLoc='center')
+
+
+plt.axis('off')
+plt.grid('off')
+
+fig = table.figure
+
+#prepare for saving:
+
+table.auto_set_font_size(False)
+table.set_fontsize(10)
+table.auto_set_column_width(col=list(range(2)))
+
+# draw canvas once
+plt.gcf().canvas.draw()
+# get bounding box of table
+points = table.get_window_extent(plt.gcf()._cachedRenderer).get_points()
+# add 10 pixel spacing
+points[0,:] -= 10; points[1,:] += 10
+# get new bounding box in inches
+nbbox = matplotlib.transforms.Bbox.from_extents(points/plt.gcf().dpi)
+
+pdf.savefig(table.figure, orientation='landscape', bbox_inches=nbbox,)
+
+plt.close()
+
+pdf.close()
+
+print("PDF Saved succesfully -> Location: ", FILE_LOCATION)

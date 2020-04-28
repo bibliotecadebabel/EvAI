@@ -77,7 +77,8 @@ class CommandExperimentMutation():
         
         dataGen = self.__dataGen
 
-        test_id = self.__testDao.insert(testName=self.__testName, periodSave=periodSave, dt=dt, total=totalIterations)
+        test_id = self.__testDao.insert(testName=self.__testName, periodSave=periodSave, dt=dt, 
+                                            total=totalIterations, periodCenter=periodNewSpace)
 
 
         #print("center ADN= ", self.__space.node2key(self.__getNodeCenter()))

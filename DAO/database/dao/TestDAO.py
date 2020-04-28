@@ -7,10 +7,10 @@ class TestDAO():
     def __init__(self):
         self.__handler = DBHandler()
     
-    def insert(self, testName, periodSave, dt, total):
+    def insert(self, testName, periodSave, dt, total, periodCenter, enable_mutation=1):
 
-        query = """INSERT INTO test (name, period, dt, total_iteration) VALUES (?, ?, ?, ?);"""
-        data = (testName, periodSave, dt, total)
+        query = """INSERT INTO test (name, period, dt, total_iteration, period_center, enable_mutation) VALUES (?, ?, ?, ?, ?, ?);"""
+        data = (testName, periodSave, dt, total, periodCenter, enable_mutation)
 
         row_id = self.__handler.execute(query, data)
 

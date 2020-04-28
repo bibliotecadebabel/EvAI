@@ -51,10 +51,10 @@ class TestResultDAO():
         
         return value
 
-    def findByLimitIteration(self, idTest, limitIteration):
+    def findByLimitIteration(self, idTest, minRange, maxRange):
         
-        query = """SELECT * FROM test_result WHERE center = 1 AND id_test = ? AND iteration <= ?"""
-        data = (idTest, limitIteration)
+        query = """SELECT * FROM test_result WHERE center = 1 AND id_test = ? AND iteration >= ? AND iteration <= ?"""
+        data = (idTest, minRange, maxRange)
 
         rows = self.__handler.executeQuery(query, data)
 
