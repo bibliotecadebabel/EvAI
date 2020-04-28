@@ -36,7 +36,7 @@ class TestResultDAO():
 
     def find(self, idTest):
         
-        query = """SELECT * FROM test_result WHERE id_test = ?"""
+        query = """SELECT * FROM test_result WHERE center = 1 AND id_test = ?"""
         data = (idTest,)
 
         rows = self.__handler.executeQuery(query, data)
@@ -51,8 +51,22 @@ class TestResultDAO():
         
         return value
 
-    def findByIteration(self, idTest, iteration):
-        pass
+    def findByLimitIteration(self, idTest, limitIteration):
+        
+        query = """SELECT * FROM test_result WHERE center = 1 AND id_test = ? AND iteration <= ?"""
+        data = (idTest, limitIteration)
+
+        rows = self.__handler.executeQuery(query, data)
+
+        value = []
+        for row in rows:
+            resultTest = TestResultEntity()
+
+            resultTest.load(data=row)
+
+            value.append(resultTest)
+        
+        return value
 
     def delete(self, id):
         pass

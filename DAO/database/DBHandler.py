@@ -15,24 +15,23 @@ class DBHandler():
             self.__connected = True
             self.__cursor = self.__connection.cursor()
 
-            print("Database connected succesfully")
-
         except Exception as ex:
             self.__connected = False
             print(ex)
+
+            raise
 
     
     def __disconnect(self):
 
         try:
 
-            self.__connection.close()
             self.__cursor.close()
-
-            print("Database disconnected succesfully")
+            self.__connection.close()
 
         except Exception:
-            pass
+
+            raise
 
         finally:
             self.__connected = False
@@ -40,23 +39,30 @@ class DBHandler():
     
     def execute(self, query, data):
 
+        row_id = 0
+
         try:
 
             self.__connect()
 
             self.__cursor.execute(query, data)
 
+            row_id = self.__cursor.lastrowid
+
             self.__connection.commit()
 
         except Exception as ex:
 
-            print(ex)
             print("query=", query)
             print("data=", data)
+
+            raise
         
         finally:
 
             self.__disconnect()
+        
+        return row_id
     
     def executeQuery(self, query, data=None):
         
@@ -77,9 +83,10 @@ class DBHandler():
 
         except Exception as ex:
 
-            print(ex)
             print("query=", query)
             print("data=", data)
+
+            raise
         
         finally:
 
@@ -100,8 +107,9 @@ class DBHandler():
 
         except Exception as ex:
 
-            print(ex)
             print("query=", query)
+
+            raise
         
         finally:
 

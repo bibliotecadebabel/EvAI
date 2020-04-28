@@ -12,7 +12,7 @@ PERIOD_SAVE = 10
 PERIOD_NEWSPACE = 200 
 
 # After TOTAL_ITERATIONS, the experiment will stop.
-TOTAL_ITERATIONS = 12000
+TOTAL_ITERATIONS = 10000
 
 # dt parameter
 DT = 0.01
@@ -24,10 +24,7 @@ CUDA = True
 MAX_LAYER = 3
 
 # TEST_NAME, the name of the experiment (unique)
-TEST_NAME = "test-2_4/26/2020"
-
-# TEST_ID, the id of the test (unique)
-TEST_ID = 2
+TEST_NAME = "test-3"
 
 
 def DNA_test_i(x,y):
@@ -54,7 +51,6 @@ dataGen = dataCreator.returnParam()
 space = DNA_test_i(dataGen.size[1], dataGen.size[2])
 
 
-trainer = CommandExperimentMutation.CommandExperimentMutation(space=space, dataGen=dataGen, testName=TEST_NAME,
-                                                                testId=TEST_ID, cuda=CUDA)
+trainer = CommandExperimentMutation.CommandExperimentMutation(space=space, dataGen=dataGen, testName=TEST_NAME, cuda=CUDA)
                                                                 
 trainer.execute(periodSave=PERIOD_SAVE, periodNewSpace=PERIOD_NEWSPACE, totalIterations=TOTAL_ITERATIONS, dt=DT)

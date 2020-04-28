@@ -1,16 +1,20 @@
 from DAO.database.DBHandler import DBHandler
 
+from Entities.TestEntity import TestEntity
+
 class TestDAO():
 
     def __init__(self):
         self.__handler = DBHandler()
     
-    def insert(self, idTest, testName):
+    def insert(self, testName, periodSave, dt, total):
 
-        query = """INSERT INTO test (id, name) VALUES (?, ?);"""
-        data = (idTest, testName)
+        query = """INSERT INTO test (name, period, dt, total_iteration) VALUES (?, ?, ?, ?);"""
+        data = (testName, periodSave, dt, total)
 
-        self.__handler.execute(query, data)
+        row_id = self.__handler.execute(query, data)
+
+        return row_id
 
     def find(self, idTest):
         
@@ -35,11 +39,21 @@ class TestDAO():
 
     def findAll(self):
         
-        query = """SELECT * FROM test WHERE name = ?"""
+        query = """SELECT * FROM test"""
 
         rows = self.__handler.executeQuery(query)
 
-        return rows
+        value = []
+        
+        for row in rows:
+            
+            testEntity = TestEntity()
+            
+            testEntity.load(row)
+
+            value.append(testEntity)
+
+        return value
 
     def deleteAll(self):
         pass

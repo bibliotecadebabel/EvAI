@@ -5,14 +5,13 @@ from DNA_Graph import DNA_Graph
 
 class CommandExperimentMutation():
 
-    def __init__(self, space, dataGen, testName, testId, cuda=False):
+    def __init__(self, space, dataGen, testName, cuda=False):
         self.__space = space
         self.__cuda = cuda
         self.__dataGen = dataGen
         self.__bestNetwork = None
         self.__generateNetworks()
         self.__testName = testName
-        self.__testId = testId
         self.__testDao = TestDAO.TestDAO()
         self.__testResultDao = TestResultDAO.TestResultDAO()
         
@@ -30,12 +29,11 @@ class CommandExperimentMutation():
 
         centerNetwork = None
         if self.__bestNetwork is None:
-            print("new network")
+            #print("new network")
             centerNetwork = nw.Network(centerAdn, cudaFlag=CUDA)
         else:
-            print("cloning best network=", self.__bestNetwork.adn)
+            print("new center (cloning network)=", self.__bestNetwork.adn)
             centerNetwork = self.__bestNetwork.clone()
-            print("new center network adn=", centerNetwork.adn)
         
         self.__nodes.append(nodeCenter)
         self.__networks.append(centerNetwork)
@@ -79,10 +77,10 @@ class CommandExperimentMutation():
         
         dataGen = self.__dataGen
 
-        self.__testDao.insert(idTest=self.__testId, testName=self.__testName)
+        test_id = self.__testDao.insert(testName=self.__testName, periodSave=periodSave, dt=dt, total=totalIterations)
 
 
-        print("center ADN= ", self.__space.node2key(self.__getNodeCenter()))
+        #print("center ADN= ", self.__space.node2key(self.__getNodeCenter()))
 
         for j in range(1, totalIterations+1):
 
@@ -92,7 +90,7 @@ class CommandExperimentMutation():
             if j % periodSave == 0:
                 print("saving Energy, j=", j)
                 self.__saveEnergy()
-                self.__testResultDao.insert(idTest=self.__testId, iteration=j, dna_graph=self.__space)
+                self.__testResultDao.insert(idTest=test_id, iteration=j, dna_graph=self.__space)
         
             if j % periodNewSpace == 0:
 
