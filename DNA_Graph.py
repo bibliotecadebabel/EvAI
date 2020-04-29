@@ -2,7 +2,7 @@ import utilities.Quadrants as qu
 import utilities.Node as nd
 import utilities.Graphs as gr
 import TangentPlane as tplane
-from DNA_creators import Creator
+from DNA_creators import Creator as Creator_full
 
 class DNA_Graph():
 
@@ -28,7 +28,9 @@ class DNA_Graph():
         pass
 
 
-    def __init__(self,center,size,dim,condition,typos=(0,(0,1,0,0)),type_add_layer=None):
+    def __init__(self,center,size,dim,condition,
+                typos=(0,(0,1,0,0)),type_add_layer=None,
+                creator=Creator_full):
         self.typos = typos
         self.center=center
         self.x_dim=dim[0]
@@ -37,7 +39,7 @@ class DNA_Graph():
         self.objects=None
         self.graph=None
         self.condition=condition
-        self.creator=Creator(self.typos,condition,type_add_layer)
+        self.creator=creator(self.typos,condition,type_add_layer)
         g=self.creator.create(self.center,size)
         self.graph=g
         self.objects=list(g.key2node.values())

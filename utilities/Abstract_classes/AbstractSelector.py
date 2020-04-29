@@ -30,8 +30,8 @@ class Selector(ABC):
             self.current_path.pop(0)
         pass
 
-    def forget_path(self, path):
-        if len(path) > self.max_path_size:
+    def forget_path(self,path):
+        while len(path) > self.max_path_size:
             path.pop(0)
         pass
 
@@ -45,10 +45,10 @@ class Selector(ABC):
         while len(self.observations)>self.max_observation_size:
             self.observations.pop(0)
         for observation in self.observations:
-            self.observation(observation)
+            self.forget_observation(observation)
         pass
 
-    def update(space):
+    def update(self,space):
         self.register_observations(space)
         self.update_current_path(space)
         self.forget_observations()
