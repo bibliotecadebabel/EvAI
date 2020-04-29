@@ -1,4 +1,4 @@
-from DAO import GeneratorFromImage
+from DAO import GeneratorFromImage, GeneratorFromCIFAR
 
 class CommandCreateDataGen():
 
@@ -6,8 +6,13 @@ class CommandCreateDataGen():
         self.__dataGen = None
         self.__cuda = cuda
 
-    def execute(self, compression, amount_images):
-        self.__dataGen = GeneratorFromImage.GeneratorFromImage(compression, amount_images, cuda=self.__cuda)
+    def execute(self, compression, batchSize, source='default'):
+        
+        if source == 'cifar':
+            self.__dataGen = GeneratorFromCIFAR.GeneratorFromCIFAR(compression, batchSize)
+        else:
+            self.__dataGen = GeneratorFromImage.GeneratorFromImage(compression, batchSize, cuda=self.__cuda)
+
         self.__dataGen.dataConv2d()
 
     

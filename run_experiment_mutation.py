@@ -12,7 +12,7 @@ PERIOD_SAVE = 10
 PERIOD_NEWSPACE = 200 
 
 # After TOTAL_ITERATIONS, the experiment will stop.
-TOTAL_ITERATIONS = 10000
+TOTAL_ITERATIONS = 2000
 
 # dt parameter
 DT = 0.01
@@ -24,7 +24,7 @@ CUDA = True
 MAX_LAYER = 3
 
 # TEST_NAME, the name of the experiment (unique)
-TEST_NAME = "test-3"
+TEST_NAME = "test-cifar-1"
 
 
 def DNA_test_i(x,y):
@@ -45,7 +45,7 @@ def DNA_test_i(x,y):
 
 
 dataCreator = CommandCreateDataGen.CommandCreateDataGen(cuda=CUDA)
-dataCreator.execute(2, 200)
+dataCreator.execute(compression=2, batchSize=200, source="default")
 dataGen = dataCreator.returnParam()
 
 space = DNA_test_i(dataGen.size[1], dataGen.size[2])

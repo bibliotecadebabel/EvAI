@@ -23,25 +23,19 @@ class Generator(ABC):
 
     def dataConv2d(self):
 
-        if self.cuda == True:
-            self.label[0] = torch.tensor([0], dtype=self.dtypeLong).cuda()
-            self.label[1] = torch.tensor([1], dtype=self.dtypeLong).cuda()
-        else:
-            self.label[0] = torch.tensor([0], dtype=self.dtypeLong)
-            self.label[1] = torch.tensor([1], dtype=self.dtypeLong)   
+        self.label[0] = torch.tensor([0], dtype=self.dtypeLong)
+        self.label[1] = torch.tensor([1], dtype=self.dtypeLong)   
 
         self.generateData()
         self.__convertDataToPytorch()
         self.__generateSize()
 
+        self.data = [self.data] # Compatible with CIFAR-10 batch format
+
     def dataConv3d(self):
         
-        if self.cuda == True:
-            self.label[0] = torch.tensor([0], dtype=self.dtypeLong).cuda()
-            self.label[1] = torch.tensor([1], dtype=self.dtypeLong).cuda()
-        else:
-            self.label[0] = torch.tensor([0], dtype=self.dtypeLong)
-            self.label[1] = torch.tensor([1], dtype=self.dtypeLong)
+        self.label[0] = torch.tensor([0], dtype=self.dtypeLong)
+        self.label[1] = torch.tensor([1], dtype=self.dtypeLong)
 
         self.generateData()        
         self.__convertDataToPytorch(True)
@@ -57,10 +51,7 @@ class Generator(ABC):
         
         s = len(self.data[0])
 
-        if self.cuda == True:
-            batch = torch.zeros(s, 3, self.data[0][0].shape[0], self.data[0][0].shape[1]).float().cuda()
-        else:
-            batch = torch.zeros(s, 3, self.data[0][0].shape[0], self.data[0][0].shape[1]).float()
+        batch = torch.zeros(s, 3, self.data[0][0].shape[0], self.data[0][0].shape[1]).float()
 
         for i in range(s):
             batch[i] = self.numpyToTorch(self.data[0][i], conv3d)
@@ -68,17 +59,11 @@ class Generator(ABC):
         self.data[0] = None
         self.data[0] = batch
 
-        if self.cuda == True:
-            self.data[1] = torch.tensor(self.data[1]).long().cuda()
-        else:
-            self.data[1] = torch.tensor(self.data[1]).long()
+        self.data[1] = torch.tensor(self.data[1]).long()
     
     def numpyToTorch(self, data, conv3d=False):
 
-        if self.cuda == True:
-            data = torch.from_numpy(data).float().cuda()
-        else:
-            data = torch.from_numpy(data).float()
+        data = torch.from_numpy(data).float()
             
         data.transpose_(0, 2)
         data.transpose_(1, 2)
