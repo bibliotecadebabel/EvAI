@@ -19,7 +19,7 @@ class Selector(ABC):
         self.current_path = []
         self.max_path_size = 4
         self.max_observation_size = 20
-        self.current_time = []
+        self.current_time = 0
         self.training_time = 200
         self.dt = 0.01
 
@@ -42,7 +42,7 @@ class Selector(ABC):
         pass
 
     def forget_observations(self):
-        if len(self.observations)>self.max_observation_size:
+        while len(self.observations)>self.max_observation_size:
             self.observations.pop(0)
         for observation in self.observations:
             self.observation(observation)
@@ -54,6 +54,7 @@ class Selector(ABC):
         self.forget_observations()
         self.train()
         self.update_predicted_actions()
+        self.current_time = self.current_time+1
         pass
 
     #should create net given hyperparameters
