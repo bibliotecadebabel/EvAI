@@ -1,6 +1,26 @@
 from DNA_Graph import DNA_Graph
 from DNA_conditions import max_layer
 from DNA_creators import Creator
+from DNA_creators import Creator_from_selection as Creator_s
+
+def DNA_Creator_s(x,y):
+    def condition(DNA):
+        output=True
+        if DNA:
+            for num_layer in range(0,len(DNA)-3):
+                layer=DNA[num_layer]
+                x_l=layer[3]
+                y_l=layer[4]
+                output=output and (x_l<x) and (y_l<y)
+        if output:
+            return max_layer(DNA,3)
+    center=((0, 3, 5, 3, 3),(0, 8, 8, 3,3),(0,11,5, x, y), (1, 5, 2), (2,))
+    version='inclusion'
+    space=DNA_Graph(center,2,(x,y),condition,((0,(0,0,1,1)),(1,(0,1,0,0)))
+        ,version,Creator_s)
+    space.imprimir()
+    print(space.length())
+
 
 def DNA_test_i(x,y):
     def condition(DNA):
@@ -15,7 +35,7 @@ def DNA_test_i(x,y):
             return max_layer(DNA,3)
     center=((0, 3, 5, 3, 3),(0, 8, 8, 3,3),(0,11,5, x, y), (1, 5, 2), (2,))
     version='inclusion'
-    space=space=DNA_Graph(center,2,(x,y),condition,(0,(0,0,1,1),(0,1,0,0),(1,0,0,0)),version)
+    space=space=DNA_Graph(center,1,(x,y),condition,(0,(0,0,1,1),(0,1,0,0),(1,0,0,0)),version)
     space.imprimir()
     print(space.length())
 
@@ -156,7 +176,8 @@ def linear_kernel_width(x,y):
     #print(space.key2node(center))
     return space
 
-DNA_test_i(11,11)
+DNA_Creator_s(11,11)
+#DNA_test_i(11,11)
 #layer_increase_i(11,11)
 #kernel_increase_i(11,11)
 #add_filter_i(11,11)
