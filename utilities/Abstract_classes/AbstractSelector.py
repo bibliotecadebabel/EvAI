@@ -45,7 +45,7 @@ class Selector(ABC):
         while len(self.observations)>self.max_observation_size:
             self.observations.pop(0)
         for observation in self.observations:
-            self.observation(observation)
+            self.forget_observation(observation)
         pass
 
     def update(self,space):
