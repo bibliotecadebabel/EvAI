@@ -18,7 +18,14 @@ class GeneratorFromCIFAR(Generator):
         self.batchSize = batchSize
         self.transform = transforms.Compose([transforms.ToTensor(), transforms.Normalize((0.5, 0.5, 0.5), (0.5, 0.5, 0.5))])
         self.trainset = torchvision.datasets.CIFAR10(root='./cifar', train=True, download=False, transform=self.transform)
+
+        testBatchSize = self.batchSize
+
+        if self.batchSize < 5000:
+            testBatchSize = testBatchSize*2
+
         self.__trainoader = torch.utils.data.DataLoader(self.trainset, batch_size=self.batchSize, shuffle=True, num_workers=0)
+        self.__testloader = torch.utils.data.DataLoader(self.trainset, batch_size=testBatchSize, shuffle=False, num_workers=0)
 
     def generateData(self):
         
@@ -36,6 +43,23 @@ class GeneratorFromCIFAR(Generator):
 
             if i >= 0:
                 break
+    
+    
+    def __generateTestData(self):
+        
+        del self._testData
+        self._testData = None
+
+        for i, data in enumerate(self.__testloader):
+            
+            inputs, labels = data
+
+            inputs = inputs*255
+
+            self._testData = [inputs, labels]
+
+            if i >= 0:
+                break
 
     
     def update(self):
@@ -44,4 +68,5 @@ class GeneratorFromCIFAR(Generator):
 
     def dataConv2d(self):
         self.generateData()
+        self.__generateTestData()
         self.size = [3, 32, 32]

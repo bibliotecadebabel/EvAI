@@ -28,6 +28,7 @@ class Network(nn.Module):
         self.__createStructure()
         self.total_value = 0
         self.history_loss = []
+        self.__accumulated_loss = 0
 
     def setAttribute(self, name, value):
         setattr(self,name,value)
@@ -181,9 +182,6 @@ class Network(nn.Module):
                 layer.getBias().data -= (layer.bias_der_total * dt)
 
     def Predict(self, image, label):
-        #self.assignLabels(torch.tensor([0], dtype=torch.long))
-
-        #labelTensor = torch.tensor([label.item()]).long().cuda()
 
         labelTensor = tensorFactory.createTensor(body=[label.item()], cuda=self.cudaFlag, requiresGrad=False)
         self.assignLabels(labelTensor)
@@ -246,13 +244,21 @@ class Network(nn.Module):
                 self.Train(inputs, 1, 1)
                 self.optimizer.step()
                 
-                self.total_value += self.__getLossLayer().value.item()
+                self.total_value = self.__getLossLayer().value.item()
+                self.__accumulated_loss += self.total_value
 
                 self.history_loss.append(self.total_value)
 
                 dataGenerator.update()
 
                 i=i+1
+    def getAverageLoss(self, iterations):
+
+        average = self.__accumulated_loss / iterations
+
+        self.__accumulated_loss = 0
+
+        return average
 
     def updateGradFlag(self, flag):
 
@@ -276,135 +282,6 @@ class Network(nn.Module):
 
         pass
 
-    def addFilters(self):
-
-        self.updateGradFlag(False)
-        networkClone = self.clone()
-
-        layerConv2d = networkClone.nodes[1].objects[0]
-        layerLinear = networkClone.nodes[2].objects[0]
-
-        networkClone.updateGradFlag(False)
-        layerConv2d.value.requires_grad = False
-
-        networkClone.__modifyADN()
-
-
-        '''
-        layerConv2d.getFilter().grad = None
-        layerConv2d.getBias().grad = None
-        layerLinear.getFilter().grad = None
-        layerLinear.getBias().grad = None
-        layerConv2d.value.grad = None
-        layerLinear.filter_der_total = 0
-        layerLinear.bias_der_total = 0
-        layerConv2d.filter_der_total = 0
-        layerConv2d.bias_der_total = 0
-        '''
-
-        shapeFilterConv2d = layerConv2d.getFilter().shape
-        shapeFilterLinear = layerLinear.getFilter().shape
-        shapeValueConv2d = layerConv2d.value.shape
-
-        layerConv2d.getFilter().resize_(shapeFilterConv2d[0]+1, 3, shapeFilterConv2d[2], shapeFilterConv2d[3])
-        layerConv2d.getBias().resize_(shapeFilterConv2d[0]+1)
-
-        layerConv2d.value.resize_(shapeValueConv2d[0], shapeValueConv2d[1]+1, shapeValueConv2d[2], shapeValueConv2d[3])
-
-        layerLinear.getFilter().resize_(2, shapeFilterLinear[1]+1)
-
-        layerConv2d.getFilter()[shapeFilterConv2d[0]] = layerConv2d.getFilter()[shapeFilterConv2d[0]-1].clone()
-
-        layerConv2d.getBias()[shapeFilterConv2d[0]] = layerConv2d.getBias()[shapeFilterConv2d[0]-1].clone()
-
-        layerConv2d.value[shapeValueConv2d[0]-1][shapeValueConv2d[1]] = layerConv2d.value[shapeValueConv2d[0]-1][shapeValueConv2d[1]-1].clone()
-
-        for i in range(layerLinear.getFilter().shape[0]):
-            layerLinear.getFilter()[i][layerLinear.getFilter().shape[1]-1] = layerLinear.getFilter()[i][layerLinear.getFilter().shape[1]-2].clone()
-
-        networkClone.updateGradFlag(True)
-        layerConv2d.value.requires_grad = True
-
-        return networkClone
-
-
-    def addFilter2(self, newAdn):
-
-        self.updateGradFlag(False)
-
-        newNetwork = Network(newAdn, cudaFlag=self.cudaFlag)
-
-        layerConv2d = self.nodes[1].objects[0]
-        layerLinear = self.nodes[2].objects[0]
-
-        shapeFilterConv2d = layerConv2d.getFilter().shape
-        shapeFilterLinear = layerLinear.getFilter().shape
-
-        cloneConv2dFilter = layerConv2d.getFilter().clone()
-        cloneConv2dBias = layerConv2d.getBias().clone()
-        cloneLinearFilter = layerLinear.getFilter().clone()
-        cloneLinearBias = layerLinear.getBias().clone()
-
-
-
-        cloneConv2dFilter.resize_(shapeFilterConv2d[0]+1, 3, shapeFilterConv2d[2], shapeFilterConv2d[3])
-        cloneConv2dBias.resize_(shapeFilterConv2d[0]+1)
-
-        cloneLinearFilter.resize_(2, shapeFilterLinear[1]+1)
-
-        cloneConv2dFilter[shapeFilterConv2d[0]] = cloneConv2dFilter[shapeFilterConv2d[0]-1].clone()
-
-        cloneConv2dBias[shapeFilterConv2d[0]] = cloneConv2dBias[shapeFilterConv2d[0]-1].clone()
-
-        for i in range(cloneLinearFilter.shape[0]):
-            cloneLinearFilter[i][cloneLinearFilter.shape[1]-1] = cloneLinearFilter[i][cloneLinearFilter.shape[1]-2].clone()
-
-
-        newNetwork.nodes[1].objects[0].setFilter(cloneConv2dFilter)
-        newNetwork.nodes[1].objects[0].setBias(cloneConv2dBias)
-        newNetwork.nodes[2].objects[0].setFilter(cloneLinearFilter)
-        newNetwork.nodes[2].objects[0].setBias(cloneLinearBias)
-
-        self.updateGradFlag(True)
-
-        return newNetwork
-
-
-    def removeFilter(self):
-        pass
-        '''
-        layerConv2d = self.nodes[1].objects[0]
-        layerLinear = self.nodes[2].objects[0]
-
-        layerConv2d.getFilter().grad = None
-        layerConv2d.getBias().grad = None
-        layerLinear.getFilter().grad = None
-        layerLinear.getBias().grad = None
-
-        shapeFilterConv2d = layerConv2d.getFilter().shape
-        shapeFilterLinear = layerLinear.getFilter().shape
-        shapeValueConv2d = layerConv2d.value.shape
-
-        self.updateGradFlag(False)
-
-        layerConv2d.getFilter().resize_(shapeFilterConv2d[0]-1, 3, shapeFilterConv2d[2], shapeFilterConv2d[3])
-        layerConv2d.getBias().resize_(shapeFilterConv2d[0]-1)
-
-        layerConv2d.value.requires_grad = False
-        layerConv2d.value.resize_(shapeValueConv2d[0], shapeValueConv2d[1]-1, shapeValueConv2d[2], shapeValueConv2d[3])
-        layerConv2d.value.requires_grad = True
-
-        layerLinear.getFilter().resize_(2, shapeFilterLinear[1]-1)
-
-        layerLinear.filter_der_total = 0
-        layerLinear.bias_der_total = 0
-        layerConv2d.filter_der_total = 0
-        layerConv2d.bias_der_total = 0
-
-        self.__modifyADN(False)
-
-        self.updateGradFlag(True)
-        '''
 
     def forward(self, x):
         self.__doFoward()
@@ -452,31 +329,6 @@ class Network(nn.Module):
 
         return network
 
-
-    def __modifyADN(self, Add=True):
-
-        #print("old ADN: ", self.adn)
-
-        modifyADN = list(self.adn)
-        conv2d = list(modifyADN[0])
-        linear = list(modifyADN[1])
-
-        if Add == True:
-            conv2d[2] += 1
-            linear[1] += 1
-        else:
-            conv2d[2] -= 1
-            linear[1] -= 1
-
-        modifyADN[0] = tuple(conv2d)
-        modifyADN[1] = tuple(linear)
-
-
-
-        self.adn = tuple(modifyADN)
-
-        #print("new ADN: ", self.adn)
-
     def __printGrad(self):
         if self.nodes[1].objects[0].getFilter().grad is not None:
             layer1 = self.nodes[1].objects[0]
@@ -485,3 +337,35 @@ class Network(nn.Module):
             print("shape bias grad: ", layer1.getFilter().grad.shape)
             print("shape filter 2 grad: ", layer2.getFilter().grad.shape)
             print("shape bias 2 grad: ", layer2.getFilter().grad.shape)
+
+    def generateEnergy(self, dataGen):
+
+        accuracy = 0
+        with torch.no_grad():
+
+            total = 0
+            correct = 0
+        
+            if self.cudaFlag == True:
+                inputs, labels = dataGen._testData[0].cuda(), dataGen._testData[1].cuda()
+            else:
+                inputs, labels = dataGen._testData[0], dataGen._testData[1]
+            
+            self.assignLabels(labels)
+            self.nodes[0].objects[0].value = inputs
+            self(inputs)
+
+            linearValue = self.__getLayerProbability().value
+
+            _, predicted = torch.max(linearValue.data, 1)
+
+            print("predicted=", predicted)
+            print("labels=", labels)
+            print("what: ", (predicted==labels).sum())
+            
+            total += labels.size(0)
+            correct += (predicted == labels).sum().item()
+
+            accuracy = correct / total
+        
+        return accuracy

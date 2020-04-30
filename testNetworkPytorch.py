@@ -202,16 +202,18 @@ def Test_Mutacion():
     networkADN = ((0, 3, 5, 3, 3),(0, 8, 8, 3,3),(0, 11, 5, 32, 32), (1, 5, 10), (2,))
     network = nw.Network(networkADN, cudaFlag=True)
 
-    dataGen = GeneratorFromCIFAR.GeneratorFromCIFAR(2,  4)
+    dataGen = GeneratorFromCIFAR.GeneratorFromCIFAR(2,  50)
+    #dataGen = GeneratorFromImage.GeneratorFromImage(2, 200)
     dataGen.dataConv2d()
 
-    for epoch in range(1, 2000001):
-
+    for epoch in range(2000001):
 
         network.Training(data=dataGen, p=1, dt=0.01, labels=None)
-        if epoch % 1000 == 999:
-            print("L=", network.total_value/1000,"- epoch =", epoch+1)
-            network.total_value = 0
+
+        if epoch % 100 == 99:
+
+            print("Average Loss=", network.getAverageLoss(epoch+1), " - i= ", epoch+1)
+            print("Accuracy =", network.generateEnergy(dataGen))
 
 
 #Test_pytorchNetwork()
