@@ -2,7 +2,7 @@ import children.pytorch.Network as nw
 import children.Interfaces as Inter
 import children.pytorch.Functions as Functions
 import children.pytorch.MutateNetwork as MutateNetwork
-from DAO import GeneratorFromImage
+from DAO import GeneratorFromImage, GeneratorFromCIFAR
 
 import torch
 import torch.nn as nn
@@ -12,11 +12,8 @@ import torch.optim as optim
 class Net(nn.Module):
     def __init__(self, objects):
         super(Net, self).__init__()
-        self.conv1 = nn.Conv2d(3, 50, 2, 2)
-        self.conv2 = nn.Conv2d(50, 25, 2, 2)
-        self.conv3 = nn.Conv2d(25, 12, 2, 2)
-        self.fc1 = nn.Linear(12 * 1 * 1, 10)
-        self.fc2 = nn.Linear(10 * 1 * 1, 2)
+        self.conv1 = nn.Conv2d(3, 16, 32, 32)
+        self.fc1 = nn.Linear(16 * 1 * 1, 10)
 
     def forward(self, x):
 
@@ -27,24 +24,9 @@ class Net(nn.Module):
         sigmoid = torch.nn.Sigmoid()
         x = sigmoid(x) + torch.nn.functional.relu(x)
 
-        #lenght = len(self.conv2.weight[0].view(-1))
-        #print("len2=", lenght)
-        x = self.conv2(x) 
-        
-        sigmoid = torch.nn.Sigmoid()
-        x = sigmoid(x) + torch.nn.functional.relu(x)
-        
-        #lenght = len(self.conv3.weight[0].view(-1))
-        #print("len3=", lenght)
-        x = self.conv3(x) 
-
-        sigmoid = torch.nn.Sigmoid()
-        x = sigmoid(x) + torch.nn.functional.relu(x)
-
-        x = x.view(-1, 12 * 1 * 1)
+        x = x.view(-1, 16 * 1 * 1)
 
         x = self.fc1(x)
-        x = self.fc2(x)
 
         return x
 
@@ -155,36 +137,6 @@ def Test_node_1(network,n=100,dt=0.1):
         print(network.getProbability())
         k+=1
 
-def Test_pytorchNetwork(dataGen):
-    batch = [dataGen.data]
-    k = 50
-    device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
-
-    net = Net([dataGen.size[1], dataGen.size[2], k]).to(device)
-    criterion = nn.CrossEntropyLoss()
-    optimizer = optim.SGD(net.parameters(), lr=0.001, momentum=0.9)
-    running_loss = 0.0
-    for _,a in enumerate(batch):
-        
-        inputs, labels = a[0] / 255, a[1]
-
-        for j in range(24000):
-            # zero the parameter gradients
-            optimizer.zero_grad()
-
-            # forward + backward + optimize
-            outputs = net(inputs)
-            loss = criterion(outputs, labels)
-            loss.backward()
-            optimizer.step()
-
-            # print statistics
-            running_loss += loss.item()
-
-            if j % 2000 == 1999:    # print every 2000 mini-batches
-                print("Energy: ", running_loss, "i = ", j+1)
-                running_loss = 0.0
-
 def Test_Batch(dataGen):
 
     batch = [dataGen.data]
@@ -205,12 +157,39 @@ def Test_Batch(dataGen):
         #print("Loss Array: ", networks[0].getLossArray())
         Inter.trakPytorch(networks[0], "pokemon-netmap", dataGen)
 
-def Test_Mutacion(dataGen):
-    batch = [dataGen.data]
-    print("len data: ", len(dataGen.data[0]))
-    ks = [10]
-    x = dataGen.size[1]
-    y = dataGen.size[2]
+def Test_pytorchNetwork():
+    dataGen = GeneratorFromCIFAR.GeneratorFromCIFAR(2,  10)
+    dataGen.dataConv2d()
+    device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
+
+    net = Net([]).to(device)
+    criterion = nn.CrossEntropyLoss()
+    optimizer = optim.SGD(net.parameters(), lr=0.01, momentum=0.0)
+    running_loss = 0.0
+
+    for j in range(24000):
+
+        # zero the parameter gradients
+        optimizer.zero_grad()
+
+        # forward + backward + optimize
+        outputs = net(dataGen.data[0].cuda())
+        loss = criterion(outputs, dataGen.data[1].cuda())
+        loss.backward()
+        optimizer.step()
+
+        # print statistics
+        running_loss += loss.item()
+
+        dataGen.update()
+
+        if j % 100 == 0:    # print every 2000 mini-batches
+            print("Energy: ", running_loss, "i = ", j+1)
+        running_loss = 0.0
+
+
+                
+def Test_Mutacion():
 
     print("creating networks")
     #(0, ks[i], len(dataGen.data[0]), 1, 1),
@@ -219,32 +198,24 @@ def Test_Mutacion(dataGen):
     #networkADN = ((0, 3, 5, 8, 8), (0, 5, 3, 4, 4), (1, 3, 2), (2,))
     #mutationADN = ((0, 3, 10, 2, 2), (0, 10, 20, 10, 10), (1, 20, 2), (2,))
     #mutationADN = ((0, 3, 5, 8, 8), (0, 5, 3, 3, 3), (0, 3, 3, 2, 2), (1, 3, 2), (2,))
-    networkADN = ((0, 3, 15, 3, 3), (0, 18, 10, x, y), (1, 10, 2), (2,))
-    mutationADN = ((0, 3, 15, 3, 3), (0, 18, 15, 3, 3), (0, 18, 10, x, y), (1, 10, 2), (2,))
+    #networkADN = ((0, 3, 5, 3, 3),(0, 8, 8, 3,3),(0,11,5, 32, 32), (1, 5, 10), (2,))
+    networkADN = ((0, 3, 5, 3, 3),(0, 8, 8, 3,3),(0, 11, 5, 32, 32), (1, 5, 10), (2,))
     network = nw.Network(networkADN, cudaFlag=True)
 
-    for _,a in enumerate(dataGen.data):
-        
-        print("red original (network): ", *network.adn)
-        network.Training(data=a[0], p=1, dt=0.01, labels=a[1])
-        print("mutando")
-        netwokMutated = MutateNetwork.executeMutation(network, mutationADN)
-        print("entrando red mutada #1 (mutation1): ", *netwokMutated.adn)
-        netwokMutated.Training(data=a[0],p=1, dt=0.01, labels=a[1])
-        Inter.trakPytorch(netwokMutated, "pokemon-netmap", dataGen)
+    dataGen = GeneratorFromCIFAR.GeneratorFromCIFAR(2,  4)
+    dataGen.dataConv2d()
+
+    for epoch in range(1, 2000001):
 
 
-dataGen = GeneratorFromImage.GeneratorFromImage(2,  200, cuda=True)
-dataGen.dataConv2d()
-size = dataGen.size
+        network.Training(data=dataGen, p=1, dt=0.01, labels=None)
+        if epoch % 1000 == 999:
+            print("L=", network.total_value/1000,"- epoch =", epoch+1)
+            network.total_value = 0
 
 
-x = size[1]
-y = size[2]
-k = 2
-
-#Test_pytorchNetwork(dataGen)
+#Test_pytorchNetwork()
 
 #Test_Batch(dataGen)
-Test_Mutacion(dataGen)
+Test_Mutacion()
 

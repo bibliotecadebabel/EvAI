@@ -29,8 +29,9 @@ class Generator(ABC):
         self.generateData()
         self.__convertDataToPytorch()
         self.__generateSize()
-
-        self.data = [self.data] # Compatible with CIFAR-10 batch format
+    
+    def update(self):
+        pass
 
     def dataConv3d(self):
         

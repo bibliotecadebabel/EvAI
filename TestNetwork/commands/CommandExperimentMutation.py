@@ -77,6 +77,7 @@ class CommandExperimentMutation():
         
         dataGen = self.__dataGen
 
+        print("inserting 1")
         test_id = self.__testDao.insert(testName=self.__testName, periodSave=periodSave, dt=dt, 
                                             total=totalIterations, periodCenter=periodNewSpace)
 
@@ -84,27 +85,21 @@ class CommandExperimentMutation():
         #print("center ADN= ", self.__space.node2key(self.__getNodeCenter()))
 
         for j in range(1, totalIterations+1):
-
-            for _,data in enumerate(dataGen.data, 0):
                 
-                if self.__cuda == True:
-                    inputs, labels = data[0].cuda(), data[1].cuda()
-                else:
-                    inputs, labels = data[0], data[1]
 
-                for network in self.__networks:
-                    network.Training(data=inputs, labels=labels, dt=dt, p=1)
+            for network in self.__networks:
+                network.Training(data=dataGen, labels=None, dt=dt, p=1)
                 
-                if j % periodSave == 0:
-                    print("saving Energy, j=", j)
-                    self.__saveEnergy()
-                    self.__testResultDao.insert(idTest=test_id, iteration=j, dna_graph=self.__space)
-            
-                if j % periodNewSpace == 0:
+            if j % periodSave == 0:
+                print("saving Energy, j=", j)
+                self.__saveEnergy()
+                self.__testResultDao.insert(idTest=test_id, iteration=j, dna_graph=self.__space)
+        
+            if j % periodNewSpace == 0:
 
-                    if self.__defineNewCenter() == True:
-                        self.__generateNewSpace()
-                        self.__generateNetworks()
+                if self.__defineNewCenter() == True:
+                    self.__generateNewSpace()
+                    self.__generateNetworks()
 
     
     def __getBestNetwork(self):

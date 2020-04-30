@@ -215,16 +215,13 @@ class Network(nn.Module):
         #self.__doFoward()
         self.__doBackward()
         self.updateGradFlag(False)
-
-        self.total_value += ((self.__getLossLayer().value)/n).item()
         #self.Acumulate_der(n, peso)
         #self.Reset_der()
 
-    def Training(self, data, labels, dt=0.1, p=1):
+    def Training(self, data, labels=None, dt=0.1, p=1):
 
             self.optimizer = optim.SGD(self.parameters(), lr=dt, momentum=0)
-            n = len(data) * 5/4
-            peso = len(data) / 4
+            dataGenerator = data
 
             i=0
             while i < p:
@@ -237,14 +234,24 @@ class Network(nn.Module):
                     print("L=", self.total_value, " i=", str(i))
                 
                 '''
-                
-                self.assignLabels(labels)
-                self.total_value = 0
-                self.optimizer.zero_grad()
-                self.Train(data, 1, 1)
 
+                if self.cudaFlag == True:
+                    inputs, labels_data = dataGenerator.data[0].cuda(), dataGenerator.data[1].cuda()
+                else:
+                    inputs, labels_data = dataGenerator.data[0], dataGenerator.data[1]
+
+                self.assignLabels(labels_data)
+                #self.total_value = 0
+                self.optimizer.zero_grad()
+                self.Train(inputs, 1, 1)
                 self.optimizer.step()
-                self.history_loss.append(self.total_value)
+                
+                self.total_value += self.__getLossLayer().value.item()
+
+                #self.history_loss.append(self.total_value)
+
+                dataGenerator.update()
+
                 i=i+1
 
     def updateGradFlag(self, flag):

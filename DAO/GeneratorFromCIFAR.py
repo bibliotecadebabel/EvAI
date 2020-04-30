@@ -16,14 +16,32 @@ class GeneratorFromCIFAR(Generator):
         super().__init__(comp, batchSize, "CIFAR", "folder")
 
         self.batchSize = batchSize
-        self.transform = transforms.Compose([transforms.ToTensor(),transforms.Normalize((0.5, 0.5, 0.5), (0.5, 0.5, 0.5))])
+        self.transform = transforms.Compose([transforms.ToTensor(), transforms.Normalize((0.5, 0.5, 0.5), (0.5, 0.5, 0.5))])
         self.trainset = torchvision.datasets.CIFAR10(root='./cifar', train=True, download=False, transform=self.transform)
+        self.__trainoader = torch.utils.data.DataLoader(self.trainset, batch_size=self.batchSize, shuffle=True, num_workers=0)
 
     def generateData(self):
+        
+        del self.data
+    
+        self.data = None
 
+        for i, data in enumerate(self.__trainoader):
+            
+            inputs, labels = data
 
-        self.data = torch.utils.data.DataLoader(self.trainset, batch_size=self.batchSize, shuffle=True, num_workers=2)
+            inputs = inputs*255
 
+            self.data = [inputs, labels]
+
+            if i >= 0:
+                break
+
+    
+    def update(self):
+
+        self.generateData()
 
     def dataConv2d(self):
         self.generateData()
+        self.size = [3, 32, 32]
