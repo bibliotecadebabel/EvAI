@@ -191,7 +191,7 @@ while True:
         update(status)
         print('The iteration number is:')
         print(k)
-        status.print_energy()
+        #status.print_energy()
         #status.print_particles()
         #status.print_particles()
         #status.print_max_particles()

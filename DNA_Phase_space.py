@@ -36,8 +36,12 @@ class DNA_Phase_space():
         k_o=self.node2key(node)
         V_o=stream.findCurrentvalue(k_o)
         p=self.node2plane(node)
-        p.energy=V_o
-        return V_o
+        if V_o:
+            p.energy=V_o/(0.01+V_o)+V_o/(0.001+V_o)+V_o/(0.0001+V_o)+V_o/.001+(V_o/.1)**2
+            return p.energy
+        else:
+            p.energy=V_o
+            return V_o
 
     def update_max_particles(self):
         old_max=self.node_max_particles
@@ -274,8 +278,11 @@ class DNA_Phase_space():
         print(self.center())
         print('and its energy is')
         node = self.key2node(self.center())
+        stream=self.stream
+        k_o=self.node2key(node)
+        V_o=stream.findCurrentvalue(k_o)
         if node:
-            print(self.node2V(node))
+            print(V_o)
 
 
     def update(self):
@@ -321,7 +328,7 @@ class DNA_Phase_space():
         self.beta=2
         self.alpha=50
         self.support=[]
-        dataGen = GeneratorFromImage.GeneratorFromImage(2, 100, cuda=False)
+        dataGen = GeneratorFromImage.GeneratorFromImage(2, 200, cuda=False)
         dataGen.dataConv2d()
         self.stream=TorchStream(dataGen,25)
         self.radius=10
