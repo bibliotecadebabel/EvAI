@@ -5,6 +5,12 @@ from DNA_Graph import DNA_Graph
 
 ###### EXPERIMENT SETTINGS ######
 
+# BATCH SIZE
+BATCH_SIZE = 200
+
+# DATA SOURCE ('default' -> Pikachu, 'cifar' -> CIFAR)
+DATA_SOURCE = 'default'
+
 # Every PERDIOD_SAVE iterations, all DNA and its energies will be stored in the database.
 PERIOD_SAVE = 5 
 
@@ -24,7 +30,7 @@ CUDA = True
 MAX_LAYER = 3
 
 # TEST_NAME, the name of the experiment (unique)
-TEST_NAME = "test-cifar-13"
+TEST_NAME = "test-pikachu-1"
 
 
 def DNA_test_i(x,y):
@@ -45,7 +51,7 @@ def DNA_test_i(x,y):
 
 
 dataCreator = CommandCreateDataGen.CommandCreateDataGen(cuda=CUDA)
-dataCreator.execute(compression=2, batchSize=10, source="cifar")
+dataCreator.execute(compression=2, batchSize=BATCH_SIZE, source=DATA_SOURCE)
 dataGen = dataCreator.returnParam()
 
 space = DNA_test_i(dataGen.size[1], dataGen.size[2])
