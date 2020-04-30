@@ -15,6 +15,7 @@ class Generator(ABC):
         self.dtypeFloat = torch.float32
         self.dtypeLong = torch.long
         self.cuda = cuda
+        self._testData = []
 
 
     @abstractmethod
