@@ -44,7 +44,7 @@ class Status():
         self.frame1=[]
         self.frame2=[]
         self.Transfer=None
-        self.S=100
+        self.S=200
         self.Comp=2
         self.Data_gen=None
         self.p=1
@@ -145,13 +145,13 @@ def create_objects(status):
     #center=((0, 3, 2, x, y), (1, 2, 2), (2,))
     #space=DNA_Graph(center,status.dx,(x,y),condition,(0,(1,1,0,0)))
     #Dimension of kernel
-    #center=((0, 3, 5, 3, 3),(0, 8, 8, 3,3),(0,11,5, x, y), (1, 5, 2), (2,))
-    center=((0, 3, 2, x, y), (1, 2, 2), (2,))
+    center=((0, 3, 5, 3, 3),(0, 8, 8, 3,3),(0,11,5, x, y), (1, 5, 2), (2,))
+    #center=((0, 3, 2, x, y), (1, 2, 2), (2,))
     version='inclusion'
-    space=space=DNA_Graph(center,status.dx,(x,y),condition,(0,(0,0,1,1),(0,1,0,0),(1,0,0,0)),version)
+    space=space=DNA_Graph(center,status.dx,(x,y),condition,(0,(1,0,0,0),(0,0,1,1),(0,1,0,0)),version)
     #space=space=DNA_Graph(center,1,(x,y),condition,(0,(1,0,0,0)),version)
     Phase_space=DNA_Phase_space(space)
-    Dynamics=Dynamic_DNA(space,Phase_space)
+    Dynamics=Dynamic_DNA(space,Phase_space,status.dx)
     Phase_space.create_particles(status.n)
     Phase_space.beta=status.beta
     Phase_space.alpha=status.alpha
