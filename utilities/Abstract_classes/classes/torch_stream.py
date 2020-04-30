@@ -19,10 +19,9 @@ class TorchStream(Stream):
             p=self.log_size-len(self.log)
             out_net=self.old_net.clone()
             a=self.dataGen.data
-            out_net.Training(data=a[0],
+            out_net.Training(data=self.dataGen,
                 p=p,
-                dt=self.dt,
-                labels=a[1])
+                dt=self.dt)
             out_net.history_loss=[]
             return out_net
 
@@ -43,10 +42,9 @@ class TorchStream(Stream):
             net=log.new_net
             log.old_net=net.clone()
             log.old_net.history_loss=[]
-            net.Training(data=a[0],
+            net.Training(data=self.dataGen,
                 p=self.log_size,
-                dt=self.dt,
-                labels=a[1])
+                dt=self.dt)
             log.charge(net.history_loss)
             net.history_loss=[]
         elif log.signal and (len(log.log) <5):
@@ -56,10 +54,9 @@ class TorchStream(Stream):
             net=log.get_net()
             log.old_net=net.clone()
             log.old_net.history_loss=[]
-            net.Training(data=a[0],
+            net.Training(data=self.dataGen,
                 p=self.log_size-5,
-                dt=self.dt,
-                labels=a[1])
+                dt=self.dt)
             log.charge(net.history_loss)
             net.history_loss=[]
 #        else:

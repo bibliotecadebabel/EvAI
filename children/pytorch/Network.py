@@ -241,14 +241,14 @@ class Network(nn.Module):
                     inputs, labels_data = dataGenerator.data[0], dataGenerator.data[1]
 
                 self.assignLabels(labels_data)
-                #self.total_value = 0
+                self.total_value = 0
                 self.optimizer.zero_grad()
                 self.Train(inputs, 1, 1)
                 self.optimizer.step()
                 
                 self.total_value += self.__getLossLayer().value.item()
 
-                #self.history_loss.append(self.total_value)
+                self.history_loss.append(self.total_value)
 
                 dataGenerator.update()
 
