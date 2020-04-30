@@ -28,7 +28,7 @@ class Status():
         self.tau=0.01
         self.n = 1000
         self.r=3
-        self.dx = 8
+        self.dx = 2
         self.L = 1
         self.beta = 2
         self.alpha = 50
@@ -112,6 +112,8 @@ def initialize_parameters(self):
     self.Potantial=potential
     self.Interaction=interaction
     self.display_size=display_size
+    self.dx = 2
+
 
 def create_objects(status):
     status.Data_gen=GeneratorFromImage.GeneratorFromImage(
@@ -143,9 +145,11 @@ def create_objects(status):
     #center=((0, 3, 2, x, y), (1, 2, 2), (2,))
     #space=DNA_Graph(center,status.dx,(x,y),condition,(0,(1,1,0,0)))
     #Dimension of kernel
-    center=((0, 3, 5, 3, 3),(0, 8, 8, 3,3),(0,11,5, x, y), (1, 5, 2), (2,))
+    #center=((0, 3, 5, 3, 3),(0, 8, 8, 3,3),(0,11,5, x, y), (1, 5, 2), (2,))
+    center=((0, 3, 2, x, y), (1, 2, 2), (2,))
     version='inclusion'
-    space=space=DNA_Graph(center,1,(x,y),condition,(0,(0,0,1,1),(0,1,0,0),(1,0,0,0)),version)
+    space=space=DNA_Graph(center,status.dx,(x,y),condition,(0,(0,0,1,1),(0,1,0,0),(1,0,0,0)),version)
+    #space=space=DNA_Graph(center,1,(x,y),condition,(0,(1,0,0,0)),version)
     Phase_space=DNA_Phase_space(space)
     Dynamics=Dynamic_DNA(space,Phase_space)
     Phase_space.create_particles(status.n)
@@ -187,7 +191,7 @@ while True:
         update(status)
         print('The iteration number is:')
         print(k)
-        #status.print_energy()
+        status.print_energy()
         #status.print_particles()
         #status.print_particles()
         #status.print_max_particles()

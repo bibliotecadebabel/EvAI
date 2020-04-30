@@ -28,7 +28,7 @@ class Dynamic_DNA():
             center = phase_space.node2key(node_max)
             x = old_graph.x_dim
             y = old_graph.y_dim
-            space=DNA_Graph(center,3,(x,y),condition,typos,'inclusion')
+            space=DNA_Graph(center,self.dx,(x,y),condition,typos,'inclusion')
             #Phase_space = DNA_Phase_space(space)
             phase_space.DNA_graph = space
             phase_space.objects = space.objects
@@ -145,7 +145,7 @@ class Dynamic_DNA():
 
 
 
-    def __init__(self,space,phase_space,update_space=None):
+    def __init__(self,space,phase_space,dx=1,update_space=None):
         self.space = space
         self.phase_space= phase_space
         self.objects=phase_space.objects
@@ -154,13 +154,14 @@ class Dynamic_DNA():
             self.update_space=update_space
         else:
             self.update_space=self.update_space_default
-        self.diffusion_coefficient=1
+        self.diffusion_coefficient=0
         self.lost_coefficient=10
-        self.interaction_coefficient=1
+        self.interaction_coefficient=0
         self.dt=0.01
-        self.mutation_coefficient=1000
+        self.mutation_coefficient=100
         self.Graph=phase_space.DNA_graph
         self.epsilon=0.01
+        self.dx=dx
 
 
 
