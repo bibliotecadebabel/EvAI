@@ -28,7 +28,7 @@ class Dynamic_DNA():
             center = phase_space.node2key(node_max)
             x = old_graph.x_dim
             y = old_graph.y_dim
-            space=DNA_Graph(center,3,(x,y),condition,typos)
+            space=DNA_Graph(center,3,(x,y),condition,typos,'inclusion')
             #Phase_space = DNA_Phase_space(space)
             phase_space.DNA_graph = space
             phase_space.objects = space.objects

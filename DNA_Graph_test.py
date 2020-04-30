@@ -176,8 +176,8 @@ def linear_kernel_width(x,y):
     #print(space.key2node(center))
     return space
 
-DNA_Creator_s(11,11)
-#DNA_test_i(11,11)
+#DNA_Creator_s(11,11)
+DNA_test_i(11,11)
 #layer_increase_i(11,11)
 #kernel_increase_i(11,11)
 #add_filter_i(11,11)
