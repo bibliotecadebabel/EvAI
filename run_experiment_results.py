@@ -22,6 +22,7 @@ TEST_ID = int(input("Select test id: "))
 MIN_RANGE = int(input("Select min range iteration: "))
 MAX_RANGE = int(input("Select max range iteration: "))
 PERIOD_ITERATION = int(input("Select iteration period (recommended -> center period): ", ))
+AVERAGE_ENERGY = int(input("Show energy as avegare? (0 = no / 1 = yes): " ))
 
 test_name = ""
 for test in test_list:
@@ -39,11 +40,34 @@ axis_x = []
 axis_y = []
 table_data_energy = []
 table_data_dna = []
-for result in results:
-    axis_x.append(result.iteration)
-    axis_y.append(result.tangentPlane.energy)
-    table_data_energy.append([result.iteration, result.tangentPlane.energy])
-    table_data_dna.append([result.iteration, result.dna])
+
+if AVERAGE_ENERGY == 1:
+
+    energy_accum = 0
+    for result in results:
+        energy_accum += result.tangentPlane.energy
+
+        if result.iteration % PERIOD_ITERATION == 0:
+            
+            average = energy_accum / PERIOD_ITERATION
+
+            axis_x.append(result.iteration)
+            axis_y.append(average)
+            table_data_energy.append([result.iteration, average])
+            table_data_dna.append([result.iteration, result.dna])
+
+            energy_accum = 0
+else:
+
+    for result in results:
+
+        if result.iteration % PERIOD_ITERATION == 0:
+            
+            axis_x.append(result.iteration)
+            axis_y.append(result.tangentPlane.energy)
+            table_data_energy.append([result.iteration, result.tangentPlane.energy])
+            table_data_dna.append([result.iteration, result.dna])
+
 
 
 fig, ax = plt.subplots()

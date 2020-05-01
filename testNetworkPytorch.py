@@ -206,14 +206,14 @@ def Test_Mutacion():
     #dataGen = GeneratorFromImage.GeneratorFromImage(2, 200)
     dataGen.dataConv2d()
 
-    for epoch in range(2000001):
-
+    for epoch in range(24000):
+        
         network.Training(data=dataGen, p=1, dt=0.01, labels=None)
 
-        if epoch % 100 == 99:
+        if epoch % 200 == 199:
+            print("Average Loss=", network.getAverageLoss(50), " - i= ", epoch+1)
 
-            print("Average Loss=", network.getAverageLoss(epoch+1), " - i= ", epoch+1)
-            print("Accuracy =", network.generateEnergy(dataGen))
+    print("Accuracy=", network.generateEnergy(dataGen))
 
 
 #Test_pytorchNetwork()

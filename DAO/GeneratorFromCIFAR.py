@@ -18,14 +18,10 @@ class GeneratorFromCIFAR(Generator):
         self.batchSize = batchSize
         self.transform = transforms.Compose([transforms.ToTensor(), transforms.Normalize((0.5, 0.5, 0.5), (0.5, 0.5, 0.5))])
         self.trainset = torchvision.datasets.CIFAR10(root='./cifar', train=True, download=False, transform=self.transform)
+        self.testSet = torchvision.datasets.CIFAR10(root='./cifar', train=False, download=False, transform=self.transform)
 
-        testBatchSize = self.batchSize
-
-        if self.batchSize < 5000:
-            testBatchSize = testBatchSize*2
-
-        self.__trainoader = torch.utils.data.DataLoader(self.trainset, batch_size=self.batchSize, shuffle=True, num_workers=0)
-        self.__testloader = torch.utils.data.DataLoader(self.trainset, batch_size=testBatchSize, shuffle=False, num_workers=0)
+        self._trainoader = torch.utils.data.DataLoader(self.trainset, batch_size=self.batchSize, shuffle=True, num_workers=0)
+        self._testloader = torch.utils.data.DataLoader(self.testSet, batch_size=self.batchSize, shuffle=False, num_workers=0)
 
     def generateData(self):
         
@@ -33,7 +29,7 @@ class GeneratorFromCIFAR(Generator):
     
         self.data = None
 
-        for i, data in enumerate(self.__trainoader):
+        for i, data in enumerate(self._trainoader):
             
             inputs, labels = data
 
@@ -50,7 +46,7 @@ class GeneratorFromCIFAR(Generator):
         del self._testData
         self._testData = None
 
-        for i, data in enumerate(self.__testloader):
+        for i, data in enumerate(self._testloader):
             
             inputs, labels = data
 

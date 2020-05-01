@@ -17,10 +17,7 @@ class CommandGetResultExperiment():
 
         results = self.__testResultDao.findByLimitIteration(idTest=self.__testId, minRange=minRange, maxRange=maxRange)
         
-        for result in results:
-
-            if result.iteration % periodIteration == 0:
-                self.__value.append(result)
+        self.__value = results
 
 
     def getReturnParam(self):

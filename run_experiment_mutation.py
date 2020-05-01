@@ -6,19 +6,19 @@ from DNA_Graph import DNA_Graph
 ###### EXPERIMENT SETTINGS ######
 
 # BATCH SIZE
-BATCH_SIZE = 200
+BATCH_SIZE = 50
 
 # DATA SOURCE ('default' -> Pikachu, 'cifar' -> CIFAR)
-DATA_SOURCE = 'default'
+DATA_SOURCE = 'cifar'
 
 # Every PERDIOD_SAVE iterations, all DNA and its energies will be stored in the database.
-PERIOD_SAVE = 5 
+PERIOD_SAVE = 1
 
 # Every PERDIOD_NEWSPACE iterations, a new DNA GRAPH will be generated with the dna of the lowest energy network as center.
 PERIOD_NEWSPACE = 200 
 
 # After TOTAL_ITERATIONS, the experiment will stop.
-TOTAL_ITERATIONS = 2000
+TOTAL_ITERATIONS = 1000
 
 # dt parameter
 DT = 0.01
@@ -30,7 +30,7 @@ CUDA = True
 MAX_LAYER = 3
 
 # TEST_NAME, the name of the experiment (unique)
-TEST_NAME = "test-pikachu-1"
+TEST_NAME = "test-error"
 
 
 def DNA_test_i(x,y):

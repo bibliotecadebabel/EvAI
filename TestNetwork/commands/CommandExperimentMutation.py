@@ -86,14 +86,12 @@ class CommandExperimentMutation():
 
         for j in range(1, totalIterations+1):
                 
-
+            print("epoch #", j)
             for network in self.__networks:
                 network.Training(data=dataGen, labels=None, dt=dt, p=1)
                 
-            if j % periodSave == 0:
-                print("saving Energy, j=", j)
-                self.__saveEnergy()
-                self.__testResultDao.insert(idTest=test_id, iteration=j, dna_graph=self.__space)
+            self.__saveEnergy()
+            self.__testResultDao.insert(idTest=test_id, iteration=j, dna_graph=self.__space)
 
             if j % periodNewSpace == 0:
 
@@ -106,10 +104,11 @@ class CommandExperimentMutation():
         lowestEnergy = 10000
         bestNetwork = None
         for network in self.__networks:
-
-            if network.total_value <= lowestEnergy:
+            
+            AverageLoss = network.getAverageLoss(50)
+            if AverageLoss <= lowestEnergy:
                 bestNetwork = network
-                lowestEnergy = network.total_value
+                lowestEnergy = AverageLoss
 
         return bestNetwork
 
