@@ -38,7 +38,7 @@ def Nothing(layer):
 
 ############### FUNCIONES PROPAGATE ###############
 
-def conv2d_propagate(layer):
+def conv2d_propagate(layer): ## MUTATION: ADDING IMAGE TO INPUT IN EVERY CONVOLUTION LAYER
     
     parent = layer.node.parents[0].objects[0]
 
@@ -68,13 +68,29 @@ def conv2d_propagate(layer):
         
         if inputShape[2] >= outputShape[2]:
             
-            newValue = layer.value.data.clone()
-            newValue = torch.nn.functional.pad(newValue,(0, diff_kernel, 0, diff_kernel),"constant", 0)
+            with torch.no_grad():
+                newValue = layer.value.data.clone()
+                newValue = torch.nn.functional.pad(newValue,(0, diff_kernel, 0, diff_kernel),"constant", 0)
 
-            layer.value = torch.cat((layer.image, newValue), dim=1)
+                layer.value = torch.cat((layer.image, newValue), dim=1)
         else:
             print("OUTPUT LARGER THAN INPUTS")
         
+def conv2d_propagate_multipleInputs(layer): ## MUTATION: Multiple inputs per convolutional layer
+    
+    parent = layer.node.parents[0].objects[0]
+    
+    current_input = __getInput(layer, parent.value)
+
+    shapeFilter = layer.getFilter().shape
+    
+    normalize = shapeFilter[2] * shapeFilter[3]
+
+    value = layer.object(current_input) / normalize
+    
+    sigmoid = torch.nn.Sigmoid()
+    
+    layer.value = sigmoid(value) + torch.nn.functional.relu(value)
 
 def linear_propagate(layer):
 
@@ -91,79 +107,6 @@ def MSEloss_propagate(layer):
     parent = layer.node.parents[0].objects[0]
 
     layer.value = layer.object(parent.value, layer.label)
-    
-############### FUNCIONES BACKPROPAGATE ###############
-
-def probability_der(layer):
-    layer.value_der = (1/layer.value)*-1
-
-def c_filter_der(layer):
-    kid = layer.node.kids[0]
-    p = kid.objects[0].value
-    sc = layer.value[0]
-    sn = layer.value[1]
-    label=layer.label
-    filter_der = np.zeros(2, dtype=float)
-    if label == "c":
-        filter_der[0] = p - (p*p)
-        filter_der[1] = (-(p*p)*np.exp(sn))/np.exp(sc)
-    else:
-        filter_der[0] = (-(p*p)*np.exp(sc))/np.exp(sn)
-        filter_der[1] = p - (p*p)
-
-    layer.value_der = filter_der*kid.objects[0].value_der
-
-def b_filter_der(layer):
-    kid = layer.node.kids[0]
-
-    layer.filter_der[0] = (layer.value+layer.bias)*kid.objects[0].value_der[0]
-    layer.filter_der[1] = (layer.value+layer.bias)*kid.objects[0].value_der[1]
-
-    layer.value_der = (((layer.filters[0] * kid.objects[0].value_der[0]))
-        + ((layer.filters[1] * kid.objects[0].value_der[1])))
-    layer.bias_der = (((layer.filters[0] * kid.objects[0].value_der[0]))
-        + ((layer.filters[1] * kid.objects[0].value_der[1])))
-
-def a_filter_der(layer):
-
-    kid = layer.node.kids[0]
-
-    for i in range(layer.filters.shape[0]):
-        layer.filter_der[i] = ((layer.value+layer.bias) * kid.objects[0].value_der[i])
-    layer.bias_der=0
-    for i in range(layer.filters.shape[0]):
-        layer.bias_der += (layer.filters[i]
-            * kid.objects[0].value_der[i])
-
-############### ELIMINAR FILTROS ###############
-
-def removeFilters(layer):
-    removeFilterNodeA(layer)
-    removeFilterNodeB(layer.node.kids[0].objects[0])
-
-def removeFilterNodeA(layerNodeA):
-    if layerNodeA.filters is not None and len(layerNodeA.filters) > 0:
-
-        newFilterShape = list(layerNodeA.filters.shape)
-
-        if newFilterShape[0] > 0:
-            newFilterShape[0] -= 1
-
-        #layerNodeA.filters = deleteLastFilter(layerNodeA.filters, newFilterShape)
-
-def removeFilterNodeB(layerNodeB):
-    if layerNodeB.filters[0] is not None and len(layerNodeB.filters[0]) > 0:
-
-        newFilterShape = list(layerNodeB.filters[0].shape)
-        if newFilterShape[0] > 0:
-            newFilterShape[0] -= 1
-
-        auxFilter = np.zeros((2, newFilterShape[0]), dtype=float)
-
-        #auxFilter[0] = deleteLastFilter(layerNodeB.filters[0], newFilterShape)
-        #auxFilter[1] = deleteLastFilter(layerNodeB.filters[1], newFilterShape)
-
-        layerNodeB.filters = auxFilter
 
 ############### CREADOR DE TENSORES ###############
 
@@ -203,3 +146,75 @@ def deleteLastTensorDimension(oldTensor, newShape):
         newFilter[i] = oldTensor[i]
 
     return newFilter
+
+def __getBiggestInput(currentInput, layerList):
+
+    kernel = 0
+    biggest_input = None
+
+    for layer in layerList:
+        
+        shape = layer.value.shape
+        
+        if kernel < shape[2]:
+
+            kernel = shape[2]
+            biggest_input = layer.value
+    
+    if kernel < currentInput.shape[2]:
+        biggest_input = currentInput
+    
+    return biggest_input
+
+def __doPad(targetTensor, refferenceTensor):
+
+    pad_tensor = targetTensor
+    
+    target_shape = targetTensor.shape
+    refference_shape = refferenceTensor.shape
+
+    diff_kernel = abs(refference_shape[2] - target_shape[2])
+
+    if diff_kernel > 0:
+        pad_tensor = torch.nn.functional.pad(targetTensor,(0, diff_kernel, 0, diff_kernel),"constant", 0)
+        del targetTensor
+    
+    return pad_tensor
+
+def __getInput(layer, parentOutput):
+    
+    len_other_inputs = len(layer.other_inputs)
+
+    value = parentOutput
+
+    if len_other_inputs > 0:
+        
+        with torch.no_grad():   
+
+            normal_input = parentOutput.clone()
+
+            biggest_input = __getBiggestInput(normal_input, layer.other_inputs)
+
+            normal_input = __doPad(normal_input, biggest_input)
+
+            concat_tensor_list = [normal_input]
+
+            for i in range(len(layer.other_inputs)):
+                
+
+                current_input = layer.other_inputs[i].value.clone()
+                
+                current_input = __doPad(current_input, biggest_input)
+
+                concat_tensor_list.append(current_input)
+
+
+            value = torch.cat(tuple(concat_tensor_list), dim=1)
+
+            for tensorPadded in concat_tensor_list:
+                del tensorPadded
+            
+            del concat_tensor_list
+
+    return value
+

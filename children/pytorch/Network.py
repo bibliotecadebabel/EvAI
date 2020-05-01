@@ -19,7 +19,8 @@ class Network(nn.Module):
         self.cudaFlag = cudaFlag
         self.adn = adn
         self.nodes = []
-        #self.label = tensor([1], dtype=torch.long).cuda()
+        self.__lenghNodes = 0
+
         self.label = tensorFactory.createTensor(body=[1], cuda=self.cudaFlag, requiresGrad=False)
 
         self.factory = factory.LayerGenerator(cuda=self.cudaFlag)
@@ -65,21 +66,21 @@ class Network(nn.Module):
 
         graph = Graphs.Graph(True)
 
-        amount_of_nodes = len(self.adn) + 1
+        self.__generateLengthNodes()
 
-        for i in range(0, amount_of_nodes):
+        for i in range(0, self.__lenghNodes):
             self.nodes.append(nd.Node())
 
-        for i in range(0, amount_of_nodes):
+        for i in range(0, self.__lenghNodes):
 
-            if i < (amount_of_nodes - 1):
+            if i < (self.__lenghNodes - 1):
                 graph.add_node(i, self.nodes[i])
                 graph.add_node(i + 1, self.nodes[i + 1])
                 graph.add_edges(i, [i+1])
 
 
         self.nodes = list(graph.key2node.values())
-        #print("nodes: ", len(self.nodes))
+
         self.__assignLayers()
 
     def __assignLayers(self):
@@ -87,13 +88,31 @@ class Network(nn.Module):
         self.nodes[0].objects.append(ly.Layer(node=self.nodes[0], value=None, propagate=functions.Nothing, cudaFlag=self.cudaFlag))
 
         for i in range(len(self.adn)):
-            indexNode = i + 1
             tupleBody = self.adn[i]
-            layer = self.factory.findValue(tupleBody)
-            layer.node = self.nodes[indexNode]
-            self.nodes[indexNode].objects.append(layer)
-            attributeName = "layer"+str(indexNode)
-            self.setAttribute(attributeName, layer.object)
+
+            if tupleBody[0] != 3:
+                indexNode = i + 1
+                layer = self.factory.findValue(tupleBody)
+                layer.node = self.nodes[indexNode]
+                self.nodes[indexNode].objects.append(layer)
+                attributeName = "layer"+str(indexNode)
+                self.setAttribute(attributeName, layer.object)
+            else:
+                input_node = tupleBody[1]+1
+                target_node = tupleBody[2]+1
+
+                self.nodes[target_node].objects[0].other_inputs.append(self.nodes[input_node].objects[0])
+
+    def __generateLengthNodes(self):
+
+        for i in range(len(self.adn)):
+            
+            tupleBody = self.adn[i]
+
+            if tupleBody[0] != 3:
+                self.__lenghNodes += 1
+        
+        self.__lenghNodes += 1
 
     def Acumulate_der(self, n, peso=1):
 
@@ -129,9 +148,6 @@ class Network(nn.Module):
 
         for node in self.nodes[:-1]:
             layer = node.objects[0]
-
-            #if layer.object is not None:
-            #    layer.object.zero_grad()
 
             if layer.getBiasDer() is not None:
                 layer.getBiasDer().data.zero_()

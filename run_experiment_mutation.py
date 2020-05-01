@@ -18,7 +18,7 @@ PERIOD_SAVE = 1
 PERIOD_NEWSPACE = 200 
 
 # After TOTAL_ITERATIONS, the experiment will stop.
-TOTAL_ITERATIONS = 1000
+TOTAL_ITERATIONS = 30000
 
 # dt parameter
 DT = 0.01
@@ -30,7 +30,7 @@ CUDA = True
 MAX_LAYER = 3
 
 # TEST_NAME, the name of the experiment (unique)
-TEST_NAME = "test-error"
+TEST_NAME = "test-cifar-allnight"
 
 
 def DNA_test_i(x,y):
