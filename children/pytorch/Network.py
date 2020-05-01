@@ -224,15 +224,7 @@ class Network(nn.Module):
             i=0
             while i < p:
 
-                '''            
-                if i == 1:
-                    print("L=", self.total_value, " i=", str(i), "adn=", self.nodes[2].objects[0].adn," - ", self.nodes[3].objects[0].adn)
-
-                if i % 100 == 99:
-                    print("L=", self.total_value, " i=", str(i))
                 
-                '''
-
                 if self.cudaFlag == True:
                     inputs, labels_data = dataGenerator.data[0].cuda(), dataGenerator.data[1].cuda()
                 else:
@@ -252,13 +244,25 @@ class Network(nn.Module):
                 dataGenerator.update()
 
                 i=i+1
-    def getAverageLoss(self, iterations):
+
+    def getAverageLoss_test(self, iterations):
 
         average = self.__accumulated_loss / iterations
 
         self.__accumulated_loss = 0
 
         return average
+    
+    def getAverageLoss(self, iterations):
+
+        last_x = self.history_loss[-iterations:]
+
+        accum = 0
+
+        for loss in last_x:
+            accum += loss
+        
+        return (accum/iterations)
 
     def updateGradFlag(self, flag):
 
@@ -341,30 +345,29 @@ class Network(nn.Module):
     def generateEnergy(self, dataGen):
 
         accuracy = 0
+        print("generate energy")
         with torch.no_grad():
 
             total = 0
             correct = 0
-        
-            if self.cudaFlag == True:
-                inputs, labels = dataGen._testData[0].cuda(), dataGen._testData[1].cuda()
-            else:
-                inputs, labels = dataGen._testData[0], dataGen._testData[1]
-            
-            self.assignLabels(labels)
-            self.nodes[0].objects[0].value = inputs
-            self(inputs)
 
-            linearValue = self.__getLayerProbability().value
+            for i, data in enumerate(dataGen._testloader):
 
-            _, predicted = torch.max(linearValue.data, 1)
+                if self.cudaFlag == True:
+                    inputs, labels = data[0].cuda(), data[1].cuda()
+                else:
+                    inputs, labels = data[0], data[1]
+                
+                self.assignLabels(labels)
+                self.nodes[0].objects[0].value = inputs*255 # DESNORMALIZAR!
+                self(self.nodes[0].objects[0].value)
 
-            print("predicted=", predicted)
-            print("labels=", labels)
-            print("what: ", (predicted==labels).sum())
-            
-            total += labels.size(0)
-            correct += (predicted == labels).sum().item()
+                linearValue = self.__getLayerProbability().value
+
+                _, predicted = torch.max(linearValue.data, 1)
+                
+                total += labels.size(0)
+                correct += (predicted == labels).sum().item()
 
             accuracy = correct / total
         
