@@ -18,7 +18,7 @@ from DNA_Phase_space import DNA_Phase_space
 from Dynamic_DNA import Dynamic_DNA
 from utilities.Abstract_classes.classes.torch_stream import TorchStream
 import children.pytorch.Network as nw
-from DNA_conditions import max_layer
+from DNA_conditions import max_layer,max_filter
 from DNA_creators import Creator
 import time
 
@@ -131,7 +131,7 @@ def create_objects(status):
                 y_l=layer[4]
                 output=output and (x_l<x) and (y_l<y)
         if output:
-            return max_layer(DNA,3)
+            return max_filter(max_layer(DNA,3),20)
     typos=[]
     print('The value of typos is')
     print(status.typos)
