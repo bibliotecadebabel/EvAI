@@ -152,7 +152,7 @@ class DNA_Phase_space():
                         self.mutate(node,kid)
                         V_f=self.node2V(kid)
                     if not(V_f):
-                        V_f=0
+                        V_f=V_o
                     dV=V_f-V_o
                     key_f=self.node2key(kid)
                     stream.key2signal_on(key_f)
