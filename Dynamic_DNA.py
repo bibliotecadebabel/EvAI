@@ -59,7 +59,7 @@ class Dynamic_DNA():
                 if p.difussion_field:
                     component=component+p.difussion_field[k]*c_d
                 if p.external_field:
-                    component=component-p.external_field[k]/abs(p.external_field[k]+self.epsilon)*c_l
+                    component=component-p.external_field[k]-p.external_field[k]/abs(p.external_field[k]+self.epsilon)*c_l
                 if p.interaction_field:
                     component=component+p.interaction_field[k]*c_i
                 p.force_field.append(-c_k*component)
@@ -155,12 +155,12 @@ class Dynamic_DNA():
         else:
             self.update_space=self.update_space_default
         self.diffusion_coefficient=0
-        self.lost_coefficient=10
+        self.lost_coefficient=1
         self.interaction_coefficient=0
         self.dt=0.01
-        self.mutation_coefficient=100
+        self.mutation_coefficient=20
         self.Graph=phase_space.DNA_graph
-        self.epsilon=0.01
+        self.epsilon=0.001
         self.dx=dx
 
 

@@ -147,6 +147,8 @@ class DNA_Phase_space():
                     if not(V_f):
                         self.mutate(node,kid)
                         V_f=self.node2V(kid)
+                    if not(V_f):
+                        V_f=0
                     dV=V_f-V_o
                     key_f=self.node2key(kid)
                     stream.key2signal_on(key_f)
@@ -321,7 +323,7 @@ class DNA_Phase_space():
         self.support=[]
         dataGen = GeneratorFromImage.GeneratorFromImage(2, 100, cuda=False)
         dataGen.dataConv2d()
-        self.stream=TorchStream(dataGen,200)
+        self.stream=TorchStream(dataGen,25)
         self.radius=10
         self.influence=2
         self.node_max_particles=None
