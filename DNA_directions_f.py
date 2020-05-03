@@ -19,7 +19,7 @@ def imprimir(g):
                 +str(nodek.objects[0]))
 
 def DNA2layers(DNA):
-    layers=[(-1)]
+    layers=[]
     for layer in DNA:
         if (layer[0]==3):
             break
@@ -34,10 +34,41 @@ def DNA2synapses(DNA):
             synapses.append(layer)
     return synapses
 
+def compute_output(g,node):
+    key=g.node2key.get(node)
+    if len(node.objects)>1:
+        pass
+    elif key==-1:
+        image=node.objects[0]
+        node.objects.append([image[1],image[2]])
+    else:
+        x=0
+        y=0
+        x_l=node.objects[0][3]
+        y_l=node.objects[0][1]
+        for parent in node.parents:
+            compute_output(g,parent)
+            p_out=parent.objects[1]
+            x=max(x,p_out[0])
+            y=max(y,p_out[1])
+        node.objects.append([x-x_l+1,y-y_l+1])
+
+def fix_fully_conected(g):
+    full_node=g.key2node.get(len(list(g.key2node.values()))-4)
+    compute_output(g,full_node)
+    output=full_node.objects[1]
+    layer=full_node.objects[0]
+    full_node.objects[0]=(layer[0],layer[1],
+        layer[2],output[0]+layer[3]-1,output[0]+layer[4]-1)
+
+
+
+
 
 def graph2DNA(g):
     num_layers=len(list(g.key2node.values()))-1
-    DNA=[]
+    node=g.key2node.get(-1)
+    DNA=[node.objects[0]]
     for k in range(num_layers):
         node=g.key2node.get(k)
         DNA.append(node.objects[0])
@@ -63,12 +94,7 @@ def DNA2graph(DNA):
         g.add_edges(synapse[1],[synapse[2]])
     return g
 
-def compute_num_layers(DNA):
-    k=0
-    for layer in DNA:
-        if not(layer[0]==3):
-            k=k+1
-    return k
+
 
 def layer_filter(layer,N):
     layer_f=list(layer)
@@ -92,6 +118,7 @@ def increase_filters(num_layer,source_DNA):
         return None
     else:
         g=DNA2graph(source_DNA)
+        imprimir(g)
         node_t=g.key2node.get(num_layer)
         node_t.objects[0]=layer_filter(node_t.objects[0],
             1)
@@ -195,7 +222,7 @@ def add_layer(num_layer,source_DNA):
             return k+1
     g=DNA2graph(source_DNA)
     total_layers=len(DNA2layers(source_DNA))
-    if  num_layer>total_layers-3:
+    if  num_layer-1>total_layers-3:
         return None
     else:
         node=nd.Node()
@@ -217,6 +244,7 @@ def add_layer(num_layer,source_DNA):
         t_layer=layer_chanel(t_layer,5)
         t_node.objects[0]=t_layer
         g.relable(relabler)
+        fix_fully_conected(g)
         return graph2DNA(g)
 
 creator=add_layer
@@ -232,7 +260,7 @@ def remove_layer(num_layer,source_DNA):
             return k-1
     g=DNA2graph(source_DNA)
     total_layers=len(DNA2layers(source_DNA))
-    if total_layers<4:
+    if total_layers<5:
         return None
     else:
         t_node=g.key2node.get(num_layer)
@@ -247,7 +275,8 @@ def remove_layer(num_layer,source_DNA):
             node=g.key2node.get(1)
             node.objects[0]=layer_chanel(node.objects[0],3)
         g.relable(relabler)
-        imprimir(g)
+        fix_fully_conected(g)
+        #imprimir(g)
         return graph2DNA(g)
 
 creator=remove_layer
