@@ -38,7 +38,22 @@ def Nothing(layer):
 
 ############### FUNCIONES PROPAGATE ###############
 
-def conv2d_propagate(layer): ## MUTATION: ADDING IMAGE TO INPUT IN EVERY CONVOLUTION LAYER
+def conv2d_propagate(layer):
+
+    print("default mode")
+    parent = layer.node.parents[0].objects[0]
+
+    shapeFilter = layer.getFilter().shape
+    
+    normalize = shapeFilter[2] * shapeFilter[3]
+
+    value = layer.object(parent.value) / normalize
+    
+    sigmoid = torch.nn.Sigmoid()
+    
+    layer.value = sigmoid(value) + torch.nn.functional.relu(value)
+    
+def conv2d_propagate_images(layer): ## MUTATION: ADDING IMAGE TO INPUT IN EVERY CONVOLUTION LAYER
     
     parent = layer.node.parents[0].objects[0]
 
@@ -80,6 +95,7 @@ def conv2d_propagate_multipleInputs(layer): ## MUTATION: Multiple inputs per con
     
     parent = layer.node.parents[0].objects[0]
     
+    #print("current layer= ", layer.adn)
     current_input = __getInput(layer, parent.value)
 
     shapeFilter = layer.getFilter().shape
@@ -147,7 +163,7 @@ def deleteLastTensorDimension(oldTensor, newShape):
 
     return newFilter
 
-def __getBiggestInput(currentInput, layerList):
+def __getBiggestInput(layerList):
 
     kernel = 0
     biggest_input = None
@@ -161,8 +177,8 @@ def __getBiggestInput(currentInput, layerList):
             kernel = shape[2]
             biggest_input = layer.value
     
-    if kernel < currentInput.shape[2]:
-        biggest_input = currentInput
+    #if kernel < currentInput.shape[2]:
+    #    biggest_input = currentInput
     
     return biggest_input
 
@@ -191,25 +207,30 @@ def __getInput(layer, parentOutput):
         
         with torch.no_grad():   
 
-            normal_input = parentOutput.clone()
+            #normal_input = parentOutput.clone()
 
-            biggest_input = __getBiggestInput(normal_input, layer.other_inputs)
+            #biggest_input = __getBiggestInput(normal_input, layer.other_inputs)
+            
+            biggest_input = __getBiggestInput(layer.other_inputs)
+            #normal_input = __doPad(normal_input, biggest_input)
 
-            normal_input = __doPad(normal_input, biggest_input)
-
-            concat_tensor_list = [normal_input]
+            concat_tensor_list = []
 
             for i in range(len(layer.other_inputs)):
                 
-
+                #print("concat layer=", layer.other_inputs[i].adn)
                 current_input = layer.other_inputs[i].value.clone()
-                
+                #print("concat input= ", current_input.shape)
+
                 current_input = __doPad(current_input, biggest_input)
+                #print("concat input padded= ", current_input.shape)
 
                 concat_tensor_list.append(current_input)
 
 
             value = torch.cat(tuple(concat_tensor_list), dim=1)
+
+            #print("final input size=", value.shape)
 
             for tensorPadded in concat_tensor_list:
                 del tensorPadded
