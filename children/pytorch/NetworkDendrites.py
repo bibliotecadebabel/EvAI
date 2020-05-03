@@ -18,7 +18,7 @@ class Network(nn.Module, na.NetworkAbstract):
         na.NetworkAbstract.__init__(self,adn=adn, cuda=cudaFlag, momentum=momentum)
 
         self.__lenghNodes = 0
-        self.__conv2d_propagate_mode = const.CONV2D_IMAGE_INPUTS
+        self.__conv2d_propagate_mode = const.CONV2D_DEFAULT
         self.__accumulated_loss = 0
         self.createStructure()
 
@@ -71,6 +71,8 @@ class Network(nn.Module, na.NetworkAbstract):
 
             if tupleBody[0] != 3:
                 self.__lenghNodes += 1
+            else:
+                self.__conv2d_propagate_mode = const.CONV2D_MULTIPLE_INPUTS
         
         self.__lenghNodes += 1
 

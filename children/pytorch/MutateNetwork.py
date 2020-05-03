@@ -8,7 +8,7 @@ import torch as torch
 
 def executeMutation(oldNetwork, newAdn):
     
-    network = nw.Network(newAdn, cudaFlag=oldNetwork.cudaFlag)
+    network = nw.Network(newAdn, cudaFlag=oldNetwork.cudaFlag, momentum=oldNetwork.momentum)
 
     length_newadn = len(newAdn)
     length_oldadn = len(oldNetwork.adn)

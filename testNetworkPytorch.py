@@ -1,4 +1,5 @@
 import children.pytorch.Network as nw
+import children.pytorch.NetworkDendrites as nw_dendrites
 import children.Interfaces as Inter
 import children.pytorch.Functions as Functions
 import children.pytorch.MutateNetwork as MutateNetwork
@@ -198,20 +199,22 @@ def Test_Mutacion():
     #networkADN = ((0, 3, 5, 8, 8), (0, 5, 3, 4, 4), (1, 3, 2), (2,))
     #mutationADN = ((0, 3, 10, 2, 2), (0, 10, 20, 10, 10), (1, 20, 2), (2,))
     #mutationADN = ((0, 3, 5, 8, 8), (0, 5, 3, 3, 3), (0, 3, 3, 2, 2), (1, 3, 2), (2,))
-    networkADN = ((0, 3, 5, 3, 3),(0, 8, 8, 3,3),(0, 11, 5, 32, 32), (1, 5, 10), (2,))
-    #networkADN = ((0, 3, 5, 3, 3),(0, 5, 3, 3, 3),(0, 11, 4, 5, 5), (0, 9, 5, 30, 30), (1, 5, 10), (2,), (3, 0, 2), (3, -1, 2), (3, 0, 3))
-    network = nw.Network(networkADN, cudaFlag=True)
-
+    #networkADN = ((0, 3, 5, 3, 3),(0, 8, 8, 3, 3),(0, 11, 5, 32, 32), (1, 5, 10), (2,))
+    networkADN = ((0, 3, 5, 3, 3), (0, 5, 3, 3, 3), (0, 11, 5, 32, 32), (1, 5, 10), (2,), 
+       (3, -1, 0), (3, 0, 1), (3, 0, 2), (3, -1, 2), (3, 1, 2))
+    #network = nw.Network(networkADN, cudaFlag=True)
+    network = nw_dendrites.Network(networkADN, cudaFlag=True)
+    
     dataGen = GeneratorFromCIFAR.GeneratorFromCIFAR(2,  50)
-    #dataGen = GeneratorFromImage.GeneratorFromImage(2, 2)
+    #dataGen = GeneratorFromImage.GeneratorFromImage(2, 100)
     dataGen.dataConv2d()
 
-    for epoch in range(1000):
+    for epoch in range(2000):
         
         network.Training(data=dataGen, p=1, dt=0.01, labels=None)
 
         if epoch % 200 == 199:
-            print("Average Loss=", network.getAverageLoss(50), " - i= ", epoch+1)
+            print("Average Loss=", network.total_value, " - i= ", epoch+1)
 
     print("Accuracy=", network.generateEnergy(dataGen))
 

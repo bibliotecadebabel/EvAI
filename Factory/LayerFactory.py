@@ -2,6 +2,7 @@ import torch
 import children.pytorch.Layer as ly
 import children.pytorch.Functions as functions
 import Factory.AbstractFactory as AbstractFactory
+import const.propagate_mode as const
 import math
 
 class LayerGenerator(AbstractFactory.FactoryClass):
@@ -17,25 +18,30 @@ class LayerGenerator(AbstractFactory.FactoryClass):
         self.dictionary[1] = self.__createLinear
         self.dictionary[2] = self.__createCrossEntropyLoss
 
-    def findValue(self, tupleBody):
+    def findValue(self, tupleBody, propagate_mode):
         key = tupleBody[0]
 
         value = self.dictionary[key]
 
-        return value(tupleBody)
+        return value(tupleBody, propagate_mode)
 
-    def __createConv2d(self, tupleBody):
+    def __createConv2d(self, tupleBody, propagate_mode):
 
         layer = torch.nn.Conv2d(tupleBody[1], tupleBody[2], (tupleBody[3], tupleBody[4]))
         self.__initConv2d(layer, (tupleBody[3], tupleBody[4]))
         
         self.__verifyCuda(layer)
         
-        value = ly.Layer(objectTorch=layer, propagate=functions.conv2d_propagate, value=None, adn=tupleBody, cudaFlag=self.__cuda)
+        if propagate_mode == const.CONV2D_MULTIPLE_INPUTS:
+            value = ly.Layer(objectTorch=layer, propagate=functions.conv2d_propagate_multipleInputs, value=None, adn=tupleBody, cudaFlag=self.__cuda)
+        elif propagate_mode == const.CONV2D_IMAGE_INPUTS:
+            value = ly.Layer(objectTorch=layer, propagate=functions.conv2d_propagate_images, value=None, adn=tupleBody, cudaFlag=self.__cuda)
+        else:
+            value = ly.Layer(objectTorch=layer, propagate=functions.conv2d_propagate, value=None, adn=tupleBody, cudaFlag=self.__cuda)
         
         return value
 
-    def __createLinear(self, tupleBody):
+    def __createLinear(self, tupleBody, propagate_mode=None):
         
         layer = torch.nn.Linear(tupleBody[1], tupleBody[2])
         self.__initLinear(layer, tupleBody[1])
@@ -46,7 +52,7 @@ class LayerGenerator(AbstractFactory.FactoryClass):
 
         return value
 
-    def __createCrossEntropyLoss(self, tupleBody):
+    def __createCrossEntropyLoss(self, tupleBody, propagate_mode=None):
 
         layer = torch.nn.CrossEntropyLoss()
         
