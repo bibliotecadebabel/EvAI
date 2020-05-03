@@ -28,7 +28,7 @@ def DNA2synapses_test(x,y):
     print(dire.DNA2synapses(DNA))
 
 def DNA2graph_test(x,y):
-    DNA=((0, 3, 5, 3, 3),(0, 8, 8, 3,3),(0,11,5, x, y),
+    DNA=((0, 3, 5, 3, 3),(0, 5, 8, 3,3),(0,13,5, x, y),
             (1, 5, 2), (2,),(3,-1,0),(3,0,1),
             (3,1,2),(3,2,3),(3,3,4),(3,0,2))
     print('The graph is')

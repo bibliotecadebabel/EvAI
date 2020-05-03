@@ -52,12 +52,12 @@ class Graph():
     def remove_node(self,key):
         if key in self.key2node.keys():
             node=self.key2node[key]
-            for kid in node.kids:
-                print('removing kid:')
-                print(kid.objects)
+            print(len(node.kids))
+            kids=node.kids.copy()
+            for kid in kids:
                 self.remove_edge(self.node2key[kid],key)
-            for parent in node.parents:
-                print('removing parent')
+            parents=node.parents.copy()
+            for parent in parents:
                 self.remove_edge(self.node2key[parent],key)
             self.key2node.pop(key)
             self.node2key.pop(node)
