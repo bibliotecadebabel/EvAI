@@ -69,9 +69,10 @@ class Network(nn.Module, na.NetworkAbstract):
             
             tupleBody = self.adn[i]
 
-            if tupleBody[0] != 3:
+            if tupleBody[0] >= 0 and tupleBody[0] <= 2:
                 self.__lenghNodes += 1
-            else:
+            
+            if tupleBody[0] == 3:
                 self.__conv2d_propagate_mode = const.CONV2D_MULTIPLE_INPUTS
         
         self.__lenghNodes += 1
