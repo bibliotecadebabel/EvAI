@@ -36,14 +36,14 @@ def DNA2synapses(DNA):
 
 
 def graph2DNA(g):
-    nodes=list(g.key2node.values())
-    nodes.pop(0)
+    num_layers=len(list(g.key2node.values()))-1
     DNA=[]
-    for node in nodes:
+    for k in range(num_layers):
+        node=g.key2node.get(k)
         DNA.append(node.objects[0])
-    for node in nodes:
-        parents = node.parents.copy()
-        parents.pop(0)
+    for k in range(num_layers-2):
+        node=g.key2node.get(k)
+        parents=node.parents
         for parent in parents:
             DNA.append((3,g.node2key.get(parent),
                 g.node2key.get(node)))
@@ -138,7 +138,7 @@ def modify_layer_kernel(layer_DNA,num):
 type=(0,0,1,1)
 
 def increase_kernel(num_layer,source_DNA):
-    if num_layer>len(DNA2layers(source_DNA)))-2:
+    if num_layer>len(DNA2layers(source_DNA))-2:
         return None
     else:
         out_DNA=list(source_DNA)
@@ -162,7 +162,7 @@ directions_labels.update({creator:type})
 
 type=(0,0,-1,-1)
 def decrease_kernel(num_layer,source_DNA):
-    if num_layer>len(DNA2layers(source_DNA)))-2:
+    if num_layer>len(DNA2layers(source_DNA))-2:
         return None
     else:
         out_DNA=list(source_DNA)
@@ -186,29 +186,38 @@ directions_labels.update({creator:type})
 
 type=(1,0,0,0)
 def add_layer(num_layer,source_DNA):
-    def relable(k):
+    def relabler(k):
         if k==-2:
             return num_layer
-        elif:
-            k<num_layer
+        elif k<num_layer :
             return k
         else:
             return k+1
-    g=graph2DNA(source_DNA)
+    g=DNA2graph(source_DNA)
     total_layers=len(DNA2layers(source_DNA))
     if  num_layer>total_layers-3:
         return None
     else:
-        t_node=g.get(num_layer)
+        node=nd.Node()
+        if num_layer==0:
+            node.objects.append((0,3,5,3,3))
+            g.add_node(-2,node)
+            g.add_edges(-1,[-2])
+            g.add_edges(-2,[num_layer])
+        else:
+            o_node=g.key2node.get(num_layer-1)
+            o_layer=o_node.objects[0]
+            node=nd.Node()
+            node.objects.append((0,o_layer[2],5,3,3))
+            g.add_node(-2,node)
+            g.add_edges(num_layer-1,[-2])
+            g.add_edges(-2,[num_layer])
+        t_node=g.key2node.get(num_layer)
         t_layer=t_node.objects[0]
-        node=nb.Node()
-        node.objects[0]=(0,t_layer[2],5,3,3)
-        g.add_node(-2,node)
-        f_node=g.get(num_layer+1)
-        layer_f=f_node.objects[0]
-        f_node.objects[0]=layer_chanel(layer_f,5)
-
-        return tuple(out_DNA)
+        t_layer=layer_chanel(t_layer,5)
+        t_node.objects[0]=t_layer
+        g.relable(relabler)
+        return graph2DNA(g)
 
 creator=add_layer
 directions.update({type:creator})
@@ -216,17 +225,30 @@ directions_labels.update({creator:type})
 
 type=(-1,0,0,0)
 def remove_layer(num_layer,source_DNA):
-    total_layers=len(source_DNA)
-    if total_layers<4 or not(num_layer==0):
+    def relabler(k):
+        if k<num_layer :
+            return k
+        else:
+            return k-1
+    g=DNA2graph(source_DNA)
+    total_layers=len(DNA2layers(source_DNA))
+    if total_layers<4:
         return None
     else:
-        out_DNA=list(source_DNA)
-        m1_filters=out_DNA[0][2]
-        out_DNA.pop(0)
-        new_layer_f=list(out_DNA[num_layer])
-        new_layer_f[1]=new_layer_f[1]-m1_filters
-        out_DNA[num_layer]=tuple(new_layer_f)
-        return tuple(out_DNA)
+        t_node=g.key2node.get(num_layer)
+        t_layer=t_node.objects[0]
+        for kid in t_node.kids:
+            f_layer=kid.objects[0]
+            kid.objects[0]=layer_chanel(f_layer,
+                -t_layer[2])
+        g.remove_node(num_layer)
+        if num_layer==0:
+            g.add_edges(-1,[1])
+            node=g.key2node.get(1)
+            node.objects[0]=layer_chanel(node.objects[0],3)
+        g.relable(relabler)
+        imprimir(g)
+        return graph2DNA(g)
 
 creator=remove_layer
 directions.update({type:creator})

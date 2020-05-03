@@ -12,6 +12,18 @@ class Graph():
         if not(key in self.key2node.keys()):
             self.key2node.update({key : node})
             self.node2key.update({node : key})
+    def relable(self,map):
+        keys=list(self.node2key.values())
+        node2key={}
+        key2node={}
+        for key in keys:
+            node=self.key2node.get(key)
+            key2node.update({map(key) : node})
+            node2key.update({node : map(key)})
+        self.key2node=key2node
+        self.node2key=node2key
+
+
     def add_edges(self,key,keys):
         if not(key in self.key2node.keys()):
             pass
@@ -27,20 +39,28 @@ class Graph():
                         safe_append(node,node_k.kids)
                     else:
                         safe_append(node, node_k.parents)
+
     def remove_edge(self,key_a,key_b):
-        def rm_edge(key_a,dict,key_b):
-            node=dict[key_a]
-            safe_remove(dict.get(key_b),node.kids)
+        def rm_edge(key_aa,dict,key_bb):
+            node=dict[key_aa]
+            safe_remove(dict.get(key_bb),node.kids)
+            safe_remove(dict.get(key_bb),node.parents)
         safe_ope(key_a,self.key2node,rm_edge,key_b)
         safe_ope(key_b,self.key2node,rm_edge,key_a)
         pass
+
     def remove_node(self,key):
         if key in self.key2node.keys():
             node=self.key2node[key]
             for kid in node.kids:
-                self.remove_edge(key,self.node2key[kid])
-            self.key2node.pop(key, None)
-            self.node2key.pop(node, None)
+                print('removing kid:')
+                print(kid.objects)
+                self.remove_edge(self.node2key[kid],key)
+            for parent in node.parents:
+                print('removing parent')
+                self.remove_edge(self.node2key[parent],key)
+            self.key2node.pop(key)
+            self.node2key.pop(node)
 
 #Given a graph, returns a tree, whose
 #objects are the nodes in a spanning tree
@@ -133,14 +153,14 @@ def spanning_tree_n(Graph,tree=None,leave=None,n=None):
 def it_points(node1,node2):
     return node2.objects[0]==node1
 
-G=Graph()
-for k in range(10):
-    G.add_node(k,nd.Node())
-G.add_edges(1,[2,3,3,7])
-G.remove_node(3)
-print(len(G.key2node[7].kids))
-print('Hi')
-a=[3]
-safe_append(4,a)
-safe_remove(5,a)
-print(a)
+#G=Graph()
+#for k in range(10):
+#    G.add_node(k,nd.Node())
+#G.add_edges(1,[2,3,3,7])
+#G.remove_node(3)
+#print(len(G.key2node[7].kids))
+#print('Hi')
+#a=[3]
+#safe_append(4,a)
+#safe_remove(5,a)
+#print(a)
