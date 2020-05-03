@@ -3,6 +3,7 @@ import children.pytorch.NetworkDendrites as nw_dendrites
 import children.Interfaces as Inter
 import children.pytorch.Functions as Functions
 import children.pytorch.MutateNetwork as MutateNetwork
+import children.pytorch.MutateNetwork_Dendrites as Mutate_Dendrites
 from DAO import GeneratorFromImage, GeneratorFromCIFAR
 
 import torch
@@ -195,13 +196,12 @@ def Test_Mutacion():
     print("creating networks")
     #(0, ks[i], len(dataGen.data[0]), 1, 1),
 
+
+    networkADN = ((0, 3, 5, 3, 3), (0, 5, 7, 3, 3), (0, 10, 8, 32, 32), (1, 8, 10), (2,), 
+        (3, -1, 0), (3, 0, 1), (3, 1, 2), (3, -1, 2))
     
-    #networkADN = ((0, 3, 5, 8, 8), (0, 5, 3, 4, 4), (1, 3, 2), (2,))
-    #mutationADN = ((0, 3, 10, 2, 2), (0, 10, 20, 10, 10), (1, 20, 2), (2,))
-    #mutationADN = ((0, 3, 5, 8, 8), (0, 5, 3, 3, 3), (0, 3, 3, 2, 2), (1, 3, 2), (2,))
-    #networkADN = ((0, 3, 5, 3, 3),(0, 8, 8, 3, 3),(0, 11, 5, 32, 32), (1, 5, 10), (2,))
-    networkADN = ((0, 3, 5, 3, 3), (0, 5, 3, 3, 3), (0, 11, 5, 32, 32), (1, 5, 10), (2,), 
-       (3, -1, 0), (3, 0, 1), (3, 0, 2), (3, -1, 2), (3, 1, 2))
+    mutate_1 = ((0, 3, 5, 3, 3), (0, 8, 7, 3, 3), (0, 10, 8, 32, 32), (1, 8, 10), (2,), 
+        (3, -1, 0), (3, -1, 1), (3, 0, 1), (3, 1, 2), (3, -1, 2))
     #network = nw.Network(networkADN, cudaFlag=True)
     network = nw_dendrites.Network(networkADN, cudaFlag=True)
     
@@ -209,14 +209,11 @@ def Test_Mutacion():
     #dataGen = GeneratorFromImage.GeneratorFromImage(2, 100)
     dataGen.dataConv2d()
 
-    for epoch in range(2000):
-        
-        network.Training(data=dataGen, p=1, dt=0.01, labels=None)
-
-        if epoch % 200 == 199:
-            print("Average Loss=", network.total_value, " - i= ", epoch+1)
-
-    print("Accuracy=", network.generateEnergy(dataGen))
+    network.Training(data=dataGen, p=800, dt=0.01, labels=None)
+    print("Accuracy original=", network.generateEnergy(dataGen))
+    network_1 = Mutate_Dendrites.executeMutation(oldNetwork=network, newAdn=mutate_1)
+    network_1.Training(data=dataGen, p=800, dt=0.01, labels=None)
+    print("Accuracy mutate=", network_1.generateEnergy(dataGen))
 
 
 #Test_pytorchNetwork()
