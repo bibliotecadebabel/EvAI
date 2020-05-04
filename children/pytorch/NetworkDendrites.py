@@ -119,10 +119,16 @@ class Network(nn.Module, na.NetworkAbstract):
 
             i=0
             while i < p:
-                if i == 0:
-                    print("Accuracy before first iteration=", self.generateEnergy(data))
-                if i % 100 == 0:
-                    print("Loss=", self.getAverageLoss(50), "i=", i+1)
+                #if i == 0:
+                #    print("Accuracy before first iteration=", self.generateEnergy(data))
+    
+                #if i % 100 == 99:
+                #    print("Loss=", self.getAverageLoss(50), "i=", i)
+
+                #if i == 1:
+                #    print("Loss=", self.total_value, "- i=", i)
+                #if i % 100 == 99:
+                #    print("Loss=", self.total_value, "- i=", i)
 
                 if self.cudaFlag == True:
                     inputs, labels_data = dataGenerator.data[0].cuda(), dataGenerator.data[1].cuda()
