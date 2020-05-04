@@ -91,10 +91,10 @@ def fix_fully_conected_test(x,y):
     dire.fix_fully_conected(g)
     dire.imprimir(g)
 
-#add_layer_test(11,11)
+add_layer_test(11,11)
 #fix_fully_conected_test(11,11)
 #compute_num_layers_test(11,11)
-remove_layer_test(11,11)
+#remove_layer_test(11,11)
 ##DNA2graph_relable_test(11,11)
 #decrease_filters_test(11,11)
 #increase_filters_test(11,11)

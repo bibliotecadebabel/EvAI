@@ -47,20 +47,22 @@ class Network(nn.Module, na.NetworkAbstract):
 
         self.nodes[0].objects.append(ly.Layer(node=self.nodes[0], value=None, propagate=functions.Nothing, cudaFlag=self.cudaFlag))
 
-        for i in range(len(self.adn)):
-            tupleBody = self.adn[i]
+        indexNode = 1
+        for adn in self.adn:
+            tupleBody = adn
 
-            if tupleBody[0] != 3:
-                indexNode = i + 1
+            if tupleBody[0] >= 0 and tupleBody[0] <= 2:
                 layer = self.factory.findValue(tupleBody, propagate_mode=self.__conv2d_propagate_mode)
                 layer.node = self.nodes[indexNode]
                 self.nodes[indexNode].objects.append(layer)
                 attributeName = "layer"+str(indexNode)
                 self.setAttribute(attributeName, layer.object)
-            else:
+
+                indexNode += 1
+
+            elif tupleBody[0] == 3:
                 input_node = tupleBody[1]+1
                 target_node = tupleBody[2]+1
-
                 self.nodes[target_node].objects[0].other_inputs.append(self.nodes[input_node].objects[0])
 
     def __generateLengthNodes(self):

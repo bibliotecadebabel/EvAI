@@ -6,218 +6,107 @@ import children.pytorch.MutateNetwork as MutateNetwork
 import children.pytorch.MutateNetwork_Dendrites as Mutate_Dendrites
 from DAO import GeneratorFromImage, GeneratorFromCIFAR
 
-import torch
-import torch.nn as nn
-import torch.tensor as tensor
-import torch.optim as optim
+from DNA_conditions import max_layer
+from DNA_creators import Creator
+from DNA_Graph import DNA_Graph
 
-class Net(nn.Module):
-    def __init__(self, objects):
-        super(Net, self).__init__()
-        self.conv1 = nn.Conv2d(3, 16, 32, 32)
-        self.fc1 = nn.Linear(16 * 1 * 1, 10)
+import DNA_directions_f as dire
 
-    def forward(self, x):
 
-        #lenght = len(self.conv1.weight[0].view(-1))
-        #print("len1=", lenght)
-        x = self.conv1(x) 
+def DNA_test_i(x,y):
+    def condition(DNA):
+        output=True
+        if DNA:
+            for num_layer in range(0,len(DNA)-3):
+                layer=DNA[num_layer]
+                x_l=layer[3]
+                y_l=layer[4]
+                output=output and (x_l<x) and (y_l<y)
+        if output:
+            return max_layer(DNA, 3)
+    center=((0, 3, 5, 3, 3),(0, 8, 8, 3,3),(0,11,5, x, y), (1, 5, 10), (2,))
+    version='inclusion'
+    space=space=DNA_Graph(center,2,(x,y),condition,(0,(1,0,0,0)),version)
+    return space
 
-        sigmoid = torch.nn.Sigmoid()
-        x = sigmoid(x) + torch.nn.functional.relu(x)
+def remove_layer_test(x,y):
+    center=((-1,x,y),(0, 3, 5, 5, 5),(0, 5, 8, 1,1),(0,13,12, 28, 28),
+            (1, 12, 10), (2,),(3,-1,0),(3,0,1),
+            (3,1,2),(3,2,3),(3,3,4),(3,0,2))
+    #center=((-1,x,y),(0, 3, 2, 5, 5),(0, 2, 2, 1,1),(0,4,2, 7, 7),
+    #        (1, 2, 10), (2,),(3,-1,0),(3,0,1),
+    #        (3,1,2),(3,2,3),(3,3,4),(3,0,2))
 
-        x = x.view(-1, 16 * 1 * 1)
+    mutateADN=dire.remove_layer(0,center)
 
-        x = self.fc1(x)
+    return [center, mutateADN]
 
-        return x
+def add_layer_test(x,y):
+    center=((-1,x,y),(0, 3, 5, 5, 5),(0, 5, 8, 7,7),(0,13,12, 28, 28),
+            (1, 12, 10), (2,),(3,-1,0),(3,0,1),
+            (3,1,2),(3,2,3),(3,3,4),(3,0,2))
+ 
+    mutateADN=dire.add_layer(0,center)
 
-def Test_node_3(network,n=100,dt=0.1):
-    k=0
-    layer_f=network.nodes[3].objects[0]
-    #layer_i=network.nodes[2].objects[0]
+    return [center, mutateADN]
 
-    image = []
-    image.append(network.nodes[0].objects[0].value)
-    image.append(torch.tensor([0], dtype=torch.long))
+def Test_Mutacion_dendrites():
 
-    k=0
-    A = network.nodes[2].objects[0].value
-    A.requires_grad = True
-    network.addFilters()
-    while k < 200:
-        
-        #value = network.nodes[3].objects[0].object(A, image[1])
-        network.assignLabels(image[1])
-        network.nodes[2].objects[0].value.requires_grad = True
-        Functions.Propagation(network.nodes[3].objects[0], 1)
-        network.nodes[3].objects[0].value.backward()
-        network.nodes[2].objects[0].value.requires_grad = False
-        network.nodes[2].objects[0].value -= network.nodes[2].objects[0].value.grad * 0.1
-        network.nodes[2].objects[0].value.grad.data.zero_()
-        
-        value = network.nodes[2].objects[0].value
-
-        sc = value[0]
-        sn = value[1]
-
-        p = torch.exp(sc) / (torch.exp(sc) + torch.exp(sn))
-        print(p)
-
-def Test_node_2(network,n=100,dt=0.1):
-    k=0
-    layer_f=network.nodes[3].objects[0]
-    #layer_i=network.nodes[2].objects[0]
-
-    #network.addFilters()
-
-    image = []
-    image.append(network.nodes[0].objects[0].value)
-    image.append(torch.tensor([1,0], dtype=torch.float32))
-
-    k=0
-
-    A = network.nodes[2].objects[0].value
-    A.requires_grad = True
-    
-    #print(network.nodes[2].objects[0].value)
-
-    network.addFilters()
-    while k < 1000:
-        
-        print("iter: ", k)
-        network.updateGradFlag(True)
-        network.nodes[1].objects[0].value.requires_grad = True
-        network.assignLabels(image[1])
-        network.nodes[2].objects[0].propagate(network.nodes[2].objects[0])
-        network.nodes[3].objects[0].propagate(network.nodes[3].objects[0])
-        network.nodes[3].objects[0].value.backward()
-        network.updateGradFlag(False)
-        network.nodes[1].objects[0].value.requires_grad = False
-        #network.Regularize_der()
-        network.Acumulate_der(1)
-        network.Update(dt)
-
-        #network.nodes[1].objects[0].value -= network.nodes[1].objects[0].value.grad * dt 
-
-        network.Reset_der_total()
-        network.Reset_der()
-
-        print("Value Layer Linear:", network.nodes[2].objects[0].value)
-        k+=1
-
-def Test_node_1(network,n=100,dt=0.1):
-    k=0
-    layer_f=network.nodes[3].objects[0]
-    #layer_i=network.nodes[2].objects[0]
-
-    image = []
-    image.append(network.nodes[0].objects[0].value)
-    image.append(torch.tensor([1,0], dtype=torch.float32))
-
-    k=0
-
-    A = network.nodes[2].objects[0].value
-    A.requires_grad = True
-    
-    print(network.nodes[2].objects[0].value)
-    while k < 10000:
-        
-        network.updateGradFlag(True)
-        network.assignLabels(image[1])
-        network.nodes[1].objects[0].propagate(network.nodes[1].objects[0])
-        network.nodes[2].objects[0].propagate(network.nodes[2].objects[0])
-        network.nodes[3].objects[0].propagate(network.nodes[3].objects[0])
-        network.nodes[3].objects[0].value.backward()
-        network.updateGradFlag(False)
-        #network.Regularize_der()
-        network.Acumulate_der(1)
-        network.Update(dt)
-        network.Reset_der_total()
-        network.Reset_der()
-        network.Predict(image)
-        print(network.getProbability())
-        k+=1
-
-def Test_Batch(dataGen):
-
-    batch = [dataGen.data]
-    print("len data: ", len(dataGen.data[0]))
-    networks = []
-    ks = [100]
-    x = dataGen.size[1]
-    y = dataGen.size[2]
-    for i in range(1):
-        print("creating networks")
-        #(0, ks[i], len(dataGen.data[0]), 1, 1),
-        networkADN = ((0, 3, ks[i], x, y), (1, ks[i], 2), (2,))
-        networks.append(nw.Network(networkADN, cudaFlag=True))
-
-    for _,a in enumerate(batch):
-        print("Start Training")
-        networks[0].Training(data=a[0], p=15000, dt=0.01, labels=a[1])
-        #print("Loss Array: ", networks[0].getLossArray())
-        Inter.trakPytorch(networks[0], "pokemon-netmap", dataGen)
-
-def Test_pytorchNetwork():
-    dataGen = GeneratorFromCIFAR.GeneratorFromCIFAR(2,  10)
+    dataGen = GeneratorFromCIFAR.GeneratorFromCIFAR(2,  50)
+    #dataGen = GeneratorFromImage.GeneratorFromImage(2, 2)
     dataGen.dataConv2d()
-    device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
 
-    net = Net([]).to(device)
-    criterion = nn.CrossEntropyLoss()
-    optimizer = optim.SGD(net.parameters(), lr=0.01, momentum=0.0)
-    running_loss = 0.0
+    print("creating DNAs")
 
-    for j in range(24000):
+    dna_list = add_layer_test(dataGen.size[1], dataGen.size[2])
+    space = DNA_test_i(dataGen.size[1], dataGen.size[2])
 
-        # zero the parameter gradients
-        optimizer.zero_grad()
+    networkADN = dna_list[0]
+    mutate_adn = dna_list[1]   
 
-        # forward + backward + optimize
-        outputs = net(dataGen.data[0].cuda())
-        loss = criterion(outputs, dataGen.data[1].cuda())
-        loss.backward()
-        optimizer.step()
-
-        # print statistics
-        running_loss += loss.item()
-
-        dataGen.update()
-
-        if j % 100 == 0:    # print every 2000 mini-batches
-            print("Energy: ", running_loss, "i = ", j+1)
-        running_loss = 0.0
-
-
-                
-def Test_Mutacion():
-
-    print("creating networks")
-    #(0, ks[i], len(dataGen.data[0]), 1, 1),
-
-
-    networkADN = ((0, 3, 5, 3, 3), (0, 5, 7, 3, 3), (0, 10, 8, 32, 32), (1, 8, 10), (2,), 
-        (3, -1, 0), (3, 0, 1), (3, 1, 2), (3, -1, 2))
-    
-    mutate_1 = ((0, 3, 5, 3, 3), (0, 8, 7, 3, 3), (0, 10, 8, 32, 32), (1, 8, 10), (2,), 
-        (3, -1, 0), (3, -1, 1), (3, 0, 1), (3, 1, 2), (3, -1, 2))
-    #network = nw.Network(networkADN, cudaFlag=True)
     network = nw_dendrites.Network(networkADN, cudaFlag=True)
     
-    dataGen = GeneratorFromCIFAR.GeneratorFromCIFAR(2,  50)
-    #dataGen = GeneratorFromImage.GeneratorFromImage(2, 100)
+    space.objects[0].objects[0].shape = networkADN
+    space.objects[1].objects[0].shape = mutate_adn
+    space.objects[1].objects[0].objects[0].direction = (0, (1, 0, 0, 0))
+
+    print("adn=", space.objects[0].objects[0].shape)
+    print("mutateADN=", space.objects[1].objects[0].shape)
+    print("direction=", space.objects[1].objects[0].objects[0].direction)
+
+    
+
+    network.Training(data=dataGen, p=100, dt=0.01, labels=None)
+    print("Accuracy original (1)=", network.generateEnergy(dataGen))
+    network.Training(data=dataGen, p=1900, dt=0.01, labels=None)
+    print("Accuracy original (2)=", network.generateEnergy(dataGen))
+    network_1 = Mutate_Dendrites.executeMutation(oldNetwork=network, nodeTarget=space.objects[1])
+    network_1.Training(data=dataGen, p=100, dt=0.01, labels=None)
+    print("Accuracy mutate (1)=", network_1.generateEnergy(dataGen))
+    network_1.Training(data=dataGen, p=1900, dt=0.01, labels=None)
+    print("Accuracy mutate (2)=", network_1.generateEnergy(dataGen))
+
+def Test_Mutacion():
+
+    #dataGen = GeneratorFromCIFAR.GeneratorFromCIFAR(2,  2)
+    dataGen = GeneratorFromImage.GeneratorFromImage(2, 2)
     dataGen.dataConv2d()
 
-    network.Training(data=dataGen, p=800, dt=0.01, labels=None)
-    print("Accuracy original=", network.generateEnergy(dataGen))
-    network_1 = Mutate_Dendrites.executeMutation(oldNetwork=network, newAdn=mutate_1)
-    network_1.Training(data=dataGen, p=800, dt=0.01, labels=None)
-    print("Accuracy mutate=", network_1.generateEnergy(dataGen))
-
+    print("creating DNAs")
+    
+    networkADN = ((0, 3, 1, 2, 2), (0, 4, 2, 11, 11), (1, 2, 2), (2,))
+    mutate_adn = ((0, 3, 1, 3, 3), (0, 4, 2, 11, 11), (1, 2, 2), (2,))
+    network = nw.Network(networkADN, cudaFlag=True)
+    
+    network.Training(data=dataGen, p=100, dt=0.01, labels=None)
+    #print("Accuracy original=", network.generateEnergy(dataGen))
+    network_1 = MutateNetwork.executeMutation(oldNetwork=network, newAdn=mutate_adn)
+    network_1.Training(data=dataGen, p=100, dt=0.01, labels=None)
+    #print("Accuracy mutate=", network_1.generateEnergy(dataGen))
+    
 
 #Test_pytorchNetwork()
 
 #Test_Batch(dataGen)
-Test_Mutacion()
-
+Test_Mutacion_dendrites()
+#Test_Mutacion()
