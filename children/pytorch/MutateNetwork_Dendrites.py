@@ -2,11 +2,11 @@ import children.pytorch.NetworkDendrites as nw
 import children.Interfaces as Inter
 import children.pytorch.Functions as Functions
 from mutations.Dictionary import MutationsDictionary
+import DNA_directions_f as direction_dna
 import torch as torch
 
-def executeMutation(oldNetwork, nodeTarget):
+def executeMutation(oldNetwork, newAdn):
     
-    newAdn = nodeTarget.objects[0].shape
     network = nw.Network(newAdn, cudaFlag=oldNetwork.cudaFlag, momentum=oldNetwork.momentum)
 
 
@@ -24,12 +24,12 @@ def executeMutation(oldNetwork, nodeTarget):
 
     elif length_newadn > length_oldadn: # add layer
         print("add layer mutation")
-        index_layer = __getTargetLayerIndex(nodeTarget)
+        index_layer = __getTargetIndex(oldAdn=oldNetwork.adn, newAdn=newAdn, direction_function=direction_dna.add_layer)
         __addLayerMutationProcess(oldNetwork=oldNetwork, network=network, lenghtOldAdn=length_oldadn, indexAdded=index_layer)
 
     elif length_oldadn > length_newadn: # remove layer
         print("remove layer mutation")
-        index_layer = __getTargetLayerIndex(nodeTarget)
+        index_layer = __getTargetIndex(oldAdn=oldNetwork.adn, newAdn=newAdn, direction_function=direction_dna.remove_layer)
         __removeLayerMutationProcess(oldNetwork=oldNetwork, network=network, lengthNewAdn=length_newadn, indexRemoved=index_layer)
 
     oldNetwork.updateGradFlag(True)
@@ -150,8 +150,17 @@ def __initNewConvolution(newConvolution):
     torch.nn.init.constant_(newConvolution.object.weight, factor_n / entries)
     torch.nn.init.constant_(newConvolution.object.bias, 0)
 
-def __getTargetLayerIndex(node):
+def __getTargetIndex(oldAdn, newAdn, direction_function):
 
-    direction = node.objects[0].objects[0].direction
+    targetLayer = None
+    indexConv2d = 0
+    for i in range(len(oldAdn)):
 
-    return direction[0]
+        if oldAdn[i][0] == 0: #check if is conv2d
+            generated_dna = direction_function(indexConv2d, oldAdn)
+            if str(generated_dna) == str(newAdn):  
+                targetLayer = indexConv2d
+                break
+            indexConv2d += 1
+    
+    return targetLayer

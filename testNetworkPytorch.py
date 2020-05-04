@@ -58,35 +58,30 @@ def Test_Mutacion_dendrites():
     indexTarget = 0
 
     #dataGen = GeneratorFromCIFAR.GeneratorFromCIFAR(2,  50)
-    dataGen = GeneratorFromImage.GeneratorFromImage(2, 2)
+    dataGen = GeneratorFromImage.GeneratorFromImage(2, 100)
     dataGen.dataConv2d()
 
     print("creating DNAs")
 
-    dna_list = remove_layer_test(dataGen.size[1], dataGen.size[2], indexTarget)
-    space = DNA_test_i(dataGen.size[1], dataGen.size[2])
+    dna_list = add_layer_test(dataGen.size[1], dataGen.size[2], indexTarget)
 
     networkADN = dna_list[0]
     mutate_adn = dna_list[1]   
 
     network = nw_dendrites.Network(networkADN, cudaFlag=True)
     
-    space.objects[0].objects[0].shape = networkADN
-    space.objects[1].objects[0].shape = mutate_adn
-    space.objects[1].objects[0].objects[0].direction = (indexTarget, (0, 0, 0, 0))
 
-    print("adn=", space.objects[0].objects[0].shape)
-    print("mutateADN=", space.objects[1].objects[0].shape)
-    print("direction=", space.objects[1].objects[0].objects[0].direction)
+    print("adn=", networkADN)
+    print("mutateADN=", mutate_adn)
 
     
 
-    network.Training(data=dataGen, p=1000, dt=0.01, labels=None)
+    network.Training(data=dataGen, p=100, dt=0.01, labels=None)
     #print("Accuracy original (1)=", network.generateEnergy(dataGen))
     #network.Training(data=dataGen, p=1900, dt=0.01, labels=None)
     #print("Accuracy original (2)=", network.generateEnergy(dataGen))
-    network_1 = Mutate_Dendrites.executeMutation(oldNetwork=network, nodeTarget=space.objects[1])
-    network_1.Training(data=dataGen, p=1000, dt=0.01, labels=None)
+    network_1 = Mutate_Dendrites.executeMutation(oldNetwork=network, newAdn=mutate_adn)
+    network_1.Training(data=dataGen, p=100, dt=0.01, labels=None)
     #print("Accuracy mutate (1)=", network_1.generateEnergy(dataGen))
     #network_1.Training(data=dataGen, p=1900, dt=0.01, labels=None)
     #print("Accuracy mutate (2)=", network_1.generateEnergy(dataGen))
