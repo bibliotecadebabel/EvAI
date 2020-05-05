@@ -24,12 +24,12 @@ def DNA_Creator_s(x,y):
 
 def DNA_test_f(x,y):
     def condition(DNA):
-        return max_layer(DNA,10)
-    center=((-1,1,3,x,y),(0, 3, 5, x, y),
+        return max_layer(DNA,15)
+    center=((-1,1,3,x,y),(0, 3, 5, 3, 3),(0,5, 5, x-2, y-2),
             (1, 5, 2), (2,),(3,-1,0),(3,0,1),
-            (3,1,2))
+            (3,1,2),(3,2,3))
     version='final'
-    space=space=DNA_Graph(center,2,(x,y),condition,(0,(0,0,1,1),(0,1,0,0),(1,0,0,0)),version)
+    space=space=DNA_Graph(center,1,(x,y),condition,(0,(0,0,1,1),(0,1,0,0),(1,0,0,0)),version)
     space.imprimir()
     print(space.length())
 

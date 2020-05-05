@@ -239,6 +239,7 @@ directions_labels.update({creator:type})
 
 type=(1,0,0,0)
 def add_layer(num_layer,source_DNA):
+    print(num_layer)
     if num_layer>len(DNA2layers(source_DNA))-3:
         return None
     def relabler(k):
