@@ -6,14 +6,14 @@ import DNA_directions_f as dire
 
 
 def Persistent_synapse_condition_test(x,y):
-    DNA = ((-1,11,11),(0, 3, 5, 3, 3),(0, 8, 8,3,3),
+    DNA = ((-1,1,3,11,11),(0, 3, 5, 3, 3),(0, 8, 8,3,3),
              (0, 8, 8,7,7),
              (1, 7, 2), (2,),(3,-1,0),(3,0,1),
              (3,1,2),(3,2,3),(3,3,4))
     print(dire.Persistent_synapse_condition(DNA))
 
 def compute_num_layers_test(x,y):
-    DNA=((-1,11,11),(0, 3, 5, 3, 3),(0, 8, 8, 3,3),(0,11,5, x, y),
+    DNA=((-1,1,3,11,11),(0, 3, 5, 3, 3),(0, 8, 8, 3,3),(0,11,5, x, y),
             (1, 5, 2), (2,),(3,-1,0),(3,0,1),
             (3,1,2),(3,2,3),(3,3,4),(3,0,2))
     print('The number of layers in')
@@ -22,7 +22,7 @@ def compute_num_layers_test(x,y):
     print(len(dire.DNA2layers(DNA)))
 
 def DNA2layers_test(x,y):
-    DNA=((-1,11,11),(0, 3, 5, 3, 3),(0, 8, 8, 3,3),(0,11,5, x, y),
+    DNA=((-1,1,3,11,11),(0, 3, 5, 3, 3),(0, 8, 8, 3,3),(0,11,5, x, y),
             (1, 5, 2), (2,),(3,-1,0),(3,0,1),
             (3,1,2),(3,2,3),(3,3,4),(3,0,2))
     print('The layers are')
@@ -101,6 +101,24 @@ def fix_fully_conected_test(x,y):
     dire.fix_fully_conected(g)
     dire.imprimir(g)
 
+def increase_kernel_test(x,y):
+    DNA=((-1,1,3,x,y),(0, 3, 5, 3, 3),(0, 5, 8, 7,7),(0,13,5, 2, 2),
+            (1, 5, 2), (2,),(3,-1,0),(3,0,1),
+            (3,1,2),(3,2,3),(3,3,4))
+    #while DNA:
+    print('The new DNA is')
+    print(dire.increase_kernel(1,DNA))
+
+def decrease_kernel_test(x,y):
+    DNA=((-1,1,3,x,y),(0, 3, 5, 3, 3),(0, 5, 8, 7,7),(0,13,5, 2, 2),
+            (1, 5, 2), (2,),(3,-1,0),(3,0,1),
+            (3,1,2),(3,2,3),(3,3,4))
+    #while DNA:
+    print('The new DNA is')
+    print(dire.decrease_kernel(1,DNA))
+
+#increase_kernel_test(11,11)
+decrease_kernel_test(11,11)
 #Persistent_synapse_condition_test(11,11)
 #add_layer_test(11,11)
 #fix_fully_conected_test(11,11)
@@ -110,6 +128,6 @@ def fix_fully_conected_test(x,y):
 #decrease_filters_test(11,11)
 #increase_filters_test(11,11)
 #graph2DNA_test(11,11)
-DNA2graph_test(11,11)
+#DNA2graph_test(11,11)
 #DNA2synapses_test(11,11)
 #DNA2layers_test(11,11)

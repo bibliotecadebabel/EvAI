@@ -182,19 +182,23 @@ def modify_layer_kernel(layer_DNA,num):
 type=(0,0,1,1)
 
 def increase_kernel(num_layer,source_DNA):
-    if num_layer>len(DNA2layers(source_DNA))-2:
+    if num_layer>len(DNA2layers(source_DNA))-4:
         return None
     else:
+        num_layer=num_layer+1
         out_DNA=list(source_DNA)
         layer=list(out_DNA[num_layer])
         layer_f=list(out_DNA[num_layer+1])
         if len(layer_f) == 3:
             return None
         else:
-            if modify_layer_kernel(layer,1) and modify_layer_kernel(layer_f,-1):
+            if modify_layer_kernel(layer,1):
                 out_DNA[num_layer]=modify_layer_kernel(layer,1)
                 #out_DNA[num_layer+1]=modify_layer_kernel(layer_f,-1)
-                return tuple(out_DNA)
+                DNA=tuple(out_DNA)
+                g=DNA2graph(DNA)
+                fix_fully_conected(g)
+                return Persistent_synapse_condition(graph2DNA(g))
             else:
                 return None
 
@@ -206,22 +210,25 @@ directions_labels.update({creator:type})
 
 type=(0,0,-1,-1)
 def decrease_kernel(num_layer,source_DNA):
-    if num_layer>len(DNA2layers(source_DNA))-2:
+    if num_layer>len(DNA2layers(source_DNA))-4:
         return None
     else:
+        num_layer=num_layer+1
         out_DNA=list(source_DNA)
         layer=list(out_DNA[num_layer])
         layer_f=list(out_DNA[num_layer+1])
         if len(layer_f) == 3:
             return None
         else:
-            new_layer=modify_layer_kernel(layer,-1)
-            if not(new_layer):
-                return None
+            if modify_layer_kernel(layer,-1):
+                out_DNA[num_layer]=modify_layer_kernel(layer,-1)
+                #out_DNA[num_layer+1]=modify_layer_kernel(layer_f,-1)
+                DNA=tuple(out_DNA)
+                g=DNA2graph(DNA)
+                fix_fully_conected(g)
+                return Persistent_synapse_condition(graph2DNA(g))
             else:
-                out_DNA[num_layer]=new_layer
-                #out_DNA[num_layer+1]=modify_layer_kernel(layer_f,1)
-                return tuple(out_DNA)
+                return None
 
 
 creator=decrease_kernel
