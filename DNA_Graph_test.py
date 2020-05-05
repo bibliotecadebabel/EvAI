@@ -22,6 +22,17 @@ def DNA_Creator_s(x,y):
     print(space.length())
 
 
+def DNA_test_f(x,y):
+    def condition(DNA):
+        return max_layer(DNA,10)
+    center=((-1,1,3,x,y),(0, 3, 5, x, y),
+            (1, 5, 2), (2,),(3,-1,0),(3,0,1),
+            (3,1,2))
+    version='final'
+    space=space=DNA_Graph(center,2,(x,y),condition,(0,(0,0,1,1),(0,1,0,0),(1,0,0,0)),version)
+    space.imprimir()
+    print(space.length())
+
 def DNA_test_i(x,y):
     def condition(DNA):
         output=True
@@ -176,8 +187,9 @@ def linear_kernel_width(x,y):
     #print(space.key2node(center))
     return space
 
+DNA_test_f(11,11)
 #DNA_Creator_s(11,11)
-DNA_test_i(11,11)
+#DNA_test_i(11,11)
 #layer_increase_i(11,11)
 #kernel_increase_i(11,11)
 #add_filter_i(11,11)

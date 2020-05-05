@@ -9,8 +9,11 @@ class Creator():
     def __init__(self,typos,condition,type_add_layer=None):
         if type_add_layer==None:
             from DNA_directions import directions
-        else:
+        elif type_add_layer=='inclusion':
             from DNA_directions_i import directions,directions_labels
+            self.directions_labels=directions_labels
+        else:
+            from DNA_directions_f import directions,directions_labels
             self.directions_labels=directions_labels
         self.typos=typos
         self.condition=condition

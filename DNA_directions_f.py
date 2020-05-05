@@ -119,6 +119,8 @@ def layer_filter(layer,N):
     return tuple(layer_f)
 
 def layer_chanel(layer,N):
+    print('The layer is')
+    print(layer)
     layer_f=list(layer)
     layer_f[1]=layer_f[1]+N
     return tuple(layer_f)
@@ -131,11 +133,11 @@ directions_labels={}
 type=(0,1,0,0)
 def increase_filters(num_layer,source_DNA):
     total_layers=len(DNA2layers(source_DNA))
-    if num_layer>total_layers-3:
+    if num_layer>total_layers-4:
         return None
     else:
         g=DNA2graph(source_DNA)
-        imprimir(g)
+        #imprimir(g)
         node_t=g.key2node.get(num_layer)
         node_t.objects[0]=layer_filter(node_t.objects[0],
             1)
@@ -237,6 +239,8 @@ directions_labels.update({creator:type})
 
 type=(1,0,0,0)
 def add_layer(num_layer,source_DNA):
+    if num_layer>len(DNA2layers(source_DNA))-3:
+        return None
     def relabler(k):
         if k==-2:
             return num_layer
