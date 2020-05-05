@@ -28,38 +28,55 @@ def DNA2layers(DNA):
     return layers
 
 def DNA2synapses(DNA):
-    synapses=[]
-    for layer in DNA:
-        if (layer[0]==3):
-            synapses.append(layer)
-    return synapses
+    return [layer for layer in DNA if layer[0] == 3]
 
-def compute_output(g,node):
-    key=g.node2key.get(node)
-    if len(node.objects)>1:
+def compute_output(g, node):
+    key = g.node2key.get(node)
+    if len(node.objects) > 1:
         pass
-    elif key==-1:
-        image=node.objects[0]
-        node.objects.append([image[1],image[2]])
+    elif key == -1:
+        image = node.objects[0]
+        node.objects.append([image[3], image[4]])
     else:
-        x=0
-        y=0
-        x_l=node.objects[0][3]
-        y_l=node.objects[0][1]
+        x = 0
+        y = 0
+        x_l = node.objects[0][3]
+        y_l = node.objects[0][4]
         for parent in node.parents:
-            compute_output(g,parent)
-            p_out=parent.objects[1]
-            x=max(x,p_out[0])
-            y=max(y,p_out[1])
-        node.objects.append([x-x_l+1,y-y_l+1])
+            compute_output(g, parent)
+            p_out = parent.objects[1]
+            x = max(x, p_out[0])
+            y = max(y, p_out[1])
+        node.objects.append([x-x_l+1, y-y_l+1])
 
 def fix_fully_conected(g):
-    full_node=g.key2node.get(len(list(g.key2node.values()))-4)
-    compute_output(g,full_node)
-    output=full_node.objects[1]
-    layer=full_node.objects[0]
-    full_node.objects[0]=(layer[0],layer[1],
-        layer[2],output[0]+layer[3]-1,output[0]+layer[4]-1)
+    full_node = g.key2node.get(len(list(g.key2node.values()))-4)
+    compute_output(g, full_node)
+    output = full_node.objects[1]
+    layer = full_node.objects[0]
+    full_node.objects[0] = (layer[0],
+                            layer[1],
+                            layer[2],
+                            output[0] + layer[3] - 1,
+                            output[0] + layer[4] - 1)
+
+def Persistent_synapse_condition(DNA):
+    if DNA:
+        g = DNA2graph(DNA)
+        full_node = g.key2node.get(len(list(g.key2node.values()))-4)
+        compute_output(g, full_node)
+        k = 0
+        condition = True
+        while k < len(list(g.key2node.values()))-4:
+            node = g.key2node.get(k)
+            output = node.objects[1]
+            condition = (condition and (output[0] > 1)
+                and (output[1] > 1))
+            if not condition:
+                return
+            k += 1
+        return DNA
+
 
 
 
@@ -72,7 +89,7 @@ def graph2DNA(g):
     for k in range(num_layers):
         node=g.key2node.get(k)
         DNA.append(node.objects[0])
-    for k in range(num_layers-2):
+    for k in range(num_layers):
         node=g.key2node.get(k)
         parents=node.parents
         for parent in parents:
@@ -245,7 +262,7 @@ def add_layer(num_layer,source_DNA):
         t_node.objects[0]=t_layer
         g.relable(relabler)
         fix_fully_conected(g)
-        return graph2DNA(g)
+        return Persistent_synapse_condition(graph2DNA(g))
 
 creator=add_layer
 directions.update({type:creator})
@@ -253,6 +270,8 @@ directions_labels.update({creator:type})
 
 type=(-1,0,0,0)
 def remove_layer(num_layer,source_DNA):
+    if num_layer>len(DNA2layers(source_DNA))-4:
+        return None
     def relabler(k):
         if k<num_layer :
             return k
@@ -270,14 +289,16 @@ def remove_layer(num_layer,source_DNA):
             kid.objects[0]=layer_chanel(f_layer,
                 -t_layer[2])
         g.remove_node(num_layer)
-        if num_layer==0:
-            g.add_edges(-1,[1])
-            node=g.key2node.get(1)
-            node.objects[0]=layer_chanel(node.objects[0],3)
+        g.add_edges(num_layer-1,[num_layer+1])
+        node=g.key2node.get(num_layer+1)
+        node_o=g.key2node.get(num_layer-1)
+        node.objects[0]=layer_chanel(node.objects[0],
+            node_o.objects[0][2])
+        #print('The new graph is:')
+        #imprimir(g)
         g.relable(relabler)
         fix_fully_conected(g)
-        #imprimir(g)
-        return graph2DNA(g)
+        return Persistent_synapse_condition(graph2DNA(g))
 
 creator=remove_layer
 directions.update({type:creator})
