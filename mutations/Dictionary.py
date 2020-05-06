@@ -43,15 +43,15 @@ class MutationsDictionary():
 
     def __generateMutationsConv2d_dendrite(self):
 
+        self.__mutationsConv2d_dendrite[0] = Conv2dMutations.AlterExitFilterMutation_Dendrite()
         self.__mutationsConv2d_dendrite[1] = Conv2dMutations.AlterEntryFilterMutation_Dendrite()
-        self.__mutationsConv2d_dendrite[2] = Conv2dMutations.AlterExitFilterMutation_Dendrite()
-        self.__mutationsConv2d_dendrite[4] = Conv2dMutations.AlterDimensionKernel_Dendrite()
+        self.__mutationsConv2d_dendrite[3] = Conv2dMutations.AlterDimensionKernel_Dendrite()
         
 
     def __generateMutationsLinear(self):
         
+        self.__mutationsLinear[0] = LinearMutations.AlterExitFilterMutation()
         self.__mutationsLinear[1] = LinearMutations.AlterEntryFilterMutation()
-        self.__mutationsLinear[2] = LinearMutations.AlterExitFilterMutation()
 
     def __getOperation(self, oldAdn, newAdn):
 
@@ -59,6 +59,14 @@ class MutationsDictionary():
 
         for i in range(len(oldAdn)):
             result[i] = newAdn[i] - oldAdn[i]
+
+        return tuple(result) 
+
+    def __getOperationByFilter(self, oldFilter, newFilter):
+
+        result = []
+        for i in range(len(oldFilter.shape)):
+            result.append(newFilter.shape[i] - oldFilter.shape[i])
 
         return tuple(result)    
     
@@ -96,11 +104,10 @@ class MutationsDictionary():
 
         return mutationValue
     
-    def getMutationList(self, oldAdn, newAdn):
+    def getMutationList(self, layerType, oldFilter, newFilter):
 
-        layerType = oldAdn[0]
-        operation = self.__getOperation(oldAdn, newAdn)
-
+        operation = self.__getOperationByFilter(oldFilter, newFilter)
+        
         mutationDict_dendrite = self.__layerType_dendrite.get(layerType)
 
         key_list = self.__getMutationKeyList(operation)

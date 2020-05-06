@@ -257,9 +257,11 @@ class AlterEntryFilterMutation_Dendrite(Mutation):
             oldFilter = torch.cat((oldFilter, resized), dim=1)
             resized_shape = oldFilter.shape
 
+            '''
             for i in range(old_shape[0]):
                 for j in range(old_shape[1], resized_shape[1]):
                     oldFilter[i][j] = oldFilter[i][old_shape[1]-1].clone()
+            '''
 
             newNode.setFilter(oldFilter)
             newNode.setBias(oldBias)
@@ -344,3 +346,64 @@ class AlterDimensionKernel_Dendrite(Mutation):
 
             newNode.setFilter(resized)
             newNode.setBias(oldBias)
+
+class AdjustEntryFilters_Dendrite():
+
+    # adjustLayer = Layer afectado que debe ser ajustado antes de pasar sus parametros al nuevo layer
+    # indexList = Lista de index de los layers que envian filtros al layer afectado ordenados por jerarquia
+    # targetIndex = Index del Layer objetivo de la mutacion, indica el indice de partida dentro del indexList
+    # network = red neuronal donde se encuentra el layer afectado
+    def __init__(self, adjustLayer, indexList, targetIndex, network):
+        
+        self.adjustLayer = adjustLayer
+        self.indexList  = indexList
+        self.targetIndex = targetIndex
+        self.network = network
+
+    def removeFilters(self):
+
+        print("oldLayer to adjust= ", self.adjustLayer.adn)
+        print("index list=", self.indexList)
+        print("target layer=", self.targetIndex)
+
+        oldFilter = self.adjustLayer.getFilter()
+
+        shape = oldFilter.shape
+
+        value = self.getTargetRange()
+        newEntries = shape[1] - (abs(value[0] - value[1]) + 1)
+
+        if self.network.cudaFlag == True:
+            adjustedOldFilter = torch.zeros(shape[0], newEntries, shape[2], shape[3]).cuda()
+        else:
+            adjustedOldFilter = torch.zeros(shape[0], newEntries, shape[2], shape[3])
+        
+        for exit_channel in range(shape[0]):
+            index_accepted = 0
+            for entries_channel in range(shape[1]):
+
+                if entries_channel >= value[0] and entries_channel <= value[1]:
+                    pass
+                else:
+                    adjustedOldFilter[exit_channel][index_accepted] = oldFilter[exit_channel][entries_channel].clone()
+                    index_accepted += 1
+
+        return adjustedOldFilter
+
+    def getTargetRange(self):
+
+        starting = 0
+
+        for index in self.indexList:
+            
+            if index == self.targetIndex:
+                break
+            else:
+                adn = self.network.nodes[index+1].objects[0].adn
+                starting += adn[2]
+        
+        ending = self.network.nodes[self.targetIndex+1].objects[0].adn[2]
+
+        value = [starting, starting + ending-1]
+
+        return value
