@@ -117,8 +117,81 @@ def decrease_kernel_test(x,y):
     print('The new DNA is')
     print(dire.decrease_kernel(1,DNA))
 
+def spread_dendrites_test_1(x,y):
+    DNA=((-1,1,3,x,y),(0, 3, 5, 3, 3),(0, 5, 8, 7,7),(0,8,5, 2, 2),
+            (1, 5, 2), (2,),(3,-1,0),(3,0,1),
+            (3,1,2),(3,2,3),(3,3,4))
+    #while DNA:
+    print('The new DNA is')
+    print(dire.spread_dendrites(1  ,DNA))
+
+def spread_dendrites_test_2(x,y):
+    DNA=((-1,1,3,x,y),(0, 3, 5, 3, 3),(0, 5, 8, 7,7),(0,8,5, 2, 2),
+            (1, 5, 2), (2,),(3,-1,0),(3,0,1),(3,-1,1),
+            (3,1,2),(3,0,2),(3,2,3),(3,3,4))
+    print('The new DNA is')
+    print(dire.spread_dendrites(0,DNA))
+
+def spread_dendrites_test_3(x,y):
+    DNA=((-1,1,3,x,y),(0, 3, 5, 3, 3),(0, 5, 8, 7,7),(0,8,5, 2, 2),
+            (1, 5, 2), (2,),(3,-1,0),(3,0,1),
+            (3,1,2),(3,0,2),(3,-1,2),(3,2,3),(3,3,4))
+    print('The new DNA is')
+    print(dire.spread_dendrites(0,DNA))
+
+def spread_dendrites_test_4(x,y):
+    DNA=((-1,1,3,x,y),(0, 3, 5, 3, 3),(0, 5, 8, 7,7),(0,8,5, 2, 2),
+            (1, 5, 2), (2,),(3,-1,0),(3,0,1),(3,-1,1),
+            (3,1,2),(3,0,2),(3,-1,2),(3,2,3),(3,3,4))
+    print('The new DNA is')
+    print(dire.spread_dendrites(0,DNA))
+
+def spread_dendrites_test_5(x,y):
+    DNA=((-1,1,3,x,y),(0, 3, 5, 3, 3),(0, 8, 5, 3,3),(0,8,5, 3, 3),
+            (0,5,5, 3, 3),
+            (1, 5, 2), (2,),
+            (3,-1,0),
+            (3,0,1),
+            (3,-1,1),
+            (3,1,2),
+            (3,-1,2),
+            (3,2,3),
+            (3,3,4),
+            (3,4,5))
+    print('The new DNA is')
+    print(dire.spread_dendrites(0,DNA))
+
+def spread_dendrites_test_6(x,y):
+    DNA=((-1,1,3,x,y),(0, 3, 5, 2, 2),(0, 5, 5, 2,2),
+            (0,5,5, 2, 2),
+            (0,5,5, 2, 2),
+            (0,5,5, 2, 2),
+            (0,5,5, 6, 6),
+            (1, 5, 2), (2,),
+            (3,-1,0),
+            (3,0,1),
+            (3,1,2),
+            (3,2,3),
+            (3,3,4),
+            (3,4,5),
+            (3,5,6),
+            (3,6,7))
+    print('The new DNA is')
+    k=0
+    while k<5 and DNA:
+        DNA=dire.spread_dendrites(0,DNA)
+        print(DNA)
+        k=k+1
+
+
+
+spread_dendrites_test_6(11,11)
+#spread_dendrites_test_5(11,11)
+#spread_dendrites_test_4(11,11)
+#spread_dendrites_test_3(11,11)
+#spread_dendrites_test_1(11,11)
 #increase_kernel_test(11,11)
-decrease_kernel_test(11,11)
+##decrease_kernel_test(11,11)
 #Persistent_synapse_condition_test(11,11)
 #add_layer_test(11,11)
 #fix_fully_conected_test(11,11)

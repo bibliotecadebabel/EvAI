@@ -8,15 +8,15 @@ def imprimir(g):
     for node in list(g.key2node.values()):
         print('The parent(s) of')
         print(str(g.node2key.get(node))+': '
-            +str(node.objects[0]))
+            +str(node.objects))
         print('are(is):')
         for nodek in node.parents:
             print(str(g.node2key.get(nodek))+': '
-                +str(nodek.objects[0]))
+                +str(nodek.objects))
         print('and its kids are')
         for nodek in node.kids:
             print(str(g.node2key.get(nodek))+': '
-                +str(nodek.objects[0]))
+                +str(nodek.objects))
 
 def DNA2layers(DNA):
     layers=[]
@@ -119,8 +119,6 @@ def layer_filter(layer,N):
     return tuple(layer_f)
 
 def layer_chanel(layer,N):
-    print('The layer is')
-    print(layer)
     layer_f=list(layer)
     layer_f[1]=layer_f[1]+N
     return tuple(layer_f)
@@ -315,3 +313,105 @@ def remove_layer(num_layer,source_DNA):
 creator=remove_layer
 directions.update({type:creator})
 directions_labels.update({creator:type})
+
+type=(0,0,1)
+def spread_dendrites(num_layer,source_DNA):
+    total_layers=len(DNA2layers(source_DNA))
+    num_layer=num_layer-1
+    if num_layer>total_layers-5:
+        return None
+    g=DNA2graph(source_DNA)
+    node=g.key2node.get(num_layer)
+    dendrites=node.kids.copy()
+    dendrites.remove(g.key2node.get(num_layer+1))
+    landscape=[g.node2key.get(node_k)-num_layer-1
+        for node_k in dendrites]
+    old_index=select_old_index2spread(num_layer,
+        landscape,total_layers-num_layer-5)
+    if old_index:
+#        print(f'The idex to remove is {old_index}')
+        g.remove_edge(num_layer,old_index)
+        t_node=g.key2node.get(old_index)
+        t_layer=t_node.objects[0]
+        t_node.objects[0]=layer_chanel(t_layer,-node.objects[0][2])
+        dendrites.remove(g.key2node.get(old_index))
+        landscape=[g.node2key.get(node_k)-num_layer-1
+            for node_k in dendrites]
+    new_index=select_new_index2spread(num_layer,
+        landscape,total_layers-num_layer-5)
+#    print(f'The idex to add is {new_index}')
+    if new_index and not(new_index==old_index):
+        g.add_edges(num_layer,[new_index])
+        t_node=g.key2node.get(new_index)
+        t_layer=t_node.objects[0]
+        t_node.objects[0]=layer_chanel(t_layer,node.objects[0][2])
+#        print('The new graph is')
+        fix_fully_conected(g)
+        #imprimir(g)
+        return Persistent_synapse_condition(graph2DNA(g))
+    else:
+        return None
+
+
+creator=spread_dendrites
+directions.update({type:creator})
+directions_labels.update({creator:type})
+
+def select_old_index2spread(num_layer,landscape,size):
+    if len(landscape)<2:
+        return None
+    else:
+        k=0
+        landscape_dif=[]
+        for dendrite in landscape:
+            if k==0:
+                landscape_dif.append(dendrite)
+            else:
+                landscape_dif.append(abs(dendrite-landscape[k-1]))
+            k=k+1
+        #print('The dif_landscape is')
+        #print(landscape_dif)
+        index = landscape_dif.index(min(landscape_dif))
+        return num_layer+landscape[index]+1
+
+def select_new_index2spread(num_layer,landscape,size):
+    #print(f'The landscape is {landscape}')
+    #print(f'The size is {size}')
+    if len(landscape)<1:
+        if size>0:
+            return num_layer+2
+        else:
+            return None
+    elif len(landscape)==1:
+        if size==1:
+            return None
+        l_o=landscape[0]
+        new_index=min(2*l_o+1,size)
+        if l_o==new_index:
+            #print(f'The new index is {new_index-1}')
+            return num_layer+new_index-1+1
+        else:
+            #print(f'The new index is {new_index}')
+            return num_layer+1+new_index
+    else:
+        k=0
+        landscape_dif=[]
+        for dendrite in landscape:
+            if k==0:
+                landscape_dif.append(dendrite)
+            else:
+                landscape_dif.append(abs(dendrite-landscape[k-1]))
+            k=k+1
+        spread=max(landscape_dif)
+        new_index=max(landscape)+spread
+        if new_index<size:
+            return num_layer+new_index+1
+        elif (new_index==size) and not(size in landscape):
+            return num_layer+size+1
+        else:
+            base_index=landscape_dif.index(spread)
+            new_index=landscape[base_index]+spread//2+1
+            if not(new_index in landscape):
+                return num_layer+new_index+1
+            else:
+                return None
