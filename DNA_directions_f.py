@@ -299,11 +299,12 @@ def remove_layer(num_layer,source_DNA):
             kid.objects[0]=layer_chanel(f_layer,
                 -t_layer[2])
         g.remove_node(num_layer)
-        g.add_edges(num_layer-1,[num_layer+1])
         node=g.key2node.get(num_layer+1)
         node_o=g.key2node.get(num_layer-1)
-        node.objects[0]=layer_chanel(node.objects[0],
-            node_o.objects[0][2])
+        if not(node_o in node.parents):
+            g.add_edges(num_layer-1,[num_layer+1])
+            node.objects[0]=layer_chanel(node.objects[0],
+                node_o.objects[0][2])
         #print('The new graph is:')
         #imprimir(g)
         g.relable(relabler)

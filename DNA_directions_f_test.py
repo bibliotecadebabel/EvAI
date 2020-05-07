@@ -213,7 +213,7 @@ def retract_dendrites_test(x,y):
         k=k-1
 
 
-retract_dendrites_test(11,11)
+#retract_dendrites_test(11,11)
 #spread_dendrites_test_6(11,11)
 #spread_dendrites_test_5(11,11)
 #spread_dendrites_test_4(11,11)
@@ -225,7 +225,7 @@ retract_dendrites_test(11,11)
 #add_layer_test(11,11)
 #fix_fully_conected_test(11,11)
 #compute_num_layers_test(11,11)
-#remove_layer_test(11,11)
+remove_layer_test(11,11)
 ##DNA2graph_relable_test(11,11)
 #decrease_filters_test(11,11)
 #increase_filters_test(11,11)
