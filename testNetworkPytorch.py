@@ -30,15 +30,15 @@ def DNA_test_i(x,y):
     return space
 
 def remove_layer_test(x,y, indexTarget):
-    center=((-1,x,y),(0, 3, 5, 5, 5),(0, 5, 8, 1,1),(0,13,12, 7, 7),
+    center=((-1,1,3,x,y),(0, 3, 5, 5, 5),(0, 5, 8, 1,1),(0,13,12, 7, 7),
             (1, 12, 2), (2,),(3,-1,0),(3,0,1),
             (3,1,2),(3,2,3),(3,3,4),(3,0,2))
-    #center=((-1,x,y),(0, 3, 2, 5, 5),(0, 2, 2, 1,1),(0,4,2, 7, 7),
+    #center=((-1,1,3,x,y),(0, 3, 2, 5, 5),(0, 2, 2, 1,1),(0,4,2, 7, 7),
     #        (1, 2, 10), (2,),(3,-1,0),(3,0,1),
     #        (3,1,2),(3,2,3),(3,3,4),(3,0,2))
-    #center = ((-1, 11, 11), (0, 3, 3, 3, 3), (0, 3, 6, 5, 5), (0, 6, 4, 1, 1), (0, 7, 2, 9, 9), (1, 2, 10), (2,), 
+    #center = ((-1,1,3,x,y), (0, 3, 3, 3, 3), (0, 3, 6, 5, 5), (0, 6, 4, 1, 1), (0, 7, 2, 9, 9), (1, 2, 10), (2,), 
     #(3, -1, 0),(3, 0, 3),(3, 0, 1), (3, 1, 2), (3, 2, 3))
-    #center=((-1,x,y),(0, 3, 2, 5, 5),(0, 2, 3, 7,7),(0,5,2, 28, 28),
+    #center=((-1,1,3,x,y),(0, 3, 2, 5, 5),(0, 2, 3, 7,7),(0,5,2, 28, 28),
     #        (1, 2, 10), (2,),(3,-1,0),(3,0,1),
     #        (3,1,2),(3,2,3),(3,3,4),(3,0,2))
     mutateADN=dire.remove_layer(indexTarget,center)
@@ -46,10 +46,10 @@ def remove_layer_test(x,y, indexTarget):
     return [center, mutateADN]
 
 def add_layer_test(x,y, indexTarget):
-    #center=((-1,x,y),(0, 3, 5, 5, 5),(0, 5, 8, 7,7),(0,13,12, 28, 28),
+    #center=((-1,1,3,x,y),(0, 3, 5, 5, 5),(0, 5, 8, 7,7),(0,13,12, 28, 28),
     #        (1, 12, 10), (2,),(3,-1,0),(3,0,1),
     #        (3,1,2),(3,2,3),(3,3,4),(3,0,2))
-    center=((-1,x,y),(0, 3, 2, 5, 5),(0, 2, 2, 1,1),(0,4,2, 7, 7),
+    center=((-1,1,3,x,y),(0, 3, 2, 5, 5),(0, 2, 2, 1,1),(0,4,2, 7, 7),
             (1, 2, 10), (2,),(3,-1,0),(3,0,1),
             (3,1,2),(3,2,3),(3,3,4),(3,0,2))
  
@@ -57,17 +57,82 @@ def add_layer_test(x,y, indexTarget):
 
     return [center, mutateADN]
 
+def increase_filters_test(x,y, indexTarget):
+    center= ((-1,1,3,x,y),(0, 3, 5, 3, 3),(0, 5, 7, 3,3),(0,15, 12, 32, 32),
+            (1, 12, 10), (2,),(3,-1,0),(3,0,1),(3,-1, 2),
+            (3,0,2), (3,1,2), (3, 2, 3), (3, 3, 4))
+    mutateADN = dire.increase_filters(indexTarget,center)
+
+    return [center, mutateADN]
+
+def decrease_filters_test(x,y, indexTarget):
+
+    center= ((-1,1,3,x,y),(0, 3, 3, 3, 3),(0, 3, 2, 3,3),(0,8,3, 5, 5),
+            (1, 3, 2), (2,),(3,-1,0),(3,0,1),
+            (3,0,2), (3,1,2), (3,-1, 2), (3, 2, 3), (3, 3, 4))
+
+    mutateADN = dire.decrease_filters(indexTarget,center)
+
+    return [center, mutateADN]
+
+def increase_kernel_test(x,y, indexTarget):
+
+    center= ((-1,1,3,x,y),(0, 3, 5, 3, 3),(0, 5, 8, 3,3),(0,13,5, 9, 9),
+            (1, 5, 2), (2,),(3,-1,0),(3,0,1),
+            (3,1,2),(3,0,2), (3, 2, 3), (3, 3, 4))
+
+    mutateADN = dire.increase_kernel(indexTarget,center)
+
+    return [center, mutateADN]
+
+def decrease_kernel_test(x,y, indexTarget):
+
+    center= ((-1,1,3,x,y),(0, 3, 5, 3, 3),(0, 5, 8, 3,3),(0,13,5, 9, 9),
+            (1, 5, 2), (2,),(3,-1,0),(3,0,1),
+            (3,1,2),(3,0,2), (3, 2, 3), (3, 3, 4))
+
+    mutateADN = dire.decrease_kernel(indexTarget,center)
+
+    return [center, mutateADN]
+
+
+def spread_dendrites_test(x,y, indexTarget):
+    
+    # AGREGA DENDRITA
+    #center= ((-1,1,3,x,y),(0, 3, 5, 3, 3),(0, 5, 8, 7,7),(0,8,5, 3, 3),
+    #        (1, 5, 2), (2,),(3,-1,0),(3,0,1),
+    #        (3,1,2),(3,2,3),(3,3,4))
+
+    # AGREGA DENDRITA
+    #center = ((-1,1,3,x,y),(0, 3, 5, 3, 3),(0, 8, 8, 7,7),(0,13,5, 9, 9),
+    #        (1, 5, 2), (2,),(3,-1,0),(3,0,1),(3,-1,1),
+    #        (3,1,2),(3,0,2),(3,2,3),(3,3,4))
+
+    # AGREGA DENDRITA
+    #center = ((-1,1,3,x,y),(0, 3, 5, 3, 3),(0, 5, 8, 7,7),(0,16,5, 11, 11),
+    #        (1, 5, 2), (2,),(3,-1,0),(3,0,1),
+    #        (3,1,2),(3,0,2),(3,-1,2),(3,2,3),(3,3,4))
+
+    # CAMBIA DENDRITA
+    center = ((-1,1,3,x,y),(0, 3, 5, 3, 3),(0, 8, 5, 3,3),(0,8,5, 3, 3),
+            (0,5,5, 9, 9),(1, 5, 2), (2,),(3,-1,0),(3,0,1),(3,-1,1),
+            (3,1,2),(3,-1,2),(3,2,3),(3,3,4),(3,4,5))
+            
+    mutateADN = dire.spread_dendrites(indexTarget,center)
+
+    return [center, mutateADN]
+
 def Test_Mutacion_dendrites():
 
-    indexTarget = 1
+    indexTarget = 0
 
-    #dataGen = GeneratorFromCIFAR.GeneratorFromCIFAR(2,  50)
-    dataGen = GeneratorFromImage.GeneratorFromImage(2, 200)
+    dataGen = GeneratorFromCIFAR.GeneratorFromCIFAR(2,  50)
+    #dataGen = GeneratorFromImage.GeneratorFromImage(3, 2)
     dataGen.dataConv2d()
 
     print("creating DNAs")
 
-    dna_list = remove_layer_test(dataGen.size[1], dataGen.size[2], indexTarget)
+    dna_list = increase_filters_test(dataGen.size[1], dataGen.size[2], indexTarget)
 
     networkADN = dna_list[0]
     mutate_adn = dna_list[1]
@@ -80,15 +145,16 @@ def Test_Mutacion_dendrites():
 
     
 
-    network.Training(data=dataGen, p=2000, dt=0.01, labels=None)
-    #print("Accuracy original (1)=", network.generateEnergy(dataGen))
-    #network.Training(data=dataGen, p=1900, dt=0.01, labels=None)
-    #print("Accuracy original (2)=", network.generateEnergy(dataGen))
+    network.Training(data=dataGen, p=100, dt=0.01, labels=None)
+    print("Accuracy original (1)=", network.generateEnergy(dataGen))
+    network.Training(data=dataGen, p=1900, dt=0.01, labels=None)
+    print("Accuracy original (2)=", network.generateEnergy(dataGen))
     network_1 = Mutate_Dendrites.executeMutation(oldNetwork=network, newAdn=mutate_adn)
-    network_1.Training(data=dataGen, p=2000, dt=0.01, labels=None)
-    #print("Accuracy mutate (1)=", network_1.generateEnergy(dataGen))
-    #network_1.Training(data=dataGen, p=1900, dt=0.01, labels=None)
-    #print("Accuracy mutate (2)=", network_1.generateEnergy(dataGen))
+    network_1.Training(data=dataGen, p=100, dt=0.01, labels=None)
+    print("Accuracy mutate (1)=", network_1.generateEnergy(dataGen))
+    network_1.Training(data=dataGen, p=1900, dt=0.01, labels=None)
+    print("Accuracy mutate (2)=", network_1.generateEnergy(dataGen))
+    network.Training(data=dataGen, p=100, dt=0.01, labels=None)
 
 def Test_Mutacion():
 

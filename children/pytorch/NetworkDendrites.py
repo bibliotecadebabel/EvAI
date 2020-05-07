@@ -127,7 +127,7 @@ class Network(nn.Module, na.NetworkAbstract):
 
                 #if i == 1:
                 #    print("Loss=", self.total_value, "- i=", i)
-                #if i % 100 == 99:
+                #if i % 99 == 98:
                 #    print("Loss=", self.total_value, "- i=", i)
 
                 if self.cudaFlag == True:

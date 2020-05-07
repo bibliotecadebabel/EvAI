@@ -1,5 +1,6 @@
 from mutations.MutationAbstract import Mutation
 import torch as torch
+import const.mutation_type as m_type
 
 ########## NORMAL MUTATIONS ##########
 
@@ -360,6 +361,7 @@ class AdjustEntryFilters_Dendrite():
         self.targetIndex = targetIndex
         self.network = network
 
+    # Only use when mutation is remove layer
     def removeFilters(self):
 
         print("oldLayer to adjust= ", self.adjustLayer.adn)
@@ -371,6 +373,8 @@ class AdjustEntryFilters_Dendrite():
         shape = oldFilter.shape
 
         value = self.getTargetRange()
+
+        print("range to remove=", value)
         newEntries = shape[1] - (abs(value[0] - value[1]) + 1)
 
         if self.network.cudaFlag == True:
@@ -390,6 +394,77 @@ class AdjustEntryFilters_Dendrite():
 
         return adjustedOldFilter
 
+    def adjustEntryFilters(self, oldFilter, newFilter,  mutation_type):
+        
+        value = oldFilter
+
+        if mutation_type == m_type.DEFAULT_ADD_FILTERS:
+            value =  self.__increaseEntryFilters(oldFilter=oldFilter, newFilter=newFilter)
+        elif mutation_type == m_type.DEFAULT_REMOVE_FILTERS:
+            value = self.__decreaseEntryFilters(oldFilter=oldFilter, newFilter=newFilter)
+        
+        return value
+
+    def __decreaseEntryFilters(self, oldFilter, newFilter):
+        
+        shape = oldFilter.shape
+
+        range_filter  = self.getTargetRange()
+        value = abs(newFilter.shape[1] - oldFilter.shape[1])
+        conserved_range = [range_filter[0], abs(range_filter[1] - value)]
+        remove_gane = [conserved_range[1]+1, range_filter[1]]
+        if self.network.cudaFlag == True:
+            adjustedFilter = torch.zeros(shape[0], shape[1]-value, shape[2], shape[3]).cuda()
+        else:
+            adjustedFilter = torch.zeros(shape[0], shape[1]-value, shape[2], shape[3])
+        
+        print("layer range=", range_filter)
+        print("conserved RANGE=", conserved_range)
+        print("remove range=", remove_gane)
+        print("new filter size=", adjustedFilter.shape)
+        
+        for exit_channel in range(shape[0]):
+            index_accepted = 0
+            for entries_channel in range(shape[1]):
+
+                if entries_channel >= remove_gane[0] and entries_channel <= remove_gane[1]:
+                    pass
+                else:
+                    adjustedFilter[exit_channel][index_accepted] = oldFilter[exit_channel][entries_channel].clone()
+                    index_accepted += 1
+        
+        return adjustedFilter
+    
+    def __increaseEntryFilters(self, oldFilter, newFilter):
+        startIndex = self.getTargetRange()[1]
+        print("starting index to add=", startIndex)
+        value = abs(newFilter.shape[1] - oldFilter.shape[1])
+
+        range_add = [startIndex+1, startIndex+value]
+
+        shape = oldFilter.shape
+
+        if self.network.cudaFlag == True:
+            adjustedFilter = torch.zeros(shape[0], shape[1]+value, shape[2], shape[3]).cuda()
+        else:
+            adjustedFilter = torch.zeros(shape[0], shape[1]+value, shape[2], shape[3])
+
+        print("add range=", range_add)
+        print("new filter size=", adjustedFilter.shape) 
+
+        for exit_channel in range(shape[0]):
+            index_accepted = 0
+            for entries_channel in range(shape[1]+value):
+
+                if entries_channel >= range_add[0] and entries_channel <= range_add[1]:
+                    pass
+                else:
+                    adjustedFilter[exit_channel][entries_channel] = oldFilter[exit_channel][index_accepted].clone()
+                    index_accepted += 1
+        
+        return adjustedFilter
+
+    # Obtener el rango de indices del filtro de  layer afectado, dependiendo de la jerarquia del layer de la mutacion.
     def getTargetRange(self):
 
         starting = 0
@@ -399,8 +474,15 @@ class AdjustEntryFilters_Dendrite():
             if index == self.targetIndex:
                 break
             else:
-                adn = self.network.nodes[index+1].objects[0].adn
-                starting += adn[2]
+                indexNode = index + 1
+
+                if indexNode > 0: #check if is not image
+                    adn = self.network.nodes[indexNode].objects[0].adn
+                    starting += adn[2]
+                
+                elif indexNode == 0:
+                    starting += 3 #if indexNode equals zero is image, and image always has 3 output channels
+
         
         ending = self.network.nodes[self.targetIndex+1].objects[0].adn[2]
 

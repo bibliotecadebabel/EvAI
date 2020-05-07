@@ -5,6 +5,7 @@ from mutations.Dictionary import MutationsDictionary
 import DNA_directions_f as direction_dna
 import torch as torch
 import mutations.Convolution2d.Mutations as Conv2dMutations
+import const.mutation_type as m_type
 
 def executeMutation(oldNetwork, newAdn):
     
@@ -52,13 +53,32 @@ def __generateLenghtADN(adn):
 
 def __defaultMutationProcess(oldNetwork, network, lenghtAdn):
     
+    mutation_type, index_target = __getMutationTypeAndTargetIndex(oldAdn=oldNetwork.adn, newAdn=network.adn)
+    source_dendrites = []
+
+    if index_target is not None:
+        source_dendrites = __getSourceLayerDendrites(indexLayer=index_target, oldAdn=oldNetwork.adn)
+
+    print("source dendrites=", source_dendrites)
+
     for i in range(1, lenghtAdn+1):
 
         oldLayer = oldNetwork.nodes[i].objects[0]
         newLayer = network.nodes[i].objects[0]
 
         if oldLayer.getFilter() is not None:
-            __doMutate(oldFilter=oldLayer.getFilter(), oldBias=oldLayer.getBias(),
+
+            adjustFilterMutation = __getAdjustFilterMutation(indexLayer=i, source_dendrites=source_dendrites,
+                                                                network=oldNetwork, adjustLayer=oldLayer)
+
+            oldFilter = oldLayer.getFilter()
+
+            if adjustFilterMutation is not None:
+
+                oldFilter = adjustFilterMutation.adjustEntryFilters(oldFilter=oldFilter, newFilter=newLayer.getFilter(), 
+                                                            mutation_type=mutation_type)
+
+            __doMutate(oldFilter=oldFilter, oldBias=oldLayer.getBias(),
                         newLayer=newLayer, flagCuda=network.cudaFlag, layerType=oldLayer.adn[0])
         
         if network.cudaFlag == True:
@@ -164,6 +184,43 @@ def __initNewConvolution(newConvolution):
     torch.nn.init.constant_(newConvolution.object.weight, factor_n / entries)
     torch.nn.init.constant_(newConvolution.object.bias, 0)
 
+def __getMutationTypeAndTargetIndex(oldAdn, newAdn):
+
+    same_dendrites = True
+    mutation_type = None
+    target_index = None
+    
+    for i in range(len(oldAdn)):
+        
+        if oldAdn[i][0] == 0:
+
+            if oldAdn[i][2] > newAdn[i][2]:
+                mutation_type = m_type.DEFAULT_REMOVE_FILTERS
+                target_index = i - 1
+                break
+            
+            elif oldAdn[i][2] < newAdn[i][2]:
+                mutation_type = m_type.DEFAULT_ADD_FILTERS
+                target_index = i - 1
+                break
+
+        if oldAdn[i][0] == 3:
+
+            if oldAdn[i] != newAdn[i]:
+                same_dendrites = False
+                break
+    
+    if same_dendrites == False:
+        mutation_type = m_type.DEFAULT_CHANGE_DENDRITES
+        target_index = None
+
+    
+    print("mutation type=", mutation_type)
+    print("target index=", target_index)
+    return [mutation_type, target_index]
+            
+
+
 def __getTargetIndex(oldAdn, newAdn, direction_function):
 
     targetLayer = None
@@ -178,7 +235,6 @@ def __getTargetIndex(oldAdn, newAdn, direction_function):
             indexConv2d += 1
     
     return targetLayer
-
 
 def __getSourceLayerDendrites(indexLayer, oldAdn):
     source_dendrites = []
