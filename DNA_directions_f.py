@@ -415,3 +415,85 @@ def select_new_index2spread(num_layer,landscape,size):
                 return num_layer+new_index+1
             else:
                 return None
+
+type=(0,0,-1)
+def retract_dendrites(num_layer,source_DNA):
+    total_layers=len(DNA2layers(source_DNA))
+    num_layer=num_layer-1
+    if num_layer>total_layers-5:
+        return None
+    g=DNA2graph(source_DNA)
+    node=g.key2node.get(num_layer)
+    dendrites=node.kids.copy()
+    dendrites.remove(g.key2node.get(num_layer+1))
+    landscape=[g.node2key.get(node_k)-num_layer-1
+        for node_k in dendrites]
+    old_index=select_old_index2retract(num_layer,
+        landscape,total_layers-num_layer-5)
+    if old_index:
+        g.remove_edge(num_layer,old_index)
+        t_node=g.key2node.get(old_index)
+        t_layer=t_node.objects[0]
+        t_node.objects[0]=layer_chanel(t_layer,-node.objects[0][2])
+        dendrites.remove(g.key2node.get(old_index))
+        landscape=[g.node2key.get(node_k)-num_layer-1
+            for node_k in dendrites]
+    new_index=select_new_index2retract(num_layer,
+        landscape,total_layers-num_layer-5,old_index)
+#    print(f'The idex to add is {new_index}')
+    if new_index and not(new_index==old_index):
+        g.add_edges(num_layer,[new_index])
+        t_node=g.key2node.get(new_index)
+        t_layer=t_node.objects[0]
+        t_node.objects[0]=layer_chanel(t_layer,node.objects[0][2])
+#        print('The new graph is')
+        fix_fully_conected(g)
+        #imprimir(g)
+        return Persistent_synapse_condition(graph2DNA(g))
+    else:
+        if not(old_index):
+            return None
+        else:
+            fix_fully_conected(g)
+            return Persistent_synapse_condition(graph2DNA(g))
+
+
+creator=retract_dendrites
+directions.update({type:creator})
+directions_labels.update({creator:type})
+
+def select_old_index2retract(num_layer,landscape,size):
+    if len(landscape)<1:
+        return None
+    else:
+        return num_layer+max(landscape)+1
+
+def select_new_index2retract(num_layer,landscape,size,old_index=None):
+    if len(landscape)<1:
+        if old_index:
+            contract=old_index-num_layer+1
+            if contract//2==0:
+                return None
+            else:
+                return num_layer-1+contract//2
+        else:
+            return None
+    else:
+        k=0
+        landscape_dif=[]
+        for dendrite in landscape:
+            if k==0:
+                landscape_dif.append(dendrite)
+            else:
+                landscape_dif.append(abs(dendrite-landscape[k-1]))
+            k=k+1
+        spread=max(landscape_dif)
+        base_index=landscape_dif.index(spread)-1
+        if base_index==-1:
+            new_index=spread//2
+        else:
+            new_index=landscape[base_index]+spread//2
+        if not(new_index in landscape):
+            return num_layer+new_index+1
+        else:
+            return None

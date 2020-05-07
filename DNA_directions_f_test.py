@@ -182,10 +182,39 @@ def spread_dendrites_test_6(x,y):
         DNA=dire.spread_dendrites(0,DNA)
         print(DNA)
         k=k+1
+        print(k)
+
+def retract_dendrites_test(x,y):
+    DNA=((-1,1,3,x,y),(0, 3, 5, 2, 2),(0, 5, 5, 2,2),
+            (0,5,5, 2, 2),
+            (0,5,5, 2, 2),
+            (0,5,5, 2, 2),
+            (0,5,5, 6, 6),
+            (1, 5, 2), (2,),
+            (3,-1,0),
+            (3,0,1),
+            (3,1,2),
+            (3,2,3),
+            (3,3,4),
+            (3,4,5),
+            (3,5,6),
+            (3,6,7))
+    print('The new DNA is')
+    k=0
+    while k<3 and DNA:
+        DNA=dire.spread_dendrites(0,DNA)
+        print(DNA)
+        k=k+1
+        #print(k)
+    #print(DNA)
+    while 0<k and DNA:
+        DNA=dire.retract_dendrites(0,DNA)
+        print(DNA)
+        k=k-1
 
 
-
-spread_dendrites_test_6(11,11)
+retract_dendrites_test(11,11)
+#spread_dendrites_test_6(11,11)
 #spread_dendrites_test_5(11,11)
 #spread_dendrites_test_4(11,11)
 #spread_dendrites_test_3(11,11)
