@@ -54,9 +54,11 @@ class DNA_Phase_space():
             if old_max and not(old_max == node_M):
                 self.max_changed = True
             self.node_max_particles=node_M
+            self.DNA_graph.node_max_particle=node_M
 
         else:
             self.node_max_particles=None
+            self.DNA_graph.node_max_particle=None
 
     def print_max_particles(self):
         if self.node_max_particles:

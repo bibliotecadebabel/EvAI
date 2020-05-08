@@ -123,13 +123,7 @@ def tree_distances(tree):
      distances.update({node : len(paths[node])-1})
     return distances
 
-print('Hi')
-test={}
-a=(1,2)
-b=(1,2)
-test.update({a : 'Hola'})
-print(test[a])
-print(test[b])
+
 
 
 

@@ -44,6 +44,7 @@ class DNA_Graph():
         self.graph=g
         self.objects=list(g.key2node.values())
         self.version = type_add_layer
+        self.node_max_particle=None
 
 
 

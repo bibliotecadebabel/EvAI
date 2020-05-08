@@ -4,6 +4,41 @@ from DNA_creators import Creator
 from DNA_creators import Creator_from_selection as Creator_s
 from utilities.Abstract_classes.classes.random_selector import random_selector
 
+def random_predict_test(x,y):
+    selector=random_selector()
+    center=((-11,1,3,x,y),(0, 3, 5, 3, 3),(0, 5, 8, 3,3),
+        (0,8,5, x-4, y-4), (1, 5, 2), (2,))
+    selector.update(center)
+    print(selector.get_predicted_actions())
+
+
+def random_forget_test(x,y):
+    selector=random_selector()
+    center=((-11,1,3,x,y),(0, 3, 5, 3, 3),(0, 5, 8, 3,3),
+        (0,8,5, x-4, y-4), (1, 5, 2), (2,))
+    selector.register_observations(center)
+    print('The registered observation is:')
+    selector.print_observation()
+    selector.forget_observations()
+    print('The forgoten observation is:')
+    selector.print_observation()
+
+
+
+def random_record_test(x,y):
+    selector=random_selector()
+    center=((-11,1,3,x,y),(0, 3, 5, 3, 3),(0, 5, 8, 3,3),
+        (0,8,5, x-4, y-4), (1, 5, 2), (2,))
+    selector.register_observations(center)
+    print('The registered observation is:')
+    selector.print_observation()
+
+
+
+def random_selector_test():
+    selector=random_selector()
+    print('Done')
+    pass
 
 def DNA_Creator_s(x,y):
     def condition(DNA):
@@ -17,11 +52,9 @@ def DNA_Creator_s(x,y):
         if output:
             return max_layer(DNA,3)
     center=((0, 3, 5, 3, 3),(0, 8, 8, 3,3),(0,11,5, x, y), (1, 5, 2), (2,))
-    selector=random_selector()
-    selector.update(center)
-    actions=selector.get_predicted_actions()
     version='inclusion'
-    space=DNA_Graph(center,2,(x,y),condition,actions
+    space=DNA_Graph(center,2,(x,y),condition,((0,(0,0,1,1)),
+        (1,(0,1,0,0)))
         ,version,Creator_s)
     space.imprimir()
     print(space.length())
@@ -194,8 +227,12 @@ def linear_kernel_width(x,y):
     #print(space.key2node(center))
     return space
 
+random_predict_test(11,11)
+#random_forget_test(11,11)
+#random_record_test(11,11)
+#random_selector_test()
 #DNA_test_f(11,11)
-DNA_Creator_s(11,11)
+#DNA_Creator_s(11,11)
 #DNA_test_i(11,11)
 #layer_increase_i(11,11)
 #kernel_increase_i(11,11)

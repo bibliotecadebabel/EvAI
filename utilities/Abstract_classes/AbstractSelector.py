@@ -25,7 +25,7 @@ class Selector(ABC):
 
 
     def update_current_path(self,space):
-        self.current_path.append(space2action(space))
+        self.current_path.append(self.space2action(space))
         if len(self.current_path)>self.max_path_size:
             self.current_path.pop(0)
         pass
@@ -42,7 +42,7 @@ class Selector(ABC):
         pass
 
     def forget_observations(self):
-        while len(self.observations)>self.max_observation_size:
+        while len(self.observations)+1>self.max_observation_size:
             self.observations.pop(0)
         for observation in self.observations:
             self.forget_observation(observation)
@@ -51,10 +51,10 @@ class Selector(ABC):
     def update(self,space):
         self.register_observations(space)
         self.update_current_path(space)
-        self.forget_observations()
         self.train()
         self.update_predicted_actions()
         self.current_time = self.current_time+1
+        self.forget_observations()
         pass
 
     #should create net given hyperparameters
