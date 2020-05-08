@@ -58,7 +58,7 @@ def add_layer_test(x,y, indexTarget):
     return [center, mutateADN]
 
 def increase_filters_test(x,y, indexTarget):
-    center= ((-1,1,3,x,y),(0, 3, 5, 3, 3),(0, 5, 7, 3,3),(0,15, 12, 32, 32),
+    center= ((-1,1,3,x,y),(0, 3, 5, 3, 3),(0, 5, 7, 3,3),(0,15, 12, 11, 11),
             (1, 12, 10), (2,),(3,-1,0),(3,0,1),(3,-1, 2),
             (3,0,2), (3,1,2), (3, 2, 3), (3, 3, 4))
     mutateADN = dire.increase_filters(indexTarget,center)
@@ -67,7 +67,7 @@ def increase_filters_test(x,y, indexTarget):
 
 def decrease_filters_test(x,y, indexTarget):
 
-    center= ((-1,1,3,x,y),(0, 3, 3, 3, 3),(0, 3, 2, 3,3),(0,8,3, 5, 5),
+    center= ((-1,1,3,x,y),(0, 3, 3, 3, 3),(0, 3, 2, 3,3),(0,8,3, 11, 11),
             (1, 3, 2), (2,),(3,-1,0),(3,0,1),
             (3,0,2), (3,1,2), (3,-1, 2), (3, 2, 3), (3, 3, 4))
 
@@ -122,20 +122,39 @@ def spread_dendrites_test(x,y, indexTarget):
 
     return [center, mutateADN]
 
+def retract_dendrites_test(x,y, indexTarget):
+    
+    center = ((-1,1,3,x,y),(0, 3, 5, 3, 3),(0, 8, 8, 7,7),(0,13,5, 9, 9),
+            (1, 5, 2), (2,),(3,-1,0),(3,0,1),(3,-1,1),
+            (3,1,2),(3,0,2),(3,2,3),(3,3,4))
+            
+    mutateADN = dire.retract_dendrites(indexTarget,center)
+
+    return [center, mutateADN]
+
 def Test_Mutacion_dendrites():
 
     indexTarget = 0
 
-    dataGen = GeneratorFromCIFAR.GeneratorFromCIFAR(2,  50)
-    #dataGen = GeneratorFromImage.GeneratorFromImage(3, 2)
+    #dataGen = GeneratorFromCIFAR.GeneratorFromCIFAR(2,  50)
+    dataGen = GeneratorFromImage.GeneratorFromImage(2, 100)
     dataGen.dataConv2d()
 
     print("creating DNAs")
 
-    dna_list = increase_filters_test(dataGen.size[1], dataGen.size[2], indexTarget)
+    dna_list = spread_dendrites_test(dataGen.size[1], dataGen.size[2], indexTarget)
 
-    networkADN = dna_list[0]
-    mutate_adn = dna_list[1]
+    #networkADN = dna_list[0]
+    #mutate_adn = dna_list[1]
+
+    
+    networkADN = ((-1,1,3,11,11),(0, 3, 5, 3, 3),(0, 8, 5, 3,3),(0,13,5, 3, 3),
+            (0,5,5, 9, 9),(1, 5, 2), (2,),(3,-1,0),(3,0,1),(3,-1,1),
+            (3,1,2),(3,-1,2), (3,0,2), (3,2,3),(3,3,4),(3,4,5))
+    mutate_adn = ((-1,1,3,11,11),(0, 3, 5, 3, 3),(0, 8, 5, 3,3),(0,10,5, 3, 3),
+            (0,5,5, 7, 7),(1, 5, 2), (2,),(3,-1,0),(3,0,1),(3,-1,1),
+            (3,1,2), (3,0,2), (3,2,3),(3,3,4),(3,4,5))
+    
 
     network = nw_dendrites.Network(networkADN, cudaFlag=True)
     
@@ -145,15 +164,15 @@ def Test_Mutacion_dendrites():
 
     
 
-    network.Training(data=dataGen, p=100, dt=0.01, labels=None)
-    print("Accuracy original (1)=", network.generateEnergy(dataGen))
-    network.Training(data=dataGen, p=1900, dt=0.01, labels=None)
-    print("Accuracy original (2)=", network.generateEnergy(dataGen))
+    network.Training(data=dataGen, p=500, dt=0.01, labels=None)
+    #print("Accuracy original (1)=", network.generateEnergy(dataGen))
+    #network.Training(data=dataGen, p=1900, dt=0.01, labels=None)
+    #print("Accuracy original (2)=", network.generateEnergy(dataGen))
     network_1 = Mutate_Dendrites.executeMutation(oldNetwork=network, newAdn=mutate_adn)
-    network_1.Training(data=dataGen, p=100, dt=0.01, labels=None)
-    print("Accuracy mutate (1)=", network_1.generateEnergy(dataGen))
-    network_1.Training(data=dataGen, p=1900, dt=0.01, labels=None)
-    print("Accuracy mutate (2)=", network_1.generateEnergy(dataGen))
+    network_1.Training(data=dataGen, p=1000, dt=0.01, labels=None)
+    #print("Accuracy mutate (1)=", network_1.generateEnergy(dataGen))
+    #network_1.Training(data=dataGen, p=1900, dt=0.01, labels=None)
+    #print("Accuracy mutate (2)=", network_1.generateEnergy(dataGen))
     network.Training(data=dataGen, p=100, dt=0.01, labels=None)
 
 def Test_Mutacion():

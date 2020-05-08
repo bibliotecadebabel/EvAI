@@ -361,12 +361,12 @@ class AdjustEntryFilters_Dendrite():
         self.targetIndex = targetIndex
         self.network = network
 
-    # Only use when mutation is remove layer
+    # Only use when mutation is remove layer or remove dendrite
     def removeFilters(self):
 
-        print("oldLayer to adjust= ", self.adjustLayer.adn)
-        print("index list=", self.indexList)
-        print("target layer=", self.targetIndex)
+        #print("oldLayer to adjust= ", self.adjustLayer.adn)
+        #print("index list=", self.indexList)
+        #print("target layer=", self.targetIndex)
 
         oldFilter = self.adjustLayer.getFilter()
 
@@ -402,6 +402,8 @@ class AdjustEntryFilters_Dendrite():
             value =  self.__increaseEntryFilters(oldFilter=oldFilter, newFilter=newFilter)
         elif mutation_type == m_type.DEFAULT_REMOVE_FILTERS:
             value = self.__decreaseEntryFilters(oldFilter=oldFilter, newFilter=newFilter)
+        elif mutation_type == m_type.DEFAULT_REMOVE_DENDRITE:
+            value = self.removeFilters()
         
         return value
 
@@ -418,10 +420,9 @@ class AdjustEntryFilters_Dendrite():
         else:
             adjustedFilter = torch.zeros(shape[0], shape[1]-value, shape[2], shape[3])
         
-        print("layer range=", range_filter)
-        print("conserved RANGE=", conserved_range)
-        print("remove range=", remove_gane)
-        print("new filter size=", adjustedFilter.shape)
+        #print("layer range=", range_filter)
+        #print("conserved RANGE=", conserved_range)
+        print("range to remove=", remove_gane)
         
         for exit_channel in range(shape[0]):
             index_accepted = 0
@@ -437,7 +438,6 @@ class AdjustEntryFilters_Dendrite():
     
     def __increaseEntryFilters(self, oldFilter, newFilter):
         startIndex = self.getTargetRange()[1]
-        print("starting index to add=", startIndex)
         value = abs(newFilter.shape[1] - oldFilter.shape[1])
 
         range_add = [startIndex+1, startIndex+value]
@@ -450,7 +450,7 @@ class AdjustEntryFilters_Dendrite():
             adjustedFilter = torch.zeros(shape[0], shape[1]+value, shape[2], shape[3])
 
         print("add range=", range_add)
-        print("new filter size=", adjustedFilter.shape) 
+        #print("new filter size=", adjustedFilter.shape) 
 
         for exit_channel in range(shape[0]):
             index_accepted = 0
@@ -484,7 +484,10 @@ class AdjustEntryFilters_Dendrite():
                     starting += 3 #if indexNode equals zero is image, and image always has 3 output channels
 
         
-        ending = self.network.nodes[self.targetIndex+1].objects[0].adn[2]
+        if self.targetIndex+1 == 0:
+            ending = 3
+        else:
+            ending = self.network.nodes[self.targetIndex+1].objects[0].adn[2]
 
         value = [starting, starting + ending-1]
 
