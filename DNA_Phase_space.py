@@ -22,6 +22,10 @@ class DNA_Phase_space():
         q=node.objects[0]
         return q.objects[0]
 
+    def node2direction(self,node):
+        p=self.node2plane(node)
+        return p.direction
+
     def node2particles(self,node):
         p=self.node2plane(node)
         return p.num_particles

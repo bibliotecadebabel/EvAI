@@ -22,7 +22,7 @@ class Selector(ABC):
         self.current_time = 0
         self.training_time = 200
         self.dt = 0.01
-
+        self.current_path=[]
 
     def update_current_path(self,space):
         self.current_path.append(self.space2action(space))
