@@ -309,6 +309,7 @@ class AlterDimensionKernel_Dendrite(Mutation):
         if self._value > 0:
 
             shape = oldFilter.shape
+            old_normalize = shape[2] * shape[3]
 
             if cuda == True:
                 resized_1 = torch.zeros(shape[0], shape[1], shape[2], newDimensions).cuda()
@@ -320,8 +321,16 @@ class AlterDimensionKernel_Dendrite(Mutation):
             oldFilter = torch.cat((oldFilter, resized_1), dim=3)
             oldFilter = torch.cat((oldFilter, resized_2), dim=2)
             
+            new_normalize = oldFilter.shape[2] * oldFilter.shape[3]
+
             del resized_1
             del resized_2
+
+            
+            oldFilter = (oldFilter * new_normalize) / old_normalize
+
+            oldBias = (oldBias * new_normalize) / old_normalize
+            
 
             newNode.setFilter(oldFilter)
             newNode.setBias(oldBias)
@@ -329,6 +338,7 @@ class AlterDimensionKernel_Dendrite(Mutation):
         elif self._value < 0:
 
             shape = oldFilter.shape
+            old_normalize = shape[2] * shape[3]
 
             if cuda == True:
                 resized = torch.zeros(shape[0], shape[1], shape[2]-newDimensions, shape[3]-newDimensions).cuda()
@@ -345,6 +355,12 @@ class AlterDimensionKernel_Dendrite(Mutation):
 
             del oldFilter
 
+            new_normalize = resized.shape[2] * resized.shape[3]
+            
+            resized = (resized * new_normalize) / old_normalize
+
+            oldBias = (oldBias * new_normalize) / old_normalize
+            
             newNode.setFilter(resized)
             newNode.setBias(oldBias)
 

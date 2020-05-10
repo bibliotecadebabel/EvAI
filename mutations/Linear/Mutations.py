@@ -71,15 +71,16 @@ class AlterEntryFilterMutation(Mutation):
             shape = oldFilter.shape
 
             if cuda == True:
-                resized = torch.zeros(shape[0], 1).cuda()
+                resized = torch.zeros(shape[0], self._value).cuda()
             else:
-                resized = torch.zeros(shape[0], 1)
+                resized = torch.zeros(shape[0], self._value)
 
             oldFilter = torch.cat((oldFilter, resized), dim=1)
 
+            '''
             for i in range(oldFilter.shape[0]):
                 oldFilter[i][oldFilter.shape[1]-1] = oldFilter[i][oldFilter.shape[1]-2].clone()
-
+            '''
             newNode.setFilter(oldFilter)
             newNode.setBias(oldBias)
 
@@ -88,14 +89,15 @@ class AlterEntryFilterMutation(Mutation):
         elif self._value < 0:
 
             shape = oldFilter.shape
+            newDimension = abs(self._value)
 
             if cuda == True:
-                resized = torch.zeros(shape[0], shape[1]-1).cuda()
+                resized = torch.zeros(shape[0], shape[1]-newDimension).cuda()
             else:
-                resized = torch.zeros(shape[0], shape[1]-1)
+                resized = torch.zeros(shape[0], shape[1]-newDimension)
             
             for out_channel in range(shape[0]):
-                for in_channel in range(shape[1]-1):
+                for in_channel in range(shape[1]-newDimension):
                     resized[out_channel][in_channel] = oldFilter[out_channel][in_channel].clone()
             
             del oldFilter

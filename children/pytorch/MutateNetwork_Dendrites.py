@@ -76,9 +76,10 @@ def __defaultMutationProcess(oldNetwork, network, lenghtAdn):
             oldFilter = oldLayer.getFilter()
 
             if adjustFilterMutation is not None:
-
-                oldFilter = adjustFilterMutation.adjustEntryFilters(oldFilter=oldFilter, newFilter=newLayer.getFilter(), 
-                                                            mutation_type=mutation_type)
+                
+                if oldLayer.adn[0] == 0:
+                    oldFilter = adjustFilterMutation.adjustEntryFilters(oldFilter=oldFilter, newFilter=newLayer.getFilter(), 
+                                                                mutation_type=mutation_type)
 
             __doMutate(oldFilter=oldFilter, oldBias=oldLayer.getBias(),
                         newLayer=newLayer, flagCuda=network.cudaFlag, layerType=oldLayer.adn[0])
@@ -141,7 +142,9 @@ def __removeLayerMutationProcess(oldNetwork, network, lengthNewAdn, indexRemoved
             
             oldFilter = oldLayer.getFilter()
             if adjustFilterMutation is not None:
-                oldFilter = adjustFilterMutation.removeFilters()
+
+                if oldLayer.adn[0] == 0:
+                    oldFilter = adjustFilterMutation.removeFilters()
 
             __doMutate(oldFilter=oldFilter, oldBias=oldLayer.getBias(),
                         newLayer=newLayer, flagCuda=network.cudaFlag, layerType=oldLayer.adn[0])

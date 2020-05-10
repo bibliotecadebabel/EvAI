@@ -132,6 +132,8 @@ class NetworkLSTM(nn.Module):
             indexModule += 1
         
         self.energy = torch.div(energy, self.lenModules+1).sum()
+
+        # multiplicar por peso de la palabra (cantidad de particulas)
         self.energy = self.energy*1000
 
     def forward(self, wordsTensor):

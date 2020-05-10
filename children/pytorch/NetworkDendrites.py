@@ -20,6 +20,7 @@ class Network(nn.Module, na.NetworkAbstract):
         self.__lenghNodes = 0
         self.__conv2d_propagate_mode = const.CONV2D_DEFAULT
         self.__accumulated_loss = 0
+        self.__accuracy = 0
         self.createStructure()
 
     def createStructure(self):
@@ -112,11 +113,18 @@ class Network(nn.Module, na.NetworkAbstract):
         self.updateGradFlag(False)
 
 
-    def Training(self, data, labels=None, dt=0.1, p=1):
+    def Training(self, data, labels=None, dt=0.1, p=1, full_database=False):
 
             self.optimizer = optim.SGD(self.parameters(), lr=dt, momentum=self.momentum)
-            dataGenerator = data
+            
+            if full_database == False:
+                self.__defaultTraining(dataGenerator=data, p=p)
+            else:
+                self.__fullDatabaseTraining(dataGenerator=data, p=p)
 
+
+    def __defaultTraining(self, dataGenerator, p):
+            
             i=0
             while i < p:
                 #if i == 0:
@@ -149,6 +157,34 @@ class Network(nn.Module, na.NetworkAbstract):
                 dataGenerator.update()
 
                 i=i+1
+    
+    def __fullDatabaseTraining(self, dataGenerator, p):
+        epoch=0
+        
+        while epoch < p:
+            
+            for i, data in enumerate(dataGenerator._trainoader):
+                
+                if self.cudaFlag == True:
+                    inputs, labels_data = data[0].cuda(), data[1].cuda()
+                else:
+                    inputs, labels_data = data[0], data[1]
+
+                inputs = inputs * 255
+
+                self.assignLabels(labels_data)
+                self.total_value = 0
+                self.optimizer.zero_grad()
+                self.Train(inputs, 1, 1)
+                self.optimizer.step()
+                
+                self.total_value = self.__getLossLayer().value.item()
+                self.__accumulated_loss += self.total_value
+
+                self.history_loss.append(self.total_value)
+            
+            epoch += 1
+
 
     def forward(self, x):
         self.__doFoward()
@@ -218,4 +254,8 @@ class Network(nn.Module, na.NetworkAbstract):
 
             accuracy = correct / total
         
-        return accuracy
+        self.__accuracy = accuracy
+    
+    def getAcurracy(self):
+
+        return self.__accuracy

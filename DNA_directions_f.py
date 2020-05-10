@@ -151,7 +151,7 @@ directions_labels.update({creator:type})
 type=(0,-1,0,0)
 def decrease_filters(num_layer,source_DNA):
     total_layers=len(DNA2layers(source_DNA))
-    if num_layer>total_layers-3:
+    if num_layer>total_layers-4:
         return None
     else:
         g=DNA2graph(source_DNA)
