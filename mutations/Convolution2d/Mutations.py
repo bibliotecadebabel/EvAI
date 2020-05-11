@@ -247,6 +247,7 @@ class AlterEntryFilterMutation_Dendrite(Mutation):
     def doMutate(self, oldFilter, oldBias, newNode, cuda):
 
         old_shape = oldFilter.shape
+        new_filter_shape = newNode.getFilter().shape
 
         if self._value > 0:
 
@@ -258,15 +259,18 @@ class AlterEntryFilterMutation_Dendrite(Mutation):
             oldFilter = torch.cat((oldFilter, resized), dim=1)
             resized_shape = oldFilter.shape
 
-            '''
-            for i in range(old_shape[0]):
-                for j in range(old_shape[1], resized_shape[1]):
-                    oldFilter[i][j] = oldFilter[i][old_shape[1]-1].clone()
+            '''            
+            if str(new_filter_shape) == str(resized_shape):
+                
+                old_normalize = old_shape[1] * old_shape[2] * old_shape[3]
+                new_normalize = resized_shape[1] * resized_shape[2] * resized_shape[3]
+                oldFilter = (oldFilter * new_normalize) / old_normalize
+                oldBias = (oldBias * new_normalize) / old_normalize
             '''
 
             newNode.setFilter(oldFilter)
             newNode.setBias(oldBias)
-            
+
             del resized
 
         elif self._value < 0:
@@ -282,6 +286,14 @@ class AlterEntryFilterMutation_Dendrite(Mutation):
                 for in_channel in range(old_shape[1]-value):
                     resized[out_channel][in_channel] = oldFilter[out_channel][in_channel].clone()
 
+            '''
+            if str(new_filter_shape) == str(resized.shape):
+                
+                old_normalize = old_shape[1] * old_shape[2] * old_shape[3]
+                new_normalize = resized.shape[1] * resized.shape[2] * resized.shape[3]
+                resized = (resized * new_normalize) / old_normalize
+                oldBias = (oldBias * new_normalize) / old_normalize
+            '''
             del oldFilter
 
             newNode.setFilter(resized)
@@ -309,7 +321,7 @@ class AlterDimensionKernel_Dendrite(Mutation):
         if self._value > 0:
 
             shape = oldFilter.shape
-            old_normalize = shape[2] * shape[3]
+            old_normalize = 1 * shape[2] * shape[3]
 
             if cuda == True:
                 resized_1 = torch.zeros(shape[0], shape[1], shape[2], newDimensions).cuda()
@@ -321,7 +333,7 @@ class AlterDimensionKernel_Dendrite(Mutation):
             oldFilter = torch.cat((oldFilter, resized_1), dim=3)
             oldFilter = torch.cat((oldFilter, resized_2), dim=2)
             
-            new_normalize = oldFilter.shape[2] * oldFilter.shape[3]
+            new_normalize = 1 * oldFilter.shape[2] * oldFilter.shape[3]
 
             del resized_1
             del resized_2
@@ -338,7 +350,7 @@ class AlterDimensionKernel_Dendrite(Mutation):
         elif self._value < 0:
 
             shape = oldFilter.shape
-            old_normalize = shape[2] * shape[3]
+            old_normalize = 1 * shape[2] * shape[3]
 
             if cuda == True:
                 resized = torch.zeros(shape[0], shape[1], shape[2]-newDimensions, shape[3]-newDimensions).cuda()
@@ -355,7 +367,7 @@ class AlterDimensionKernel_Dendrite(Mutation):
 
             del oldFilter
 
-            new_normalize = resized.shape[2] * resized.shape[3]
+            new_normalize = 1 * resized.shape[2] * resized.shape[3]
             
             resized = (resized * new_normalize) / old_normalize
 
@@ -370,21 +382,19 @@ class AdjustEntryFilters_Dendrite():
     # indexList = Lista de index de los layers que envian filtros al layer afectado ordenados por jerarquia
     # targetIndex = Index del Layer objetivo de la mutacion, indica el indice de partida dentro del indexList
     # network = red neuronal donde se encuentra el layer afectado
-    def __init__(self, adjustLayer, indexList, targetIndex, network):
+    def __init__(self, adjustLayer, indexList, targetIndex, network, newFilter):
         
         self.adjustLayer = adjustLayer
         self.indexList  = indexList
         self.targetIndex = targetIndex
         self.network = network
+        self.newFilter = newFilter
 
     # Only use when mutation is remove layer or remove dendrite
     def removeFilters(self):
 
-        #print("oldLayer to adjust= ", self.adjustLayer.adn)
-        #print("index list=", self.indexList)
-        #print("target layer=", self.targetIndex)
-
         oldFilter = self.adjustLayer.getFilter()
+        oldBias = self.adjustLayer.getBias()
 
         shape = oldFilter.shape
 
@@ -408,23 +418,28 @@ class AdjustEntryFilters_Dendrite():
                     adjustedOldFilter[exit_channel][index_accepted] = oldFilter[exit_channel][entries_channel].clone()
                     index_accepted += 1
 
-        return adjustedOldFilter
+        value = self.__normalize(oldFilter=adjustedOldFilter, oldBias=oldBias, originalShape=shape)
+        return value
 
-    def adjustEntryFilters(self, oldFilter, newFilter,  mutation_type):
+    def adjustEntryFilters(self, mutation_type):
         
-        value = oldFilter
+        value = [self.adjustLayer.getFilter(), self.adjustLayer.getBias()]
 
         if mutation_type == m_type.DEFAULT_ADD_FILTERS:
-            value =  self.__increaseEntryFilters(oldFilter=oldFilter, newFilter=newFilter)
+            value =  self.__increaseEntryFilters()
         elif mutation_type == m_type.DEFAULT_REMOVE_FILTERS:
-            value = self.__decreaseEntryFilters(oldFilter=oldFilter, newFilter=newFilter)
+            value = self.__decreaseEntryFilters()
         elif mutation_type == m_type.DEFAULT_REMOVE_DENDRITE:
             value = self.removeFilters()
         
         return value
 
-    def __decreaseEntryFilters(self, oldFilter, newFilter):
+    def __decreaseEntryFilters(self):
         
+        oldFilter = self.adjustLayer.getFilter()
+        oldBias = self.adjustLayer.getBias()
+        newFilter = self.newFilter
+
         shape = oldFilter.shape
 
         range_filter  = self.getTargetRange()
@@ -450,10 +465,17 @@ class AdjustEntryFilters_Dendrite():
                     adjustedFilter[exit_channel][index_accepted] = oldFilter[exit_channel][entries_channel].clone()
                     index_accepted += 1
         
-        return adjustedFilter
+        value = self.__normalize(oldFilter=adjustedFilter, oldBias=oldBias, originalShape=shape)
+        return value
     
-    def __increaseEntryFilters(self, oldFilter, newFilter):
+    def __increaseEntryFilters(self):
+
         startIndex = self.getTargetRange()[1]
+
+        oldFilter = self.adjustLayer.getFilter()
+        oldBias = self.adjustLayer.getBias()
+        newFilter = self.newFilter
+
         value = abs(newFilter.shape[1] - oldFilter.shape[1])
 
         range_add = [startIndex+1, startIndex+value]
@@ -478,7 +500,8 @@ class AdjustEntryFilters_Dendrite():
                     adjustedFilter[exit_channel][entries_channel] = oldFilter[exit_channel][index_accepted].clone()
                     index_accepted += 1
         
-        return adjustedFilter
+        value = self.__normalize(oldFilter=adjustedFilter, oldBias=oldBias, originalShape=shape)
+        return value
 
     # Obtener el rango de indices del filtro de  layer afectado, dependiendo de la jerarquia del layer de la mutacion.
     def getTargetRange(self):
@@ -508,3 +531,17 @@ class AdjustEntryFilters_Dendrite():
         value = [starting, starting + ending-1]
 
         return value
+    
+    def __normalize(self, oldFilter, oldBias, originalShape):
+        
+        # Si los filtros tienen el mismo shape, no ocurrira una mutacion posterior y se puede normalizar de una vez
+        '''
+        if str(oldFilter.shape) == str(self.newFilter.shape):
+            
+            old_normalize = originalShape[1] * originalShape[2] * originalShape[3]
+            new_normalize = oldFilter.shape[1] * oldFilter.shape[2] * oldFilter.shape[3]
+
+            oldFilter = (oldFilter * new_normalize) / old_normalize
+            oldBias = (oldBias * new_normalize) / old_normalize
+        '''
+        return [oldFilter, oldBias]

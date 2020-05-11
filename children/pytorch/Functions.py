@@ -45,7 +45,7 @@ def conv2d_propagate(layer):
 
     shapeFilter = layer.getFilter().shape
     
-    normalize = shapeFilter[2] * shapeFilter[3]
+    normalize = 1 * shapeFilter[2] * shapeFilter[3]
 
     value = layer.object(parent.value) / normalize
     
@@ -100,7 +100,7 @@ def conv2d_propagate_multipleInputs(layer): ## MUTATION: Multiple inputs per con
 
     shapeFilter = layer.getFilter().shape
     
-    normalize = shapeFilter[2] * shapeFilter[3]
+    normalize = 1 * shapeFilter[2] * shapeFilter[3]
 
     value = layer.object(current_input) / normalize
     

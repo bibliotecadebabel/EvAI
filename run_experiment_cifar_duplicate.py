@@ -1,8 +1,7 @@
-from TestNetwork.commands import CommandCreateDataGen, CommandExperimentCifar
+from TestNetwork.commands import CommandCreateDataGen, CommandExperimentCifar_duplicate
 from DNA_conditions import max_layer
-from DNA_creators import Creator
 from DNA_Graph import DNA_Graph
-from DNA_creators import Creator_from_selection as Creator_s
+from DNA_creator_duplicate import Creator_from_selection_duplicate as Creator_s
 from utilities.Abstract_classes.classes.random_selector import random_selector
 
 ###### EXPERIMENT SETTINGS ######
@@ -20,7 +19,7 @@ PERIOD_SAVE = 1
 PERIOD_NEWSPACE = 1 
 
 # After TOTAL_ITERATIONS, the experiment will stop.
-TOTAL_ITERATIONS = 5
+TOTAL_ITERATIONS = 20
 
 # dt parameter
 DT = 0.01
@@ -32,7 +31,7 @@ CUDA = True
 MAX_LAYER = 25
 
 # TEST_NAME, the name of the experiment (unique)
-TEST_NAME = "test-cifar-fulldb-2"
+TEST_NAME = "test-cifar-fulldb_duplicate"
 
 
 def DNA_Creator_s(x,y):
@@ -81,6 +80,6 @@ while stop == False:
     
 
 
-trainer = CommandExperimentCifar.CommandExperimentCifar(space=space, dataGen=dataGen, testName=TEST_NAME,selector=selector, cuda=CUDA)
+trainer = CommandExperimentCifar_duplicate.CommandExperimentCifar_Duplicate(space=space, dataGen=dataGen, testName=TEST_NAME,selector=selector, cuda=CUDA)
                                                                 
 trainer.execute(periodSave=PERIOD_SAVE, periodNewSpace=PERIOD_NEWSPACE, totalIterations=TOTAL_ITERATIONS, dt=DT)

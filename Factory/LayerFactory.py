@@ -26,9 +26,9 @@ class LayerGenerator(AbstractFactory.FactoryClass):
         return value(tupleBody, propagate_mode)
 
     def __createConv2d(self, tupleBody, propagate_mode):
-
+        
         layer = torch.nn.Conv2d(tupleBody[1], tupleBody[2], (tupleBody[3], tupleBody[4]))
-        self.__initConv2d(layer, (tupleBody[3], tupleBody[4]))
+        self.__initConv2d(layer, (1, tupleBody[3], tupleBody[4]))
         
         self.__verifyCuda(layer)
         
@@ -70,7 +70,7 @@ class LayerGenerator(AbstractFactory.FactoryClass):
 
     def __initConv2d(self, layer, kernel_shape):
 
-        kernel_product = math.sqrt(kernel_shape[0] * kernel_shape[1])
+        kernel_product = math.sqrt(kernel_shape[0] * kernel_shape[1] * kernel_shape[2])
 
         with torch.no_grad():
             torch.nn.init.normal_(layer.weight, mean=0.0, std=1.0)
