@@ -131,7 +131,7 @@ def create_objects(status):
                 y_l=layer[4]
                 output=output and (x_l<x) and (y_l<y)
         if output:
-            return max_filter(max_layer(DNA,3),15)
+            return max_filter(max_layer(DNA,3),40)
     typos=[]
     print('The value of typos is')
     print(status.typos)

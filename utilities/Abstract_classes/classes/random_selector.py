@@ -70,6 +70,9 @@ class random_selector(Selector):
         return tuple([(action[0],self.directions[action[1]])
         for action in self.predicted_actions])
 
+    def update_current_center(self):
+        pass
+
 
 
 

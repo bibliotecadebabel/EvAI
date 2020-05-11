@@ -1,8 +1,38 @@
 from DNA_Graph import DNA_Graph
 from DNA_conditions import max_layer
-from DNA_creators import Creator
 from DNA_creators import Creator_from_selection as Creator_s
-from utilities.Abstract_classes.classes.random_selector import random_selector
+from utilities.Abstract_classes.classes.random_selector  import(
+    random_selector)
+from utilities.Abstract_classes.classes.centered_random_selector import(
+    centered_random_selector as Cen_rand_select)
+import DNA_graph_functions as Funct
+
+
+
+
+def random_centered_test(x,y):
+    def condition(DNA):
+        return max_layer(DNA,15)
+    center=((-1,1,3,x,y),
+            (0,5, 5, x-2, y-2),
+            (1, 5, 2), (2,),(3,-1,0),(3,0,1),
+            (3,1,2))
+    version='final'
+    space=space=DNA_Graph(center,1,(x,y),condition
+        ,((0,0,1),(0,0,1,1),(0,1,0,0),(1,0,0,0)),version)
+    center=space.center
+    node_c=space.graph.key2node.get(center)
+    Funct.set_num_particles(node_c.kids[0],10)
+    print(f'the center is {center}')
+    Selector=Cen_rand_select()
+    k=10
+    while k>0:
+        Selector.update(space)
+        Selector.print_observation()
+        print(Selector.get_predicted_actions())
+        k=k-1
+
+
 
 def random_predict_test(x,y):
     selector=random_selector()
@@ -227,7 +257,8 @@ def linear_kernel_width(x,y):
     #print(space.key2node(center))
     return space
 
-random_predict_test(11,11)
+random_centered_test(11,11)
+#random_predict_test(11,11)
 #random_forget_test(11,11)
 #random_record_test(11,11)
 #random_selector_test()

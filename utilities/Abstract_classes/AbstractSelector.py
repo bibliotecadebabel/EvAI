@@ -23,6 +23,7 @@ class Selector(ABC):
         self.training_time = 200
         self.dt = 0.01
         self.current_path=[]
+        self.center=0
 
     def update_current_path(self,space):
         self.current_path.append(self.space2action(space))
@@ -51,6 +52,7 @@ class Selector(ABC):
     def update(self,space):
         self.register_observations(space)
         self.update_current_path(space)
+        self.update_current_center()
         self.train()
         self.update_predicted_actions()
         self.current_time = self.current_time+1
@@ -71,6 +73,10 @@ class Selector(ABC):
     # the selected actions to record new weights
     @abstractmethod
     def register_observations(self, space):
+        pass
+
+    @abstractmethod
+    def update_current_center(self):
         pass
 
     @abstractmethod
