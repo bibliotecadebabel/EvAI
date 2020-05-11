@@ -28,7 +28,7 @@ class Status():
         self.tau=0.01
         self.n = 1000
         self.r=3
-        self.dx = 2
+        self.dx = 1
         self.L = 1
         self.beta = 2
         self.alpha = 50
@@ -102,7 +102,7 @@ def initialize_parameters(self):
     display_size=[1000,500]
     self.dt=0.01
     self.n=1000
-    self.dx=3
+    self.dx=1
     self.L=1
     self.beta=2
     self.alpha=50
@@ -191,7 +191,7 @@ while True:
         update(status)
         print('The iteration number is:')
         print(k)
-        #status.print_energy()
+        status.print_energy()
         #status.print_particles()
         #status.print_particles()
         #status.print_max_particles()

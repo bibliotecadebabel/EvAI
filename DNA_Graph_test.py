@@ -34,10 +34,12 @@ def DNA_test_f(x,y):
             (1, 5, 2), (2,),(3,-1,0),(3,0,1),
             (3,1,2),(3,2,3))
     version='final'
-    space=space=DNA_Graph(center,2,(x,y),condition
+    space=space=DNA_Graph(center,1,(x,y),condition
         ,((0,0,1),(0,0,1,1),(0,1,0,0),(1,0,0,0)),version)
     space.imprimir()
     print(space.length())
+
+
 
 def DNA_test_i(x,y):
     def condition(DNA):
