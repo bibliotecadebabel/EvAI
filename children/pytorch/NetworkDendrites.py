@@ -3,6 +3,7 @@ import children.pytorch.Layer as ly
 import children.pytorch.Functions as functions
 import children.pytorch.NetworkAbastract as na
 import const.propagate_mode as const
+import const.datagenerator_type as datagen_type
 
 import torch
 import torch.nn as nn
@@ -85,9 +86,12 @@ class Network(nn.Module, na.NetworkAbstract):
         labelTensor = na.tensorFactory.createTensor(body=[label.item()], cuda=self.cudaFlag, requiresGrad=False)
         self.assignLabels(labelTensor)
 
-        self.nodes[0].objects[0].value = image.view(1, 3, image.shape[1], image.shape[2])
+        value = image.view(1, 3, image.shape[1], image.shape[2])
 
-
+        if self.cudaFlag == True:
+            value = value.cuda()
+        
+        self.nodes[0].objects[0].value = value
         self(self.nodes[0].objects[0].value)
 
         return self.getProbability()
@@ -142,17 +146,8 @@ class Network(nn.Module, na.NetworkAbstract):
                     inputs, labels_data = dataGenerator.data[0].cuda(), dataGenerator.data[1].cuda()
                 else:
                     inputs, labels_data = dataGenerator.data[0], dataGenerator.data[1]
-
-                self.assignLabels(labels_data)
-                self.total_value = 0
-                self.optimizer.zero_grad()
-                self.Train(inputs, 1, 1)
-                self.optimizer.step()
                 
-                self.total_value = self.__getLossLayer().value.item()
-                self.__accumulated_loss += self.total_value
-
-                self.history_loss.append(self.total_value)
+                self.__doTraining(inputs=inputs, labels_data=labels_data)
 
                 dataGenerator.update()
 
@@ -161,30 +156,63 @@ class Network(nn.Module, na.NetworkAbstract):
     def __fullDatabaseTraining(self, dataGenerator, p):
         epoch=0
         
-        while epoch < p:
+        if dataGenerator.type == datagen_type.DATABASE_IMAGES:
             
-            for i, data in enumerate(dataGenerator._trainoader):
+            while epoch < p:
                 
-                if self.cudaFlag == True:
-                    inputs, labels_data = data[0].cuda(), data[1].cuda()
-                else:
-                    inputs, labels_data = data[0], data[1]
+                for i, data in enumerate(dataGenerator._trainoader):
+                    
+                    if self.cudaFlag == True:
+                        inputs, labels_data = data[0].cuda(), data[1].cuda()
+                    else:
+                        inputs, labels_data = data[0], data[1]
 
-                inputs = inputs * 255
+                    inputs = inputs * 255
 
-                self.assignLabels(labels_data)
-                self.total_value = 0
-                self.optimizer.zero_grad()
-                self.Train(inputs, 1, 1)
-                self.optimizer.step()
+                    self.__doTraining(inputs=inputs, labels_data=labels_data)
                 
-                self.total_value = self.__getLossLayer().value.item()
-                self.__accumulated_loss += self.total_value
+                epoch += 1
 
-                self.history_loss.append(self.total_value)
+        elif dataGenerator.type == datagen_type.OWN_IMAGE:
+
+            dataGenerator.generateDataBase()
+
+            while epoch < p:
+                
+                i = 0
+                for data in dataGenerator.batch(dataGenerator.batch_size):
+                    
+                    if self.cudaFlag == True:
+                        inputs, labels_data = data[0].cuda(), data[1].cuda()
+                    else:
+                        inputs, labels_data = data[0], data[1]
+
+                    self.__doTraining(inputs=inputs, labels_data=labels_data)
+
+                    #if i % 10 == 0:
+                    #    print("[",epoch,", ", i," ,", self.total_value,"]")
+
+                    i += 1
+
+                epoch += 1
+        
+        else:
+            print("ERROR UNKNOWN DATAGENERATOR TPYE")
             
-            epoch += 1
+    
 
+    def __doTraining(self, inputs, labels_data):
+
+        self.assignLabels(labels_data)
+        self.total_value = 0
+        self.optimizer.zero_grad()
+        self.Train(inputs, 1, 1)
+        self.optimizer.step()
+        
+        self.total_value = self.__getLossLayer().value.item()
+        self.__accumulated_loss += self.total_value
+
+        self.history_loss.append(self.total_value)
 
     def forward(self, x):
         self.__doFoward()

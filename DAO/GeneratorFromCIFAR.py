@@ -1,6 +1,7 @@
 import children.Interfaces as Inter
 import children.Operations as Op
-import children.net2.Network as network
+
+import const.datagenerator_type as datagen_type
 from DAO.Generator import Generator
 
 import torch
@@ -22,6 +23,7 @@ class GeneratorFromCIFAR(Generator):
 
         self._trainoader = torch.utils.data.DataLoader(self.trainset, batch_size=self.batchSize, shuffle=True, num_workers=0)
         self._testloader = torch.utils.data.DataLoader(self.testSet, batch_size=self.batchSize, shuffle=False, num_workers=0)
+        self.type = datagen_type.DATABASE_IMAGES
 
     def generateData(self):
         
@@ -43,19 +45,7 @@ class GeneratorFromCIFAR(Generator):
     
     def __generateTestData(self):
         
-        del self._testData
-        self._testData = None
-
-        for i, data in enumerate(self._testloader):
-            
-            inputs, labels = data
-
-            inputs = inputs*255
-
-            self._testData = [inputs, labels]
-
-            if i >= 0:
-                break
+        pass
 
     
     def update(self):
@@ -64,5 +54,4 @@ class GeneratorFromCIFAR(Generator):
 
     def dataConv2d(self):
         self.generateData()
-        self.__generateTestData()
         self.size = [3, 32, 32]

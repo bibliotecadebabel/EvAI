@@ -22,7 +22,7 @@ def Pool(A,N=None):
     if N==None:
         N=1
     if not(N==1):
-        print(N)
+        #print(N)
         a=Pool(a,N-1)
     return a
 
