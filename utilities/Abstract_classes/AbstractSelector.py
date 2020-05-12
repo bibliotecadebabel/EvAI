@@ -49,8 +49,8 @@ class Selector(ABC):
             self.forget_observation(observation)
         pass
 
-    def update(self,space):
-        self.register_observations(space)
+    def update(self,space,new_center=None):
+        self.register_observations(space,new_center)
         self.update_current_path(space)
         self.update_current_center()
         self.train()

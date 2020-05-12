@@ -2,6 +2,7 @@ from utilities.Abstract_classes.AbstractSelector import Selector, Observation
 import random
 import DNA_graph_functions as Funct
 import numpy as np
+from DNA_directions_f import directions as directions_f
 
 class centered_random_selector(Selector):
     class Observation_creator(Observation):
@@ -9,17 +10,19 @@ class centered_random_selector(Selector):
             num_layer=1):
             super().__init__(time=time,path=path,weight=weight)
             self.num_layer=num_layer
-    def __init__(self,num_actions=5,directions=(
+    def __init__(self,num_actions=5,directions=directions_f,mutations=(
         (0,1,0,0),(0,-1,0,0),
         (1,0,0,0),(-1,0,0,0),
         (0,0,1,1),(0,0,-1,-1),
         (0,0,1),(0,0,-1),
         )):
         super().__init__(self.Observation_creator)
-        self.directions=directions
+        self.mutations=mutations
         self.num_actions=num_actions
         self.max_observation_size = 4
         self.current_num_layer=None
+        self.directions=directions
+        self.center_key=None
 
     def Action2tensor(self,action):
         pass
@@ -42,15 +45,23 @@ class centered_random_selector(Selector):
         return creator(num_layer=num_conv_layers,
             path=path,weight=weight)
 
-    def register_observations(self, space):
+    def register_observations(self,space,new_center=None):
+        creator=self.observation_creator
         if type(space) is tuple:
             num_conv_layers = len([0 for layer in space if
                 layer[0] == 0])
             self.current_num_layer=num_conv_layers
-            self.observations.append(num_layer)
+            if new_center:
+                self.center_key=new_center
+            else:
+                self.center_key=space
         else:
+            if new_center:
+                self.center_key=new_center
+            else:
+                self.center_key=space.center
             center=space.center
-            self.current_num_layer=len([0 for layer in center if
+            self.current_num_layer=len([0 for layer in new_center if
                 layer[0] == 0])
             node_c=space.key2node(center)
             self.observations=(self.observations+
@@ -59,21 +70,22 @@ class centered_random_selector(Selector):
                 if Funct.node2num_particles(node)>0])
 
     def update_current_center(self):
-        lef_weight=sum([observation.weight for
-            observation  in self.observations
-            if observation.path[0]<0])
-        right_weight=sum([observation.weight for
-            observation in self.observations
-            if observation.path[0]>0])
-        center_weight=sum([observation.weight for
-            observation in self.observations
-            if observation.path[0]==0])
-        if center_weight>max(lef_weight,center_weight):
-            pass
-        elif right_weight>lef_weight:
-            self.center=self.center+1
-        elif right_weight<lef_weight:
-            self.center=self.center-1
+        if self.observations:
+            lef_weight=sum([observation.weight for
+                observation  in self.observations
+                if observation.path[0]<0])
+            right_weight=sum([observation.weight for
+                observation in self.observations
+                if observation.path[0]>0])
+            center_weight=sum([observation.weight for
+                observation in self.observations
+                if observation.path[0]==0])
+            if center_weight>max(lef_weight,center_weight):
+                pass
+            elif right_weight>lef_weight:
+                self.center=self.center+1
+            elif right_weight<lef_weight:
+                self.center=self.center-1
 
 
     def print_observation(self):
@@ -95,25 +107,27 @@ class centered_random_selector(Selector):
 
     def update_predicted_actions(self):
         self.predicted_actions=[]
-        if self.observations:
-            observation=self.observations[0]
-            num_layer=observation.num_layer
-            num_directions=len(self.directions)
-            k=0
-            while k<self.num_actions:
-                layer=int(np.random.normal(0, 1))+self.center
-                if layer>-1 and layer<self.current_num_layer+1:
-                    layer=random.randint(0,num_layer)
-                    direction=random.randint(0,num_directions-1)
-                    if not ([layer,direction] in self.predicted_actions):
-                        self.predicted_actions.append([layer,direction])
-                    k=k+1
-        else:
-            self.predicted_actions=None
+        num_layer=self.current_num_layer
+        num_mutations=len(self.mutations)
+        k=0
+        l=0
+        while (k<self.num_actions)  and (l<100) or (
+             len(self.predicted_actions)<3):
+            layer=int(np.random.normal(0, 1))+self.center
+            if layer>-1 and layer<self.current_num_layer+1:
+                mutation=random.randint(0,num_mutations-1)
+                DNA=self.center_key
+                if (not ([layer,mutation] in self.predicted_actions)
+                    and self.directions.get(self.mutations[mutation])(
+                        layer,DNA)):
+                    self.predicted_actions.append([layer,mutation])
+                k=k+1
+            l=l+1
+
 
 
     def get_predicted_actions(self):
-        return tuple([(action[0],self.directions[action[1]])
+        return tuple([(action[0],self.mutations[action[1]])
         for action in self.predicted_actions])
 
 

@@ -4,10 +4,14 @@ import utilities.Graphs as gr
 
 
 def max_layer(DNA,max):
-    if (DNA== None) or  (len(DNA)-2>max) :
+    if not(DNA):
         return False
     else:
-        return DNA
+        num_layer=len([0 for layer in DNA if layer[0] == 0])
+        if (num_layer<max+1):
+            return DNA
+        else:
+            return False
 
 def max_filter(DNA,max):
     u=True

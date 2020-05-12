@@ -14,7 +14,7 @@ def random_centered_test(x,y):
     def condition(DNA):
         return max_layer(DNA,15)
     center=((-1,1,3,x,y),
-            (0,5, 5, x-2, y-2),
+            (0,3, 5, x, y),
             (1, 5, 2), (2,),(3,-1,0),(3,0,1),
             (3,1,2))
     version='final'
@@ -31,6 +31,12 @@ def random_centered_test(x,y):
         Selector.print_observation()
         print(Selector.get_predicted_actions())
         k=k-1
+    actions=Selector.get_predicted_actions()
+    space=space=DNA_Graph(center,1,(x,y),condition,
+        actions,version,
+        Creator_s)
+    space.imprimir()
+
 
 
 
