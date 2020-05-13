@@ -3,7 +3,11 @@ import utilities.Node as nd
 import utilities.Graphs as gr
 import TangentPlane as tplane
 import DNA_directions_f as dire
+from Bugs_direction_f import DNA_6,DNA_2,DNA_3,DNA_4,DNA_5
 
+def Bugs_test(DNA,layer,mutation):
+    print(f'Before mutation: {DNA}')
+    print(f'After mutation: {mutation(layer,DNA)}')
 
 def Persistent_synapse_condition_test(x,y):
     DNA = ((-1,1,3,11,11),(0, 3, 5, 3, 3),(0, 8, 8,3,3),
@@ -212,7 +216,8 @@ def retract_dendrites_test(x,y):
         print(DNA)
         k=k-1
 
-
+#Bugs_test(DNA_2,0,dire.spread_dendrites)
+Bugs_test(DNA_6,0,dire.retract_dendrites)
 #retract_dendrites_test(11,11)
 #spread_dendrites_test_6(11,11)
 #spread_dendrites_test_5(11,11)
@@ -225,7 +230,7 @@ def retract_dendrites_test(x,y):
 #add_layer_test(11,11)
 #fix_fully_conected_test(11,11)
 #compute_num_layers_test(11,11)
-remove_layer_test(11,11)
+#remove_layer_test(11,11)
 ##DNA2graph_relable_test(11,11)
 #decrease_filters_test(11,11)
 #increase_filters_test(11,11)

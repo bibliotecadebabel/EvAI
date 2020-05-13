@@ -14,7 +14,7 @@ class centered_random_selector(Selector):
         (0,1,0,0),(0,-1,0,0),
         (1,0,0,0),(-1,0,0,0),
         (0,0,1,1),(0,0,-1,-1),
-        (0,0,1),(0,0,-1),
+        (0,0,1),(0,0,-1)
         )):
         super().__init__(self.Observation_creator)
         self.mutations=mutations
