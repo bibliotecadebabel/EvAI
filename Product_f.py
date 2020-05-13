@@ -22,12 +22,15 @@ from utilities.Abstract_classes.classes.centered_random_selector import(
 import children.pytorch.Network as nw
 from DNA_conditions import max_layer,max_filter
 from DNA_creators import Creator_from_selection as Creator
-from Space_update_methods import update_from_select as space_updater
+from Dyamic_DNA_f_methods import update_from_select as space_updater
+from Dyamic_DNA_f_methods import (
+    update_velocity_mobility as velocity_updater)
 
 import time
 
 class Status():
     def __init__(self, display_size=None):
+        self.max_layer=10
         self.typos_version='final'
         self.typos=((1,0,0,0),(0,0,1,1),(0,1,0,0))
         self.dt = 0.1
@@ -62,7 +65,9 @@ class Status():
         self.Graph=None
         self.Dynamics=None
         self.Creator=Creator
-        self.Selector=Selector()
+        self.Selector_creator=Selector
+        self.Selector=None
+
 
 
         #self.typos=(0,(0,0,1,1))
@@ -136,13 +141,15 @@ def create_objects(status):
     x = dataGen.size[1]
     y = dataGen.size[2]
     def condition(DNA):
-        return max_layer(DNA,30)
+        return max_layer(DNA,status.max_layer)
     version=status.typos_version
     center=((-1,1,3,x,y),
             (0,3, 5, x, y),
             (1, 5, 2), (2,),(3,-1,0),(3,0,1),
             (3,1,2))
-    selector=status.Selector
+    print(f'Before passing the condition is {condition}' )
+    selector=status.Selector_creator(condition=condition)
+    status.Selector=selector
     creator=status.Creator
     selector.update(center)
     actions=selector.get_predicted_actions()
@@ -151,6 +158,7 @@ def create_objects(status):
     Phase_space=DNA_Phase_space(space)
     Dynamics=Dynamic_DNA(space,Phase_space,status.dx,
         Creator=creator,Selector=selector,
+        update_velocity=velocity_updater,
         update_space=space_updater,version=version)
     Phase_space.create_particles(status.n)
     Phase_space.beta=status.beta

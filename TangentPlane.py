@@ -17,3 +17,4 @@ class tangent_plane():
         self.interaction_potential=0
         self.velocity_potential=0
         self.direction=None
+        self.variance=None

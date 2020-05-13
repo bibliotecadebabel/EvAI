@@ -45,7 +45,7 @@ class Dynamic_DNA():
 
 
 
-    def update_force_field(self):
+    def update_force_field_default(self):
         c_k=self.mutation_coefficient
         for node in self.support:
             p=self.node2plane(node)
@@ -66,7 +66,7 @@ class Dynamic_DNA():
                 p.force_field.append(c_k*component)
                 k=k+1
 
-    def update_velocity(self):
+    def update_velocity_default(self):
         dt=self.dt
         for node in self.support:
             p=self.node2plane(node)
@@ -134,7 +134,7 @@ class Dynamic_DNA():
         print('updating force field took:')
         timing(self.update_force_field)
         print('updating velocity took:')
-        timing(self.update_velocity)
+        self.update_velocity(self)
         print('Moving particles took:')
         timing(self.update_particles)
         print('Updating space took:')
@@ -146,7 +146,10 @@ class Dynamic_DNA():
 
 
 
-    def __init__(self,space,phase_space,dx=1,update_space=None,
+    def __init__(self,space,phase_space,dx=1,
+        update_space=None,
+        update_velocity=None,
+        update_force_field=None,
         Selector=None,Creator=None,version='inclusion'):
         self.space = space
         self.phase_space= phase_space
@@ -156,6 +159,14 @@ class Dynamic_DNA():
             self.update_space=update_space
         else:
             self.update_space=self.update_space_default
+        if update_velocity:
+            self.update_velocity=update_velocity
+        else:
+            self.update_velocity=self.update_velocity_default
+        if update_force_field:
+            self.update_force_field=update_force_field
+        else:
+            self.update_force_field=self.update_force_field_default
         self.diffusion_coefficient=0
         self.lost_coefficient=50
         self.interaction_coefficient=0

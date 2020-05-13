@@ -30,6 +30,10 @@ class DNA_Phase_space():
         p=self.node2plane(node)
         return p.num_particles
 
+    def node2variance(self,node):
+        p=self.node2plane(node)
+        return p.variance
+
     def add_net(self,key):
         stream=self.stream
         stream.add_net(key)
@@ -41,7 +45,15 @@ class DNA_Phase_space():
         V_o=stream.findCurrentvalue(k_o)
         p=self.node2plane(node)
         if V_o:
-            p.energy=V_o/(0.01+V_o)+V_o/(0.001+V_o)+V_o/(0.0001+V_o)+V_o/.001+(V_o/.1)**2
+            p.energy=V_o
+            """
+            p.energy=(V_o/(0.01+V_o)
+            +V_o/(0.001+V_o)
+            +V_o/(0.0001+V_o)
+            +V_o/(0.00001+V_o)
+            +V_o/(0.00001+V_o)
+            +V_o/.001+(V_o/.1)**2)
+            """
             return p.energy
         else:
             p.energy=V_o
@@ -193,6 +205,18 @@ class DNA_Phase_space():
                 k=k+1
             p_o.interaction_field=interaction_field
 
+    def emptynumber(self,number):
+        if number:
+            return number
+        else:
+            return 100
+
+    def update_variance(self):
+        for node in self.support:
+            variance=sum([self.node2V(kid)**2 for kid
+                in node.kids if self.emptynumber(self.node2V(kid))<self.node2V(node)])
+            self.variance=variance**(0.5)
+
 
     def print_diffussion_field(self):
         for node in self.objects:
@@ -314,6 +338,7 @@ class DNA_Phase_space():
         timing(self.update_interaction_field)
         print('Computing maximum took:')
         timing(self.update_max_particles)
+        self.update_variance()
         #print('The maximum node is')
         #print(self.node2key(self.node_max_particles))
         stream.pop()
@@ -342,6 +367,7 @@ class DNA_Phase_space():
         self.node_max_particles=None
         self.max_changed=False
         self.attach_balls()
+        self.time=0
 
 
 

@@ -498,6 +498,6 @@ def select_new_index2retract(num_layer,landscape,size,old_index=None):
         else:
             new_index=landscape[base_index]+spread//2
         if not(new_index in landscape):
-            return num_layer+new_index
+            return num_layer+new_index+1
         else:
             return None

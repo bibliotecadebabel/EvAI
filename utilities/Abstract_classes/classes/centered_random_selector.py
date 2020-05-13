@@ -10,12 +10,16 @@ class centered_random_selector(Selector):
             num_layer=1):
             super().__init__(time=time,path=path,weight=weight)
             self.num_layer=num_layer
-    def __init__(self,num_actions=5,directions=directions_f,mutations=(
+    def __init__(self,num_actions=8,directions=directions_f,
+        condition=None,
+        mutations=(
         (0,1,0,0),(0,-1,0,0),
         (1,0,0,0),(-1,0,0,0),
         (0,0,1,1),(0,0,-1,-1),
         (0,0,1),(0,0,-1)
         )):
+        print('The condition is')
+        print(condition)
         super().__init__(self.Observation_creator)
         self.mutations=mutations
         self.num_actions=num_actions
@@ -23,6 +27,9 @@ class centered_random_selector(Selector):
         self.current_num_layer=None
         self.directions=directions
         self.center_key=None
+        self.condition=condition
+
+
 
     def Action2tensor(self,action):
         pass
@@ -112,14 +119,17 @@ class centered_random_selector(Selector):
         k=0
         l=0
         while (k<self.num_actions)  and (l<100) or (
-             len(self.predicted_actions)<3):
-            layer=int(np.random.normal(0, 1))+self.center
+             len(self.predicted_actions)<3*num_layer):
+            layer=int(np.random.normal(0, 2))+self.center
             if layer>-1 and layer<self.current_num_layer+1:
                 mutation=random.randint(0,num_mutations-1)
                 DNA=self.center_key
-                if (not ([layer,mutation] in self.predicted_actions)
-                    and self.directions.get(self.mutations[mutation])(
-                        layer,DNA)):
+                condition=self.condition
+                new_DNA=self.directions.get(self.mutations[mutation])(
+                    layer,DNA)
+                new_DNA=condition(new_DNA)
+                if  (not ([layer,mutation] in
+                    self.predicted_actions) and new_DNA):
                     self.predicted_actions.append([layer,mutation])
                 k=k+1
             l=l+1
