@@ -343,7 +343,8 @@ def spread_dendrites(num_layer,source_DNA):
     new_index=select_new_index2spread(num_layer,
         landscape,total_layers-num_layer-5)
 #    print(f'The idex to add is {new_index}')
-    if new_index and not(new_index==old_index):
+    if new_index and not(new_index==old_index) and (
+        not(new_index==num_layer or new_index==num_layer+1)):
         g.add_edges(num_layer,[new_index])
         t_node=g.key2node.get(new_index)
         t_layer=t_node.objects[0]
@@ -414,7 +415,7 @@ def select_new_index2spread(num_layer,landscape,size):
         else:
             base_index=landscape_dif.index(spread)
             new_index=landscape[base_index]+spread//2+1
-            if not(new_index in landscape):
+            if not(new_index in landscape) and new_index<size:
                 return num_layer+new_index+1
             else:
                 return None
@@ -434,6 +435,7 @@ def retract_dendrites(num_layer,source_DNA):
     old_index=select_old_index2retract(num_layer,
         landscape,total_layers-num_layer-5)
     if old_index:
+        print(f'The target layer is {num_layer} and the index is {old_index}')
         g.remove_edge(num_layer,old_index)
         t_node=g.key2node.get(old_index)
         t_layer=t_node.objects[0]
@@ -444,7 +446,8 @@ def retract_dendrites(num_layer,source_DNA):
     new_index=select_new_index2retract(num_layer,
         landscape,total_layers-num_layer-5,old_index)
 #    print(f'The idex to add is {new_index}')
-    if new_index and not(new_index==old_index):
+    if new_index and not(new_index==old_index) and (
+        not(new_index==num_layer or new_index==num_layer+1)):
         g.add_edges(num_layer,[new_index])
         t_node=g.key2node.get(new_index)
         t_layer=t_node.objects[0]
@@ -478,7 +481,7 @@ def select_new_index2retract(num_layer,landscape,size,old_index=None):
             if contract//2==0:
                 return None
             else:
-                return num_layer-1+contract//2
+                return num_layer+contract//2
         else:
             return None
     else:

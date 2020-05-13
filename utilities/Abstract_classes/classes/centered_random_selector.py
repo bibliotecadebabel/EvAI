@@ -2,7 +2,7 @@ from utilities.Abstract_classes.AbstractSelector import Selector, Observation
 import random
 import DNA_graph_functions as Funct
 import numpy as np
-from DNA_directions_f import directions as directions_f
+
 
 class centered_random_selector(Selector):
     class Observation_creator(Observation):
@@ -10,7 +10,7 @@ class centered_random_selector(Selector):
             num_layer=1):
             super().__init__(time=time,path=path,weight=weight)
             self.num_layer=num_layer
-    def __init__(self,num_actions=8,directions=directions_f,
+    def __init__(self,num_actions=8,directions=None,
         condition=None,
         mutations=(
         (0,1,0,0),(0,-1,0,0),
@@ -25,7 +25,12 @@ class centered_random_selector(Selector):
         self.num_actions=num_actions
         self.max_observation_size = 4
         self.current_num_layer=None
-        self.directions=directions
+        if directions=='dupiclate':
+            from DNA_directions_duplicate import directions
+            self.directions=directions
+        else:
+            from DNA_directions_f import directions as directions
+            self.directions=directions
         self.center_key=None
         self.condition=condition
 

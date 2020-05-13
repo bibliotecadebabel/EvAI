@@ -31,7 +31,7 @@ import time
 class Status():
     def __init__(self, display_size=None):
         self.max_layer=10
-        self.typos_version='final'
+        self.typos_version='duplicate'
         self.typos=((1,0,0,0),(0,0,1,1),(0,1,0,0))
         self.dt = 0.1
         self.tau=0.01
@@ -147,8 +147,8 @@ def create_objects(status):
             (0,3, 5, x, y),
             (1, 5, 2), (2,),(3,-1,0),(3,0,1),
             (3,1,2))
-    print(f'Before passing the condition is {condition}' )
-    selector=status.Selector_creator(condition=condition)
+    selector=status.Selector_creator(condition=condition,
+        directions=version)
     status.Selector=selector
     creator=status.Creator
     selector.update(center)

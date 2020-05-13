@@ -94,6 +94,9 @@ class Creator_from_selection():
         elif type_add_layer=='inclusion':
             from DNA_directions_i import directions,directions_labels
             self.directions_labels=directions_labels
+        elif type_add_layer=='duplicate':
+            from DNA_directions_duplicate import directions,directions_labels
+            self.directions_labels=directions_labels
         else:
             from DNA_directions_f import directions,directions_labels
             self.directions_labels=directions_labels
