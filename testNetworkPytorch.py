@@ -129,8 +129,38 @@ def Test_Mutacion():
                 network_kid = Mutate_Dendrites.executeMutation(oldNetwork=network, newAdn=kidDNA)
                 network_kid.Training(data=dataGen, p=2, dt=0.01, labels=None, full_database=True)
     '''
+def Test_Save_Model():
+    dataGen = GeneratorFromCIFAR.GeneratorFromCIFAR(2,  50)
+    dataGen.dataConv2d()
+    parentDNA = ((-1,1,3,32,32),(0, 3, 5, 3, 3),(0,5, 5, 32-2, 32-2),
+            (1, 5, 10), (2,),(3,-1,0),(3,0,1),
+            (3,1,2),(3,2,3))
+
+    network = nw_dendrites.Network(parentDNA, cudaFlag=True)
+    network.Training(data=dataGen, p=2, dt=0.01, labels=None, full_database=True)
+    network.generateEnergy(dataGen)
+    print("Accuracy before save=", network.getAcurracy())
+
+    network.saveModel("models/test_1")
+
+def Test_Load_Model():
+
+    dataGen = GeneratorFromCIFAR.GeneratorFromCIFAR(2,  50)
+    dataGen.dataConv2d()
+
+    parentDNA = ((-1, 1, 3, 32, 32), (0, 3, 5, 3, 3), (0, 8, 7, 3, 3), (0, 7, 6, 30, 30), (1, 6, 10), (2,), (3, -1, 0), (3, -1, 1), (3, 0, 1), (3, 1, 2), (3, 2, 3), (3, 3, 4))
+
+    network = nw_dendrites.Network(parentDNA, cudaFlag=True)
+    network.loadModel("saved_models/cifar/1_test-cifar-1_model_4")
+    network.generateEnergy(dataGen)
+    print("Accuracy now=", network.getAcurracy())
+    network.Training(data=dataGen, p=1, dt=0.01, labels=None, full_database=True)
+    network.generateEnergy(dataGen)
+    print("Accuracy after training again=", network.getAcurracy())
 #Test_pytorchNetwork()
 
 #Test_Batch(dataGen)
 #Test_Mutacion_dendrites()
-Test_Mutacion()
+#Test_Mutacion()
+#Test_Save_Model()
+Test_Load_Model()

@@ -23,6 +23,8 @@ class Network(nn.Module, na.NetworkAbstract):
         self.__accumulated_loss = 0
         self.__accuracy = 0
         self.createStructure()
+        self.__currentEpoch = 0
+        self.optimizer = optim.SGD(self.parameters(), lr=0.1, momentum=self.momentum)
 
     def createStructure(self):
 
@@ -118,9 +120,9 @@ class Network(nn.Module, na.NetworkAbstract):
 
 
     def Training(self, data, labels=None, dt=0.1, p=1, full_database=False):
-
-            self.optimizer = optim.SGD(self.parameters(), lr=dt, momentum=self.momentum)
             
+            self.optimizer = optim.SGD(self.parameters(), lr=dt, momentum=self.momentum)
+
             if full_database == False:
                 self.__defaultTraining(dataGenerator=data, p=p)
             else:
@@ -149,6 +151,8 @@ class Network(nn.Module, na.NetworkAbstract):
                 
                 self.__doTraining(inputs=inputs, labels_data=labels_data)
 
+                self.__currentEpoch = i
+
                 dataGenerator.update()
 
                 i=i+1
@@ -159,7 +163,7 @@ class Network(nn.Module, na.NetworkAbstract):
         if dataGenerator.type == datagen_type.DATABASE_IMAGES:
             
             while epoch < p:
-                
+
                 for i, data in enumerate(dataGenerator._trainoader):
                     
                     if self.cudaFlag == True:
@@ -171,6 +175,7 @@ class Network(nn.Module, na.NetworkAbstract):
 
                     self.__doTraining(inputs=inputs, labels_data=labels_data)
                 
+                self.__currentEpoch = epoch
                 epoch += 1
 
         elif dataGenerator.type == datagen_type.OWN_IMAGE:
@@ -193,7 +198,7 @@ class Network(nn.Module, na.NetworkAbstract):
                     #    print("[",epoch,", ", i," ,", self.total_value,"]")
 
                     i += 1
-
+                self.__currentEpoch = epoch
                 epoch += 1
         
         else:
@@ -287,3 +292,18 @@ class Network(nn.Module, na.NetworkAbstract):
     def getAcurracy(self):
 
         return self.__accuracy
+    
+    def saveModel(self, path):
+
+        torch.save({
+            'model_state_dict': self.state_dict(),
+            'optimizer_state_dict': self.optimizer.state_dict(),
+            }, path)
+
+    
+    def loadModel(self, path):
+
+        checkpoint = torch.load(path)
+        self.load_state_dict(checkpoint['model_state_dict'])
+        self.optimizer.load_state_dict(checkpoint['optimizer_state_dict'])
+        self.train()

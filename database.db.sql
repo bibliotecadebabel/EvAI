@@ -1,13 +1,12 @@
 BEGIN TRANSACTION;
-DROP TABLE IF EXISTS "test";
-CREATE TABLE IF NOT EXISTS "test" (
+DROP TABLE IF EXISTS "test_models";
+CREATE TABLE IF NOT EXISTS "test_models" (
 	"id"	INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
-	"name"	TEXT NOT NULL,
-	"period"	INTEGER NOT NULL,
-	"dt"	REAL NOT NULL,
-	"total_iteration"	INTEGER NOT NULL,
-	"period_center"	INTEGER NOT NULL,
-	"enable_mutation"	INTEGER NOT NULL
+	"id_test"	INTEGER NOT NULL,
+	"dna"	TEXT NOT NULL,
+	"iteration"	INTEGER NOT NULL,
+	"model_name"	TEXT NOT NULL,
+	"model_weight" REAL NOT NULL
 );
 DROP TABLE IF EXISTS "test_result";
 CREATE TABLE IF NOT EXISTS "test_result" (
@@ -17,5 +16,15 @@ CREATE TABLE IF NOT EXISTS "test_result" (
 	"dna"	TEXT NOT NULL,
 	"tangentPlane"	TEXT NOT NULL,
 	"center"	INTEGER NOT NULL
+);
+DROP TABLE IF EXISTS "test";
+CREATE TABLE IF NOT EXISTS "test" (
+	"id"	INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
+	"name"	TEXT NOT NULL,
+	"period"	INTEGER NOT NULL,
+	"dt"	REAL NOT NULL,
+	"total_iteration"	INTEGER NOT NULL,
+	"period_center"	INTEGER NOT NULL,
+	"enable_mutation"	INTEGER NOT NULL
 );
 COMMIT;

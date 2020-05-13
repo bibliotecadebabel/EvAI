@@ -19,8 +19,11 @@ PERIOD_SAVE = 1
 # Every PERDIOD_NEWSPACE iterations, a new DNA GRAPH will be generated with the dna of the lowest energy network as center.
 PERIOD_NEWSPACE = 1 
 
+# Every PERIOD_SAVE_MODEL iterations, the best network (current center) will be stored on filesystem
+PERIOD_SAVE_MODEL = 1
+
 # After TOTAL_ITERATIONS, the experiment will stop.
-TOTAL_ITERATIONS = 5
+TOTAL_ITERATIONS = 4
 
 # dt parameter
 DT = 0.01
@@ -32,7 +35,7 @@ CUDA = True
 MAX_LAYER = 25
 
 # TEST_NAME, the name of the experiment (unique)
-TEST_NAME = "test-cifar-fulldb-2"
+TEST_NAME = "test-cifar-1"
 
 
 def DNA_Creator_s(x,y):
@@ -51,10 +54,12 @@ def DNA_Creator_s(x,y):
     center=((-1,1,3,x,y),(0, 3, 5, 3, 3),(0,5, 5, x-2, y-2),
             (1, 5, 10), (2,),(3,-1,0),(3,0,1),
             (3,1,2),(3,2,3))
-    selector=random_selector()
-    selector.update(center)
-    actions=selector.get_predicted_actions()
+    selector = None
+    #selector=random_selector()
+    #selector.update(center)
+    #actions=selector.get_predicted_actions()
     version='final'
+    actions = ((0, (0,1,0,0)), (1, (0,1,0,0)), (0, (1,0,0,0)))
     space=DNA_Graph(center,1,(x,y),condition,actions
         ,version,Creator_s)
 
@@ -83,4 +88,4 @@ while stop == False:
 
 trainer = CommandExperimentCifar.CommandExperimentCifar(space=space, dataGen=dataGen, testName=TEST_NAME,selector=selector, cuda=CUDA)
                                                                 
-trainer.execute(periodSave=PERIOD_SAVE, periodNewSpace=PERIOD_NEWSPACE, totalIterations=TOTAL_ITERATIONS, dt=DT)
+trainer.execute(periodSave=PERIOD_SAVE, periodNewSpace=PERIOD_NEWSPACE, totalIterations=TOTAL_ITERATIONS, dt=DT, periodSaveModel=PERIOD_SAVE_MODEL)

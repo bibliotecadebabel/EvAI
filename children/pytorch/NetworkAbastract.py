@@ -15,9 +15,9 @@ class NetworkAbstract(ABC):
         self.total_value = 0
         self.history_loss = []
 
-    @abstractmethod
-    def train(self):
-        pass
+    #@abstractmethod
+    #def train(self):
+    #    pass
 
     def setAttribute(self, name, value):
         setattr(self,name,value)

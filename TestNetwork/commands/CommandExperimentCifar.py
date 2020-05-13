@@ -1,9 +1,10 @@
 import children.pytorch.MutateNetwork_Dendrites as MutateNetwork
 import children.pytorch.NetworkDendrites as nw
-from DAO.database.dao import TestDAO, TestResultDAO
+from DAO.database.dao import TestDAO, TestResultDAO, TestModelDAO
 from DNA_Graph import DNA_Graph
 from utilities.Abstract_classes.classes.random_selector import random_selector
 from DNA_creators import Creator_from_selection as Creator_s
+import const.path_models as const_path
 
 class CommandExperimentCifar():
 
@@ -17,6 +18,7 @@ class CommandExperimentCifar():
         self.__testDao = TestDAO.TestDAO()
         self.__selector = selector
         self.__testResultDao = TestResultDAO.TestResultDAO()
+        self.__testModelDao = TestModelDAO.TestModelDAO()
 
     def __generateNetworks(self):
 
@@ -75,7 +77,7 @@ class CommandExperimentCifar():
         return nodeCenter
 
 
-    def execute(self, periodSave, periodNewSpace, totalIterations, dt):
+    def execute(self, periodSave, periodNewSpace, periodSaveModel, totalIterations, dt):
 
         dataGen = self.__dataGen
 
@@ -103,6 +105,12 @@ class CommandExperimentCifar():
                 if self.__defineNewCenter() == True:
                     self.__generateNewSpace()
                     self.__generateNetworks()
+            
+            if j % periodSaveModel == 0:
+
+                print("saving model")
+                self.__saveModel(test_id=test_id, iteration=j)
+
 
 
     def __getBestNetwork(self):
@@ -142,6 +150,17 @@ class CommandExperimentCifar():
         oldSpace = self.__space
         newCenter = self.__bestNetwork.adn
 
+        newSpace = DNA_Graph(center=newCenter, size=oldSpace.size, dim=(oldSpace.x_dim, oldSpace.y_dim),
+                                condition=oldSpace.condition, typos=oldSpace.typos, 
+                                type_add_layer=oldSpace.version, creator=Creator_s)
+
+        self.__space = None
+        self.__space = newSpace
+        
+    def __generateNewSpace_backup(self):
+        oldSpace = self.__space
+        newCenter = self.__bestNetwork.adn
+
         stop = False
         while stop == False:
             
@@ -161,3 +180,15 @@ class CommandExperimentCifar():
         
         self.__space = None
         self.__space = newSpace
+
+    def __saveModel(self, test_id, iteration):
+
+        fileName = str(test_id)+"_"+self.__testName+"_model_"+str(iteration)
+        path_model = "saved_models/cifar/"+fileName
+
+        self.__bestNetwork.generateEnergy(self.__dataGen)
+        dna = str(self.__bestNetwork.adn)
+        
+        self.__bestNetwork.saveModel(path_model)
+        
+        self.__testModelDao.insert(idTest=test_id,dna=dna,iteration=iteration,fileName=fileName, model_weight=self.__bestNetwork.getAcurracy())
