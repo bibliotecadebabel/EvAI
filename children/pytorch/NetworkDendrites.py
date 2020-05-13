@@ -119,15 +119,21 @@ class Network(nn.Module, na.NetworkAbstract):
         self.updateGradFlag(False)
 
 
-    def Training(self, data, labels=None, dt=0.1, p=1, full_database=False):
+    def Training(self, data, labels=None, dt=0.1, p=1, full_database=False, epochs=None):
             
             self.optimizer = optim.SGD(self.parameters(), lr=dt, momentum=self.momentum)
 
             if full_database == False:
                 self.__defaultTraining(dataGenerator=data, p=p)
             else:
-                self.__fullDatabaseTraining(dataGenerator=data, p=p)
 
+                if epochs != None:
+                    self.__fullDatabaseTraining(dataGenerator=data, epochs=epochs)
+                else:
+                    if data.type == datagen_type.DATABASE_IMAGES:
+                        self.__defaultTraining(dataGenerator=data, p=p)
+                    else:
+                        self.__trainingRandomBatch(dataGenerator=data, p=p)
 
     def __defaultTraining(self, dataGenerator, p):
             
@@ -156,13 +162,34 @@ class Network(nn.Module, na.NetworkAbstract):
                 dataGenerator.update()
 
                 i=i+1
+
+    def __trainingRandomBatch(self, dataGenerator, p):
+
+        i = 1
+        dataGenerator.generateDataBase()
+        while i <= p:
+
+            data = dataGenerator.get_random_batch()
+
+            if self.cudaFlag == True:
+                inputs, labels_data = data[0].cuda(), data[1].cuda()
+            else:
+                inputs, labels_data = data[0], data[1]
+
+            self.__doTraining(inputs=inputs, labels_data=labels_data)
+            
+            #if i % 10 == 0 or i == 0:
+            #    print("[", i," ,", self.total_value,"]")
+                
+            self.__currentEpoch = i
+            i += 1
     
-    def __fullDatabaseTraining(self, dataGenerator, p):
-        epoch=0
+    def __fullDatabaseTraining(self, dataGenerator, epochs):
+        epoch=1
         
         if dataGenerator.type == datagen_type.DATABASE_IMAGES:
             
-            while epoch < p:
+            while epoch <= epochs:
 
                 for i, data in enumerate(dataGenerator._trainoader):
                     
@@ -182,9 +209,9 @@ class Network(nn.Module, na.NetworkAbstract):
 
             dataGenerator.generateDataBase()
 
-            while epoch < p:
+            while epoch <= epochs:
                 
-                i = 0
+                i = 1
                 for data in dataGenerator.batch(dataGenerator.batch_size):
                     
                     if self.cudaFlag == True:
@@ -203,8 +230,8 @@ class Network(nn.Module, na.NetworkAbstract):
         
         else:
             print("ERROR UNKNOWN DATAGENERATOR TPYE")
-            
-    
+        
+
 
     def __doTraining(self, inputs, labels_data):
 

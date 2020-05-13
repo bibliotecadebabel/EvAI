@@ -2,6 +2,8 @@ import children.Interfaces as Inter
 import children.Operations as Op
 import numpy as np
 from DAO.Generator import Generator
+from DAO.Generator import torch
+import random
 import const.datagenerator_type as datagen_type
 
 class GeneratorFromImage(Generator):
@@ -10,7 +12,6 @@ class GeneratorFromImage(Generator):
 
         self.A = None
         self.x = None
-        self._trainoader = 50000
         self.type = datagen_type.OWN_IMAGE
         self.batch_size = batch_size
         self.databaseSize = database_size
@@ -82,6 +83,22 @@ class GeneratorFromImage(Generator):
 
         self.trainloader = database
         self.target_tensor = target
+    
+    def get_random_batch(self):
+        
+        last_index = self.databaseSize - self.batch_size
+        
+        min_range = random.randint(0, last_index)
+        max_range = min_range + self.batch_size
+
+        batch = [self.trainloader[0][min_range:max_range], self.trainloader[1][min_range:max_range]]
+
+        batch[0] = torch.cat((self.target_tensor[0].clone(), batch[0]), dim=0)
+        batch[1] = torch.cat((self.target_tensor[1].clone(), batch[1]), dim=0)
+
+        return batch
+
+
 
     
         

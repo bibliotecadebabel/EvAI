@@ -94,7 +94,7 @@ class CommandExperimentCifar():
             i = 0
             for network in self.__networks:
                 print("training net #", i)
-                network.Training(data=dataGen, labels=None, dt=dt, p=1, full_database=True)
+                network.Training(data=dataGen, labels=None, dt=dt, epochs=1, full_database=True)
                 i += 1
                 
             self.__saveEnergy()

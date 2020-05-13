@@ -49,9 +49,9 @@ class Generator(ABC):
 
         self.label[0] = torch.tensor([0], dtype=self.dtypeLong)
         self.label[1] = torch.tensor([1], dtype=self.dtypeLong) 
-
-        del self.data
-        del self.trainloader
+        
+        self.data = None
+        self.trainloader = None
 
         self.generateTrainLoader() 
         self.__convertDatabaseToPytorch()
