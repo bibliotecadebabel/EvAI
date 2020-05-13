@@ -83,7 +83,7 @@ class CommandExperimentCifar():
 
         print("inserting 1")
         test_id = self.__testDao.insert(testName=self.__testName, periodSave=periodSave, dt=dt, 
-                                            total=totalIterations, periodCenter=periodNewSpace)
+                                           total=totalIterations, periodCenter=periodNewSpace)
 
 
         #print("center ADN= ", self.__space.node2key(self.__getNodeCenter()))
@@ -94,7 +94,7 @@ class CommandExperimentCifar():
             i = 0
             for network in self.__networks:
                 print("training net #", i)
-                network.Training(data=dataGen, labels=None, dt=dt, epochs=1, full_database=True)
+                network.TrainingCosineLR(dataGenerator=dataGen, dt=dt, epochs=1)
                 i += 1
                 
             self.__saveEnergy()

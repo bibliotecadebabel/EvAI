@@ -118,6 +118,48 @@ class Network(nn.Module, na.NetworkAbstract):
         self.__doBackward()
         self.updateGradFlag(False)
 
+    def __doTraining(self, inputs, labels_data):
+
+        self.assignLabels(labels_data)
+        self.total_value = 0
+        self.optimizer.zero_grad()
+        self.Train(inputs, 1, 1)
+        self.optimizer.step()
+        
+        self.total_value = self.__getLossLayer().value.item()
+        self.__accumulated_loss += self.total_value
+
+        self.history_loss.append(self.total_value)
+
+    def TrainingCosineLR(self, dataGenerator, dt=0.1, epochs=1):
+        self.optimizer = optim.SGD(self.parameters(), lr=dt, momentum=self.momentum) 
+
+        total_steps = len(dataGenerator._trainoader) 
+        scheduler = optim.lr_scheduler.CosineAnnealingLR(self.optimizer, total_steps)  
+
+        epoch = 1
+        while epoch <= epochs:
+
+            for i, data in enumerate(dataGenerator._trainoader):
+                
+                if self.cudaFlag == True:
+                    inputs, labels_data = data[0].cuda(), data[1].cuda()
+                else:
+                    inputs, labels_data = data[0], data[1]
+
+                inputs = inputs * 255
+                
+                self.__doTraining(inputs=inputs, labels_data=labels_data)
+                scheduler.step()
+
+                #if i % 100 == 99:
+                #    print("[{:d}, {:d}, lr={:.10f}, Loss={:.10f}]".format(epoch, i+1, self.optimizer.param_groups[0]['lr'], self.getAverageLoss(100)))
+
+            self.__currentEpoch = epoch
+            
+            scheduler = optim.lr_scheduler.CosineAnnealingLR(self.optimizer, total_steps)
+
+            epoch += 1
 
     def Training(self, data, labels=None, dt=0.1, p=1, full_database=False, epochs=None):
             
@@ -232,19 +274,6 @@ class Network(nn.Module, na.NetworkAbstract):
             print("ERROR UNKNOWN DATAGENERATOR TPYE")
         
 
-
-    def __doTraining(self, inputs, labels_data):
-
-        self.assignLabels(labels_data)
-        self.total_value = 0
-        self.optimizer.zero_grad()
-        self.Train(inputs, 1, 1)
-        self.optimizer.step()
-        
-        self.total_value = self.__getLossLayer().value.item()
-        self.__accumulated_loss += self.total_value
-
-        self.history_loss.append(self.total_value)
 
     def forward(self, x):
         self.__doFoward()

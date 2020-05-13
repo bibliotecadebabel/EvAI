@@ -26,7 +26,7 @@ PERIOD_SAVE_MODEL = 1
 TOTAL_ITERATIONS = 4
 
 # dt parameter
-DT = 0.01
+DT = 0.1
 
 # CUDA parameter (true/false)
 CUDA = True
@@ -35,7 +35,7 @@ CUDA = True
 MAX_LAYER = 25
 
 # TEST_NAME, the name of the experiment (unique)
-TEST_NAME = "test-cifar-1"
+TEST_NAME = "test-cifar-cosine"
 
 
 def DNA_Creator_s(x,y):
