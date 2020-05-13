@@ -90,6 +90,10 @@ class Status():
         Dynamics=self.Dynamics
         phase_space=Dynamics.phase_space
         phase_space.print_max_particles()
+    def print_predicted_actions(self):
+        selector=self.Selector
+        actions=selector.get_predicted_actions()
+        print(f'The predicted actions are: {actions}')
 
 
 
@@ -188,6 +192,7 @@ while True:
         print('The iteration number is:')
         print(k)
         status.print_energy()
+        status.print_predicted_actions()
         #status.print_particles()
         #status.print_particles()
         #status.print_max_particles()
