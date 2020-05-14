@@ -52,7 +52,7 @@ class Selector(ABC):
     def update(self,space,new_center=None):
         self.register_observations(space,new_center)
         self.update_current_path(space)
-        self.update_current_center()
+        self.update_current_center(space,new_center)
         self.train()
         self.update_predicted_actions()
         self.current_time = self.current_time+1

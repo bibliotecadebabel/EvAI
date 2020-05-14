@@ -18,11 +18,11 @@ def update_velocity_mobility(self):
             variance=phase_space.node2variance(node)
             if variance:
                 if int(variance)>0:
-                    mobility=1/variance**10
+                    mobility=1/variance^5
                 else:
                     mobility=1
             else:
-                mobility=10000
+                mobility=1
             if prob < dt*abs(dE)*mobility:
                 j=0
                 par_dE=0

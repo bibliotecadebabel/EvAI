@@ -10,7 +10,7 @@ class centered_random_selector(Selector):
             num_layer=1):
             super().__init__(time=time,path=path,weight=weight)
             self.num_layer=num_layer
-    def __init__(self,num_actions=4,directions=None,
+    def __init__(self,num_actions=8,directions=None,
         condition=None,
         mutations=(
         (0,1,0,0),(0,-1,0,0),
@@ -81,8 +81,18 @@ class centered_random_selector(Selector):
                 for node in node_c.kids
                 if Funct.node2num_particles(node)>0])
 
-    def update_current_center(self):
+    def update_current_center(self,space=None,new_center=None):
+        if not(type(space)) is tuple:
+            node_nc=space.key2node(new_center)
+            if not(new_center==space.center):
+                direction=Funct.node2direction(node_nc)
+                if direction[1]==(0,0,1):
+                    self.center=self.center+1
+                elif direction[1]==(0,0,-1):
+                    self.center=self.center-1
+
         if self.observations:
+            node_new_c=space.graph.node2key
             lef_weight=sum([observation.weight for
                 observation  in self.observations
                 if observation.path[0]<0])
