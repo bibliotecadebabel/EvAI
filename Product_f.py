@@ -16,7 +16,7 @@ from DAO import GeneratorFromImage
 from DNA_Graph import DNA_Graph
 from DNA_Phase_space_f import DNA_Phase_space
 from Dynamic_DNA_f import Dynamic_DNA
-from utilities.Abstract_classes.classes.torch_stream_f import TorchStream
+from utilities.Abstract_classes.classes.torch_stream_fb import TorchStream
 from utilities.Abstract_classes.classes.centered_random_selector import(
     centered_random_selector as Selector)
 import children.pytorch.Network as nw
@@ -30,7 +30,8 @@ import time
 
 class Status():
     def __init__(self, display_size=None):
-        self.max_layer=10
+        self.max_layer=5
+        self.max_filter=40
         self.typos_version='duplicate'
         self.typos=((1,0,0,0),(0,0,1,1),(0,1,0,0))
         self.dt = 0.1
@@ -53,7 +54,7 @@ class Status():
         self.frame1=[]
         self.frame2=[]
         self.Transfer=None
-        self.S=200
+        self.S=20
         self.Comp=2
         self.Data_gen=None
         self.p=1
@@ -140,8 +141,10 @@ def create_objects(status):
     dataGen=status.Data_gen
     x = dataGen.size[1]
     y = dataGen.size[2]
+    max_layers=status.max_layer
+    max_filters=status.max_filter
     def condition(DNA):
-        return max_layer(DNA,status.max_layer)
+        return max_filter(max_layer(DNA,max_layers),max_filters)
     version=status.typos_version
     center=((-1,1,3,x,y),
             (0,3, 5, x, y),

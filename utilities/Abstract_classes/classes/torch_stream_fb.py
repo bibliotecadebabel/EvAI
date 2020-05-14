@@ -21,7 +21,7 @@ class TorchStream(Stream):
             a=self.dataGen.data
             out_net.Training(data=self.dataGen,
                 p=p,
-                dt=self.dt,full_database=True))
+                dt=self.dt,full_database=True)
             out_net.history_loss=[]
             return out_net
 
@@ -44,7 +44,7 @@ class TorchStream(Stream):
             log.old_net.history_loss=[]
             net.Training(data=self.dataGen,
                 p=self.log_size,
-                dt=self.dt,full_database=True))
+                dt=self.dt,full_database=True)
             log.charge(net.history_loss)
             net.history_loss=[]
         elif log.signal and (len(log.log) <5):

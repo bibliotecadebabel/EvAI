@@ -15,14 +15,10 @@ def max_layer(DNA,max):
 
 def max_filter(DNA,max):
     u=True
-    if DNA:
-        for i in range(len(DNA)-1):
-            u=u and DNA[i][1]<max
-            if not(u):
-                break
-        if not(u):
-            return False
-        else:
-            return DNA
+    if not(DNA):
+        return False
     else:
-        return DNA
+        if all([layer[2]<max for layer in DNA if layer[0] == 0]):
+            return DNA
+        else:
+            return False
