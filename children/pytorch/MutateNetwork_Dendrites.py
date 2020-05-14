@@ -20,16 +20,16 @@ def executeMutation(oldNetwork, newAdn):
 
 
     if length_newadn == length_oldadn:
-        #print("default mutation process")
+        print("default mutation process")
         __defaultMutationProcess(oldNetwork=oldNetwork, network=network, lenghtAdn=length_newadn)
 
     elif length_newadn > length_oldadn: # add layer
-        #print("add layer mutation")
+        print("add layer mutation")
         index_layer = __getTargetIndex(oldAdn=oldNetwork.adn, newAdn=newAdn, direction_function=direction_dna.add_layer)
         __addLayerMutationProcess(oldNetwork=oldNetwork, network=network, lenghtOldAdn=length_oldadn, indexAdded=index_layer)
 
     elif length_oldadn > length_newadn: # remove layer
-        #print("remove layer mutation")
+        print("remove layer mutation")
         index_layer = __getTargetIndex(oldAdn=oldNetwork.adn, newAdn=newAdn, direction_function=direction_dna.remove_layer)
         __removeLayerMutationProcess(oldNetwork=oldNetwork, network=network, lengthNewAdn=length_newadn, indexRemoved=index_layer)
 
@@ -250,7 +250,6 @@ def __getRemovedDendrite(oldAdn, newAdn):
                     break
 
             if dendrite_found == False:
-                print("removed dendrite=", oldAdn[i])
                 removed_dendrite.append(oldAdn[i])
                 break
 

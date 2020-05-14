@@ -400,7 +400,7 @@ class AdjustEntryFilters_Dendrite():
 
         value = self.getTargetRange()
 
-        print("range to remove=", value)
+        #print("range to remove=", value)
         newEntries = shape[1] - (abs(value[0] - value[1]) + 1)
 
         if self.network.cudaFlag == True:
@@ -453,7 +453,7 @@ class AdjustEntryFilters_Dendrite():
         
         #print("layer range=", range_filter)
         #print("conserved RANGE=", conserved_range)
-        print("range to remove=", remove_gane)
+        #print("range to remove=", remove_gane)
         
         for exit_channel in range(shape[0]):
             index_accepted = 0
@@ -487,7 +487,7 @@ class AdjustEntryFilters_Dendrite():
         else:
             adjustedFilter = torch.zeros(shape[0], shape[1]+value, shape[2], shape[3])
 
-        print("add range=", range_add)
+        #print("add range=", range_add)
         #print("new filter size=", adjustedFilter.shape) 
 
         for exit_channel in range(shape[0]):
