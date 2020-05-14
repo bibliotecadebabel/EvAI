@@ -3,7 +3,7 @@ import torch
 
 class Generator(ABC):
 
-    def __init__(self, comp, s, source, target, cuda=True):
+    def __init__(self, comp, s, source, target, cuda=False):
 
         self.Comp = comp
         self.S = s
@@ -17,6 +17,7 @@ class Generator(ABC):
         self.trainloader = None
         self.type = None
         self.target_tensor = None
+        self.cuda = cuda
 
 
     @abstractmethod

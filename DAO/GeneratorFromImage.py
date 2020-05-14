@@ -7,7 +7,7 @@ import random
 import const.datagenerator_type as datagen_type
 
 class GeneratorFromImage(Generator):
-    def __init__(self, comp, batch_size,database_size=2000,cuda=True):
+    def __init__(self, comp, batch_size,database_size=2000,cuda=False):
         super().__init__(comp, batch_size, "btest", "folder", cuda)
 
         self.A = None

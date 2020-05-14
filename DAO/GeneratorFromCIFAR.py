@@ -13,8 +13,8 @@ import torch.optim as optim
 
 
 class GeneratorFromCIFAR(Generator):
-    def __init__(self, comp, batchSize):
-        super().__init__(comp, batchSize, "CIFAR", "folder")
+    def __init__(self, comp, batchSize, cuda=False):
+        super().__init__(comp, batchSize, "CIFAR", "folder", cuda=cuda)
 
         self.batchSize = batchSize
         self.transform = transforms.Compose([transforms.ToTensor(), transforms.Normalize((0.5, 0.5, 0.5), (0.5, 0.5, 0.5))])
