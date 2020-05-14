@@ -1,5 +1,5 @@
 from Particle import particle as particle
-from utilities.Abstract_classes.classes.torch_stream_f import TorchStream
+from utilities.Abstract_classes.classes.torch_stream_fb import TorchStream
 from DAO import GeneratorFromImage
 import children.pytorch.MutateNetwork_Dendrites as Mutate
 import utilities.Graphs as gr
