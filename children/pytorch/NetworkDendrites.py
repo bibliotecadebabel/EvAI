@@ -208,7 +208,6 @@ class Network(nn.Module, na.NetworkAbstract):
     def __trainingRandomBatch(self, dataGenerator, p):
 
         i = 1
-        dataGenerator.generateDataBase()
         while i <= p:
 
             data = dataGenerator.get_random_batch()
@@ -248,8 +247,6 @@ class Network(nn.Module, na.NetworkAbstract):
                 epoch += 1
 
         elif dataGenerator.type == datagen_type.OWN_IMAGE:
-
-            dataGenerator.generateDataBase()
 
             while epoch <= epochs:
                 
