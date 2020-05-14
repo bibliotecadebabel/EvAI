@@ -1,6 +1,6 @@
 import numpy as np
 from PIL import Image
-import os
+#import os
 import random
 import children.Net as Net0
 
@@ -75,8 +75,8 @@ def trakPytorch(Net,Out_name, dataGen):
             print(i/10)
         j=0
     print(a.shape)
-    Array2image(a,Out_name)  
-    
+    Array2image(a,Out_name)
+
 
 def Image2array(Name,type=None):
     dir_path=os.path.dirname(os.path.realpath(__file__))
