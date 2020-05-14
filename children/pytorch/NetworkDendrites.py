@@ -163,34 +163,30 @@ class Network(nn.Module, na.NetworkAbstract):
 
     def Training(self, data, labels=None, dt=0.1, p=1, full_database=False, epochs=None):
             
-            self.optimizer = optim.SGD(self.parameters(), lr=dt, momentum=self.momentum)
+            dt_param = dt
+            if type(dt) is float:
+                self.optimizer = optim.SGD(self.parameters(), lr=dt, momentum=self.momentum)
+                dt_param = None
 
             if full_database == False:
-                self.__defaultTraining(dataGenerator=data, p=p)
+                self.__defaultTraining(dataGenerator=data, p=p, dt=dt_param)
             else:
 
                 if epochs != None:
-                    self.__fullDatabaseTraining(dataGenerator=data, epochs=epochs)
+                    self.__fullDatabaseTraining(dataGenerator=data, epochs=epochs, dt=dt_param)
                 else:
                     if data.type == datagen_type.DATABASE_IMAGES:
-                        self.__defaultTraining(dataGenerator=data, p=p)
+                        self.__defaultTraining(dataGenerator=data, p=p, dt=dt_param)
                     else:
-                        self.__trainingRandomBatch(dataGenerator=data, p=p)
+                        self.__trainingRandomBatch(dataGenerator=data, p=p, dt=dt_param)
 
-    def __defaultTraining(self, dataGenerator, p):
+    def __defaultTraining(self, dataGenerator, p, dt=None):
             
             i=0
             while i < p:
-                #if i == 0:
-                #    print("Accuracy before first iteration=", self.generateEnergy(data))
-    
-                #if i % 100 == 99:
-                #    print("Loss=", self.getAverageLoss(50), "i=", i)
-
-                #if i == 1:
-                #    print("Loss=", self.total_value, "- i=", i)
-                #if i % 100 == 99:
-                #    print("Loss=", self.total_value, "- i=", i)
+                
+                if dt is not None:
+                    self.optimizer = optim.SGD(self.parameters(), lr=dt[i], momentum=self.momentum)
 
                 if self.cudaFlag == True:
                     inputs, labels_data = dataGenerator.data[0].cuda(), dataGenerator.data[1].cuda()
@@ -205,10 +201,13 @@ class Network(nn.Module, na.NetworkAbstract):
 
                 i=i+1
 
-    def __trainingRandomBatch(self, dataGenerator, p):
+    def __trainingRandomBatch(self, dataGenerator, p, dt=None):
 
-        i = 1
-        while i <= p:
+        i = 0
+        while i < p:
+
+            if dt is not None:
+                self.optimizer = optim.SGD(self.parameters(), lr=dt[i], momentum=self.momentum)
 
             data = dataGenerator.get_random_batch()
 
@@ -218,14 +217,11 @@ class Network(nn.Module, na.NetworkAbstract):
                 inputs, labels_data = data[0], data[1]
 
             self.__doTraining(inputs=inputs, labels_data=labels_data)
-            
-            #if i % 10 == 0 or i == 0:
-            #    print("[", i," ,", self.total_value,"]")
-                
+
             self.__currentEpoch = i
             i += 1
     
-    def __fullDatabaseTraining(self, dataGenerator, epochs):
+    def __fullDatabaseTraining(self, dataGenerator, epochs, dt=None):
         epoch=1
         
         if dataGenerator.type == datagen_type.DATABASE_IMAGES:
@@ -234,6 +230,9 @@ class Network(nn.Module, na.NetworkAbstract):
 
                 for i, data in enumerate(dataGenerator._trainoader):
                     
+                    if dt is not None:
+                        self.optimizer = optim.SGD(self.parameters(), lr=dt[i], momentum=self.momentum)
+
                     if self.cudaFlag == True:
                         inputs, labels_data = data[0].cuda(), data[1].cuda()
                     else:
@@ -250,18 +249,18 @@ class Network(nn.Module, na.NetworkAbstract):
 
             while epoch <= epochs:
                 
-                i = 1
+                i = 0
                 for data in dataGenerator.batch(dataGenerator.batch_size):
                     
+                    if dt is not None:
+                        self.optimizer = optim.SGD(self.parameters(), lr=dt[i], momentum=self.momentum)
+
                     if self.cudaFlag == True:
                         inputs, labels_data = data[0].cuda(), data[1].cuda()
                     else:
                         inputs, labels_data = data[0], data[1]
 
                     self.__doTraining(inputs=inputs, labels_data=labels_data)
-
-                    #if i % 10 == 0:
-                    #    print("[",epoch,", ", i," ,", self.total_value,"]")
 
                     i += 1
                 self.__currentEpoch = epoch
@@ -360,3 +359,6 @@ class Network(nn.Module, na.NetworkAbstract):
         self.load_state_dict(checkpoint['model_state_dict'])
         self.optimizer.load_state_dict(checkpoint['optimizer_state_dict'])
         self.train()
+    
+    def __printValues(self, epoch, i, avg=1):
+        print("[{:d}, {:d}, lr={:.10f}, Loss={:.10f}]".format(epoch, i+1, self.optimizer.param_groups[0]['lr'], self.getAverageLoss(avg)))

@@ -99,20 +99,22 @@ def Test_Mutacion_dendrites():
 
 def Test_Mutacion():
 
-    #dataGen = GeneratorFromCIFAR.GeneratorFromCIFAR(2,  50)
-    dataGen = GeneratorFromImage.GeneratorFromImage(2, 100, 10000)
+    dataGen = GeneratorFromCIFAR.GeneratorFromCIFAR(2,  50)
+    #dataGen = GeneratorFromImage.GeneratorFromImage(2, 100, 10000)
     dataGen.dataConv2d()
 
     print("creating DNAs")
     #space = DNA_Creator_s(dataGen.size[1], dataGen.size[2])
 
-    parentDNA = ((-1, 1, 3, 11, 11), (0, 3, 5, 3, 3), (0, 8, 6, 3, 3), (0, 6, 4, 3, 3), (0, 13, 5, 3, 3), (0, 14, 7, 11, 11), (1, 7, 2), (2,), (3, -1, 0), (3, -1, 1), (3, 0, 1), (3, 1, 2), (3, 1, 3), (3, 2, 3), (3, -1, 3), (3, -1, 4), (3, 1, 4), (3, 3, 4), (3, 4, 5), (3, 5, 6))
-    mutate_dna = ((-1, 1, 3, 11, 11), (0, 3, 5, 3, 3), (0, 8, 6, 3, 3), (0, 6, 4, 3, 3), (0, 13, 5, 3, 3), (0, 11, 7, 9, 9), (1, 7, 2), (2,), (3, -1, 0), (3, -1, 1), (3, 0, 1), (3, 1, 2), (3, 1, 3), (3, 2, 3), (3, -1, 3), (3, 1, 4), (3, 3, 4), (3, 4, 5), (3, 5, 6))
-    
+    parentDNA = ((-1, 1, 3, 32, 32), (0, 3, 5, 3, 3), (0, 8, 6, 3, 3), (0, 6, 4, 3, 3), (0, 13, 5, 3, 3), (0, 14, 7, 32, 32), (1, 7, 10), (2,), (3, -1, 0), (3, -1, 1), (3, 0, 1), (3, 1, 2), (3, 1, 3), (3, 2, 3), (3, -1, 3), (3, -1, 4), (3, 1, 4), (3, 3, 4), (3, 4, 5), (3, 5, 6))
+    mutate_dna = ((-1, 1, 3, 32, 32), (0, 3, 5, 3, 3), (0, 8, 6, 3, 3), (0, 6, 4, 3, 3), (0, 13, 5, 3, 3), (0, 11, 7, 9, 9), (1, 7, 2), (2,), (3, -1, 0), (3, -1, 1), (3, 0, 1), (3, 1, 2), (3, 1, 3), (3, 2, 3), (3, -1, 3), (3, 1, 4), (3, 3, 4), (3, 4, 5), (3, 5, 6))
+    dt =[0.1, 0.08, 0.06, 0.04, 0.02]
+    #dt = 0.01
     network = nw_dendrites.Network(parentDNA, cudaFlag=True)
-    network.Training(data=dataGen, p=100, dt=0.01, labels=None, full_database=True)
-    network_kid = Mutate_Dendrites.executeMutation(oldNetwork=network, newAdn=mutate_dna)
-    network_kid.Training(data=dataGen, p=100, dt=0.01, labels=None, full_database=True)
+    for i in range(100):
+        network.Training(data=dataGen, p=5, dt=dt, labels=None, full_database=True)
+    #network_kid = Mutate_Dendrites.executeMutation(oldNetwork=network, newAdn=mutate_dna)
+    #network_kid.Training(data=dataGen, p=5, dt=dt, labels=None, full_database=True)
     # Inter.trakPytorch(network, "pokemon-netmap", dataGen)
     '''
     for node in space.objects:
