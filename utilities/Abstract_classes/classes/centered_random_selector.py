@@ -10,7 +10,7 @@ class centered_random_selector(Selector):
             num_layer=1):
             super().__init__(time=time,path=path,weight=weight)
             self.num_layer=num_layer
-    def __init__(self,num_actions=8,directions=None,
+    def __init__(self,num_actions=4,directions=None,
         condition=None,
         mutations=(
         (0,1,0,0),(0,-1,0,0),

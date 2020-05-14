@@ -32,7 +32,7 @@ class Status():
     def __init__(self, display_size=None):
         self.max_layer=10
         self.max_filter=60
-        self.cuda=False
+        self.cuda=bool(input("Insert flag for cuda"))
         self.typos_version='duplicate'
         self.typos=((1,0,0,0),(0,0,1,1),(0,1,0,0))
         self.dt = 0.1
@@ -160,7 +160,7 @@ def create_objects(status):
     space=DNA_Graph(center,1,(x,y),condition,actions,
         version,creator)
     stream=TorchStream(status.Data_gen,25)
-    Phase_space=DNA_Phase_space(space,        
+    Phase_space=DNA_Phase_space(space,
         stream=stream)
     Dynamics=Dynamic_DNA(space,Phase_space,status.dx,
         Creator=creator,Selector=selector,
