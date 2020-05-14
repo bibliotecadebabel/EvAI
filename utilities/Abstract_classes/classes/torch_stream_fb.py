@@ -29,6 +29,7 @@ class TorchStream(Stream):
         super().__init__(self.Torch_log_creator)
         self.log_size=log_size
         self.dataGen=dataGen
+        self.cuda=self.dataGen.cuda
         self.dt=dt
 
     def charge_node(self,key):
@@ -94,7 +95,7 @@ class TorchStream(Stream):
         if not(node):
             self.add_node(key)
             network = nw.Network(key,
-                                 cudaFlag=False)
+                                 cudaFlag=self.cuda)
             self.link_node(key,network)
             self.charge_node(key)
             print('added net')
