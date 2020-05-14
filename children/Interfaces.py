@@ -6,7 +6,9 @@ import children.Net as Net0
 
 def traking(Net,Name,Out_name):
     dir_path=os.path.dirname(os.path.realpath(__file__))
-    im=Image.open(dir_path+'\\'+Name+'.png')
+    file_name = Name+'.png'
+    final_path = os.path.join(dir_path, file_name)
+    im=Image.open(final_path)
     size=np.shape(Net.w_node.Value[0])
     im0=im.convert('RGB')
     Ima=np.array(im0)
@@ -81,9 +83,13 @@ def trakPytorch(Net,Out_name, dataGen):
 def Image2array(Name,type=None):
     dir_path=os.path.dirname(os.path.realpath(__file__))
     if type is None:
-        im=Image.open(dir_path+'\\'+Name+'.png')
+        file_name = Name+'.png'
+        final_path = os.path.join(dir_path, file_name)
+        im=Image.open(final_path)
     else:
-        im=Image.open(dir_path+'\\'+Name+'.'+type)
+        file_name = Name+'.'+type
+        final_path = os.path.join(dir_path, file_name)
+        im=Image.open(final_path)
     im0= im.convert('RGB')
     im=im0
     pix_val = list(im.getdata())
