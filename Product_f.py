@@ -206,6 +206,7 @@ while True:
         print('The iteration number is:')
         print(k)
         status.print_energy()
+        print('The predicted actions are:')
         status.print_predicted_actions()
         #status.print_particles()
         #status.print_particles()

@@ -113,7 +113,8 @@ class TorchStream(Stream):
         k = 0
         for key, node in graph_dict.items():
             log = node.get_object()
-            print('The energy of {} is {}'.format(key, log.Currentvalue()))
+            if log.signal:
+                print('The energy of {} is {}'.format(key, log.Currentvalue()))
             k += 1
     def print_signal(self):
         Graph = self.Graph

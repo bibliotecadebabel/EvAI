@@ -39,6 +39,10 @@ class DNA_Phase_space():
         stream.add_net(key)
         pass
 
+    def node2energy(self,node):
+        p=self.node2plane(node)
+        return p.energy
+
     def node2V(self,node):
         stream=self.stream
         k_o=self.node2key(node)
@@ -216,7 +220,7 @@ class DNA_Phase_space():
     def update_variance(self):
         for node in self.support:
             variance=sum([self.node2V(kid)**2 for kid
-                in node.kids if self.emptynumber(self.node2V(kid))<self.node2V(node)])
+                in node.kids if self.emptynumber(self.node2energy(kid))<self.node2energy(node)])
             self.variance=variance**(0.5)
 
 

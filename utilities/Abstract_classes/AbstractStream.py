@@ -14,7 +14,7 @@ class Charge_log(ABC):
             del self.log[0]
 
     def Currentvalue(self):
-        if self.log:            
+        if self.log:
             return self.log[0]
         else:
             return  None
