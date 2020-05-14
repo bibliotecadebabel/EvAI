@@ -23,7 +23,7 @@ PERIOD_NEWSPACE = 1
 PERIOD_SAVE_MODEL = 1
 
 # After TOTAL_ITERATIONS, the experiment will stop.
-TOTAL_ITERATIONS = 4
+TOTAL_ITERATIONS = 10
 
 # dt parameter
 DT = 0.1
