@@ -30,8 +30,8 @@ import time
 
 class Status():
     def __init__(self, display_size=None):
-        self.max_layer=5
-        self.max_filter=40
+        self.max_layer=10
+        self.max_filter=60
         self.typos_version='duplicate'
         self.typos=((1,0,0,0),(0,0,1,1),(0,1,0,0))
         self.dt = 0.1
@@ -136,7 +136,7 @@ def initialize_parameters(self):
 
 def create_objects(status):
     status.Data_gen=GeneratorFromImage.GeneratorFromImage(
-    status.Comp, status.S, cuda=False)
+    status.Comp, status.S, cuda=True)
     status.Data_gen.dataConv2d()
     dataGen=status.Data_gen
     x = dataGen.size[1]
