@@ -5,6 +5,7 @@ from DNA_Graph import DNA_Graph
 from utilities.Abstract_classes.classes.random_selector import random_selector
 from DNA_creators import Creator_from_selection as Creator_s
 import const.path_models as const_path
+import os
 
 class CommandExperimentCifar():
 
@@ -184,11 +185,10 @@ class CommandExperimentCifar():
     def __saveModel(self, test_id, iteration):
 
         fileName = str(test_id)+"_"+self.__testName+"_model_"+str(iteration)
-        path_model = "saved_models/cifar/"+fileName
-
+        final_path = os.path.join("saved_models","cifar",fileName)
         self.__bestNetwork.generateEnergy(self.__dataGen)
         dna = str(self.__bestNetwork.adn)
         
-        self.__bestNetwork.saveModel(path_model)
+        self.__bestNetwork.saveModel(final_path)
         
         self.__testModelDao.insert(idTest=test_id,dna=dna,iteration=iteration,fileName=fileName, model_weight=self.__bestNetwork.getAcurracy())
