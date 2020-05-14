@@ -352,16 +352,15 @@ class DNA_Phase_space():
     #Pourus medium exponent
 
     def __init__(self,DNA_graph,
-            Potential=None,Interaction=None,External=None):
+            Potential=None,Interaction=None,External=None,
+            stream=None):
         self.DNA_graph = DNA_graph
         self.objects = DNA_graph.objects
         self.num_particles = None
         self.beta=2
         self.alpha=50
         self.support=[]
-        dataGen = GeneratorFromImage.GeneratorFromImage(2, 200, cuda=False)
-        dataGen.dataConv2d()
-        self.stream=TorchStream(dataGen,25)
+        self.stream=stream
         self.radius=10
         self.influence=2
         self.node_max_particles=None

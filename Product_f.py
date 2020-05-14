@@ -32,6 +32,7 @@ class Status():
     def __init__(self, display_size=None):
         self.max_layer=10
         self.max_filter=60
+        self.cuda=False
         self.typos_version='duplicate'
         self.typos=((1,0,0,0),(0,0,1,1),(0,1,0,0))
         self.dt = 0.1
@@ -136,7 +137,7 @@ def initialize_parameters(self):
 
 def create_objects(status):
     status.Data_gen=GeneratorFromImage.GeneratorFromImage(
-    status.Comp, status.S, cuda=True)
+    status.Comp, status.S, cuda=status.cuda)
     status.Data_gen.dataConv2d()
     dataGen=status.Data_gen
     x = dataGen.size[1]
@@ -158,7 +159,9 @@ def create_objects(status):
     actions=selector.get_predicted_actions()
     space=DNA_Graph(center,1,(x,y),condition,actions,
         version,creator)
-    Phase_space=DNA_Phase_space(space)
+    stream=TorchStream(status.Data_gen,25)
+    Phase_space=DNA_Phase_space(space,        
+        stream=stream)
     Dynamics=Dynamic_DNA(space,Phase_space,status.dx,
         Creator=creator,Selector=selector,
         update_velocity=velocity_updater,
