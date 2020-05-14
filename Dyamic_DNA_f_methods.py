@@ -99,7 +99,7 @@ def update_from_select(self):
     selector=self.Selector
     version=self.version
     phase_space.time=phase_space.time+1
-    if phase_space.max_changed or phase_space.time>1000:
+    if phase_space.max_changed or phase_space.time>100:
         phase_space.time=0
         num_particles = phase_space.num_particles
         old_graph = phase_space.DNA_graph
