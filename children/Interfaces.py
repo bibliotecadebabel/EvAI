@@ -1,6 +1,6 @@
 import numpy as np
 from PIL import Image
-#import os
+import os
 import random
 import children.Net as Net0
 
