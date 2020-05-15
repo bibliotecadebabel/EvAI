@@ -14,7 +14,7 @@ import children.Operations as Op
 import children.net2.Network as nw
 from DAO import GeneratorFromCIFAR
 from DNA_Graph import DNA_Graph
-from DNA_Phase_space_f import DNA_Phase_space
+from DNA_Phase_space_f_av import DNA_Phase_space
 from Dynamic_DNA_f import Dynamic_DNA
 from utilities.Abstract_classes.classes.torch_stream_fb import TorchStream
 from utilities.Abstract_classes.classes.centered_random_selector import(
@@ -32,6 +32,9 @@ class Status():
     def __init__(self, display_size=None):
         self.max_layer=5
         self.max_filter=70
+        self.log_size=200
+        self.min_log_size=80
+        self.S=32
         self.cuda=bool(input("Insert flag for cuda"))
         self.typos_version='duplicate'
         self.typos=((1,0,0,0),(0,0,1,1),(0,1,0,0))
@@ -150,12 +153,12 @@ def create_objects(status):
     center=((-1,1,3,x,y),
             (0,3, 15, 3 , 3),
             (0,18, 15, 3,  3),
-            (0,30, 15, x-2, y-2),
+            (0,30, 15, x, y),
             (1, 15,2),
              (2,),
             (3,-1,0),
             (3,0,1),(3,-1,1),
-            (3,1,2),(3,0,2),
+            (3,1,2),(3,0,2),(3,-1,2),
             (3,2,3),
             (3,3,4))
     selector=status.Selector_creator(condition=condition,
@@ -166,7 +169,8 @@ def create_objects(status):
     actions=selector.get_predicted_actions()
     space=DNA_Graph(center,1,(x,y),condition,actions,
         version,creator)
-    stream=TorchStream(status.Data_gen,25)
+    stream=TorchStream(status.Data_gen,status.log_size,
+        min_size=status.min_log_size)
     Phase_space=DNA_Phase_space(space,
         stream=stream)
     Dynamics=Dynamic_DNA(space,Phase_space,status.dx,

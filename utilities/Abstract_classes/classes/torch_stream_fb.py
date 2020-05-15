@@ -25,12 +25,18 @@ class TorchStream(Stream):
             out_net.history_loss=[]
             return out_net
 
-    def __init__(self,dataGen,log_size=200,dt=0.001):
+    def __init__(self,dataGen,log_size=200,dt=0.001,min_size=5):
         super().__init__(self.Torch_log_creator)
         self.log_size=log_size
         self.dataGen=dataGen
         self.cuda=self.dataGen.cuda
         self.dt=dt
+        self.min_size=min_size
+
+    def key2average(self,key):
+        log=self.key2log(key)
+        history=log.log.copy()
+        return sum(history[:self.min_size])/self.min_size
 
     def charge_node(self,key):
         log=self.key2log(key)
@@ -48,7 +54,7 @@ class TorchStream(Stream):
                 dt=self.dt,full_database=True)
             log.charge(net.history_loss)
             net.history_loss=[]
-        elif log.signal and (len(log.log) <5):
+        elif log.signal and (len(log.log) < self.min_size+2):
 #            print('The net')
 #            print(key)
 #            print('is charging')
