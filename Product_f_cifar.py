@@ -30,8 +30,8 @@ import time
 
 class Status():
     def __init__(self, display_size=None):
-        self.max_layer=10
-        self.max_filter=60
+        self.max_layer=60
+        self.max_filter=70
         self.cuda=bool(input("Insert flag for cuda"))
         self.typos_version='duplicate'
         self.typos=((1,0,0,0),(0,0,1,1),(0,1,0,0))
@@ -148,8 +148,8 @@ def create_objects(status):
         return max_filter(max_layer(DNA,max_layers),max_filters)
     version=status.typos_version
     center=((-1,1,3,x,y),
-            (0,3, 5, x, y),
-            (1, 5, 2), (2,),(3,-1,0),(3,0,1),
+            (0,3, 30, x, y),
+            (1, 30, 2), (2,),(3,-1,0),(3,0,1),
             (3,1,2))
     selector=status.Selector_creator(condition=condition,
         directions=version)

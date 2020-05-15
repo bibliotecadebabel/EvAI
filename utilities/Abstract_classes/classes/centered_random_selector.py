@@ -13,10 +13,10 @@ class centered_random_selector(Selector):
     def __init__(self,num_actions=8,directions=None,
         condition=None,
         mutations=(
-        (0,1,0,0),(0,-1,0,0),
-        (1,0,0,0),(-1,0,0,0),
-        (0,0,1,1),(0,0,-1,-1),
-        (0,0,1),(0,0,-1)
+        (0,1,0,0),
+        (1,0,0,0),
+        (0,0,1,1),(0,0,-1,-1)
+        (0,0,1),
         )):
         print('The condition is')
         print(condition)
@@ -82,7 +82,7 @@ class centered_random_selector(Selector):
                 if Funct.node2num_particles(node)>0])
 
     def update_current_center(self,space=None,new_center=None):
-        
+
         if not(type(space)) is tuple:
             node_nc=space.key2node(new_center)
             if not(new_center==space.center):
