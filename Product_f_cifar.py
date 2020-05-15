@@ -55,7 +55,7 @@ class Status():
         self.frame1=[]
         self.frame2=[]
         self.Transfer=None
-        self.S=20
+        self.S=25
         self.Comp=2
         self.Data_gen=None
         self.p=1
