@@ -3,6 +3,7 @@ from DNA_Graph import DNA_Graph
 from DNA_Phase_space import DNA_Phase_space
 from timing import timing
 import numpy as np
+import DNA_graph_functions as Funct
 
 
 def update_velocity_mobility(self):
@@ -92,6 +93,47 @@ def update_velocity_default(self):
                 particle.velocity.append(node.kids[j])
             else:
                 pass
+
+def update_from_select_09(self):
+    phase_space=self.phase_space
+    creator=self.Creator
+    selector=self.Selector
+    version=self.version
+    phase_space.time=phase_space.time+1
+    if phase_space.node_max_particles:
+        node_max = phase_space.node_max_particles
+        node_c = phase_space.key2node(phase_space.DNA_graph.center)
+        p_c=Funct.node2num_particles(node_c)
+        p_m=Funct.node2num_particles(node_max)
+    if (phase_space.max_changed and p_m*0.90>p_c) or (
+        phase_space.time>2000):
+        phase_space.time=0
+        num_particles = phase_space.num_particles
+        old_graph = phase_space.DNA_graph
+        old_center= old_graph.center
+        condition = old_graph.condition
+        typos = old_graph.typos
+        node_max = phase_space.node_max_particles
+        center = phase_space.node2key(node_max)
+        selector.update(old_graph,new_center=center)
+        actions=selector.get_predicted_actions()
+        x = old_graph.x_dim
+        y = old_graph.y_dim
+        space=DNA_Graph(center,1,(x,y),condition,actions,
+            version,creator)
+        phase_space.DNA_graph = space
+        phase_space.objects = space.objects
+        phase_space.support=[]
+        phase_space.create_particles(num_particles+1)
+        phase_space.stream.signals_off()
+        phase_space.attach_balls()
+        phase_space.max_changed = False
+        phase_space.node_max_particles = None
+        self.space = space
+        self.phase_space= phase_space
+        self.objects=phase_space.objects
+        self.support=phase_space.support
+        self.Graph=phase_space.DNA_graph
 
 def update_from_select(self):
     phase_space=self.phase_space

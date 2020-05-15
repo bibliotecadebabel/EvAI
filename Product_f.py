@@ -22,7 +22,7 @@ from utilities.Abstract_classes.classes.centered_random_selector import(
 import children.pytorch.Network as nw
 from DNA_conditions import max_layer,max_filter
 from DNA_creators import Creator_from_selection as Creator
-from Dyamic_DNA_f_methods import update_from_select as space_updater
+from Dyamic_DNA_f_methods import update_from_select_09 as space_updater
 from Dyamic_DNA_f_methods import (
     update_velocity_mobility as velocity_updater)
 
@@ -30,7 +30,7 @@ import time
 
 class Status():
     def __init__(self, display_size=None):
-        self.max_layer=10
+        self.max_layer=5
         self.max_filter=60
         self.cuda=bool(input("Insert flag for cuda"))
         self.typos_version='duplicate'
@@ -55,7 +55,7 @@ class Status():
         self.frame1=[]
         self.frame2=[]
         self.Transfer=None
-        self.S=20
+        self.S=200
         self.Comp=2
         self.Data_gen=None
         self.p=1
@@ -148,8 +148,8 @@ def create_objects(status):
         return max_filter(max_layer(DNA,max_layers),max_filters)
     version=status.typos_version
     center=((-1,1,3,x,y),
-            (0,3, 5, x, y),
-            (1, 5, 2), (2,),(3,-1,0),(3,0,1),
+            (0,3, 20, x, y),
+            (1, 20, 2), (2,),(3,-1,0),(3,0,1),
             (3,1,2))
     selector=status.Selector_creator(condition=condition,
         directions=version)
