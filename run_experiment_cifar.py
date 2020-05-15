@@ -58,7 +58,6 @@ def DNA_Creator_s(x,y):
     selector=random_selector()
     selector.update(center)
     actions=selector.get_predicted_actions()
-    print("predicted actions=", actions)
     version='final'
     #actions = ((0, (0,1,0,0)), (1, (0,1,0,0)), (0, (1,0,0,0)))
     space=DNA_Graph(center,1,(x,y),condition,actions
