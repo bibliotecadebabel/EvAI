@@ -12,7 +12,7 @@ import children.Data_generator as dgen
 import children.Interfaces as Inter
 import children.Operations as Op
 import children.net2.Network as nw
-from DAO import GeneratorFromCifar
+from DAO import GeneratorFromImage
 from DNA_Graph import DNA_Graph
 from DNA_Phase_space_f import DNA_Phase_space
 from Dynamic_DNA_f import Dynamic_DNA
