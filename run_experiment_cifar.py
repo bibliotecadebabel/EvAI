@@ -35,7 +35,7 @@ CUDA = True
 MAX_LAYER = 25
 
 # TEST_NAME, the name of the experiment (unique)
-TEST_NAME = "test-cifar-cosine"
+TEST_NAME = "test-cifar-error"
 
 
 def DNA_Creator_s(x,y):
@@ -55,11 +55,12 @@ def DNA_Creator_s(x,y):
             (1, 5, 10), (2,),(3,-1,0),(3,0,1),
             (3,1,2),(3,2,3))
     selector = None
-    #selector=random_selector()
-    #selector.update(center)
-    #actions=selector.get_predicted_actions()
+    selector=random_selector()
+    selector.update(center)
+    actions=selector.get_predicted_actions()
+    print("predicted actions=", actions)
     version='final'
-    actions = ((0, (0,1,0,0)), (1, (0,1,0,0)), (0, (1,0,0,0)))
+    #actions = ((0, (0,1,0,0)), (1, (0,1,0,0)), (0, (1,0,0,0)))
     space=DNA_Graph(center,1,(x,y),condition,actions
         ,version,Creator_s)
 
