@@ -17,7 +17,7 @@ from DNA_Graph import DNA_Graph
 from DNA_Phase_space_f_av import DNA_Phase_space
 from Dynamic_DNA_f import Dynamic_DNA
 from utilities.Abstract_classes.classes.torch_stream_fb import TorchStream
-from utilities.Abstract_classes.classes.centered_random_selector import(
+from utilities.Abstract_classes.classes.positive_random_selector import(
     centered_random_selector as Selector)
 import children.pytorch.Network as nw
 from DNA_conditions import max_layer,max_filter
@@ -32,7 +32,7 @@ class Status():
     def __init__(self, display_size=None):
         self.max_layer=5
         self.max_filter=70
-        self.log_size=200
+        self.log_size=110
         self.min_log_size=80
         self.S=32
         self.cuda=bool(input("Insert flag for cuda"))

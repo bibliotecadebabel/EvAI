@@ -17,8 +17,9 @@ from DNA_Graph import DNA_Graph
 from DNA_Phase_space_f_av import DNA_Phase_space
 from Dynamic_DNA_f import Dynamic_DNA
 from utilities.Abstract_classes.classes.torch_stream_fb import TorchStream
-from utilities.Abstract_classes.classes.centered_random_selector import(
+from utilities.Abstract_classes.classes.positive_random_selector import(
     centered_random_selector as Selector)
+
 import children.pytorch.Network as nw
 from DNA_conditions import max_layer,max_filter
 from DNA_creators import Creator_from_selection as Creator
@@ -32,7 +33,8 @@ class Status():
     def __init__(self, display_size=None):
         self.max_layer=5
         self.max_filter=60
-        self.log_size=25
+        self.log_size=50
+        self.min_log_size=30
         self.cuda=bool(input("Insert flag for cuda"))
         self.typos_version='duplicate'
         self.typos=((1,0,0,0),(0,0,1,1),(0,1,0,0))
@@ -160,7 +162,8 @@ def create_objects(status):
     actions=selector.get_predicted_actions()
     space=DNA_Graph(center,1,(x,y),condition,actions,
         version,creator)
-    stream=TorchStream(status.Data_gen,status.log_size)
+    stream=TorchStream(status.Data_gen,status.log_size,
+        min_size=status.min_log_size)
     Phase_space=DNA_Phase_space(space,
         stream=stream)
     Dynamics=Dynamic_DNA(space,Phase_space,status.dx,

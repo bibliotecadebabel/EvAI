@@ -6,7 +6,8 @@ class random_selector(Selector):
         def __init__(self,num_layer=1):
             super().__init__()
             self.num_layer=num_layer
-    def __init__(self,num_actions=5,directions=(
+    def __init__(self,num_actions=5,condition=None,
+        directions=(
         (0,1,0,0),
         (1,0,0,0),
         (0,0,1,1),
