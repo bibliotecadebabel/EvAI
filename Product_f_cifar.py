@@ -155,8 +155,8 @@ def create_objects(status):
              (2,),
             (3,-1,0),
             (3,0,1),(3,-1,1),
-            (3,1,2),(3,-1,2),
-            (3,2,3),(3,1,3),
+            (3,1,2),(3,0,2),
+            (3,2,3),
             (3,3,4))
     selector=status.Selector_creator(condition=condition,
         directions=version)
