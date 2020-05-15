@@ -12,7 +12,7 @@ import children.Data_generator as dgen
 import children.Interfaces as Inter
 import children.Operations as Op
 import children.net2.Network as nw
-from DAO import GeneratorFromCifar
+from DAO import GeneratorFromCIFAR
 from DNA_Graph import DNA_Graph
 from DNA_Phase_space_f import DNA_Phase_space
 from Dynamic_DNA_f import Dynamic_DNA
@@ -136,7 +136,7 @@ def initialize_parameters(self):
 
 
 def create_objects(status):
-    status.Data_gen=GeneratorFromImage.GeneratorFromImage(
+    status.Data_gen=GeneratorFromCIFAR.GeneratorFromCIFAR(
     status.Comp, status.S, cuda=status.cuda)
     status.Data_gen.dataConv2d()
     dataGen=status.Data_gen

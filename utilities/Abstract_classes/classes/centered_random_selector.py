@@ -82,14 +82,16 @@ class centered_random_selector(Selector):
                 if Funct.node2num_particles(node)>0])
 
     def update_current_center(self,space=None,new_center=None):
+        
         if not(type(space)) is tuple:
             node_nc=space.key2node(new_center)
             if not(new_center==space.center):
                 direction=Funct.node2direction(node_nc)
-                if direction[1]==(0,0,1):
+                if direction[1]==(1,0,0,0):
                     self.center=self.center+1
-                elif direction[1]==(0,0,-1):
+                elif direction[1]==(-1,0,0,0):
                     self.center=self.center-1
+
 
         if self.observations:
             node_new_c=space.graph.node2key
