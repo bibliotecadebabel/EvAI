@@ -147,6 +147,7 @@ class CommandExperimentCifar():
 
         return value
 
+    '''
     def __generateNewSpace(self):
         oldSpace = self.__space
         newCenter = self.__bestNetwork.adn
@@ -157,8 +158,9 @@ class CommandExperimentCifar():
 
         self.__space = None
         self.__space = newSpace
-        
-    def __generateNewSpace_backup(self):
+    '''
+
+    def __generateNewSpace(self):
         oldSpace = self.__space
         newCenter = self.__bestNetwork.adn
 

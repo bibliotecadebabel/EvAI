@@ -23,7 +23,7 @@ class random_selector(Selector):
     def create_net(self):
         pass
 
-    def register_observations(self, space):
+    def register_observations(self, space, new_center=None):
         if type(space) is tuple:
             num_conv_layers = len([0 for layer in space if layer[0] == 0])
             self.observations.append(self.observation_creator(num_conv_layers))
@@ -70,7 +70,7 @@ class random_selector(Selector):
         return tuple([(action[0],self.directions[action[1]])
         for action in self.predicted_actions])
 
-    def update_current_center(self):
+    def update_current_center(self, space=None,new_center=None):
         pass
 
 
