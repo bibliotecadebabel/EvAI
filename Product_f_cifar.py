@@ -148,9 +148,16 @@ def create_objects(status):
         return max_filter(max_layer(DNA,max_layers),max_filters)
     version=status.typos_version
     center=((-1,1,3,x,y),
-            (0,3, 30, x, y),
-            (1, 30, 2), (2,),(3,-1,0),(3,0,1),
-            (3,1,2))
+            (0,3, 15, 3 , 3),
+            (0,18, 15, 3,  3),
+            (0,30, 15, x-2, y-2),
+            (1, 15,2),
+             (2,),
+            (3,-1,0),
+            (3,0,1),(3,-1,1)
+            (3,1,2),(3,-1,2),
+            (3,2,3),(3,1,3),
+            (3,3,4))
     selector=status.Selector_creator(condition=condition,
         directions=version)
     status.Selector=selector
