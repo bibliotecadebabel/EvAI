@@ -22,7 +22,7 @@ from utilities.Abstract_classes.classes.positive_random_selector import(
 import children.pytorch.Network as nw
 from DNA_conditions import max_layer,max_filter
 from DNA_creators import Creator_from_selection as Creator
-from Dyamic_DNA_f_methods import update_none  as space_updater
+from Dyamic_DNA_f_methods import update_dynamic  as space_updater
 from Dyamic_DNA_f_methods import (
     update_velocity_mobility as velocity_updater)
 
@@ -32,9 +32,9 @@ from utilities.Abstract_classes.classes.Alaising_cosine import (
 
 class Status():
     def __init__(self, display_size=None):
-        self.dt_Max=0.08
+        self.dt_Max=0.01
         self.dt_min=0.0001
-        self.max_iter=100000
+        self.max_iter=5000
         self.max_layer=10
         self.max_filter=70
         self.log_size=400

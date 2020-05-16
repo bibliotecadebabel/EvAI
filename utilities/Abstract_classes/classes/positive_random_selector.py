@@ -156,6 +156,15 @@ class centered_random_selector(Selector):
         return tuple([(action[0],self.mutations[action[1]])
         for action in self.predicted_actions])
 
+    def DNA2new_DNA(self,DNA):
+        directions=self.directions
+        self.update_predicted_actions()
+        actions=self.get_predicted_actions()
+        direction=actions[0]
+        mutation=directions.get(direction[1])
+        layer=direction[0]
+        return mutation(layer,DNA)
+
 
 
 

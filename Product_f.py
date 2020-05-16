@@ -23,7 +23,7 @@ from utilities.Abstract_classes.classes.positive_random_selector import(
 import children.pytorch.Network as nw
 from DNA_conditions import max_layer,max_filter
 from DNA_creators import Creator_from_selection as Creator
-from Dyamic_DNA_f_methods import update_none as space_updater
+from Dyamic_DNA_f_methods import update_dynamic as space_updater
 from Dyamic_DNA_f_methods import (
     update_velocity_mobility as velocity_updater)
 
@@ -33,9 +33,9 @@ from utilities.Abstract_classes.classes.Alaising_cosine import (
 
 class Status():
     def __init__(self, display_size=None):
-        self.dt_Max=0.08
-        self.dt_min=0.0001
-        self.max_iter=4000
+        self.dt_Max=0.0001
+        self.dt_min=0.00001
+        self.max_iter=10000
         self.max_layer=5
         self.max_filter=60
         self.log_size=50
@@ -164,10 +164,22 @@ def create_objects(status):
     def condition(DNA):
         return max_filter(max_layer(DNA,max_layers),max_filters)
     version=status.typos_version
+    """
     center=((-1,1,3,x,y),
             (0,3, 4, x, y),
             (1, 4, 2), (2,),(3,-1,0),(3,0,1),
-            (3,1,2))
+            (3,1,2))"""
+    center=((-1,1,3,x,y),
+            (0,3, 15, 3 , 3),
+            (0,18, 15, 3,  3),
+            (0,33, 15, x, y),
+            (1, 15,2),
+             (2,),
+            (3,-1,0),
+            (3,0,1),(3,-1,1),
+            (3,1,2),(3,0,2),(3,-1,2),
+            (3,2,3),
+            (3,3,4))        
     selector=status.Selector_creator(condition=condition,
         directions=version)
     status.Selector=selector

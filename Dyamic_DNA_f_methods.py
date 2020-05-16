@@ -99,6 +99,60 @@ def update_velocity_default(self):
 def update_none(self):
     pass
 
+def update_dynamic(self):
+    phase_space=self.phase_space
+    creator=self.Creator
+    selector=self.Selector
+    version=self.version
+    phase_space.time=phase_space.time+1
+    if phase_space.time>250:
+        phase_space.time=0
+        node2remove=phase_space2node2remove(phase_space)
+        if node2remove:
+            remove_node(phase_space,node2remove)
+            add_node(phase_space,selector)
+
+
+def add_node(phase_space,Selector,particles=0):
+    center=phase_space.center()
+    DNA_graph=phase_space.DNA_graph
+    graph=DNA_graph.graph
+    keys=list(graph.node2key.values())
+    new_DNA=None
+    while (new_DNA in keys) or new_DNA==None:
+        new_DNA=Selector.DNA2new_DNA(center)
+    Funct.add_node(graph,new_DNA)
+    graph.add_edges(center,[new_DNA])
+    DNA_graph.objects.append(phase_space.
+        key2node(new_DNA))
+
+
+def remove_node(phase_space,node2remove):
+    DNA2remove=phase_space.node2key(node2remove)
+    phase_space.objects.remove(node2remove)
+    if node2remove in phase_space.support:
+        phase_space.support.remove(node2remove)
+    DNA_graph=phase_space.DNA_graph
+    graph=DNA_graph.graph
+    graph.remove_node(DNA2remove)
+
+def phase_space2node2remove(phase_space):
+    nodes=phase_space.objects
+    support_complement=[ node for node in nodes if
+        phase_space.node2particles(node) == 0]
+    if support_complement:
+        energies=[
+            phase_space.node2energy(node) for node in
+                support_complement
+                ]
+        index2remove=np.argmin(np.array(energies))
+        node2remove=support_complement[index2remove]
+        return node2remove
+    else:
+        return None
+
+
+
 def update_from_select_stochastic(self):
     phase_space=self.phase_space
     creator=self.Creator

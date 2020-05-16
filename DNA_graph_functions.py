@@ -1,3 +1,16 @@
+import utilities.Quadrants as qu
+import utilities.Node as nd
+import utilities.Graphs as gr
+import TangentPlane as tplane
+
+def add_node(g,DNA):
+    node=nd.Node()
+    q=qu.Quadrant(DNA)
+    p=tplane.tangent_plane()
+    node.objects.append(q)
+    q.objects.append(p)
+    g.add_node(DNA,node)
+
 def node2plane(node):
     q=node.objects[0]
     return q.objects[0]

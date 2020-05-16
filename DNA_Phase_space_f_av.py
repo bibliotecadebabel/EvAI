@@ -310,7 +310,7 @@ class DNA_Phase_space():
             print(f'{key} : {self.node2particles(node)}')
 
     def print_center(self):
-        print(self.center())
+        print(f'{self.center()} : {self.node2particles(self.key2node(self.center()))}')
         print('and its energy is')
         node = self.key2node(self.center())
         stream=self.stream
@@ -340,7 +340,7 @@ class DNA_Phase_space():
         #print('After external field, the signals are')
         #stream.print_signal()
         print('Computing the interaction field took:')
-        timing(self.update_interaction_field)
+        #timing(self.update_interaction_field)
         print('Computing maximum took:')
         timing(self.update_max_particles)
         self.update_variance()
