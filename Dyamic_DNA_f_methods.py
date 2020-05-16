@@ -105,12 +105,13 @@ def update_dynamic(self):
     selector=self.Selector
     version=self.version
     phase_space.time=phase_space.time+1
-    if phase_space.time>250:
+    if phase_space.time>20:
         phase_space.time=0
         node2remove=phase_space2node2remove(phase_space)
         if node2remove:
             remove_node(phase_space,node2remove)
-            add_node(phase_space,selector)
+            while len(phase_space.objects)<selector.num_actions:
+                add_node(phase_space,selector)
 
 
 def add_node(phase_space,Selector,particles=0):
