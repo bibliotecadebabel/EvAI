@@ -234,7 +234,7 @@ while True:
         status.print_predicted_actions()
         if status.Alai:
             status.Alai.update()
-        if k>200
+        if k>200:
             status.Alai.time=0
         #status.print_particles()
         #status.print_particles()
