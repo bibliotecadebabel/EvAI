@@ -21,7 +21,7 @@ class GeneratorFromCIFAR(Generator):
         self.trainset = torchvision.datasets.CIFAR10(root='./cifar', train=True, download=False, transform=self.transform)
         self.testSet = torchvision.datasets.CIFAR10(root='./cifar', train=False, download=False, transform=self.transform)
 
-        self._trainoader = torch.utils.data.DataLoader(self.trainset, batch_size=self.batchSize, shuffle=False, num_workers=0)
+        self._trainoader = torch.utils.data.DataLoader(self.trainset, batch_size=self.batchSize, shuffle=True, num_workers=0)
         self._testloader = torch.utils.data.DataLoader(self.testSet, batch_size=self.batchSize, shuffle=False, num_workers=0)
         self.type = datagen_type.DATABASE_IMAGES
 
