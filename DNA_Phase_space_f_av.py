@@ -307,7 +307,7 @@ class DNA_Phase_space():
     def print_support(self):
         for node in self.support:
             key = self.node2key(node)
-            print(key)
+            print(f'{key} : {self.node2particles(node)}')
 
     def print_center(self):
         print(self.center())
