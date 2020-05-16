@@ -22,7 +22,7 @@ from utilities.Abstract_classes.classes.positive_random_selector import(
 import children.pytorch.Network as nw
 from DNA_conditions import max_layer,max_filter
 from DNA_creators import Creator_from_selection as Creator
-from Dyamic_DNA_f_methods import update_from_select_09  as space_updater
+from Dyamic_DNA_f_methods import update_none  as space_updater
 from Dyamic_DNA_f_methods import (
     update_velocity_mobility as velocity_updater)
 
