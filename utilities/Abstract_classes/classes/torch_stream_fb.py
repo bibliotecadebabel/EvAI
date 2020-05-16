@@ -6,32 +6,45 @@ import torch.nn as nn
 import torch.tensor as tensor
 import torch.optim as optim
 
-class TorchStream(Stream):
-    class Torch_log_creator(Charge_log):
-        def __init__(self):
-            super().__init__()
-            self.old_net=None
-            self.new_net=None
-            self.log_size=None
-            self.dataGen=None
-            self.dt=0
-        def get_net(self):
-            p=self.log_size-len(self.log)
-            out_net=self.old_net.clone()
-            a=self.dataGen.data
-            out_net.Training(data=self.dataGen,
-                p=p,
-                dt=self.dt,full_database=True)
-            out_net.history_loss=[]
-            return out_net
 
-    def __init__(self,dataGen,log_size=200,dt=0.001,min_size=5):
+
+class TorchStream(Stream):
+    def Alai2creator(self,Alai):
+        class Torch_log_creator(Charge_log):
+            def __init__(self,a=0):
+                super().__init__()
+                self.old_net=None
+                self.new_net=None
+                self.log_size=None
+                self.dataGen=None
+                self.Alai=Alai
+                self.dt=0
+            def get_net(self):
+                p=self.log_size-len(self.log)
+                out_net=self.old_net.clone()
+                a=self.dataGen.data
+                if not(self.Alai):
+                    out_net.Training(data=self.dataGen,
+                        p=p,
+                        dt=self.dt,full_database=True)
+                else:
+                    out_net.Training(data=self.dataGen,
+                        p=p,
+                        dt=Alai.get_increments(-p),
+                        full_database=True)
+                out_net.history_loss=[]
+                return out_net
+        return Torch_log_creator
+    def __init__(self,dataGen,log_size=200,dt=0.001,min_size=5,
+        Alai=None):
+        self.Torch_log_creator=self.Alai2creator(Alai)
         super().__init__(self.Torch_log_creator)
         self.log_size=log_size
         self.dataGen=dataGen
         self.cuda=self.dataGen.cuda
         self.dt=dt
         self.min_size=min_size
+        self.Alai=Alai
 
     def key2average(self,key):
         log=self.key2log(key)
@@ -49,9 +62,16 @@ class TorchStream(Stream):
             net=log.new_net
             log.old_net=net.clone()
             log.old_net.history_loss=[]
-            net.Training(data=self.dataGen,
-                p=self.log_size,
-                dt=self.dt,full_database=True)
+            Alai=self.Alai
+            if not(self.Alai):
+                net.Training(data=self.dataGen,
+                    p=self.log_size,
+                    dt=self.dt,full_database=True)
+            else:
+                net.Training(data=self.dataGen,
+                    p=self.log_size,
+                    dt=Alai.get_increments(self.log_size),
+                    full_database=True)
             log.charge(net.history_loss)
             net.history_loss=[]
         elif log.signal and (len(log.log) < self.min_size+2):
@@ -61,9 +81,20 @@ class TorchStream(Stream):
             net=log.get_net()
             log.old_net=net.clone()
             log.old_net.history_loss=[]
-            net.Training(data=self.dataGen,
-                p=self.log_size-5,
-                dt=self.dt,full_database=True)
+            Alai=self.Alai
+            if not(self.Alai):
+                net.Training(data=self.dataGen,
+                    p=self.log_size-self.min_size,
+                    dt=self.dt,full_database=True)
+            else:
+                net.Training(data=self.dataGen,
+                    p=self.log_size-self.min_size,
+                    dt=Alai.get_increments(self.log_size
+                    -self.min_size),
+                    full_database=True)
+#            net.Training(data=self.dataGen,
+#                p=self.log_size-5,
+#                dt=self.dt,full_database=True)
             log.charge(net.history_loss)
             net.history_loss=[]
 #        else:

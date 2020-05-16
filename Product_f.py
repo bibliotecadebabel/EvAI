@@ -28,14 +28,28 @@ from Dyamic_DNA_f_methods import (
     update_velocity_mobility as velocity_updater)
 
 import time
+from utilities.Abstract_classes.classes.Alaising_cosine import (
+    Alaising as Alai)
 
 class Status():
     def __init__(self, display_size=None):
+        self.dt_Max=0.08
+        self.dt_min=0.0001
+        self.max_iter=4000
         self.max_layer=5
         self.max_filter=60
         self.log_size=50
         self.min_log_size=30
         self.cuda=bool(input("Insert flag for cuda"))
+        self.typos_version='duplicate'
+        #self.Alai=None
+        self.Alai=Alai(min=self.dt_min
+            , max=self.dt_Max,
+                max_time=self.max_iter+self.log_size)
+        self.max_layer=5
+        self.max_filter=60
+        self.log_size=50
+        self.min_log_size=30
         self.typos_version='duplicate'
         self.typos=((1,0,0,0),(0,0,1,1),(0,1,0,0))
         self.dt = 0.1
@@ -151,8 +165,8 @@ def create_objects(status):
         return max_filter(max_layer(DNA,max_layers),max_filters)
     version=status.typos_version
     center=((-1,1,3,x,y),
-            (0,3, 20, x, y),
-            (1, 20, 2), (2,),(3,-1,0),(3,0,1),
+            (0,3, 4, x, y),
+            (1, 4, 2), (2,),(3,-1,0),(3,0,1),
             (3,1,2))
     selector=status.Selector_creator(condition=condition,
         directions=version)
@@ -162,8 +176,13 @@ def create_objects(status):
     actions=selector.get_predicted_actions()
     space=DNA_Graph(center,1,(x,y),condition,actions,
         version,creator)
-    stream=TorchStream(status.Data_gen,status.log_size,
-        min_size=status.min_log_size)
+    if status.Alai:
+        stream=TorchStream(status.Data_gen,status.log_size,
+            min_size=status.min_log_size,
+            Alai=status.Alai)
+    else:
+        stream=TorchStream(status.Data_gen,status.log_size,
+            min_size=status.min_log_size)
     Phase_space=DNA_Phase_space(space,
         stream=stream)
     Dynamics=Dynamic_DNA(space,Phase_space,status.dx,
@@ -198,7 +217,7 @@ while False:
     transfer=status.Transfer.status_transfer
     k=k+1
     pass
-while True:
+while k<status.max_iter:
     #\begin{with gui}
     #status.Transfer.readLoad()
     #\end{with gui}
@@ -212,6 +231,8 @@ while True:
         status.print_energy()
         print('The predicted actions are:')
         status.print_predicted_actions()
+        if status.Alai:
+            status.Alai.update()
         #status.print_particles()
         #status.print_particles()
         #status.print_max_particles()

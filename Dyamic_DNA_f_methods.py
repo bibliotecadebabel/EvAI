@@ -105,7 +105,7 @@ def update_from_select_09(self):
         node_c = phase_space.key2node(phase_space.DNA_graph.center)
         p_c=Funct.node2num_particles(node_c)
         p_m=Funct.node2num_particles(node_max)
-    if (phase_space.max_changed and p_m*0.90>p_c) or (
+    if (phase_space.max_changed and p_m*0.9>p_c) or (
         phase_space.time>2000):
         phase_space.time=0
         num_particles = phase_space.num_particles

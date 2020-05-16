@@ -27,9 +27,14 @@ from Dyamic_DNA_f_methods import (
     update_velocity_mobility as velocity_updater)
 
 import time
+from utilities.Abstract_classes.classes.Alaising_cosine import (
+    Alaising as Alai)
 
 class Status():
     def __init__(self, display_size=None):
+        self.dt_Max=0.08
+        self.dt_min=0.0001
+        self.max_iter=4000
         self.max_layer=5
         self.max_filter=70
         self.log_size=110
@@ -37,6 +42,9 @@ class Status():
         self.S=32
         self.cuda=bool(input("Insert flag for cuda"))
         self.typos_version='duplicate'
+        self.Alai=Alai(min=self.dt_min,
+             max=self.dt_Max,
+                max_time=self.max_iter+self.log_size)
         self.typos=((1,0,0,0),(0,0,1,1),(0,1,0,0))
         self.dt = 0.1
         self.tau=0.01
@@ -169,8 +177,13 @@ def create_objects(status):
     actions=selector.get_predicted_actions()
     space=DNA_Graph(center,1,(x,y),condition,actions,
         version,creator)
-    stream=TorchStream(status.Data_gen,status.log_size,
-        min_size=status.min_log_size)
+    if status.Alai:
+        stream=TorchStream(status.Data_gen,status.log_size,
+            min_size=status.min_log_size,
+            Alai=status.Alai)
+    else:
+        stream=TorchStream(status.Data_gen,status.log_size,
+            min_size=status.min_log_size)
     Phase_space=DNA_Phase_space(space,
         stream=stream)
     Dynamics=Dynamic_DNA(space,Phase_space,status.dx,
