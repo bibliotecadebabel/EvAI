@@ -232,6 +232,10 @@ while True:
         status.print_energy()
         print('The predicted actions are:')
         status.print_predicted_actions()
+        if status.Alai:
+            status.Alai.update()
+        if k>200
+            status.Alai.time=0
         #status.print_particles()
         #status.print_particles()
         #status.print_max_particles()
