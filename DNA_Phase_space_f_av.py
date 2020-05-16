@@ -307,17 +307,16 @@ class DNA_Phase_space():
     def print_support(self):
         for node in self.support:
             key = self.node2key(node)
-            print(f'{key} : {self.node2particles(node)}')
+            print(f'{key} : {self.node2particles(node)} : {self.node2energy(node)}')
 
     def print_center(self):
-        print(f'{self.center()} : {self.node2particles(self.key2node(self.center()))}')
-        print('and its energy is')
         node = self.key2node(self.center())
         stream=self.stream
         k_o=self.node2key(node)
         V_o=stream.findCurrentvalue(k_o)
         if node:
-            print(V_o)
+            print(f'{self.center()} : {self.node2particles(self.key2node(self.center()))} and its energy is {V_o}')
+
 
 
     def update(self):
@@ -333,16 +332,15 @@ class DNA_Phase_space():
         stream.signals_off()
         self.DNA_graph.update()
         self.update_density()
-        print('Computing the diffusion field took:')
-        timing(self.update_diffussion_field)
+        self.update_diffussion_field()
         print('Computing the external field took:')
         timing(self.update_external_field)
         #print('After external field, the signals are')
         #stream.print_signal()
-        print('Computing the interaction field took:')
+        #print('Computing the interaction field took:')
         #timing(self.update_interaction_field)
-        print('Computing maximum took:')
-        timing(self.update_max_particles)
+        #print('Computing maximum took:')
+        self.update_max_particles()
         self.update_variance()
         #print('The maximum node is')
         #print(self.node2key(self.node_max_particles))

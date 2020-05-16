@@ -5,6 +5,7 @@ from timing import timing
 import numpy as np
 import DNA_graph_functions as Funct
 from random import randint
+from Particle import particle as particle
 
 
 
@@ -99,20 +100,38 @@ def update_velocity_default(self):
 def update_none(self):
     pass
 
+
 def update_dynamic(self):
     phase_space=self.phase_space
     creator=self.Creator
     selector=self.Selector
     version=self.version
     phase_space.time=phase_space.time+1
-    if phase_space.time>100:
+    if phase_space.time>20:
         phase_space.time=0
         node2remove=phase_space2node2remove(phase_space)
         if node2remove:
             remove_node(phase_space,node2remove)
-            while len(phase_space.objects)<selector.num_actions:
-                add_node(phase_space,selector)
+            while len(phase_space.objects)<8:
+                new_DNA=add_node(phase_space,selector)
 
+
+
+def create_particles(self,N,key=None):
+    if key == None:
+        key=self.center()
+    k=0
+    self.num_particles=N
+    node=self.key2node(key)
+    p=self.node2plane(node)
+    while k<N:
+        par=particle()
+        par.position.append(node)
+        par.velocity.append(node)
+        #par.objects.append(log)
+        p.particles.append(par)
+        p.num_particles+=1
+        k=k+1
 
 def add_node(phase_space,Selector,particles=0):
     center=phase_space.center()
@@ -122,10 +141,16 @@ def add_node(phase_space,Selector,particles=0):
     new_DNA=None
     while (new_DNA in keys) or new_DNA==None:
         new_DNA=Selector.DNA2new_DNA(center)
+    actions=Selector.get_predicted_actions()
+    direction=tuple(actions[0])
     Funct.add_node(graph,new_DNA)
     graph.add_edges(center,[new_DNA])
-    DNA_graph.objects.append(phase_space.
-        key2node(new_DNA))
+    new_node=phase_space.key2node(new_DNA)
+    DNA_graph.objects.append(new_node)
+    p=Funct.node2plane(new_node)
+    p.direction=direction
+
+    return new_DNA
 
 
 def remove_node(phase_space,node2remove):
@@ -136,6 +161,14 @@ def remove_node(phase_space,node2remove):
     DNA_graph=phase_space.DNA_graph
     graph=DNA_graph.graph
     graph.remove_node(DNA2remove)
+
+def node_max_particles(phase_space):
+    particles=[
+        phase_space.node2particles(node) for node in
+            phase_space.objects
+            ]
+    max_index=np.argmax(np.array(particles))
+    return phase_space.objects[max_index]
 
 def phase_space2node2remove(phase_space):
     nodes=phase_space.objects
@@ -150,7 +183,15 @@ def phase_space2node2remove(phase_space):
         node2remove=support_complement[index2remove]
         return node2remove
     else:
-        return None
+        pass
+        """
+        particles=[
+            phase_space.node2particles(node) for node in
+                phase_space.support
+                ]
+        index2remove=np.argmin(np.array(particles))
+        node2remove=phase_space.support[index2remove]
+        return node2remove"""
 
 
 
@@ -202,12 +243,12 @@ def update_from_select_09(self):
     selector=self.Selector
     version=self.version
     phase_space.time=phase_space.time+1
-    if phase_space.node_max_particles:
-        node_max = phase_space.node_max_particles
-        node_c = phase_space.key2node(phase_space.DNA_graph.center)
-        p_c=Funct.node2num_particles(node_c)
-        p_m=Funct.node2num_particles(node_max)
-    if (phase_space.max_changed and p_m*0.9>p_c) or (
+    node_max=node_max_particles(phase_space)
+    node_c = phase_space.key2node(phase_space.DNA_graph.center)
+    p_c=Funct.node2num_particles(node_c)
+    p_m=Funct.node2num_particles(node_max)
+    print(f'The value of p_m is : {p_m} and p_c is : {p_c} ')
+    if (p_m>p_c*2) or (
         phase_space.time>4000):
         phase_space.time=0
         num_particles = phase_space.num_particles
@@ -236,6 +277,15 @@ def update_from_select_09(self):
         self.objects=phase_space.objects
         self.support=phase_space.support
         self.Graph=phase_space.DNA_graph
+    elif phase_space.time>200:
+        phase_space.time=0
+        node2remove=phase_space2node2remove(phase_space)
+        node_c = phase_space.key2node(phase_space.DNA_graph.center)
+        if node2remove and not (node2remove==node_c):
+            remove_node(phase_space,node2remove)
+            while len(phase_space.objects)<8:
+                new_DNA=add_node(phase_space,selector)
+
 
 def update_from_select(self):
     phase_space=self.phase_space

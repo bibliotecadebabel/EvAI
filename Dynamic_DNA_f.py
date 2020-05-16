@@ -129,15 +129,10 @@ class Dynamic_DNA():
 
 
     def update(self):
-        print('updating phase space field took:')
-        timing(self.phase_space.update)
-        print('updating force field took:')
-        timing(self.update_force_field)
-        print('updating velocity took:')
+        self.phase_space.update()
+        self.update_force_field()
         self.update_velocity(self)
-        print('Moving particles took:')
-        timing(self.update_particles)
-        print('Updating space took:')
+        self.update_particles()
         self.update_space(self)
 
 

@@ -32,7 +32,7 @@ from utilities.Abstract_classes.classes.Alaising_cosine import (
 
 class Status():
     def __init__(self, display_size=None):
-        self.dt_Max=0.01
+        self.dt_Max=0.1
         self.dt_min=0.0001
         self.max_iter=5000
         self.max_layer=10
@@ -227,13 +227,19 @@ while True:
     #\end{without gui}
     if status.active:
         update(status)
-        print('The iteration number is:')
-        print(k)
-        status.print_energy()
-        print('The predicted actions are:')
+        print(f'The iteration number is: {k}')
+        #status.print_energy()
         status.print_predicted_actions()
         if status.Alai:
             status.Alai.update()
+        #status.print_particles()
+        #status.print_particles()
+        #status.print_max_particles()
+        #print(status.typos)
+        #status.print_signal()
+        #status.print_difussion_filed()
+#        print_nets(status)
+#        time.sleep(0.5)
         if k>200:
             status.Alai.time=0
         #status.print_particles()

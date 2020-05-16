@@ -23,7 +23,7 @@ from utilities.Abstract_classes.classes.positive_random_selector import(
 import children.pytorch.Network as nw
 from DNA_conditions import max_layer,max_filter
 from DNA_creators import Creator_from_selection as Creator
-from Dyamic_DNA_f_methods import update_dynamic as space_updater
+from Dyamic_DNA_f_methods import update_from_select_09 as space_updater
 from Dyamic_DNA_f_methods import (
     update_velocity_mobility as velocity_updater)
 
@@ -179,7 +179,7 @@ def create_objects(status):
             (3,0,1),(3,-1,1),
             (3,1,2),(3,0,2),(3,-1,2),
             (3,2,3),
-            (3,3,4))        
+            (3,3,4))
     selector=status.Selector_creator(condition=condition,
         directions=version)
     status.Selector=selector
@@ -238,10 +238,8 @@ while k<status.max_iter:
     #\end{without gui}
     if status.active:
         update(status)
-        print('The iteration number is:')
-        print(k)
-        status.print_energy()
-        print('The predicted actions are:')
+        print(f'The iteration number is: {k}')
+        #status.print_energy()
         status.print_predicted_actions()
         if status.Alai:
             status.Alai.update()
