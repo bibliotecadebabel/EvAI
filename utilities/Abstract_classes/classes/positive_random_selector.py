@@ -15,7 +15,7 @@ class centered_random_selector(Selector):
         mutations=(
         (0,1,0,0),
         (1,0,0,0),
-        (0,0,1,1),(0,0,-1,-1),
+        (0,0,1,1),
         (0,0,1),
         )):
         print('The condition is')
@@ -135,9 +135,8 @@ class centered_random_selector(Selector):
         num_mutations=len(self.mutations)
         k=0
         l=0
-        while (k<self.num_actions)  and ((l<100) or (
-             len(self.predicted_actions)<3*num_layer)):
-            layer=int(np.random.normal(0, 2*self.current_num_layer))+self.center
+        while (k<self.num_actions)  and (l<100):
+            layer=int(np.random.normal(0, self.current_num_layer))+self.center
             if layer>-1 and layer<self.current_num_layer+1:
                 mutation=random.randint(0,num_mutations-1)
                 DNA=self.center_key
