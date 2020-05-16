@@ -105,7 +105,7 @@ def update_dynamic(self):
     selector=self.Selector
     version=self.version
     phase_space.time=phase_space.time+1
-    if phase_space.time>20:
+    if phase_space.time>100:
         phase_space.time=0
         node2remove=phase_space2node2remove(phase_space)
         if node2remove:
