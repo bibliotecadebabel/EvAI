@@ -27,23 +27,41 @@ from Dyamic_DNA_f_methods import (
 import time
 from utilities.Abstract_classes.classes.Alaising_cosine import (
     Alaising as Alai)
-import Product_f_save as program
+
 #from Product_f_cifar import Status as program_cf
 
 
+def run_cifar():
+    import Product_f_cifar_save_2 as program
+    status=program.Status()
+    status.dt_Max=0.01
+    status.dt_min=0.0001
+    status.clear_period=200000
+    status.max_iter=100000
+    status.log_size=200
+    status.min_log_size=100
+    status.cuda=False
+    status.mutation_coefficient=.1
+    status.experiment_name='experiment_test_save_cifar_0'
+    status.save_space_period=100
+    status.save_net_period=200
+    status.save2database=True
+    program.run(status)
+
 def run_slow_ncf():
+    import Product_f_save as program
     status=program.Status()
     status.dt_Max=0.0001
     status.dt_min=0.00001
-    status.clear_period=200
-    status.max_iter=101
+    status.clear_period=200000
+    status.max_iter=201
     status.log_size=50
-    status.min_log_size=3
+    status.min_log_size=30
     status.cuda=False
-    status.mutation_coefficient=1
-    status.experiment_name='experiment_test_0'
+    status.mutation_coefficient=.1
+    status.experiment_name='experiment_test_2'
     status.save_space_period=100
-    status.save_net_period=100
+    status.save_net_period=200
     status.save2database=True
     program.run(status)
 

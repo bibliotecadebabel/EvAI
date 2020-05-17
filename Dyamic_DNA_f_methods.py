@@ -283,8 +283,7 @@ def update_from_select_09(self):
         node_c = phase_space.key2node(phase_space.DNA_graph.center)
         if node2remove and not (node2remove==node_c):
             remove_node(phase_space,node2remove)
-            while len(phase_space.objects)<8:
-                new_DNA=add_node(phase_space,selector)
+            new_DNA=add_node(phase_space,selector)
 
 
 def update_from_select(self):

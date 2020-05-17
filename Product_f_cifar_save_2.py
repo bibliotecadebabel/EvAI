@@ -240,7 +240,7 @@ def run(status):
     testModelDao = TestModelDAO.TestModelDAO()
     print("cuda=", status.cuda)
     if status.save2database == True:
-        test_id = testDao.insert(testName=status.experiment_name, periodSave=status.save_space_period, dt=status.dt_Max, 
+        test_id = testDao.insert(testName=status.experiment_name, periodSave=status.save_space_period, dt=status.dt_Max,
                                           total=status.max_iter, periodCenter=1)
     #update(status)
     while False:
@@ -276,7 +276,7 @@ def run(status):
     #        time.sleep(0.5)
             if k % 200 == 0:
                 status.Alai.time=0
-            
+
             if status.save2database == True:
 
                 if k % status.save_space_period == status.save_space_period - 1:
@@ -308,7 +308,7 @@ def saveModel(status, k, testModelDao, test_id):
         net.saveModel(final_path)
         net.generateEnergy(status.Data_gen)
         testModelDao.insert(idTest=test_id, dna=str(net.adn),iteration=k, fileName=fileName, model_weight=net.getAcurracy())
-        
+
 """
 c=[]
 d=[]

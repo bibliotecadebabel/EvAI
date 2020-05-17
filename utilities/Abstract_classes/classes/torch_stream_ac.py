@@ -132,7 +132,8 @@ class TorchStream(Stream):
         if not(node):
             self.add_node(key)
             network = nw.Network(key,
-                                 cudaFlag=self.cuda,momentum=0.9)
+                                 cudaFlag=self.cuda,momentum=0.9,
+                                 weight_decay=0.0005)
             self.link_node(key,network)
             self.charge_node(key)
             print('added net')
