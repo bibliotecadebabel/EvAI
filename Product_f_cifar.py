@@ -195,6 +195,7 @@ def create_objects(status):
     else:
         stream=TorchStream(status.Data_gen,status.log_size,
             min_size=status.min_log_size)
+    status.stream=stream
     Phase_space=DNA_Phase_space(space,
         stream=stream)
     Dynamics=Dynamic_DNA(space,Phase_space,status.dx,
