@@ -13,9 +13,9 @@ import torch.optim as optim
 
 class Network(nn.Module, na.NetworkAbstract):
 
-    def __init__(self, adn, cudaFlag=True, momentum=0.0):
+    def __init__(self, adn, cudaFlag=True, momentum=0.0, weight_decay=0.0):
         nn.Module.__init__(self)
-        na.NetworkAbstract.__init__(self,adn=adn, cuda=cudaFlag, momentum=momentum)
+        na.NetworkAbstract.__init__(self,adn=adn, cuda=cudaFlag, momentum=momentum, weight_decay=weight_decay)
 
         self.__lenghNodes = 0
         self.__conv2d_propagate_mode = const.CONV2D_IMAGE_INPUTS

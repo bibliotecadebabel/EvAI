@@ -20,16 +20,22 @@ PERIOD_SAVE = 1
 PERIOD_NEWSPACE = 1 
 
 # Every PERIOD_SAVE_MODEL iterations, the best network (current center) will be stored on filesystem
-PERIOD_SAVE_MODEL = 10
+PERIOD_SAVE_MODEL = 5
 
 # After TOTAL_ITERATIONS, the experiment will stop.
 TOTAL_ITERATIONS = 100
 
 # dt parameter
-DT = 0.002
+DT = 0.001
 
 # min_dt parameter
-MIN_DT = 0.0005
+MIN_DT = 0.0001
+
+# weight_decay parameter
+WEIGHT_DECAY = 0.0005
+
+# momentum parameter
+MOMENTUM = 0.9
 
 # CUDA parameter (true/false)
 CUDA = True
@@ -41,7 +47,7 @@ MAX_LAYERS = 15
 MAX_FILTERS = 70
 
 # TEST_NAME, the name of the experiment (unique)
-TEST_NAME = "cifar_test_restart-clone_1"
+TEST_NAME = "cifar_test_restart-clone_2"
 
 
 def DNA_Creator_s(x,y):
@@ -83,6 +89,6 @@ while stop == False:
     
 
 
-trainer = CommandExperimentCifar_Restarts.CommandExperimentCifar_Restarts(space=space, dataGen=dataGen, testName=TEST_NAME,selector=selector, cuda=CUDA)
+trainer = CommandExperimentCifar_Restarts.CommandExperimentCifar_Restarts(space=space, dataGen=dataGen, testName=TEST_NAME,selector=selector, cuda=CUDA, weight_decay=WEIGHT_DECAY, momentum=MOMENTUM)
                                                                 
 trainer.execute(periodSave=PERIOD_SAVE, periodNewSpace=PERIOD_NEWSPACE, totalIterations=TOTAL_ITERATIONS, base_dt=DT, min_dt=MIN_DT, periodSaveModel=PERIOD_SAVE_MODEL)

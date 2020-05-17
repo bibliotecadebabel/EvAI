@@ -4,11 +4,12 @@ import Factory.TensorFactory as tensorFactory
 
 class NetworkAbstract(ABC):
 
-    def __init__(self, adn, cuda, momentum):
+    def __init__(self, adn, cuda, momentum, weight_decay):
         self.cudaFlag = cuda
         self.adn = adn
         self.nodes = []
-        self.momentum = momentum  
+        self.momentum = momentum 
+        self.weight_decay = weight_decay 
         self.label = tensorFactory.createTensor(body=[1], cuda=self.cudaFlag, requiresGrad=False)
         self.factory = factory.LayerGenerator(cuda=self.cudaFlag)
         self.foward_value = None   

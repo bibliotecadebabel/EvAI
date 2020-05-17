@@ -84,6 +84,7 @@ while stop == False:
     
 
 
-trainer = CommandExperimentCifar.CommandExperimentCifar(space=space, dataGen=dataGen, testName=TEST_NAME,selector=selector, cuda=CUDA)
+print("ESTE NO ES EL ARCHIVO JAVIER")
+#trainer = CommandExperimentCifar.CommandExperimentCifar(space=space, dataGen=dataGen, testName=TEST_NAME,selector=selector, cuda=CUDA)
                                                                 
-trainer.execute(periodSave=PERIOD_SAVE, periodNewSpace=PERIOD_NEWSPACE, totalIterations=TOTAL_ITERATIONS, base_dt=DT, min_dt=MIN_DT, periodSaveModel=PERIOD_SAVE_MODEL)
+#trainer.execute(periodSave=PERIOD_SAVE, periodNewSpace=PERIOD_NEWSPACE, totalIterations=TOTAL_ITERATIONS, base_dt=DT, min_dt=MIN_DT, periodSaveModel=PERIOD_SAVE_MODEL)

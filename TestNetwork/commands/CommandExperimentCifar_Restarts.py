@@ -9,11 +9,13 @@ import os
 
 class CommandExperimentCifar_Restarts():
 
-    def __init__(self, space, dataGen, testName, selector, cuda=False):
+    def __init__(self, space, dataGen, testName, selector, momentum, weight_decay, cuda=False):
         self.__space = space
         self.__cuda = cuda
         self.__dataGen = dataGen
         self.__bestNetwork = None
+        self.__momentum = momentum
+        self.__weight_decay = weight_decay
         self.__generateNetworks()
         self.__testName = testName
         self.__testDao = TestDAO.TestDAO()
@@ -38,7 +40,7 @@ class CommandExperimentCifar_Restarts():
         centerNetwork = None
         if self.__bestNetwork is None:
             print("new network")
-            centerNetwork = nw.Network(centerAdn, cudaFlag=CUDA, momentum=0.9)
+            centerNetwork = nw.Network(centerAdn, cudaFlag=CUDA, momentum=self.__momentum, weight_decay=self.__weight_decay)
         else:
             print("new center (cloning network)=", self.__bestNetwork.adn)
             centerNetwork = self.__bestNetwork.clone()
@@ -108,7 +110,7 @@ class CommandExperimentCifar_Restarts():
 
             self.__bestNetwork = self.__getBestNetwork()
 
-            self.__bestNetwork.TrainingCosineLR_Restarts(dataGenerator=dataGen, base_dt=base_dt, epochs=5, printValues=False, etamin=min_dt)
+            self.__bestNetwork.TrainingCosineLR_Restarts(dataGenerator=dataGen, base_dt=base_dt, epochs=10, etamin=min_dt)
                 
                 
             if j % periodSaveModel == 0:
