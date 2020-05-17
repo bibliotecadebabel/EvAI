@@ -253,6 +253,9 @@ class Network(nn.Module, na.NetworkAbstract):
 
                 self.__currentEpoch = i
 
+                if i % 500 == 499:
+                    self.__printValues(1, i, avg=500)
+
                 dataGenerator.update()
 
                 i=i+1

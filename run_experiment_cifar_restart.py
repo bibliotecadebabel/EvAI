@@ -8,7 +8,7 @@ from utilities.Abstract_classes.classes.random_selector import random_selector
 ###### EXPERIMENT SETTINGS ######
 
 # BATCH SIZE
-BATCH_SIZE = 25
+BATCH_SIZE = 32
 
 # DATA SOURCE ('default' -> Pikachu, 'cifar' -> CIFAR)
 DATA_SOURCE = 'cifar'
@@ -26,10 +26,10 @@ PERIOD_SAVE_MODEL = 10
 TOTAL_ITERATIONS = 100
 
 # dt parameter
-DT = 0.001
+DT = 0.002
 
 # min_dt parameter
-MIN_DT = 0.001
+MIN_DT = 0.0005
 
 # CUDA parameter (true/false)
 CUDA = True
