@@ -196,7 +196,7 @@ class Network(nn.Module, na.NetworkAbstract):
                 self.history_loss.append(self.total_value)
 
                 if i % print_every == print_every - 1:
-                    self.__printValues(epoch, i)
+                    self.__printValues(epoch, i, avg=(total_steps//4))
             
             epoch+= 1
         

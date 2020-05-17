@@ -2,7 +2,7 @@ from TestNetwork.commands import CommandCreateDataGen, CommandExperimentCifar_Re
 from DNA_conditions import max_layer,max_filter
 from DNA_creators import Creator
 from DNA_Graph import DNA_Graph
-from DNA_creator_duplicate import Creator_from_selection_duplicate as Creator_s
+from DNA_creator_duplicate_clone import Creator_from_selection_clone as Creator_s
 from utilities.Abstract_classes.classes.random_selector import random_selector
 
 ###### EXPERIMENT SETTINGS ######
@@ -20,10 +20,10 @@ PERIOD_SAVE = 1
 PERIOD_NEWSPACE = 1 
 
 # Every PERIOD_SAVE_MODEL iterations, the best network (current center) will be stored on filesystem
-PERIOD_SAVE_MODEL = 2
+PERIOD_SAVE_MODEL = 10
 
 # After TOTAL_ITERATIONS, the experiment will stop.
-TOTAL_ITERATIONS = 10
+TOTAL_ITERATIONS = 100
 
 # dt parameter
 DT = 0.001
@@ -35,20 +35,20 @@ MIN_DT = 0.001
 CUDA = True
 
 # MAX LAYER MUTATION (CONDITION)
-MAX_LAYERS = 60
+MAX_LAYERS = 15
 
 # MAX FILTERS MUTATION (CONDITION)
 MAX_FILTERS = 70
 
 # TEST_NAME, the name of the experiment (unique)
-TEST_NAME = "cifar-duplicate-restarts_ver_nocosine"
+TEST_NAME = "cifar_test_restart-clone_1"
 
 
 def DNA_Creator_s(x,y):
     def condition(DNA):
         return max_filter(max_layer(DNA,MAX_LAYERS),MAX_FILTERS)
 
-    center=((-1,1,3,x,y),(0,3, 15, 3 , 3),(0,18, 15, 3,  3),(0,33, 15, x, y),(1, 15,10),
+    center=((-1,1,3,x,y),(0,3, 15, 3 , 3),(0,18, 15, 3,  3),(0,33, 15, x, y),(1, 15, 10),
              (2,),(3,-1,0),(3,0,1),(3,-1,1),(3,1,2),(3,0,2),(3,-1,2),(3,2,3),(3,3,4))
 
     selector = None
