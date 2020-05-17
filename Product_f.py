@@ -50,6 +50,7 @@ class Status():
         self.max_filter=60
         self.log_size=50
         self.min_log_size=30
+
         self.typos=((1,0,0,0),(0,0,1,1),(0,1,0,0))
         self.dt = 0.1
         self.tau=0.01
