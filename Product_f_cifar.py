@@ -120,7 +120,7 @@ class Status():
         net=stream.get_net(center)
         net.generateEnergy(status.dataGen)
         print(f'The acurrarcy is : {network.get.Acurracy()}')
-        time.sleep(10)
+        time.sleep(100)
         pass
 
 
