@@ -37,12 +37,12 @@ def run_cifar():
     status.dt_Max=0.01
     status.dt_min=0.0001
     status.clear_period=200000
-    status.max_iter=2000
+    status.max_iter=20000
     status.log_size=200
     status.min_log_size=100
     status.cuda=True
     status.mutation_coefficient=1
-    status.experiment_name='experiment_test_save_cifar_1'
+    status.experiment_name='experiment_cifar_10mutation'
     status.save_space_period=100
     status.save_net_period=200
     status.save2database=True
