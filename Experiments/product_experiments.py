@@ -36,14 +36,15 @@ def run_slow_ncf():
     status.dt_Max=0.0001
     status.dt_min=0.00001
     status.clear_period=200
-    self.log_size=50
-    self.min_log_size=3
+    status.max_iter=101
+    status.log_size=50
+    status.min_log_size=3
     status.cuda=False
-    status.mutation_coefficient=0.1
-    status.experiment_name='experiment'
-    status.save_space_period=2000
-    status.save_net_period=10000
-    status.save2database=False
+    status.mutation_coefficient=1
+    status.experiment_name='experiment_test_0'
+    status.save_space_period=100
+    status.save_net_period=100
+    status.save2database=True
     program.run(status)
 
 def run_test():
