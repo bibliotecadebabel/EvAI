@@ -240,7 +240,7 @@ while True:
     if status.active:
         update(status)
         print(f'The iteration number is: {k}')
-        if k % 10 == 0:
+        if k % 100 == 0:
             status.print_accuracy()
         #status.print_energy()
         status.print_predicted_actions()
