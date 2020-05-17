@@ -14,9 +14,9 @@ import children.Operations as Op
 import children.net2.Network as nw
 from DAO import GeneratorFromCIFAR
 from DNA_Graph import DNA_Graph
-from DNA_Phase_space_f_av import DNA_Phase_space
+from DNA_Phase_space_f_ac import DNA_Phase_space
 from Dynamic_DNA_f import Dynamic_DNA
-from utilities.Abstract_classes.classes.torch_stream_fb import TorchStream
+from utilities.Abstract_classes.classes.torch_stream_ac import TorchStream
 from utilities.Abstract_classes.classes.positive_random_selector import(
     centered_random_selector as Selector)
 import children.pytorch.Network as nw
@@ -41,7 +41,7 @@ class Status():
         self.min_log_size=300
         self.S=50
         self.cuda=bool(input("Insert flag for cuda"))
-        self.typos_version='duplicate'
+        self.typos_version='clone'
         self.Alai=Alai(min=self.dt_min,
              max=self.dt_Max,
                 max_time=self.max_iter+self.log_size)
@@ -85,6 +85,7 @@ class Status():
 
         #self.typos=(0,(0,0,1,1))
         self.influence=2
+
     def print_DNA(self):
         phase_space=self.Dynamics.phase_space
         DNA_graph=phase_space.DNA_graph
@@ -240,7 +241,7 @@ while True:
         #status.print_difussion_filed()
 #        print_nets(status)
 #        time.sleep(0.5)
-        if k>200:
+        if k % 200 == 0:
             status.Alai.time=0
         #status.print_particles()
         #status.print_particles()

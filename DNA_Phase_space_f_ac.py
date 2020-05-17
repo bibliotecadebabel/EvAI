@@ -1,7 +1,7 @@
 from Particle import particle as particle
 from utilities.Abstract_classes.classes.torch_stream_fb import TorchStream
 from DAO import GeneratorFromImage
-import children.pytorch.MutateNetwork_Dendrites as Mutate
+import children.pytorch.MutateNetwork_Dendrites_clone as Mutate
 import utilities.Graphs as gr
 import utilities.P_trees as tr
 from timing import timing

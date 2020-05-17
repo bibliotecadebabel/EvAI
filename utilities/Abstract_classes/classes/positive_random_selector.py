@@ -28,6 +28,9 @@ class centered_random_selector(Selector):
         if directions=='dupiclate':
             from DNA_directions_duplicate import directions
             self.directions=directions
+        elif directions=='clone':
+            from DNA_directions_clone import directions as directions
+            self.directions=directions
         else:
             from DNA_directions_f import directions as directions
             self.directions=directions

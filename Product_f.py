@@ -14,9 +14,9 @@ import children.Operations as Op
 import children.net2.Network as nw
 from DAO import GeneratorFromImage
 from DNA_Graph import DNA_Graph
-from DNA_Phase_space_f_av import DNA_Phase_space
+from DNA_Phase_space_f_ac import DNA_Phase_space
 from Dynamic_DNA_f import Dynamic_DNA
-from utilities.Abstract_classes.classes.torch_stream_fb import TorchStream
+from utilities.Abstract_classes.classes.torch_stream_ac import TorchStream
 from utilities.Abstract_classes.classes.positive_random_selector import(
     centered_random_selector as Selector)
 
@@ -33,15 +33,15 @@ from utilities.Abstract_classes.classes.Alaising_cosine import (
 
 class Status():
     def __init__(self, display_size=None):
-        self.dt_Max=0.0001
-        self.dt_min=0.00001
+        self.dt_Max=0.001
+        self.dt_min=0.0001
         self.max_iter=10000
         self.max_layer=5
         self.max_filter=60
         self.log_size=50
         self.min_log_size=30
         self.cuda=bool(input("Insert flag for cuda"))
-        self.typos_version='duplicate'
+        self.typos_version='clone'
         #self.Alai=None
         self.Alai=Alai(min=self.dt_min
             , max=self.dt_Max,
@@ -50,7 +50,6 @@ class Status():
         self.max_filter=60
         self.log_size=50
         self.min_log_size=30
-        self.typos_version='duplicate'
         self.typos=((1,0,0,0),(0,0,1,1),(0,1,0,0))
         self.dt = 0.1
         self.tau=0.01
