@@ -36,8 +36,8 @@ class Status():
         self.max_iter=250
         self.max_layer=10
         self.max_filter=70
-        self.log_size=200
-        self.min_log_size=100
+        self.log_size=400
+        self.min_log_size=300
         self.S=50
         self.cuda=bool(input("Insert flag for cuda"))
         self.typos_version='clone'
