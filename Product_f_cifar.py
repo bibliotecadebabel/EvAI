@@ -119,7 +119,7 @@ class Status():
         if center:
             stream=status.stream
             net=stream.get_net(center)
-            net.generateEnergy(status.dataGen)
+            net.generateEnergy(status.Data_gen)
             print(f'The acurrarcy is : {network.get.Acurracy()}')
             time.sleep(100)
         pass
@@ -196,6 +196,7 @@ def create_objects(status):
         stream=TorchStream(status.Data_gen,status.log_size,
             min_size=status.min_log_size)
     status.stream=stream
+    status.Data_gen=Data_gen
     Phase_space=DNA_Phase_space(space,
         stream=stream)
     Dynamics=Dynamic_DNA(space,Phase_space,status.dx,
