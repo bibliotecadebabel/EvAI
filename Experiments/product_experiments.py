@@ -31,7 +31,7 @@ import Product_f as program
 #from Product_f_cifar import Status as program_cf
 
 
-def run_slow_nc():
+def run_slow_ncf():
     status=program.Status()
     status.dt_Max=0.0001
     status.dt_min=0.00001
