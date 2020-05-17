@@ -1,5 +1,6 @@
 database.db
 remote2local.txt
+saved_models/
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
