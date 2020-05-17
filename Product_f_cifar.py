@@ -116,11 +116,12 @@ class Status():
     def print_accuracy(self):
         phase_space=self.Dynamics.phase_space
         center=phase_space.center()
-        stream=status.stream
-        net=stream.get_net(center)
-        net.generateEnergy(status.dataGen)
-        print(f'The acurrarcy is : {network.get.Acurracy()}')
-        time.sleep(100)
+        if center:
+            stream=status.stream
+            net=stream.get_net(center)
+            net.generateEnergy(status.dataGen)
+            print(f'The acurrarcy is : {network.get.Acurracy()}')
+            time.sleep(100)
         pass
 
 
