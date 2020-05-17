@@ -131,15 +131,50 @@ class Network(nn.Module, na.NetworkAbstract):
 
         self.history_loss.append(self.total_value)
 
-    def TrainingCosineLR(self, dataGenerator, dt=0.1, epochs=1):
-        self.optimizer = optim.SGD(self.parameters(), lr=dt, momentum=self.momentum) 
+    def TrainingCosineLR(self, dataGenerator, dt_array, iteration):
 
-        total_steps = len(dataGenerator._trainoader) 
-        scheduler = optim.lr_scheduler.CosineAnnealingLR(self.optimizer, total_steps)  
+        start_step = iteration
+        print("start step=", start_step)
 
+        total_steps = len(dataGenerator._trainoader)
+
+        for _, data in enumerate(dataGenerator._trainoader):
+
+            self.optimizer = optim.SGD(self.parameters(), lr=dt_array[start_step], momentum=self.momentum) 
+            
+            if self.cudaFlag == True:
+                inputs, labels_data = data[0].cuda(), data[1].cuda()
+            else:
+                inputs, labels_data = data[0], data[1]
+
+            inputs = inputs * 255
+            
+            self.assignLabels(labels_data)
+            self.total_value = 0
+            self.optimizer.zero_grad()
+            self.Train(inputs, 1, 1)
+            self.optimizer.step()
+            
+            self.total_value = self.__getLossLayer().value.item()
+            self.__accumulated_loss += self.total_value
+            self.history_loss.append(self.total_value)
+
+            start_step += 1
+        
+        print("end step=", start_step)
+        print("end energy=", self.getAverageLoss(total_steps//4))
+
+    def TrainingCosineLR_Restarts(self, dataGenerator, base_dt, epochs=1, printValues=False, etamin=0.0001):
+        
+        print("momentum=", self.momentum)
+        self.optimizer = optim.SGD(self.parameters(), lr=base_dt, momentum=self.momentum) 
+        total_steps = len(dataGenerator._trainoader)
+        
+        print_every = total_steps // 4
         epoch = 1
         while epoch <= epochs:
-
+            
+            scheduler = optim.lr_scheduler.CosineAnnealingLR(self.optimizer, total_steps, eta_min=etamin)
             for i, data in enumerate(dataGenerator._trainoader):
                 
                 if self.cudaFlag == True:
@@ -149,17 +184,38 @@ class Network(nn.Module, na.NetworkAbstract):
 
                 inputs = inputs * 255
                 
-                self.__doTraining(inputs=inputs, labels_data=labels_data)
+                self.assignLabels(labels_data)
+                self.total_value = 0
+                self.optimizer.zero_grad()
+                self.Train(inputs, 1, 1)
+                self.optimizer.step()
                 scheduler.step()
 
-                #if i % 100 == 99:
-                #    print("[{:d}, {:d}, lr={:.10f}, Loss={:.10f}]".format(epoch, i+1, self.optimizer.param_groups[0]['lr'], self.getAverageLoss(100)))
+                self.total_value = self.__getLossLayer().value.item()
+                self.__accumulated_loss += self.total_value
+                self.history_loss.append(self.total_value)
 
-            self.__currentEpoch = epoch
+                if i % print_every == print_every - 1:
+                    self.__printValues(epoch, i)
             
-            scheduler = optim.lr_scheduler.CosineAnnealingLR(self.optimizer, total_steps)
+            epoch+= 1
+        
+        print("end energy=", self.getAverageLoss(total_steps//4))
+   
+    
+    def getLRCosine(self, total_steps, base_dt, etamin):
 
-            epoch += 1
+        array_lr = []
+        self.optimizer = optim.SGD(self.parameters(), lr=base_dt, momentum=self.momentum) 
+        scheduler = optim.lr_scheduler.CosineAnnealingLR(self.optimizer, total_steps, eta_min=etamin)  
+
+        for i in range(total_steps):
+            array_lr.append(scheduler.get_lr()[0])
+            self.optimizer.step()
+            scheduler.step()
+        
+        return array_lr
+
 
     def Training(self, data, labels=None, dt=0.1, p=1, full_database=False, epochs=None):
             
@@ -307,6 +363,9 @@ class Network(nn.Module, na.NetworkAbstract):
 
             if layerToClone.getFilter() is not None:
                 layer.setFilter(layerToClone.getFilter().clone())
+
+        network.total_value = self.total_value
+        network.momentum = self.momentum
 
         return network
 

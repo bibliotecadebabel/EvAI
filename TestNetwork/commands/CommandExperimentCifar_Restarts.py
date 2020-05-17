@@ -1,13 +1,13 @@
-import children.pytorch.MutateNetwork_Dendrites as MutateNetwork
+import children.pytorch.MutateNetwork_Dendrites_duplicate as MutateNetwork
 import children.pytorch.NetworkDendrites as nw
 from DAO.database.dao import TestDAO, TestResultDAO, TestModelDAO
 from DNA_Graph import DNA_Graph
 from utilities.Abstract_classes.classes.random_selector import random_selector
-from DNA_creators import Creator_from_selection as Creator_s
+from DNA_creator_duplicate import Creator_from_selection_duplicate as Creator_s
 import const.path_models as const_path
 import os
 
-class CommandExperimentCifar():
+class CommandExperimentCifar_Restarts():
 
     def __init__(self, space, dataGen, testName, selector, cuda=False):
         self.__space = space
@@ -38,7 +38,7 @@ class CommandExperimentCifar():
         centerNetwork = None
         if self.__bestNetwork is None:
             print("new network")
-            centerNetwork = nw.Network(centerAdn, cudaFlag=CUDA)
+            centerNetwork = nw.Network(centerAdn, cudaFlag=CUDA, momentum=0.9)
         else:
             print("new center (cloning network)=", self.__bestNetwork.adn)
             centerNetwork = self.__bestNetwork.clone()
@@ -89,22 +89,10 @@ class CommandExperimentCifar():
     def execute(self, periodSave, periodNewSpace, periodSaveModel, totalIterations, base_dt, min_dt):
 
         dataGen = self.__dataGen
-        
-        iterations_per_epoch = len(dataGen._trainoader)
-
-        self.__iterations_per_epoch = iterations_per_epoch
-        
-        steps = totalIterations * iterations_per_epoch
-        steps_bestnetwork = totalIterations * self.__bestNetworkEpochs * iterations_per_epoch
-
-        total_steps = steps + steps_bestnetwork
-
-        array_dt = self.__networks[0].getLRCosine(total_steps, base_dt, min_dt)
-        
+        self.__iterations_per_epoch = len(dataGen._trainoader)
         print("inserting 1")
         test_id = self.__testDao.insert(testName=self.__testName, periodSave=periodSave, dt=base_dt, 
                                           total=totalIterations, periodCenter=periodNewSpace)
-        iterations = 1
         for j in range(1, totalIterations+1):
                 
             print("epoch #", j)
@@ -112,19 +100,16 @@ class CommandExperimentCifar():
             i = 0
             for network in self.__networks:
                 print("training net #", i)
-                network.TrainingCosineLR(dataGenerator=dataGen, dt_array=array_dt, iteration=iterations-1)
+                network.TrainingCosineLR_Restarts(dataGenerator=dataGen, base_dt=base_dt,etamin=min_dt)
                 i += 1
-            
-            iterations += iterations_per_epoch
 
             self.__saveEnergy()
             self.__testResultDao.insert(idTest=test_id, iteration=j, dna_graph=self.__space)
 
             self.__bestNetwork = self.__getBestNetwork()
 
-            for _ in range(self.__bestNetworkEpochs):
-                self.__bestNetwork.TrainingCosineLR(dataGenerator=dataGen, dt_array=array_dt, iteration=iterations-1)
-                iterations += iterations_per_epoch 
+            self.__bestNetwork.TrainingCosineLR_Restarts(dataGenerator=dataGen, base_dt=base_dt, epochs=5, printValues=False, etamin=min_dt)
+                
                 
             if j % periodSaveModel == 0:
                 print("saving model")

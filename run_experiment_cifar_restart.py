@@ -1,8 +1,8 @@
-from TestNetwork.commands import CommandCreateDataGen, CommandExperimentCifar
+from TestNetwork.commands import CommandCreateDataGen, CommandExperimentCifar_Restarts
 from DNA_conditions import max_layer,max_filter
 from DNA_creators import Creator
 from DNA_Graph import DNA_Graph
-from DNA_creators import Creator_from_selection as Creator_s
+from DNA_creator_duplicate import Creator_from_selection_duplicate as Creator_s
 from utilities.Abstract_classes.classes.random_selector import random_selector
 
 ###### EXPERIMENT SETTINGS ######
@@ -26,10 +26,10 @@ PERIOD_SAVE_MODEL = 2
 TOTAL_ITERATIONS = 10
 
 # dt parameter
-DT = 0.5
+DT = 0.001
 
 # min_dt parameter
-MIN_DT = 0.0001
+MIN_DT = 0.001
 
 # CUDA parameter (true/false)
 CUDA = True
@@ -41,16 +41,15 @@ MAX_LAYERS = 60
 MAX_FILTERS = 70
 
 # TEST_NAME, the name of the experiment (unique)
-TEST_NAME = "test-cifar-dt-no-shuffle"
+TEST_NAME = "cifar-duplicate-restarts_ver_nocosine"
 
 
 def DNA_Creator_s(x,y):
     def condition(DNA):
         return max_filter(max_layer(DNA,MAX_LAYERS),MAX_FILTERS)
 
-    center=((-1,1,3,x,y),(0, 3, 5, 3, 3),(0,5, 5, x-2, y-2),
-            (1, 5, 10), (2,),(3,-1,0),(3,0,1),
-            (3,1,2),(3,2,3))
+    center=((-1,1,3,x,y),(0,3, 15, 3 , 3),(0,18, 15, 3,  3),(0,33, 15, x, y),(1, 15,10),
+             (2,),(3,-1,0),(3,0,1),(3,-1,1),(3,1,2),(3,0,2),(3,-1,2),(3,2,3),(3,3,4))
 
     selector = None
     selector=random_selector()
@@ -84,6 +83,6 @@ while stop == False:
     
 
 
-trainer = CommandExperimentCifar.CommandExperimentCifar(space=space, dataGen=dataGen, testName=TEST_NAME,selector=selector, cuda=CUDA)
+trainer = CommandExperimentCifar_Restarts.CommandExperimentCifar_Restarts(space=space, dataGen=dataGen, testName=TEST_NAME,selector=selector, cuda=CUDA)
                                                                 
 trainer.execute(periodSave=PERIOD_SAVE, periodNewSpace=PERIOD_NEWSPACE, totalIterations=TOTAL_ITERATIONS, base_dt=DT, min_dt=MIN_DT, periodSaveModel=PERIOD_SAVE_MODEL)
