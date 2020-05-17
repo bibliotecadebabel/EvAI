@@ -27,7 +27,7 @@ from Dyamic_DNA_f_methods import (
 import time
 from utilities.Abstract_classes.classes.Alaising_cosine import (
     Alaising as Alai)
-import Product_f as program
+import Product_f_save as program
 #from Product_f_cifar import Status as program_cf
 
 
