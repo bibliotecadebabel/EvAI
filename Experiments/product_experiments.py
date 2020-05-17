@@ -41,7 +41,7 @@ def run_cifar():
     status.log_size=200
     status.min_log_size=100
     status.cuda=True
-    status.mutation_coefficient=.1
+    status.mutation_coefficient=1
     status.experiment_name='experiment_test_save_cifar_1'
     status.save_space_period=100
     status.save_net_period=200
