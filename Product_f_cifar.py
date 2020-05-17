@@ -34,7 +34,7 @@ class Status():
     def __init__(self, display_size=None):
         self.dt_Max=0.1
         self.dt_min=0.0001
-        self.max_iter=5000
+        self.max_iter=250
         self.max_layer=10
         self.max_filter=70
         self.log_size=400
