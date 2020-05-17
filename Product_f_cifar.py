@@ -113,8 +113,8 @@ class Status():
         actions=selector.get_predicted_actions()
         print(f'The predicted actions are: {actions}')
 
-    def print_accuracy():
-        phase_space=Dynamics.phase_space
+    def print_accuracy(self):
+        phase_space=self.Dynamics.phase_space
         center=phase_space.center()
         stream=status.stream
         net=stream.get_net(center)
