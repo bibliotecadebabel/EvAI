@@ -33,6 +33,8 @@ from utilities.Abstract_classes.classes.Alaising_cosine import (
 
 class Status():
     def __init__(self, display_size=None):
+        self.mutation_coefficient=0.1
+        self.clear_period=80
         self.dt_Max=0.001
         self.dt_min=0.0001
         self.max_iter=10000
@@ -40,7 +42,7 @@ class Status():
         self.max_filter=60
         self.log_size=50
         self.min_log_size=30
-        self.cuda=bool(input("Insert flag for cuda"))
+        self.cuda=False
         self.typos_version='clone'
         #self.Alai=None
         self.Alai=Alai(min=self.dt_min
@@ -50,6 +52,11 @@ class Status():
         self.max_filter=60
         self.log_size=50
         self.min_log_size=30
+        self.experiment_name='experiment'
+        self.save_space_period=2000
+        self.save_net_period=10000
+        self.save2database=False
+
 
         self.typos=((1,0,0,0),(0,0,1,1),(0,1,0,0))
         self.dt = 0.1
@@ -200,7 +207,9 @@ def create_objects(status):
     Dynamics=Dynamic_DNA(space,Phase_space,status.dx,
         Creator=creator,Selector=selector,
         update_velocity=velocity_updater,
-        update_space=space_updater,version=version)
+        update_space=space_updater,version=version,
+        mutation_coefficient=status.mutation_coefficient,
+        clear_period=status.clear_period)
     Phase_space.create_particles(status.n)
     Phase_space.beta=status.beta
     Phase_space.alpha=status.alpha
@@ -208,53 +217,52 @@ def create_objects(status):
     status.Dynamics=Dynamics
     status.objects=Dynamics.objects
 
-status=Status()
-initialize_parameters(status)
-status.Transfer=tran.TransferRemote(status,
-    'remote2local.txt','local2remote.txt')
-#status.Transfer.readLoad()
-create_objects(status)
-print('The value of typos after loading is')
-print(status.typos)
-print("objects created")
-status.print_DNA()
-status.Transfer.un_load()
-status.Transfer.write()
-k=0
-#update(status)
-while False:
-    update(status)
+def run(status):
+    status.Transfer=tran.TransferRemote(status,
+        'remote2local.txt','local2remote.txt')
+    #status.Transfer.readLoad()
+    create_objects(status)
+    print('The value of typos after loading is')
+    print(status.typos)
+    print("objects created")
+    status.print_DNA()
     status.Transfer.un_load()
     status.Transfer.write()
-    transfer=status.Transfer.status_transfer
-    k=k+1
-    pass
-while k<status.max_iter:
-    #\begin{with gui}
-    #status.Transfer.readLoad()
-    #\end{with gui}
-    #\begin{wituhout gui}
-    status.active=True
-    #\end{without gui}
-    if status.active:
+    k=0
+    #update(status)
+    while False:
         update(status)
-        print(f'The iteration number is: {k}')
-        #status.print_energy()
-        status.print_predicted_actions()
-        if status.Alai:
-            status.Alai.update()
-        #status.print_particles()
-        #status.print_particles()
-        #status.print_max_particles()
-        #print(status.typos)
-        #status.print_signal()
-        #status.print_difussion_filed()
-#        print_nets(status)
-#        time.sleep(0.5)
-    else:
-        #print('inactive')
+        status.Transfer.un_load()
+        status.Transfer.write()
+        transfer=status.Transfer.status_transfer
+        k=k+1
         pass
-    k=k+1
+    while k<status.max_iter:
+        #\begin{with gui}
+        #status.Transfer.readLoad()
+        #\end{with gui}
+        #\begin{wituhout gui}
+        status.active=True
+        #\end{without gui}
+        if status.active:
+            update(status)
+            print(f'The iteration number is: {k}')
+            #status.print_energy()
+            status.print_predicted_actions()
+            if status.Alai:
+                status.Alai.update()
+            #status.print_particles()
+            #status.print_particles()
+            #status.print_max_particles()
+            #print(status.typos)
+            #status.print_signal()
+            #status.print_difussion_filed()
+    #        print_nets(status)
+    #        time.sleep(0.5)
+        else:
+            #print('inactive')
+            pass
+        k=k+1
 
 
 """

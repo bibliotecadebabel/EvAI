@@ -145,7 +145,9 @@ class Dynamic_DNA():
         update_space=None,
         update_velocity=None,
         update_force_field=None,
-        Selector=None,Creator=None,version='inclusion'):
+        Selector=None,Creator=None,version='inclusion',
+        mutation_coefficient=.1,
+        clear_period=80):
         self.space = space
         self.phase_space= phase_space
         self.objects=phase_space.objects
@@ -166,7 +168,8 @@ class Dynamic_DNA():
         self.lost_coefficient=50
         self.interaction_coefficient=0
         self.dt=0.01
-        self.mutation_coefficient=float(input("insert mutation coeficient"))
+        self.mutation_coefficient=mutation_coefficient
+        self.clear_period=clear_period
         self.Graph=phase_space.DNA_graph
         self.epsilon=0.001
         self.dx=dx

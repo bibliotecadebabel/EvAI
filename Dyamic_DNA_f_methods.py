@@ -277,7 +277,7 @@ def update_from_select_09(self):
         self.objects=phase_space.objects
         self.support=phase_space.support
         self.Graph=phase_space.DNA_graph
-    elif phase_space.time>200:
+    elif phase_space.time>self.clear_period:
         phase_space.time=0
         node2remove=phase_space2node2remove(phase_space)
         node_c = phase_space.key2node(phase_space.DNA_graph.center)
