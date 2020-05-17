@@ -25,7 +25,6 @@ from DNA_creators import Creator_from_selection as Creator
 from Dyamic_DNA_f_methods import update_from_select_09  as space_updater
 from Dyamic_DNA_f_methods import (
     update_velocity_mobility as velocity_updater)
-
 import time
 from utilities.Abstract_classes.classes.Alaising_cosine import (
     Alaising as Alai)
@@ -114,6 +113,17 @@ class Status():
         actions=selector.get_predicted_actions()
         print(f'The predicted actions are: {actions}')
 
+    def print_accuracy(self):
+        phase_space=self.Dynamics.phase_space
+        center=phase_space.center()
+        if center:
+            stream=status.stream
+            net=stream.get_net(center)
+            net.generateEnergy(status.Data_gen)
+            print(f'The acurrarcy is : {network.get.Acurracy()}')
+            time.sleep(100)
+        pass
+
 
 
 def potential(x,status=None):
@@ -185,6 +195,7 @@ def create_objects(status):
     else:
         stream=TorchStream(status.Data_gen,status.log_size,
             min_size=status.min_log_size)
+    status.stream=stream
     Phase_space=DNA_Phase_space(space,
         stream=stream)
     Dynamics=Dynamic_DNA(space,Phase_space,status.dx,
@@ -229,6 +240,8 @@ while True:
     if status.active:
         update(status)
         print(f'The iteration number is: {k}')
+        if k % 10 == 0:
+            status.print_accuracy()
         #status.print_energy()
         status.print_predicted_actions()
         if status.Alai:
