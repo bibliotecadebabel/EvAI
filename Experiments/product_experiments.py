@@ -31,7 +31,26 @@ from utilities.Abstract_classes.classes.Alaising_cosine import (
 #from Product_f_cifar import Status as program_cf
 
 
-def run_cifar():
+def run_cifar_user_input():
+    import Product_f_cifar_save_2 as program
+    status=program.Status()
+    status.dt_Max=0.01
+    status.dt_min=0.00001
+    status.clear_period=200000
+    status.max_iter=20000
+    status.log_size=int(input("Log size : ")
+    status.min_log_size=100
+    status.S=int(input("Batch size : "))
+    status.cuda=True
+    status.mutation_coefficient=int(input("mutation_coefficient : "))
+    status.experiment_name='experiment_cifar_10mutation'
+    status.save_space_period=100
+    status.save_net_period=200
+    status.save2database=False
+    program.run(status)
+
+
+def run_cifar_small_batch():
     import Product_f_cifar_save_2 as program
     status=program.Status()
     status.dt_Max=0.01
