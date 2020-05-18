@@ -38,7 +38,7 @@ def run_cifar_user_input():
     status.dt_min=0.00001
     status.clear_period=200000
     status.max_iter=20000
-    status.log_size=int(input("Log size : ")
+    status.log_size=int(input("Log size : "))
     status.min_log_size=100
     status.S=int(input("Batch size : "))
     status.cuda=True
