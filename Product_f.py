@@ -40,8 +40,8 @@ class Status():
     def __init__(self, display_size=None):
         self.mutation_coefficient=0.1
         self.clear_period=80
-        self.dt_Max=0.001
-        self.dt_min=0.0001
+        self.dt_Max=0.1
+        self.dt_min=0.00001
         self.max_iter=10000
         self.max_layer=5
         self.max_filter=60
@@ -49,10 +49,11 @@ class Status():
         self.min_log_size=30
         self.cuda=False
         self.typos_version='clone'
+        self.restart_period=50
         #self.Alai=None
         self.Alai=Alai(min=self.dt_min
             , max=self.dt_Max,
-                max_time=self.max_iter+self.log_size)
+                max_time=self.restart_period+self.log_size)
         self.max_layer=5
         self.max_filter=60
         self.log_size=200
@@ -166,6 +167,9 @@ def initialize_parameters(self):
 
 
 def create_objects(status):
+    status.Alai=Alai(min=status.dt_min,
+         max=status.dt_Max,
+            max_time=status.restart_period+status.log_size)
     status.Data_gen=GeneratorFromImage.GeneratorFromImage(
     status.Comp, status.S, cuda=status.cuda)
     status.Data_gen.dataConv2d()
@@ -258,6 +262,9 @@ def run(status):
             status.print_predicted_actions()
             if status.Alai:
                 status.Alai.update()
+
+            #if k % 200 == 0:
+            #    status.Alai.time=0
             #status.print_particles()
             #status.print_particles()
             #status.print_max_particles()

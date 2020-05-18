@@ -42,12 +42,54 @@ def run_cifar_user_input_save():
     status.S=int(input("Batch size : "))
     status.cuda=True
     status.mutation_coefficient=float(input("mutation_coefficient : "))
-    status.experiment_name=input("experiment_name : ")
+    status.experiment_name=int("experiment_name : ")
     status.save_space_period=int(input("save_space_period : "))
-    status.save_net_period=int(input("save_space_net_period : "))
+    status.save_net_period=float(input("save_space_net_period : "))
     status.save2database=True
     program.run(status)
 
+
+
+
+def run_cifar_small_batch():
+    import Product_f_cifar_save_2 as program
+    status=program.Status()
+    status.dt_Max=0.01
+    status.dt_min=0.00001
+    status.clear_period=200000
+    status.max_iter=20000
+    status.log_size=200
+    status.min_log_size=100
+    status.S=32
+    status.cuda=True
+    status.mutation_coefficient=10
+    status.experiment_name='experiment_cifar_10mutation'
+    status.save_space_period=100
+    status.save_net_period=200
+    status.save2database=False
+    program.run(status)
+
+def run_cifar_user_input_bidi():
+    import Product_f_cifar_save_2 as program
+    status=program.Status()
+    status.dt_Max=0.1
+    status.dt_min=0.00001
+    status.clear_period=200000
+    status.max_iter=2001
+    status.restart_period=200
+    from utilities.Abstract_classes.classes.centered_random_selector_bidi import(
+        centered_random_selector as Selector)
+    status.Selector_creator=Selector
+    status.log_size=int(input("Log size : "))
+    status.min_log_size=100
+    status.S=int(input("Batch size : "))
+    status.cuda=True
+    status.mutation_coefficient=float(input("mutation_coefficient : "))
+    status.experiment_name='do not sve'
+    status.save_space_period=100
+    status.save_net_period=50
+    status.save2database=False
+    program.run(status)
 
 def run_cifar_user_input():
     import Product_f_cifar_save_2 as program
@@ -61,10 +103,10 @@ def run_cifar_user_input():
     status.S=int(input("Batch size : "))
     status.cuda=True
     status.mutation_coefficient=float(input("mutation_coefficient : "))
-    status.experiment_name=float(input("experiment_name : "))
-    status.save_space_period=float(input("save_space_period : "))
-    status.save_net_period=float(input("save_space_net_period : "))
-    status.save2database=float(input("mutation_coefficient : "))
+    status.experiment_name='do not sve'
+    status.save_space_period=100
+    status.save_net_period=50
+    status.save2database=False
     program.run(status)
 
 
@@ -86,16 +128,39 @@ def run_cifar_small_batch():
     status.save2database=False
     program.run(status)
 
+def run_local_bidirect():
+    import Product_f as program
+    status=program.Status()
+    status.dt_Max=0.1
+    status.dt_min=0.00001
+    status.clear_period=200000
+    status.max_iter=2001
+    from utilities.Abstract_classes.classes.centered_random_selector_bidi import(
+        centered_random_selector as Selector)
+    status.Selector_creator=Selector
+    status.log_size=50
+    status.S=32
+    status.min_log_size=25
+    status.cuda=False
+    status.restart_period=50
+    status.mutation_coefficient=1
+    status.experiment_name='experiment_test_2'
+    status.save_space_period=100
+    status.save_net_period=200
+    status.save2database=False
+    program.run(status)
+
+
 def run_slow_ncf():
     import Product_f as program
     status=program.Status()
-    status.dt_Max=0.0001
+    status.dt_Max=0.1
     status.dt_min=0.00001
     status.clear_period=200000
-    status.max_iter=201
-    status.log_size=200
+    status.max_iter=2001
+    status.log_size=50
     status.S=32
-    status.min_log_size=50
+    status.min_log_size=25
     status.cuda=False
     status.mutation_coefficient=1
     status.experiment_name='experiment_test_2'

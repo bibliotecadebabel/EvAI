@@ -3,6 +3,11 @@ import utilities.Node as nd
 import utilities.Graphs as gr
 import TangentPlane as tplane
 
+def DNA2size(DNA):
+    return sum([
+        layer[1]*layer[2]*layer[3]*layer[4] for layer in DNA
+        if layer[0]==0])
+
 def add_node(g,DNA):
     node=nd.Node()
     q=qu.Quadrant(DNA)

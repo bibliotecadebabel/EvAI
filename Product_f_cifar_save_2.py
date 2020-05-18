@@ -50,9 +50,8 @@ class Status():
         self.S=50
         self.cuda=False
         self.typos_version='clone'
-        self.Alai=Alai(min=self.dt_min,
-             max=self.dt_Max,
-                max_time=self.max_iter+self.log_size)
+        self.restart_period=200
+        self.Alai=None
         self.typos=((1,0,0,0),(0,0,1,1),(0,1,0,0))
         self.dt = 0.1
         self.tau=0.01
@@ -167,6 +166,9 @@ def initialize_parameters(self):
 
 
 def create_objects(status):
+    status.Alai=Alai(min=status.dt_min,
+         max=status.dt_Max,
+            max_time=status.restart_period+status.log_size)
     status.Data_gen=GeneratorFromCIFAR.GeneratorFromCIFAR(
     status.Comp, status.S, cuda=status.cuda)
     status.Data_gen.dataConv2d()

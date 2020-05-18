@@ -5,6 +5,7 @@ import torch
 import torch.nn as nn
 import torch.tensor as tensor
 import torch.optim as optim
+from DNA_graph_functions import DNA2size
 
 
 
@@ -133,7 +134,8 @@ class TorchStream(Stream):
             self.add_node(key)
             network = nw.Network(key,
                                  cudaFlag=self.cuda,momentum=0.9,
-                                 weight_decay=0.0005)
+                                 weight_decay=1/DNA2size(key),
+                                 )
             self.link_node(key,network)
             self.charge_node(key)
             print('added net')
