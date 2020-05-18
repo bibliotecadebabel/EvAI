@@ -42,7 +42,7 @@ def run_cifar_user_input():
     status.min_log_size=100
     status.S=int(input("Batch size : "))
     status.cuda=True
-    status.mutation_coefficient=int(input("mutation_coefficient : "))
+    status.mutation_coefficient=float(input("mutation_coefficient : "))
     status.experiment_name='experiment_cifar_10mutation'
     status.save_space_period=100
     status.save_net_period=200
