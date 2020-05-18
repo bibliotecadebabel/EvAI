@@ -30,6 +30,45 @@ from utilities.Abstract_classes.classes.Alaising_cosine import (
 
 #from Product_f_cifar import Status as program_cf
 
+
+def run_cifar_user_no_image():
+    import Product_f_cifar_save_2 as program
+    status=program.Status()
+    status.dt_Max=0.1
+    status.dt_min=0.00001
+    status.clear_period=200000
+    status.max_layer=6
+    status.max_filters=41
+    status.max_iter=2001
+    status.restart_period=200
+    from utilities.Abstract_classes.classes.centered_random_selector_bidi import(
+        centered_random_selector as Selector)
+    status.Selector_creator=Selector
+    status.log_size=int(input("Log size : "))
+    status.min_log_size=100
+    status.S=int(input("Batch size : "))
+    status.cuda=True
+    status.mutation_coefficient=float(input("mutation_coefficient : "))
+    status.experiment_name='do not sve'
+    status.save_space_period=100
+    status.save_net_period=50
+    status.save2database=False
+    x=32
+    y=32
+    status.Center=((-1,1,3,x,y),
+            (0,3, 5, 3 , 3),
+            (0,5, 5, 3,  3),
+            (0,5, 120, x-4, y-4),
+            (1, 120,10),
+            (2,),
+            (3,-1,0),
+            (3,0,1),
+            (3,1,2),
+            (3,2,3),
+            (3,3,4))
+    program.run(status)
+
+
 def run_cifar_user_input_save():
     import Product_f_cifar_save_2 as program
     status=program.Status()
@@ -68,6 +107,9 @@ def run_cifar_small_batch():
     status.save_net_period=200
     status.save2database=False
     program.run(status)
+
+
+
 
 def run_cifar_user_input_bidi():
     import Product_f_cifar_save_2 as program
@@ -126,6 +168,44 @@ def run_cifar_small_batch():
     status.save_space_period=100
     status.save_net_period=200
     status.save2database=False
+    program.run(status)
+
+def run_local_no_image():
+    import Product_f as program
+    status=program.Status()
+    from Dyamic_DNA_f_methods import (
+        update_force_field_ac as update_force_field)
+    status.update_force_field=update_force_field
+    status.dt_Max=0.001
+    status.dt_min=0.00001
+    status.clear_period=200000
+    status.max_iter=2001
+    from utilities.Abstract_classes.classes.centered_random_selector_bidi import(
+        centered_random_selector as Selector)
+    status.Selector_creator=Selector
+    status.log_size=50
+    status.S=32
+    status.min_log_size=25
+    status.cuda=False
+    status.restart_period=50
+    status.mutation_coefficient=10
+    status.experiment_name='experiment_test_2'
+    status.save_space_period=100
+    status.save_net_period=200
+    status.save2database=False
+    x=11
+    y=11
+    status.Center=((-1,1,3,x,y),
+            (0,3, 5, 3 , 3),
+            (0,5, 5, 3,  3),
+            (0,5, 40, x-4, y-4),
+            (1, 40,2),
+             (2,),
+            (3,-1,0),
+            (3,0,1),
+            (3,1,2),
+            (3,2,3),
+            (3,3,4))
     program.run(status)
 
 def run_local_ac():

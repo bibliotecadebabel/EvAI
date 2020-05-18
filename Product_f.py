@@ -98,6 +98,19 @@ class Status():
         self.Selector_creator=Selector
         self.Selector=None
         self.update_force_field=update_force_field
+        x=11
+        y=11
+        self.Center=((-1,1,3,x,y),
+                (0,3, 15, 3 , 3),
+                (0,18, 15, 3,  3),
+                (0,33, 15, x, y),
+                (1, 15,2),
+                 (2,),
+                (3,-1,0),
+                (3,0,1),(3,-1,1),
+                (3,1,2),(3,0,2),(3,-1,2),
+                (3,2,3),
+                (3,3,4))
 
 
 
@@ -184,17 +197,7 @@ def create_objects(status):
             (0,3, 4, x, y),
             (1, 4, 2), (2,),(3,-1,0),(3,0,1),
             (3,1,2))"""
-    center=((-1,1,3,x,y),
-            (0,3, 15, 3 , 3),
-            (0,18, 15, 3,  3),
-            (0,33, 15, x, y),
-            (1, 15,2),
-             (2,),
-            (3,-1,0),
-            (3,0,1),(3,-1,1),
-            (3,1,2),(3,0,2),(3,-1,2),
-            (3,2,3),
-            (3,3,4))
+    center=status.Center
     selector=status.Selector_creator(condition=condition,
         directions=version)
     status.Selector=selector

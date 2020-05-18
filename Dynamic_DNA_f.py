@@ -147,7 +147,9 @@ class Dynamic_DNA():
         if not(self.update_force_field==self.
             update_force_field_default):
             self.update_velocity_potential()
-        self.update_force_field()
+            self.update_force_field(self)
+        else:
+            self.update_force_field()
         self.update_velocity(self)
         self.update_particles()
         self.update_space(self)

@@ -91,6 +91,19 @@ class Status():
         self.Creator=Creator
         self.Selector_creator=Selector
         self.Selector=None
+        x=32
+        y=32
+        self.Center=((-1,1,3,x,y),
+                (0,3, 15, 3 , 3),
+                (0,18, 15, 3,  3),
+                (0,33, 40, x, y),
+                (1, 40,10),
+                (2,),
+                (3,-1,0),
+                (3,0,1),(3,-1,1),
+                (3,1,2),(3,0,2),(3,-1,2),
+                (3,2,3),
+                (3,3,4))
 
 
 
@@ -184,17 +197,7 @@ def create_objects(status):
     def condition(DNA):
         return max_filter(max_layer(DNA,max_layers),max_filters)
     version=status.typos_version
-    center=((-1,1,3,x,y),
-            (0,3, 15, 3 , 3),
-            (0,18, 15, 3,  3),
-            (0,33, 40, x, y),
-            (1, 40,10),
-            (2,),
-            (3,-1,0),
-            (3,0,1),(3,-1,1),
-            (3,1,2),(3,0,2),(3,-1,2),
-            (3,2,3),
-            (3,3,4))
+    center=status.Center
     selector=status.Selector_creator(condition=condition,
         directions=version)
     status.Selector=selector
