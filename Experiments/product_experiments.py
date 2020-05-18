@@ -121,14 +121,14 @@ def run_cifar_user_input_bidi_save():
     status.max_layer=7
     status.max_filter=41
     from utilities.Abstract_classes.classes.centered_random_selector_bidi import(
-        centered_random_selector as Selector)
+        positive_random_selector as Selector)
     status.Selector_creator=Selector
     status.log_size=int(input("Log size : "))
     status.min_log_size=100
     status.S=int(input("Batch size : "))
     status.cuda=True
     status.mutation_coefficient=float(input("mutation_coefficient : "))
-    status.experiment_name="max_filtera=41 "
+    status.experiment_name="max_filtera=41_bidi"
     status.save_space_period=int(input("save_space_period : "))
     status.save_space_period=2000
     status.save_net_period=4000
