@@ -30,6 +30,24 @@ from utilities.Abstract_classes.classes.Alaising_cosine import (
 
 #from Product_f_cifar import Status as program_cf
 
+def run_cifar_user_input_save():
+    import Product_f_cifar_save_2 as program
+    status=program.Status()
+    status.dt_Max=0.01
+    status.dt_min=0.00001
+    status.clear_period=200000
+    status.max_iter=200000
+    status.log_size=int(input("Log size : "))
+    status.min_log_size=100
+    status.S=int(input("Batch size : "))
+    status.cuda=True
+    status.mutation_coefficient=float(input("mutation_coefficient : "))
+    status.experiment_name=float(input("experiment_name : "))
+    status.save_space_period=float(input("save_space_period : "))
+    status.save_net_period=float(input("save_space_net_period : "))
+    status.save2database=True
+    program.run(status)
+
 
 def run_cifar_user_input():
     import Product_f_cifar_save_2 as program
@@ -43,10 +61,10 @@ def run_cifar_user_input():
     status.S=int(input("Batch size : "))
     status.cuda=True
     status.mutation_coefficient=float(input("mutation_coefficient : "))
-    status.experiment_name='experiment_cifar_10mutation'
-    status.save_space_period=100
-    status.save_net_period=200
-    status.save2database=False
+    status.experiment_name=float(input("experiment_name : "))
+    status.save_space_period=float(input("save_space_period : "))
+    status.save_net_period=float(input("save_space_net_period : "))
+    status.save2database=float(input("mutation_coefficient : "))
     program.run(status)
 
 
