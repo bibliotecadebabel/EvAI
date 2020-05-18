@@ -135,7 +135,7 @@ def run_cifar_user_input_bidi_save():
     status.save2database=True
     x=32
     y=32
-    self.Center=((-1,1,3,x,y),
+    status.Center=((-1,1,3,x,y),
             (0,3, 15, 3 , 3),
             (0,18, 15, 3,  3),
             (0,33, 50, x, y),
