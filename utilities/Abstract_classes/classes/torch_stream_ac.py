@@ -134,7 +134,7 @@ class TorchStream(Stream):
             self.add_node(key)
             network = nw.Network(key,
                                  cudaFlag=self.cuda,momentum=0.9,
-                                 weight_decay=1/DNA2size(key),
+                                 weight_decay=0.0005,
                                  )
             self.link_node(key,network)
             self.charge_node(key)
