@@ -41,7 +41,8 @@ class Status():
         self.dt_min=0.0001
         self.max_iter=250
         self.max_layer=5
-        self.max_filter=4
+        self.max_filter=41
+        self.update_force_field=update_force_field
 
         self.experiment_name='experiment_cifar'
         self.save_space_period=200
