@@ -9,7 +9,6 @@ class TestDAO():
     
     def insert(self, testName, periodSave, dt, total, periodCenter, enable_mutation=1):
         
-        print("inserting 2")
         query = """INSERT INTO test (name, period, dt, total_iteration, period_center, enable_mutation) VALUES (?, ?, ?, ?, ?, ?);"""
         data = (testName, periodSave, dt, total, periodCenter, enable_mutation)
 

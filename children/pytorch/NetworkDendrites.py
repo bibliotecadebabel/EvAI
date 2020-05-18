@@ -163,7 +163,7 @@ class Network(nn.Module, na.NetworkAbstract):
         print("end step=", start_step)
         print("end energy=", self.getAverageLoss(total_steps//4))
 
-    def TrainingCosineLR_Restarts(self, dataGenerator, base_dt, epochs=1, etamin=0.0001):
+    def TrainingCosineLR_Restarts(self, dataGenerator, base_dt, epochs=1, etamin=0.0001, period_restart=None):
         
         print("momentum=", self.momentum)
         print("weight decay=", self.weight_decay)
@@ -171,10 +171,20 @@ class Network(nn.Module, na.NetworkAbstract):
         total_steps = len(dataGenerator._trainoader)
         
         print_every = total_steps // 4
-        epoch = 1
-        while epoch <= epochs:
+        epoch = 0
+
+        if period_restart is not None:
+            scheduler = optim.lr_scheduler.CosineAnnealingLR(self.optimizer, total_steps * period_restart, eta_min=etamin)
+        while epoch < epochs:
             
-            scheduler = optim.lr_scheduler.CosineAnnealingLR(self.optimizer, total_steps, eta_min=etamin)
+            if period_restart is None:
+                scheduler = optim.lr_scheduler.CosineAnnealingLR(self.optimizer, total_steps, eta_min=etamin)
+            else:
+
+                if epoch % period_restart == 0:
+                    print("RESTART DT")
+                    scheduler = optim.lr_scheduler.CosineAnnealingLR(self.optimizer, total_steps * period_restart, eta_min=etamin)
+
             for i, data in enumerate(dataGenerator._trainoader):
                 
                 if self.cudaFlag == True:
@@ -196,7 +206,7 @@ class Network(nn.Module, na.NetworkAbstract):
                 self.history_loss.append(self.total_value)
 
                 if i % print_every == print_every - 1:
-                    self.__printValues(epoch, i, avg=(total_steps//4))
+                    self.__printValues(epoch + 1, i, avg=(total_steps//4))
             
             epoch+= 1
         
