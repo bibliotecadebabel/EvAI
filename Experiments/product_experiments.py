@@ -119,7 +119,7 @@ def run_cifar_user_input_bidi_save():
     status.max_iter=20001
     status.restart_period=200
     status.max_layer=7
-    status.max_filter=41
+    status.max_filter=51
     from utilities.Abstract_classes.classes.centered_random_selector_bidi import(
         centered_random_selector as Selector)
     status.Selector_creator=Selector
