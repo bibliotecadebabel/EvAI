@@ -32,6 +32,9 @@ from utilities.Abstract_classes.classes.Alaising_cosine import (
 import os
 from DAO.database.dao import TestDAO, TestResultDAO, TestModelDAO
 
+
+update_force_field=None
+
 class Status():
     def __init__(self, display_size=None):
         self.dt_Max=0.01
@@ -212,7 +215,10 @@ def create_objects(status):
     Dynamics=Dynamic_DNA(space,Phase_space,status.dx,
         Creator=creator,Selector=selector,
         update_velocity=velocity_updater,
-        update_space=space_updater,version=version)
+        update_space=space_updater,version=version,
+        mutation_coefficient=status.mutation_coefficient,
+        update_force_field=status.update_force_field,
+        )
     Phase_space.create_particles(status.n)
     Phase_space.beta=status.beta
     Phase_space.alpha=status.alpha
