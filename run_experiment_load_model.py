@@ -17,6 +17,7 @@ MOMENTUM = 0.9
 EPOCHS = 60
 BATCH_SIZE = 128
 RESTAR_EPOCH_PERIOD = 30
+SHOW_ACCURACY_PERIOD = 5
 
 FOLDER = "cifar"
 MODEL_NAME = "4_cifar_test_restart-clone_2_model_25"
@@ -49,7 +50,9 @@ print(network.getAcurracy())
 
 print("STARTING TRAINING")
 test_id = TEST_DAO.insert(testName=TEST_NAME, periodSave=EPOCHS, dt=BASE_DT, total=EPOCHS, periodCenter=0)
-network.TrainingCosineLR_Restarts(dataGenerator=dataGen, base_dt=BASE_DT,epochs=EPOCHS,etamin=MIN_DT, period_restart=RESTAR_EPOCH_PERIOD)
+network.TrainingCosineLR_Restarts(dataGenerator=dataGen, base_dt=BASE_DT,epochs=EPOCHS,
+                                    etamin=MIN_DT, period_restart=RESTAR_EPOCH_PERIOD, 
+                                    period_show_accuracy=SHOW_ACCURACY_PERIOD)
 print("FINISH TRAINING")
 
 network.generateEnergy(dataGen)
