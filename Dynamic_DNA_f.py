@@ -166,7 +166,9 @@ class Dynamic_DNA():
         update_force_field=None,
         Selector=None,Creator=None,version='inclusion',
         mutation_coefficient=.1,
-        clear_period=80):
+        clear_period=80,
+        Alai=None):
+        self.Alai=Alai
         self.space = space
         self.phase_space= phase_space
         self.objects=phase_space.objects
