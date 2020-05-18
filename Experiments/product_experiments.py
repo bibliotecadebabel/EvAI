@@ -42,9 +42,9 @@ def run_cifar_user_input_save():
     status.S=int(input("Batch size : "))
     status.cuda=True
     status.mutation_coefficient=float(input("mutation_coefficient : "))
-    status.experiment_name=float(input("experiment_name : "))
-    status.save_space_period=float(input("save_space_period : "))
-    status.save_net_period=float(input("save_space_net_period : "))
+    status.experiment_name=input("experiment_name : ")
+    status.save_space_period=input(input("save_space_period : "))
+    status.save_net_period=input(input("save_space_net_period : "))
     status.save2database=True
     program.run(status)
 
