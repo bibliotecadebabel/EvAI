@@ -34,6 +34,17 @@ from utilities.Abstract_classes.classes.Alaising_cosine import (
 def run_cifar_user_no_image():
     import Product_f_cifar_save_2 as program
     status=program.Status()
+    status.Center=((-1,1,3,x,y),
+            (0,3, 5, 3 , 3),
+            (0,5, 5, 3,  3),
+            (0,5, 120, x-4, y-4),
+            (1, 120,10),
+            (2,),
+            (3,-1,0),
+            (3,0,1),
+            (3,1,2),
+            (3,2,3),
+            (3,3,4))
     status.dt_Max=0.1
     status.dt_min=0.00001
     status.clear_period=200000
@@ -55,17 +66,7 @@ def run_cifar_user_no_image():
     status.save2database=False
     x=32
     y=32
-    status.Center=((-1,1,3,x,y),
-            (0,3, 5, 3 , 3),
-            (0,5, 5, 3,  3),
-            (0,5, 120, x-4, y-4),
-            (1, 120,10),
-            (2,),
-            (3,-1,0),
-            (3,0,1),
-            (3,1,2),
-            (3,2,3),
-            (3,3,4))
+
     program.run(status)
 
 
