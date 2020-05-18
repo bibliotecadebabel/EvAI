@@ -40,8 +40,8 @@ class Status():
         self.dt_Max=0.01
         self.dt_min=0.0001
         self.max_iter=250
-        self.max_layer=5
-        self.max_filter=41
+        self.max_layer=7
+        self.max_filter=51
         self.update_force_field=update_force_field
 
         self.experiment_name='experiment_cifar'
@@ -79,6 +79,7 @@ class Status():
         self.Transfer=None
         self.S=32
         self.Comp=2
+        status.clear_period=2000000
         self.Data_gen=None
         self.p=1
         self.display=None
@@ -89,7 +90,7 @@ class Status():
         self.Graph=None
         self.Dynamics=None
         self.Creator=Creator
-        self.Selector_creator=Selector
+        self.Selector_creator=None
         self.Selector=None
         x=32
         y=32
@@ -211,6 +212,7 @@ def create_objects(status):
         update_velocity=velocity_updater,
         update_space=space_updater,version=version,
         mutation_coefficient=status.mutation_coefficient,
+        clear_period=status.clear_period,
         update_force_field=status.update_force_field,
         )
     Phase_space.create_particles(status.n)

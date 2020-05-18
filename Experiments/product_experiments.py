@@ -110,7 +110,46 @@ def run_cifar_small_batch():
     status.save2database=False
     program.run(status)
 
-def run_cifar_user_input_bidi_save():
+def run_cifar_user_input_no_save():
+    import Product_f_cifar_save_2 as program
+    status=program.Status()
+    status.dt_Max=0.1
+    status.dt_min=0.00001
+    status.clear_period=200000
+    status.max_iter=20001
+    status.restart_period=200
+    status.max_layer=7
+    status.max_filter=51
+    from utilities.Abstract_classes.classes.centered_random_selector_bidi import(
+        centered_random_selector as Selector)
+    status.Selector_creator=Selector
+    status.log_size=int(input("Log size : "))
+    status.min_log_size=100
+    status.S=int(input("Batch size : "))
+    status.cuda=True
+    status.mutation_coefficient=float(input("mutation_coefficient : "))
+    status.experiment_name="no_name"
+    status.clear_period=200
+    status.save_space_period=2000
+    status.save_net_period=4000
+    status.save2database=False
+    x=32
+    y=32
+    status.Center=((-1,1,3,x,y),
+            (0,3, 15, 3 , 3),
+            (0,18, 15, 3,  3),
+            (0,33, 50, x, y),
+            (1, 50,10),
+             (2,),
+            (3,-1,0),
+            (3,0,1),(3,-1,1),
+            (3,1,2),(3,0,2),(3,-1,2),
+            (3,2,3),
+            (3,3,4))
+    program.run(status)
+
+
+def run_cifar_user_input_bidi_no_save():
     import Product_f_cifar_save_2 as program
     status=program.Status()
     status.dt_Max=0.1
@@ -289,7 +328,7 @@ def run_local_ac():
 def run_local_bidirect():
     import Product_f as program
     status=program.Status()
-    status.dt_Max=0.1
+    status.dt_Max=0.0001
     status.dt_min=0.00001
     status.clear_period=200000
     status.max_iter=2001
@@ -301,6 +340,7 @@ def run_local_bidirect():
     status.min_log_size=25
     status.cuda=False
     status.restart_period=50
+    status.clear_period=20
     status.mutation_coefficient=1
     status.experiment_name='experiment_test_2'
     status.save_space_period=100

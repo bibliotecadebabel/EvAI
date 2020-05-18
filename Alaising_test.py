@@ -1,5 +1,16 @@
 from utilities.Abstract_classes.classes.Alaising_cosine import (
-    Alaising)
+    Alaising, Damped_Alaising)
+
+def get_Damped_test():
+    Alai=Damped_Alaising()
+    print(Alai.get_increments(-1000))
+    #print(Alai.get_increments(-n))
+    return
+
+def Damped_test():
+    Alai=Damped_Alaising()
+    print(Alai.initial_period)
+
 
 def get_increment(n):
     Alai=Alaising()
@@ -17,6 +28,8 @@ def compilation_test():
     Alai=Alaising()
     print('done')
 
-get_increment(5)
+#Damped_initialiciation_test()
+get_Damped_test()
+
 #update_test()
 #compilation_test()
