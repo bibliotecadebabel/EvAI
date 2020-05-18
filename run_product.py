@@ -1,8 +1,8 @@
-import Experiments.product_experiments  as experiements
+import Experiments.product_experiments  as experiments
 
 experiments.run_cifar_user_input_bidi()
-#experiements.run_local_bidirect()
-#experiements.run_slow_ncf()
-#experiements.run_cifar_user_input_save()
-#experiements.run_cifar_user_input()
+#experiments.run_local_bidirect()
+#experiments.run_slow_ncf()
+#experiments.run_cifar_user_input_save()
+#experiments.run_cifar_user_input()
 #import_test()
