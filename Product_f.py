@@ -34,10 +34,10 @@ import time
 from utilities.Abstract_classes.classes.Alaising_cosine import (
     Alaising as Alai)
 
-update_force_field=None
 
 class Status():
     def __init__(self, display_size=None):
+        self.update_force_field=None
         self.mutation_coefficient=0.1
         self.clear_period=80
         self.dt_Max=0.1
@@ -51,9 +51,7 @@ class Status():
         self.typos_version='clone'
         self.restart_period=50
         #self.Alai=None
-        self.Alai=Alai(min=self.dt_min
-            , max=self.dt_Max,
-                max_time=self.restart_period+self.log_size)
+        self.Alai=None
         self.max_layer=5
         self.max_filter=60
         self.log_size=200
@@ -220,7 +218,7 @@ def create_objects(status):
         update_space=space_updater,version=version,
         mutation_coefficient=status.mutation_coefficient,
         clear_period=status.clear_period,
-        update_force_field=update_force_field)
+        update_force_field=status.update_force_field)
     Phase_space.create_particles(status.n)
     Phase_space.beta=status.beta
     Phase_space.alpha=status.alpha

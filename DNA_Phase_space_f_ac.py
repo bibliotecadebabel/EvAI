@@ -8,6 +8,11 @@ from timing import timing
 
 
 class DNA_Phase_space():
+
+    def node2velocity_potential(self,node):
+        p=self.node2plane(node)
+        return p.velocity_potential
+
     def key2node(self,key):
         return self.DNA_graph.key2node(key)
 
@@ -307,7 +312,7 @@ class DNA_Phase_space():
     def print_support(self):
         for node in self.support:
             key = self.node2key(node)
-            print(f'{self.node2direction(node)} : { self.node2particles(node)} : {self.node2energy(node)}')
+            print(f'{self.node2direction(node)} : { self.node2particles(node)} : {self.node2velocity_potential(node)}: {self.node2energy(node)}')
 
     def print_center(self):
         node = self.key2node(self.center())

@@ -66,16 +66,18 @@ class Dynamic_DNA():
 
     def update_velocity_potential(self):
         c_p=self.momentum
-        for node in self.support:
+        for node in self.objects:
             p=self.node2plane(node)
             variance=p.variance
             dt=self.dt
-            p.velocity_potential+=1/c_p*dt*p.external_field
-            for kid in node.kids:
-                d_phi=p.velocity_potential-p_k.velocity_potential
-                if d_phi<0:
-                    p.velocity_potential+=dt*d_phi**2/(
-                        4*len(node.kids)*(p.variance+0.1)**(-5))
+            p.velocity_potential+=-1/c_p*dt*p.energy
+            if p.variance:
+                for kid in node.kids:
+                    p_k=self.node2plane(kid)
+                    d_phi=p_k.velocity_potential-p.velocity_potential
+                    if d_phi>0:
+                        p.velocity_potential+=-dt*d_phi**2/(
+                            4*len(node.kids)*(p.variance+0.1)**(-5))
 
 
     def update_velocity_default(self):
@@ -142,7 +144,10 @@ class Dynamic_DNA():
 
     def update(self):
         self.phase_space.update()
-        self.update_force_field()
+        if not(self.update_force_field==self.
+            update_force_field_default):
+            self.update_velocity_potential()
+        self.update_force_field(self)
         self.update_velocity(self)
         self.update_particles()
         self.update_space(self)
@@ -188,7 +193,7 @@ class Dynamic_DNA():
         self.Selector=Selector
         self.Creator=Creator
         self.version=version
-        self.momentum=0.9
+        self.momentum=2
 
 
 

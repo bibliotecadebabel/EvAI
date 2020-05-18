@@ -37,8 +37,8 @@ class Status():
         self.dt_Max=0.01
         self.dt_min=0.0001
         self.max_iter=250
-        self.max_layer=10
-        self.max_filter=70
+        self.max_layer=5
+        self.max_filter=4
 
         self.experiment_name='experiment_cifar'
         self.save_space_period=200

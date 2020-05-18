@@ -13,15 +13,13 @@ def update_force_field_ac(self):
     for node in self.support:
         p=self.node2plane(node)
         p.force_field=[]
-        c_d=self.diffusion_coefficient
-        c_l=self.lost_coefficient
-        c_i=self.interaction_coefficient
         for kid in node.kids:
             p_k=self.node2plane(kid)
-            d_phi=p.velocity_potential-p_k.velocity_potential
-            if d_phi<0:
-                component=p.velocity_potential-p_k.velocity_potential
-            p.force_field.append(c_k*component)
+            d_phi=p_k.velocity_potential-p.velocity_potential
+            component=0
+            if d_phi>0:
+                component=d_phi
+            p.force_field.append(-c_k*component)
 
 
 
