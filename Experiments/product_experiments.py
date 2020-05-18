@@ -35,34 +35,36 @@ def run_cifar():
     import Product_f_cifar_save_2 as program
     status=program.Status()
     status.dt_Max=0.01
-    status.dt_min=0.0001
+    status.dt_min=0.00001
     status.clear_period=200000
     status.max_iter=20000
     status.log_size=200
     status.min_log_size=100
+    status.S=32
     status.cuda=True
     status.mutation_coefficient=10
     status.experiment_name='experiment_cifar_10mutation'
     status.save_space_period=100
     status.save_net_period=200
-    status.save2database=True
+    status.save2database=False
     program.run(status)
 
 def run_slow_ncf():
-    import Product_f_save as program
+    import Product_f as program
     status=program.Status()
     status.dt_Max=0.0001
     status.dt_min=0.00001
     status.clear_period=200000
     status.max_iter=201
-    status.log_size=50
-    status.min_log_size=30
+    status.log_size=200
+    status.S=32
+    status.min_log_size=50
     status.cuda=False
-    status.mutation_coefficient=.1
+    status.mutation_coefficient=1
     status.experiment_name='experiment_test_2'
     status.save_space_period=100
     status.save_net_period=200
-    status.save2database=True
+    status.save2database=False
     program.run(status)
 
 def run_test():

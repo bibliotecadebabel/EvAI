@@ -43,8 +43,6 @@ class Dynamic_DNA():
             self.support=phase_space.support
             self.Graph=phase_space.DNA_graph
 
-
-
     def update_force_field_default(self):
         c_k=self.mutation_coefficient
         for node in self.support:
@@ -65,6 +63,20 @@ class Dynamic_DNA():
                     component=component+p.interaction_field[k]*c_i
                 p.force_field.append(c_k*component)
                 k=k+1
+
+    def update_velocity_potential(self):
+        c_p=self.momentum
+        for node in self.support:
+            p=self.node2plane(node)
+            variance=p.variance
+            dt=self.dt
+            p.velocity_potential+=1/c_p*dt*p.external_field
+            for kid in node.kids:
+                d_phi=p.velocity_potential-p_k.velocity_potential
+                if d_phi<0:
+                    p.velocity_potential+=dt*d_phi**2/(
+                        4*len(node.kids)*(p.variance+0.1)**(-5))
+
 
     def update_velocity_default(self):
         dt=self.dt
@@ -176,6 +188,7 @@ class Dynamic_DNA():
         self.Selector=Selector
         self.Creator=Creator
         self.version=version
+        self.momentum=0.9
 
 
 

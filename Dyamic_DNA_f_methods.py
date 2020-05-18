@@ -8,6 +8,23 @@ from random import randint
 from Particle import particle as particle
 
 
+def update_force_field_ac(self):
+    c_k=self.mutation_coefficient
+    for node in self.support:
+        p=self.node2plane(node)
+        p.force_field=[]
+        c_d=self.diffusion_coefficient
+        c_l=self.lost_coefficient
+        c_i=self.interaction_coefficient
+        for kid in node.kids:
+            p_k=self.node2plane(kid)
+            d_phi=p.velocity_potential-p_k.velocity_potential
+            if d_phi<0:
+                component=p.velocity_potential-p_k.velocity_potential
+            p.force_field.append(c_k*component)
+
+
+
 
 def update_velocity_mobility(self):
     dt=self.dt
@@ -277,7 +294,8 @@ def update_from_select_09(self):
         self.objects=phase_space.objects
         self.support=phase_space.support
         self.Graph=phase_space.DNA_graph
-    elif phase_space.time>self.clear_period:
+    elif False:
+    #elif phase_space.time>self.clear_period:
         phase_space.time=0
         node2remove=phase_space2node2remove(phase_space)
         node_c = phase_space.key2node(phase_space.DNA_graph.center)

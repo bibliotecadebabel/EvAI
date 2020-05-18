@@ -26,10 +26,15 @@ from DNA_creators import Creator_from_selection as Creator
 from Dyamic_DNA_f_methods import update_from_select_09 as space_updater
 from Dyamic_DNA_f_methods import (
     update_velocity_mobility as velocity_updater)
+from Dyamic_DNA_f_methods import (
+    update_force_field_ac as update_force_field)
+
 
 import time
 from utilities.Abstract_classes.classes.Alaising_cosine import (
     Alaising as Alai)
+
+update_force_field=None
 
 class Status():
     def __init__(self, display_size=None):
@@ -50,8 +55,8 @@ class Status():
                 max_time=self.max_iter+self.log_size)
         self.max_layer=5
         self.max_filter=60
-        self.log_size=50
-        self.min_log_size=30
+        self.log_size=200
+        self.min_log_size=50
         self.experiment_name='experiment'
         self.save_space_period=2000
         self.save_net_period=10000
@@ -93,6 +98,7 @@ class Status():
         self.Creator=Creator
         self.Selector_creator=Selector
         self.Selector=None
+        self.update_force_field=update_force_field
 
 
 
@@ -209,7 +215,8 @@ def create_objects(status):
         update_velocity=velocity_updater,
         update_space=space_updater,version=version,
         mutation_coefficient=status.mutation_coefficient,
-        clear_period=status.clear_period)
+        clear_period=status.clear_period,
+        update_force_field=update_force_field)
     Phase_space.create_particles(status.n)
     Phase_space.beta=status.beta
     Phase_space.alpha=status.alpha
