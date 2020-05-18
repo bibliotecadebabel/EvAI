@@ -119,7 +119,7 @@ def run_cifar_user_input_bidi_save():
     status.max_iter=20001
     status.restart_period=200
     status.max_layer=7
-    status.max_filter=41
+    status.max_filter=51
     from utilities.Abstract_classes.classes.centered_random_selector_bidi import(
         centered_random_selector as Selector)
     status.Selector_creator=Selector
@@ -128,7 +128,7 @@ def run_cifar_user_input_bidi_save():
     status.S=int(input("Batch size : "))
     status.cuda=True
     status.mutation_coefficient=float(input("mutation_coefficient : "))
-    status.experiment_name="max_filtera=41_bidi"
+    status.experiment_name="max_filtera=41_bidi_final"
     status.save_space_period=int(input("save_space_period : "))
     status.save_space_period=2000
     status.save_net_period=4000
@@ -158,7 +158,7 @@ def run_cifar_user_input_bidi():
     status.max_iter=20001
     status.restart_period=200
     self.max_layer=5
-    self.max_filter=41
+    self.max_filter=51
     from utilities.Abstract_classes.classes.centered_random_selector_bidi import(
         centered_random_selector as Selector)
     status.Selector_creator=Selector
@@ -177,7 +177,7 @@ def run_cifar_user_input_bidi():
             (0,3, 15, 3 , 3),
             (0,18, 15, 3,  3),
             (0,33, 60, x, y),
-            (1, 60,10),
+            (1, 50,10),
              (2,),
             (3,-1,0),
             (3,0,1),(3,-1,1),
