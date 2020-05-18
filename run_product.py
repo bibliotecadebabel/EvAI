@@ -1,4 +1,4 @@
-from Experiments.product_experiments import as experiements
+import Experiments.product_experiments  as experiements
 
 
 #run_slow_ncf()
