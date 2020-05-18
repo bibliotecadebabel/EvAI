@@ -121,7 +121,7 @@ def run_cifar_user_input_bidi_save():
     status.max_layer=7
     status.max_filter=41
     from utilities.Abstract_classes.classes.centered_random_selector_bidi import(
-        positive_random_selector as Selector)
+        centered_random_selector as Selector)
     status.Selector_creator=Selector
     status.log_size=int(input("Log size : "))
     status.min_log_size=100
