@@ -1,7 +1,8 @@
 import Experiments.product_experiments  as experiments
 
+save=bool(input('Insert any input to save'))
 if input('Insert any input for remote'):
-    experiments.run_cifar_user_input_bidi(save = False)
+    experiments.run_cifar_user_input_bidi(save = save)
 else:
     experiments.run_local_ac()
 

@@ -6,6 +6,7 @@ import torch.nn as nn
 import torch.tensor as tensor
 import torch.optim as optim
 from DNA_graph_functions import DNA2size
+import time
 
 
 
@@ -32,7 +33,7 @@ class TorchStream(Stream):
                 else:
                     dt=Alai.get_increments(-p)
                     if type(p) == list:
-                        print(f'The training range is dt_max : {dt[0]}, dt_min :{dt[self.log_size-1]} ')
+                        self.flag_print(f'The reverse training range is dt_max : {max(dt)}, dt_min :{min(dt)} ')
                     else:
                         #print(f'The training range is dt_min : {dt}, dt_max :{dt} ')
                         pass
@@ -58,6 +59,7 @@ class TorchStream(Stream):
     def flags_print(self,text):
         if self.flags==True:
             print(text)
+            time.sleep(.5)
 
     def key2average(self,key):
         log=self.key2log(key)
@@ -83,7 +85,7 @@ class TorchStream(Stream):
                     dt=self.dt,full_database=True)
             else:
                 dt=Alai.get_increments(self.log_size)
-                self.flags_print(f'The training range is dt_max : {dt[0]}, dt_min :{dt[self.log_size-1]} ')
+                self.flags_print(f'The training range is dt_max : {max(dt)}, dt_min :{min(dt)} ')
                 net.Training(data=self.dataGen,
                     p=self.log_size,
                     dt=Alai.get_increments(self.log_size),
@@ -105,7 +107,7 @@ class TorchStream(Stream):
                     dt=self.dt,full_database=True)
             else:
                 dt=Alai.get_increments(self.log_size)
-                self.flags_print(f'The training range is dt_max : {dt[0]}, dt_min :{dt[self.log_size-1]} ')
+                self.flags_print(f'The training range is dt_max : {max(dt)}, dt_min :{min(dt)} ')
                 net.Training(data=self.dataGen,
                     p=self.log_size-self.min_size,
                     dt=dt,

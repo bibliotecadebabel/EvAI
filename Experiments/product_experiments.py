@@ -77,6 +77,7 @@ def run_local_ac():
     status.dt_min=0.00001
     status.clear_period=200000
     status.max_iter=2001
+    status.Alai_creator=Alai
     from utilities.Abstract_classes.classes.centered_random_selector_bidi import(
         centered_random_selector as Selector)
     status.Selector_creator=Selector

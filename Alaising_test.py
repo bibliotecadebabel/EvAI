@@ -22,6 +22,12 @@ def Damped_test():
     Alai=Damped_Alaising()
     print(Alai.initial_period)
 
+def get_increment_log(n):
+    Alai=Alaising()
+    for k in range(5*n):
+        print(Alai.get_increments(0))
+        Alai.update()
+    return
 
 def get_increment(n):
     Alai=Alaising()
@@ -40,7 +46,7 @@ def compilation_test():
     print('done')
 
 #Damped_initialiciation_test()
-get_Damped_test_ep()
-
+#get_Damped_test_ep()
+get_increment_log(5)
 #update_test()
 #compilation_test()
