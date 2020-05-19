@@ -29,9 +29,15 @@ class TorchStream(Stream):
                         p=p,
                         dt=self.dt,full_database=True)
                 else:
+                    dt=Alai.get_increments(-p)
+                    if type(p) == list:
+                        print(f'The training range is dt_min : {dt[0]}, dt_max :{dt[self.log_size-1]} ')
+                    else:
+                        #print(f'The training range is dt_min : {dt}, dt_max :{dt} ')
+                        pass
                     out_net.Training(data=self.dataGen,
                         p=p,
-                        dt=Alai.get_increments(-p),
+                        dt=dt,
                         full_database=True)
                 out_net.history_loss=[]
                 return out_net
@@ -69,6 +75,8 @@ class TorchStream(Stream):
                     p=self.log_size,
                     dt=self.dt,full_database=True)
             else:
+                dt=Alai.get_increments(self.log_size)
+                print(f'The training range is dt_min : {dt[0]}, dt_max :{dt[self.log_size-1]} ')
                 net.Training(data=self.dataGen,
                     p=self.log_size,
                     dt=Alai.get_increments(self.log_size),
@@ -88,10 +96,11 @@ class TorchStream(Stream):
                     p=self.log_size-self.min_size,
                     dt=self.dt,full_database=True)
             else:
+                dt=Alai.get_increments(self.log_size)
+                print(f'The training range is dt_min : {dt[0]}, dt_max :{dt[self.log_size-1]} ')
                 net.Training(data=self.dataGen,
                     p=self.log_size-self.min_size,
-                    dt=Alai.get_increments(self.log_size
-                    -self.min_size),
+                    dt=dt,
                     full_database=True)
 #            net.Training(data=self.dataGen,
 #                p=self.log_size-5,
