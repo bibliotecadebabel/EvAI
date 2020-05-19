@@ -115,7 +115,7 @@ def run_cifar_user_input_no_save():
     status=program.Status()
     status.dt_Max=0.1
     status.dt_min=0.00001
-    status.clear_period=200000
+    status.clear_period=200
     status.max_iter=40001
     status.restart_period=200
     status.max_layer=10
@@ -167,7 +167,7 @@ def run_cifar_user_input_bidi_no_save():
     status.S=int(input("Batch size : "))
     status.cuda=True
     status.mutation_coefficient=float(input("mutation_coefficient : "))
-    status.experiment_name="max_filtera=51_bidi_final"
+    status.experiment_name="max_filtera=51_bidi_final_1"
     status.save_space_period=int(input("save_space_period : "))
     status.save_space_period=2000
     status.save_net_period=4000
