@@ -210,33 +210,26 @@ class Network(nn.Module, na.NetworkAbstract):
         print("end step=", start_step)
         print("end energy=", self.getAverageLoss(total_steps//4))
 
-    def TrainingCosineLR_Restarts(self, dataGenerator, base_dt, epochs=1, etamin=0.0001, period_restart=None, period_show_accuracy=None):
+    def TrainingCosineLR_Restarts(self, dataGenerator, max_dt, min_dt, epochs, restart_dt=1, show_accuarcy=False):
 
-        print("momentum=", self.momentum)
-        print("weight decay=", self.weight_decay)
-        self.optimizer = optim.SGD(self.parameters(), lr=base_dt, momentum=self.momentum, weight_decay=self.weight_decay)
+        self.optimizer = optim.SGD(self.parameters(), lr=max_dt, momentum=self.momentum, weight_decay=self.weight_decay)
         total_steps = len(dataGenerator._trainoader)
 
         print_every = total_steps // 4
         epoch = 0
 
-        if period_restart is not None:
-            scheduler = optim.lr_scheduler.CosineAnnealingLR(self.optimizer, total_steps * period_restart, eta_min=etamin)
+        scheduler = optim.lr_scheduler.CosineAnnealingLR(self.optimizer, total_steps * restart_dt, eta_min=min_dt)
 
         while epoch < epochs:
 
-            if period_restart is None:
-                scheduler = optim.lr_scheduler.CosineAnnealingLR(self.optimizer, total_steps, eta_min=etamin)
-            else:
+            if epoch % restart_dt == 0:
+                scheduler = optim.lr_scheduler.CosineAnnealingLR(self.optimizer, total_steps * restart_dt, eta_min=min_dt)
 
-                if epoch % period_restart == 0:
-                    scheduler = optim.lr_scheduler.CosineAnnealingLR(self.optimizer, total_steps * period_restart, eta_min=etamin)
+            if show_accuarcy == True and epoch > 0:
 
-                if period_show_accuracy is not None and epoch > 0:
-
-                    if epoch % period_show_accuracy == 0:
-                        self.generateEnergy(dataGen=dataGenerator)
-                        print("ACCURACY= ", self.getAcurracy())
+                if epoch % 5 == 0:
+                    self.generateEnergy(dataGen=dataGenerator)
+                    print("ACCURACY= ", self.getAcurracy())
 
             for i, data in enumerate(dataGenerator._trainoader):
 
@@ -263,8 +256,6 @@ class Network(nn.Module, na.NetworkAbstract):
                     self.__printValues(epoch + 1, i, avg=(total_steps//4))
 
             epoch+= 1
-
-        print("end energy=", self.getAverageLoss(total_steps//4))
 
 
 

@@ -9,21 +9,23 @@ import os
 
 class CommandExperimentCifar_Restarts():
 
-    def __init__(self, space, dataGen, testName, selector, momentum, weight_decay, cuda=False):
+    def __init__(self, initialDNA, dataGen, testName, selector, momentum, weight_decay, space, cuda=True):
         self.__space = space
         self.__cuda = cuda
         self.__dataGen = dataGen
-        self.__bestNetwork = None
-        self.__momentum = momentum
-        self.__weight_decay = weight_decay
-        self.__generateNetworks()
         self.__testName = testName
         self.__testDao = TestDAO.TestDAO(db='database.db')
         self.__selector = selector
         self.__testResultDao = TestResultDAO.TestResultDAO(db='database.db')
         self.__testModelDao = TestModelDAO.TestModelDAO(db='database.db')
-        self.__bestNetworkEpochs = 5
+
+        self.__bestNetwork = None
+        self.__momentum = momentum
+        self.__weight_decay = weight_decay
+
         self.__iterations_per_epoch = 0
+        self.__bestNetwork = nw.Network(adn=initialDNA, cudaFlag=cuda, 
+                                momentum=self.__momentum, weight_decay=self.__weight_decay)
 
     def __generateNetworks(self):
 
@@ -42,7 +44,7 @@ class CommandExperimentCifar_Restarts():
             print("new network")
             centerNetwork = nw.Network(centerAdn, cudaFlag=CUDA, momentum=self.__momentum, weight_decay=self.__weight_decay)
         else:
-            print("new center (cloning network)=", self.__bestNetwork.adn)
+            print("new space's center: =", self.__bestNetwork.adn)
             centerNetwork = self.__bestNetwork.clone()
 
         self.__nodes.append(nodeCenter)
@@ -88,21 +90,35 @@ class CommandExperimentCifar_Restarts():
         return nodeCenter
 
 
-    def execute(self, periodSave, periodNewSpace, periodSaveModel, totalIterations, base_dt, min_dt):
+    def execute(self, periodSave, periodNewSpace, periodSaveModel, epochs, min_dt, max_dt, min_dt_2, max_dt_2):
 
         dataGen = self.__dataGen
         self.__iterations_per_epoch = len(dataGen._trainoader)
-        print("inserting 1")
-        test_id = self.__testDao.insert(testName=self.__testName, periodSave=periodSave, dt=base_dt, 
-                                          total=totalIterations, periodCenter=periodNewSpace)
-        for j in range(1, totalIterations+1):
+
+        test_id = self.__testDao.insert(testName=self.__testName, periodSave=periodSave, dt=max_dt, 
+                                          total=epochs, periodCenter=periodNewSpace)
+        
+
+        print("TRAINING INITIAL NETWORK")
+        self.__bestNetwork.TrainingCosineLR_Restarts(dataGenerator=dataGen, max_dt=max_dt, min_dt=min_dt, 
+                                                        epochs=10, restart_dt=10)
+        self.__bestNetwork.TrainingCosineLR_Restarts(dataGenerator=dataGen, max_dt=max_dt_2, min_dt=min_dt_2, 
+                                                        epochs=10, restart_dt=10)
+
+        self.__saveModel(self.__bestNetwork, test_id=test_id, iteration=0)
+
+        self.__generateNewSpace()
+        self.__generateNetworks() 
+        
+        for j in range(1, epochs+1):
                 
-            print("epoch #", j)
+            print("---- EPOCH #", j)
 
             i = 0
             for network in self.__networks:
-                print("training net #", i)
-                network.TrainingCosineLR_Restarts(dataGenerator=dataGen, base_dt=base_dt,etamin=min_dt)
+                print("Training net #", i)
+                network.TrainingCosineLR_Restarts(dataGenerator=dataGen, max_dt=max_dt_2, min_dt=min_dt_2, 
+                                                        epochs=4, restart_dt=4)
                 i += 1
 
             self.__saveEnergy()
@@ -110,13 +126,12 @@ class CommandExperimentCifar_Restarts():
 
             self.__bestNetwork = self.__getBestNetwork()
 
-            self.__bestNetwork.TrainingCosineLR_Restarts(dataGenerator=dataGen, base_dt=base_dt, epochs=10, etamin=min_dt)
+            print("TRAINING BEST NETWORK")
+            self.__bestNetwork.TrainingCosineLR_Restarts(dataGenerator=dataGen, max_dt=max_dt_2, min_dt=min_dt_2, 
+                                                        epochs=20, restart_dt=20)
                 
                 
-            if j % periodSaveModel == 0:
-                print("saving model")
-                self.__saveModel(test_id=test_id, iteration=j)
-            
+            self.__saveModel(network=self.__bestNetwork, test_id=test_id, iteration=j)
             self.__generateNewSpace()
             self.__generateNetworks()
 
@@ -178,15 +193,16 @@ class CommandExperimentCifar_Restarts():
         self.__space = None
         self.__space = newSpace
 
-    def __saveModel(self, test_id, iteration):
+    def __saveModel(self, network, test_id, iteration):
 
         fileName = str(test_id)+"_"+self.__testName+"_model_"+str(iteration)
-        final_path = os.path.join("saved_models","cifar",fileName)
-        self.__bestNetwork.generateEnergy(self.__dataGen)
+        final_path = os.path.join("saved_models","cifar", fileName)
+        network.generateEnergy(self.__dataGen)
         
-        dna = str(self.__bestNetwork.adn)
-        accuracy = self.__bestNetwork.getAcurracy()
+        dna = str(network.adn)
+        accuracy = network.getAcurracy()
         
-        self.__bestNetwork.saveModel(final_path)
+        network.saveModel(final_path)
         
         self.__testModelDao.insert(idTest=test_id,dna=dna,iteration=iteration,fileName=fileName, model_weight=accuracy)
+        print("model saved with accuarcy= ", accuracy)
