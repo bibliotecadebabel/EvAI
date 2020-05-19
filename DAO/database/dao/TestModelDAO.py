@@ -4,8 +4,8 @@ import json
 
 class TestModelDAO():
 
-    def __init__(self):
-        self.__handler = DBHandler()
+    def __init__(self, db='database_product.db'):
+        self.__handler = DBHandler(db)
     
     def insert(self, idTest, dna, iteration, fileName, model_weight):
 

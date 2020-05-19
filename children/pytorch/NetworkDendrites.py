@@ -130,22 +130,25 @@ class Network(nn.Module, na.NetworkAbstract):
 
         self.history_loss.append(self.total_value)
 
-    def TrainingALaising(self, dataGenerator, epochs, alaising_object):
+    def TrainingALaising(self, dataGenerator, epochs, alaising_object, period_show_accuracy):
         epoch = 0
 
         steps_per_epoch = len(dataGenerator._trainoader)
-        print("steps= ", steps_per_epoch)
+        print("steps_per_epoch= ", steps_per_epoch)
+        print("weight decay= ", self.weight_decay)
+        print("momentum= ", self.momentum)
         period_print = steps_per_epoch // 4
         
         while epoch < epochs:
 
             dt_array = alaising_object.get_increments(size=steps_per_epoch)
 
-            if epoch % 2 == 0:
+            if epoch % period_show_accuracy == 0:
 
                 self.generateEnergy(dataGen=dataGenerator)
                 print("ACCURACY= ", self.getAcurracy())
 
+            print("current_max: ", alaising_object.current_max," - current_min: ", alaising_object.current_min)
             for i, data in enumerate(dataGenerator._trainoader):
                 
                 self.optimizer = optim.SGD(self.parameters(), lr=dt_array[i], 

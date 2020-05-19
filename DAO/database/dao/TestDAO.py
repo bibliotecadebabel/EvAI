@@ -4,8 +4,8 @@ from Entities.TestEntity import TestEntity
 
 class TestDAO():
 
-    def __init__(self):
-        self.__handler = DBHandler()
+    def __init__(self, db="database_product.db"):
+        self.__handler = DBHandler(db)
     
     def insert(self, testName, periodSave, dt, total, periodCenter, enable_mutation=1):
         
