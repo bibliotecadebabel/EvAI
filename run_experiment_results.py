@@ -64,6 +64,9 @@ else:
         if result.iteration % PERIOD_ITERATION == 0:
             
             axis_x.append(result.iteration)
+
+            if result.tangentPlane.energy is None:
+                result.tangentPlane.energy = 0
             axis_y.append(result.tangentPlane.energy)
             table_data_energy.append([result.iteration, result.tangentPlane.energy])
             table_data_dna.append([result.iteration, result.dna])

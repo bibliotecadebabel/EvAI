@@ -8,7 +8,7 @@ from utilities.Abstract_classes.classes.random_selector import random_selector
 ###### EXPERIMENT SETTINGS ######
 
 # BATCH SIZE
-BATCH_SIZE = 32
+BATCH_SIZE = 128
 
 # DATA SOURCE ('default' -> Pikachu, 'cifar' -> CIFAR)
 DATA_SOURCE = 'cifar'
@@ -20,10 +20,10 @@ PERIOD_SAVE = 1
 PERIOD_NEWSPACE = 1 
 
 # Every PERIOD_SAVE_MODEL iterations, the best network (current center) will be stored on filesystem
-PERIOD_SAVE_MODEL = 5
+PERIOD_SAVE_MODEL = 1
 
-# After TOTAL_ITERATIONS, the experiment will stop.
-TOTAL_ITERATIONS = 100
+# After EPOCHS, the experiment will stop.
+EPOCHS = 100
 
 # dt parameter
 DT = 0.001
@@ -47,7 +47,7 @@ MAX_LAYERS = 15
 MAX_FILTERS = 70
 
 # TEST_NAME, the name of the experiment (unique)
-TEST_NAME = "cifar_test_restart-clone_2"
+TEST_NAME = "cifar_experiment_ver2"
 
 
 def DNA_Creator_s(x,y):
