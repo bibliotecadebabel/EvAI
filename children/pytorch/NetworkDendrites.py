@@ -305,7 +305,6 @@ class Network(nn.Module, na.NetworkAbstract):
 
             i=0
 
-            printEvery = p // 4
             while i < p:
 
                 if dt is not None:
@@ -319,9 +318,6 @@ class Network(nn.Module, na.NetworkAbstract):
                 self.__doTraining(inputs=inputs, labels_data=labels_data)
 
                 self.__currentEpoch = i
-
-#                if i % printEvery == printEvery - 1:
-#                    self.__printValues(1, i, avg=printEvery)
 
                 dataGenerator.update()
 
