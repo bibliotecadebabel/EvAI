@@ -25,11 +25,11 @@ class Alaising():
 
 
 class Damped_Alaising():
-    def __init__(self,min=0.0001,
-        initial_max=0.2,
-        final_max=0.001,
-        initial_min=0.0001,
-        final_min=0.00001,
+    def __init__(self,
+        initial_max=4,
+        final_max=3,
+        initial_min=2,
+        final_min=1,
         Max_iter=2000):
         self.initial_max=initial_max
         self.final_max=final_max
@@ -39,7 +39,7 @@ class Damped_Alaising():
         self.final_min=final_min
         self.Max_iter=Max_iter
         self.time=0
-        self.initial_period=int(np.log(Max_iter)/np.log(2)-1)+1
+        self.initial_period=int(np.log(Max_iter)/np.log(2)-1)
         self.current_period=self.initial_period
         self.current_max=initial_max
         self.current_min=initial_min
@@ -72,18 +72,20 @@ class Damped_Alaising():
     def update_amplitude(self):
         n=self.Max_iter
         t=self.time
-        m_o=np.log(self.initial_min)
-        M_o=np.log(self.initial_max)
-        m_f=np.log(self.final_min)
-        M_f=np.log(self.final_max)
+        m_o=np.log10(self.initial_min)
+        M_o=np.log10(self.initial_max)
+        m_f=np.log10(self.final_min)
+        M_f=np.log10(self.final_max)
         self.current_min=10**(m_o+t*(m_f-m_o)/n)
         self.current_max=10**(M_o+t*(M_f-M_o)/n)
-        self.time+=1
 
     def update(self):
         self.update_amplitude()
         if self.local_time>self.current_period:
            self.current_period=2*self.current_period
+           print(self.local_time)
+           print(f'current max is : {self.current_max}')
+           print(f'current min is : {self.current_min}')
            self.local_time=0
         else:
            self.local_time+=1
