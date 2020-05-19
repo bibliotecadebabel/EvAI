@@ -264,8 +264,8 @@ def run(status):
             if status.Alai:
                 status.Alai.update()
 
-            #if k % 200 == 0:
-            #    status.Alai.time=0
+            if k % 200 and (status.Alai.type=='default'):
+                status.Alai.restart()
             #status.print_particles()
             #status.print_particles()
             #status.print_max_particles()
