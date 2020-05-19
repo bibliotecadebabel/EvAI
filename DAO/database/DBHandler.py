@@ -2,16 +2,17 @@ import sqlite3
 
 class DBHandler():
 
-    def __init__(self):
+    def __init__(self, db):
         self.__connection = None
         self.__connected = False
         self.__cursor = None
+        self.__database = db
 
     def __connect(self):
 
         try:
 
-            self.__connection = sqlite3.connect('database.db')
+            self.__connection = sqlite3.connect(self.__database)
             self.__connected = True
             self.__cursor = self.__connection.cursor()
 

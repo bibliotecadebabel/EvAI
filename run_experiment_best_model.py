@@ -2,26 +2,24 @@ import children.pytorch.NetworkDendrites as nw
 import os
 from DAO import GeneratorFromCIFAR
 from DAO.database.dao import TestDAO, TestModelDAO
+from utilities.Abstract_classes.classes.Alaising_cosine import (
+    Alaising, Damped_Alaising)
 
 CUDA = True
 
-TEST_NAME = "experiment_best_model"
-TEST_DAO = TestDAO.TestDAO()
-MODEL_DAO = TestModelDAO.TestModelDAO()
+TEST_NAME = "experiment_aliasing"
+TEST_DAO = TestDAO.TestDAO(db='database.db')
+MODEL_DAO = TestModelDAO.TestModelDAO(db='database.db')
 
-BASE_DT = 0.05
-MIN_DT = 0.000001
 WEIGHT_DECAY = 0.0005
 MOMENTUM = 0.9
-
 EPOCHS = 200
 BATCH_SIZE = 128
-RESTAR_EPOCH_PERIOD = 100
 SHOW_ACCURACY_PERIOD = 5
+MAX_ITER = EPOCHS * ((50000 // BATCH_SIZE) + 1) 
 
 FOLDER = "cifar"
 STORED_MODEL_NAME = TEST_NAME+"_"+str(EPOCHS)
-
 
 
 dataGen = GeneratorFromCIFAR.GeneratorFromCIFAR(2,  BATCH_SIZE)
@@ -38,13 +36,14 @@ ADN = ((-1, 1, 3, 32, 32), (0, 3, 60, 3, 3), (0, 60, 60, 3, 3), (0, 60, 60, 3, 3
           (3, 11, 13), (3, 12, 13), (3, 10, 13), (3, 13, 14), (3, 14, 15))
 
 
+Alai= Damped_Alaising(Max_iter=MAX_ITER)
+print("max iter=", Alai.Max_iter)
+
 network = nw.Network(adn=ADN, cudaFlag=CUDA, momentum=MOMENTUM, weight_decay=WEIGHT_DECAY)
 
 print("STARTING TRAINING")
-test_id = TEST_DAO.insert(testName=TEST_NAME, periodSave=EPOCHS, dt=BASE_DT, total=EPOCHS, periodCenter=0)
-network.TrainingCosineLR_Restarts(dataGenerator=dataGen, base_dt=BASE_DT,epochs=EPOCHS,
-                                    etamin=MIN_DT, period_restart=RESTAR_EPOCH_PERIOD, 
-                                    period_show_accuracy=SHOW_ACCURACY_PERIOD)
+test_id = TEST_DAO.insert(testName=TEST_NAME, periodSave=EPOCHS, dt=Alai.current_max, total=EPOCHS, periodCenter=0)
+network.TrainingALaising(dataGenerator=dataGen, epochs=EPOCHS, alaising_object=Alai, period_show_accuracy=SHOW_ACCURACY_PERIOD)
 print("FINISH TRAINING")
 
 network.generateEnergy(dataGen)
