@@ -26,10 +26,10 @@ class Alaising():
 
 class Damped_Alaising():
     def __init__(self,
-        initial_max=4,
-        final_max=3,
-        initial_min=2,
-        final_min=1,
+        initial_max=0.02,
+        final_max=0.0005,
+        initial_min=0.0001,
+        final_min=0.00001,
         Max_iter=2000):
         self.initial_max=initial_max
         self.final_max=final_max
