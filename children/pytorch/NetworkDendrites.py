@@ -71,15 +71,15 @@ class Network(nn.Module, na.NetworkAbstract):
     def __generateLengthNodes(self):
 
         for i in range(len(self.adn)):
-            
+
             tupleBody = self.adn[i]
 
             if tupleBody[0] >= 0 and tupleBody[0] <= 2:
                 self.__lenghNodes += 1
-            
+
             if tupleBody[0] == 3:
                 self.__conv2d_propagate_mode = const.CONV2D_MULTIPLE_INPUTS
-        
+
         self.__lenghNodes += 1
 
     def Predict(self, image, label):
@@ -91,7 +91,7 @@ class Network(nn.Module, na.NetworkAbstract):
 
         if self.cudaFlag == True:
             value = value.cuda()
-        
+
         self.nodes[0].objects[0].value = value
         self(self.nodes[0].objects[0].value)
 
@@ -124,7 +124,7 @@ class Network(nn.Module, na.NetworkAbstract):
         self.optimizer.zero_grad()
         self.Train(inputs, 1, 1)
         self.optimizer.step()
-        
+
         self.total_value = self.__getLossLayer().value.item()
         self.__accumulated_loss += self.total_value
 
@@ -138,7 +138,7 @@ class Network(nn.Module, na.NetworkAbstract):
         print("weight decay= ", self.weight_decay)
         print("momentum= ", self.momentum)
         period_print = steps_per_epoch // 4
-        
+
         while epoch < epochs:
 
             dt_array = alaising_object.get_increments(size=steps_per_epoch)
@@ -150,9 +150,9 @@ class Network(nn.Module, na.NetworkAbstract):
 
             print("current_max: ", alaising_object.current_max," - current_min: ", alaising_object.current_min)
             for i, data in enumerate(dataGenerator._trainoader):
-                
-                self.optimizer = optim.SGD(self.parameters(), lr=dt_array[i], 
-                        momentum=self.momentum, weight_decay=self.weight_decay) 
+
+                self.optimizer = optim.SGD(self.parameters(), lr=dt_array[i],
+                        momentum=self.momentum, weight_decay=self.weight_decay)
 
                 if self.cudaFlag == True:
                     inputs, labels_data = data[0].cuda(), data[1].cuda()
@@ -167,14 +167,14 @@ class Network(nn.Module, na.NetworkAbstract):
                 self.optimizer.zero_grad()
                 self.Train(inputs, 1, 1)
                 self.optimizer.step()
-                
+
                 self.total_value = self.__getLossLayer().value.item()
                 self.__accumulated_loss += self.total_value
                 self.history_loss.append(self.total_value)
 
                 if i % period_print == period_print - 1:
                     self.__printValues(epoch + 1, i, avg=period_print)
-            
+
             epoch += 1
 
     def TrainingCosineLR(self, dataGenerator, dt_array, iteration):
@@ -186,45 +186,45 @@ class Network(nn.Module, na.NetworkAbstract):
 
         for _, data in enumerate(dataGenerator._trainoader):
 
-            self.optimizer = optim.SGD(self.parameters(), lr=dt_array[start_step], momentum=self.momentum, weight_decay=self.weight_decay) 
-            
+            self.optimizer = optim.SGD(self.parameters(), lr=dt_array[start_step], momentum=self.momentum, weight_decay=self.weight_decay)
+
             if self.cudaFlag == True:
                 inputs, labels_data = data[0].cuda(), data[1].cuda()
             else:
                 inputs, labels_data = data[0], data[1]
 
             inputs = inputs * 255
-            
+
             self.assignLabels(labels_data)
             self.total_value = 0
             self.optimizer.zero_grad()
             self.Train(inputs, 1, 1)
             self.optimizer.step()
-            
+
             self.total_value = self.__getLossLayer().value.item()
             self.__accumulated_loss += self.total_value
             self.history_loss.append(self.total_value)
 
             start_step += 1
-        
+
         print("end step=", start_step)
         print("end energy=", self.getAverageLoss(total_steps//4))
 
     def TrainingCosineLR_Restarts(self, dataGenerator, base_dt, epochs=1, etamin=0.0001, period_restart=None, period_show_accuracy=None):
-        
+
         print("momentum=", self.momentum)
         print("weight decay=", self.weight_decay)
-        self.optimizer = optim.SGD(self.parameters(), lr=base_dt, momentum=self.momentum, weight_decay=self.weight_decay) 
+        self.optimizer = optim.SGD(self.parameters(), lr=base_dt, momentum=self.momentum, weight_decay=self.weight_decay)
         total_steps = len(dataGenerator._trainoader)
-        
+
         print_every = total_steps // 4
         epoch = 0
 
         if period_restart is not None:
             scheduler = optim.lr_scheduler.CosineAnnealingLR(self.optimizer, total_steps * period_restart, eta_min=etamin)
-        
+
         while epoch < epochs:
-            
+
             if period_restart is None:
                 scheduler = optim.lr_scheduler.CosineAnnealingLR(self.optimizer, total_steps, eta_min=etamin)
             else:
@@ -239,14 +239,14 @@ class Network(nn.Module, na.NetworkAbstract):
                         print("ACCURACY= ", self.getAcurracy())
 
             for i, data in enumerate(dataGenerator._trainoader):
-                
+
                 if self.cudaFlag == True:
                     inputs, labels_data = data[0].cuda(), data[1].cuda()
                 else:
                     inputs, labels_data = data[0], data[1]
 
                 inputs = inputs * 255
-                
+
                 self.assignLabels(labels_data)
                 self.total_value = 0
                 self.optimizer.zero_grad()
@@ -257,33 +257,33 @@ class Network(nn.Module, na.NetworkAbstract):
                 self.total_value = self.__getLossLayer().value.item()
                 self.__accumulated_loss += self.total_value
                 self.history_loss.append(self.total_value)
-                
+
 
                 if i % print_every == print_every - 1:
                     self.__printValues(epoch + 1, i, avg=(total_steps//4))
 
             epoch+= 1
-        
-        print("end energy=", self.getAverageLoss(total_steps//4))
-   
 
-    
+        print("end energy=", self.getAverageLoss(total_steps//4))
+
+
+
     def getLRCosine(self, total_steps, base_dt, etamin):
 
         array_lr = []
-        self.optimizer = optim.SGD(self.parameters(), lr=base_dt, momentum=self.momentum, weight_decay=self.weight_decay) 
-        scheduler = optim.lr_scheduler.CosineAnnealingLR(self.optimizer, total_steps, eta_min=etamin)  
+        self.optimizer = optim.SGD(self.parameters(), lr=base_dt, momentum=self.momentum, weight_decay=self.weight_decay)
+        scheduler = optim.lr_scheduler.CosineAnnealingLR(self.optimizer, total_steps, eta_min=etamin)
 
         for i in range(total_steps):
             array_lr.append(scheduler.get_lr()[0])
             self.optimizer.step()
             scheduler.step()
-        
+
         return array_lr
 
 
     def Training(self, data, labels=None, dt=0.1, p=1, full_database=False, epochs=None):
-            
+
             dt_param = dt
             if type(dt) is float:
                 self.optimizer = optim.SGD(self.parameters(), lr=dt, momentum=self.momentum, weight_decay=self.weight_decay)
@@ -302,12 +302,12 @@ class Network(nn.Module, na.NetworkAbstract):
                         self.__trainingRandomBatch(dataGenerator=data, p=p, dt=dt_param)
 
     def __defaultTraining(self, dataGenerator, p, dt=None):
-            
+
             i=0
 
             printEvery = p // 4
             while i < p:
-                
+
                 if dt is not None:
                     self.optimizer = optim.SGD(self.parameters(), lr=dt[i], momentum=self.momentum, weight_decay=self.weight_decay)
 
@@ -315,13 +315,13 @@ class Network(nn.Module, na.NetworkAbstract):
                     inputs, labels_data = dataGenerator.data[0].cuda(), dataGenerator.data[1].cuda()
                 else:
                     inputs, labels_data = dataGenerator.data[0], dataGenerator.data[1]
-                
+
                 self.__doTraining(inputs=inputs, labels_data=labels_data)
 
                 self.__currentEpoch = i
 
-                if i % printEvery == printEvery - 1:
-                    self.__printValues(1, i, avg=printEvery)
+#                if i % printEvery == printEvery - 1:
+#                    self.__printValues(1, i, avg=printEvery)
 
                 dataGenerator.update()
 
@@ -346,16 +346,16 @@ class Network(nn.Module, na.NetworkAbstract):
 
             self.__currentEpoch = i
             i += 1
-    
+
     def __fullDatabaseTraining(self, dataGenerator, epochs, dt=None):
         epoch=1
-        
+
         if dataGenerator.type == datagen_type.DATABASE_IMAGES:
-            
+
             while epoch <= epochs:
 
                 for i, data in enumerate(dataGenerator._trainoader):
-                    
+
                     if dt is not None:
                         self.optimizer = optim.SGD(self.parameters(), lr=dt[i], momentum=self.momentum, weight_decay=self.weight_decay)
 
@@ -367,17 +367,17 @@ class Network(nn.Module, na.NetworkAbstract):
                     inputs = inputs * 255
 
                     self.__doTraining(inputs=inputs, labels_data=labels_data)
-                
+
                 self.__currentEpoch = epoch
                 epoch += 1
 
         elif dataGenerator.type == datagen_type.OWN_IMAGE:
 
             while epoch <= epochs:
-                
+
                 i = 0
                 for data in dataGenerator.batch(dataGenerator.batch_size):
-                    
+
                     if dt is not None:
                         self.optimizer = optim.SGD(self.parameters(), lr=dt[i], momentum=self.momentum, weight_decay=self.weight_decay)
 
@@ -391,10 +391,10 @@ class Network(nn.Module, na.NetworkAbstract):
                     i += 1
                 self.__currentEpoch = epoch
                 epoch += 1
-        
+
         else:
             print("ERROR UNKNOWN DATAGENERATOR TPYE")
-        
+
 
 
     def forward(self, x):
@@ -455,7 +455,7 @@ class Network(nn.Module, na.NetworkAbstract):
                     inputs, labels = data[0].cuda(), data[1].cuda()
                 else:
                     inputs, labels = data[0], data[1]
-                
+
                 self.assignLabels(labels)
                 self.nodes[0].objects[0].value = inputs*255 # DESNORMALIZAR!
                 self(self.nodes[0].objects[0].value)
@@ -463,18 +463,18 @@ class Network(nn.Module, na.NetworkAbstract):
                 linearValue = self.__getLayerProbability().value
 
                 _, predicted = torch.max(linearValue.data, 1)
-                
+
                 total += labels.size(0)
                 correct += (predicted == labels).sum().item()
 
             accuracy = correct / total
-        
+
         self.__accuracy = accuracy
-    
+
     def getAcurracy(self):
 
         return self.__accuracy
-    
+
     def saveModel(self, path):
 
         torch.save({
@@ -482,13 +482,13 @@ class Network(nn.Module, na.NetworkAbstract):
             'optimizer_state_dict': self.optimizer.state_dict(),
             }, path)
 
-    
+
     def loadModel(self, path):
 
         checkpoint = torch.load(path)
         self.load_state_dict(checkpoint['model_state_dict'])
         self.optimizer.load_state_dict(checkpoint['optimizer_state_dict'])
         self.train()
-    
+
     def __printValues(self, epoch, i, avg=1):
         print("[{:d}, {:d}, lr={:.10f}, Loss={:.10f}]".format(epoch, i+1, self.optimizer.param_groups[0]['lr'], self.getAverageLoss(avg)))

@@ -79,7 +79,7 @@ class Status():
         self.Transfer=None
         self.S=32
         self.Comp=2
-        status.clear_period=2000000
+        self.clear_period=200
         self.Data_gen=None
         self.p=1
         self.display=None

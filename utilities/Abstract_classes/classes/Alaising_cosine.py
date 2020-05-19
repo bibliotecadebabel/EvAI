@@ -7,6 +7,7 @@ class Alaising():
         self.min=min
         self.max_time=max_time
         self.time=time
+        self.type='default'
     def get_increments(self,size):
         m=self.min
         M=self.max
@@ -22,6 +23,9 @@ class Alaising():
 
     def update(self):
         self.time+=1
+
+    def restart(self):
+        self.time+=0
 
 
 class Damped_Alaising():
@@ -39,11 +43,12 @@ class Damped_Alaising():
         self.final_min=final_min
         self.Max_iter=Max_iter
         self.time=0
-        self.initial_period=int(np.log(Max_iter)/np.log(2)-1)
+        self.initial_period=int(np.log(Max_iter)/np.log(2)+1)
         self.current_period=self.initial_period
         self.current_max=initial_max
         self.current_min=initial_min
         self.local_time=0
+        self.type='dampening'
 
     def get_increments(self,size,update=True):
         m=self.current_min
