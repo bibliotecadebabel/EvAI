@@ -45,7 +45,7 @@ class Damped_Alaising():
         self.current_min=initial_min
         self.local_time=0
 
-    def get_increments(self,size):
+    def get_increments(self,size,update=True):
         m=self.current_min
         M=self.current_max
         t_M=self.current_period
@@ -56,6 +56,8 @@ class Damped_Alaising():
             for i in range(size):
                 output.append(Alai.get_increments(0))
                 Alai.update()
+                if update:
+                    self.update()
             return output
         elif size<0:
             Alai=copy.deepcopy(self)

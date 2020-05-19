@@ -2,8 +2,9 @@ from utilities.Abstract_classes.classes.Alaising_cosine import (
     Alaising, Damped_Alaising)
 
 def get_Damped_test():
-    Alai=Damped_Alaising()
-    print(Alai.get_increments(-1000))
+    Alai=Damped_Alaising(Max_iter=10000)
+    print(Alai.get_increments(10))
+    print(Alai.get_increments(10))
     #print(Alai.get_increments(-n))
     return
 
