@@ -42,8 +42,8 @@ network = nw.Network(adn=ADN, cudaFlag=CUDA, momentum=MOMENTUM, weight_decay=WEI
 
 print("STARTING TRAINING")
 test_id = TEST_DAO.insert(testName=TEST_NAME, periodSave=EPOCHS, dt=BASE_DT, total=EPOCHS, periodCenter=0)
-network.TrainingCosineLR_Restarts(dataGenerator=dataGen, base_dt=BASE_DT, epochs=EPOCHS, etamin=MIN_DT, period_restart=RESTART_EPOCH_PERIOD, SHOW_ACCURACY_PERIOD=SHOW_ACCURACY_PERIOD)
-network.TrainingCosineLR_Restarts(dataGenerator=dataGen, base_dt=BASE_DT_2, epochs=EPOCHS, etamin=MIN_DT_2, period_restart=RESTART_EPOCH_PERIOD, SHOW_ACCURACY_PERIOD=SHOW_ACCURACY_PERIOD)
+network.TrainingCosineLR_Restarts(dataGenerator=dataGen, base_dt=BASE_DT, epochs=EPOCHS, etamin=MIN_DT, period_restart=RESTART_EPOCH_PERIOD, period_show_accuracy=SHOW_ACCURACY_PERIOD)
+network.TrainingCosineLR_Restarts(dataGenerator=dataGen, base_dt=BASE_DT_2, epochs=EPOCHS, etamin=MIN_DT_2, period_restart=RESTART_EPOCH_PERIOD, period_show_accuracy=SHOW_ACCURACY_PERIOD)
 print("FINISH TRAINING")
 
 network.generateEnergy(dataGen)
