@@ -176,7 +176,7 @@ def initialize_parameters(self):
 def create_objects(status):
     status.Alai=Alai(min=status.dt_min,
          max=status.dt_Max,
-            max_time=status.restart_period+status.log_size)
+            max_time=status.restart_period)
     status.Data_gen=GeneratorFromCIFAR.GeneratorFromCIFAR(
     status.Comp, status.S, cuda=status.cuda)
     status.Data_gen.dataConv2d()

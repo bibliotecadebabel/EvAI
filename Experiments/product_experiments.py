@@ -47,10 +47,13 @@ def run_cifar_user_input_bidi(save = False):
     status.S=int(input("Batch size : "))
     status.cuda=True
     status.mutation_coefficient=float(input("mutation_coefficient : "))
-    status.experiment_name="max_filtera=51_bidi_final_"
-    status.save_space_period=int(input("save_space_period : "))
-    status.save_space_period=2000
-    status.save_net_period=4000
+    if save:
+        status.experiment_name=input("insert experiment name : ")
+        status.save_space_period=int(input("save_space_period : "))
+        status.save_net_period=int(input("save_space_net_period : "))
+
+
+
     status.save2database=save
     x=32
     y=32
