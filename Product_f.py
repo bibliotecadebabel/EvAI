@@ -60,6 +60,7 @@ class Status():
         self.save_space_period=2000
         self.save_net_period=10000
         self.save2database=False
+        self.Alai_creator=None
 
 
         self.typos=((1,0,0,0),(0,0,1,1),(0,1,0,0))
@@ -95,6 +96,7 @@ class Status():
         self.Graph=None
         self.Dynamics=None
         self.Creator=Creator
+        self.Alai_creator=None
         self.Selector_creator=Selector
         self.Selector=None
         self.update_force_field=update_force_field
@@ -178,9 +180,10 @@ def initialize_parameters(self):
 
 
 def create_objects(status):
+    Alai=status.Alai_creator
     status.Alai=Alai(min=status.dt_min,
          max=status.dt_Max,
-            max_time=status.restart_period+status.log_size)
+            max_time=status.restart_period)
     status.Data_gen=GeneratorFromImage.GeneratorFromImage(
     status.Comp, status.S, cuda=status.cuda)
     status.Data_gen.dataConv2d()
@@ -264,8 +267,21 @@ def run(status):
             if status.Alai:
                 status.Alai.update()
 
-            if k % 200 and (status.Alai.type=='default'):
+            if k % status.restart_period == 0:
                 status.Alai.restart()
+                l=status.log_size
+                dt=status.Alai.get_increments(size=status.log_size)
+                print(f'It restarted, dt_max is {dt[0]} and dt min is {dt[l-1]}')
+                time.sleep(4)
+
+            else:
+                print('It did not restart')
+                l=status.log_size
+                dt=status.Alai.get_increments(size=status.log_size)
+                print(f'dt_max is {dt[0]} and dt min is {dt[l-1]}')
+                print(f'reset period is {status.restart_period}')
+                time.sleep(.5)
+
             #status.print_particles()
             #status.print_particles()
             #status.print_max_particles()

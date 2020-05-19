@@ -6,6 +6,7 @@ import torch.nn as nn
 import torch.tensor as tensor
 import torch.optim as optim
 from DNA_graph_functions import DNA2size
+import time
 
 
 
@@ -25,13 +26,14 @@ class TorchStream(Stream):
                 out_net=self.old_net.clone()
                 a=self.dataGen.data
                 if not(self.Alai):
+                    self.flags_print(f'Training no Alaising : dt={self.dt}')
                     out_net.Training(data=self.dataGen,
                         p=p,
                         dt=self.dt,full_database=True)
                 else:
                     dt=Alai.get_increments(-p)
                     if type(p) == list:
-                        print(f'The training range is dt_min : {dt[0]}, dt_max :{dt[self.log_size-1]} ')
+                        self.flag_print(f'The reverse training range is dt_max : {max(dt)}, dt_min :{min(dt)} ')
                     else:
                         #print(f'The training range is dt_min : {dt}, dt_max :{dt} ')
                         pass
@@ -52,6 +54,12 @@ class TorchStream(Stream):
         self.dt=dt
         self.min_size=min_size
         self.Alai=Alai
+        self.flags=True
+
+    def flags_print(self,text):
+        if self.flags==True:
+            print(text)
+            time.sleep(.5)
 
     def key2average(self,key):
         log=self.key2log(key)
@@ -71,12 +79,13 @@ class TorchStream(Stream):
             log.old_net.history_loss=[]
             Alai=self.Alai
             if not(self.Alai):
+                self.flags_print(f'Training no Alaising : dt={self.dt}')
                 net.Training(data=self.dataGen,
                     p=self.log_size,
                     dt=self.dt,full_database=True)
             else:
                 dt=Alai.get_increments(self.log_size)
-                print(f'The training range is dt_min : {dt[0]}, dt_max :{dt[self.log_size-1]} ')
+                self.flags_print(f'The training range is dt_max : {max(dt)}, dt_min :{min(dt)} ')
                 net.Training(data=self.dataGen,
                     p=self.log_size,
                     dt=Alai.get_increments(self.log_size),
@@ -92,12 +101,13 @@ class TorchStream(Stream):
             log.old_net.history_loss=[]
             Alai=self.Alai
             if not(self.Alai):
+                self.flags_print(f'Training no Alaising : dt={self.dt}')
                 net.Training(data=self.dataGen,
                     p=self.log_size-self.min_size,
                     dt=self.dt,full_database=True)
             else:
                 dt=Alai.get_increments(self.log_size)
-                print(f'The training range is dt_min : {dt[0]}, dt_max :{dt[self.log_size-1]} ')
+                self.flags_print(f'The training range is dt_max : {max(dt)}, dt_min :{min(dt)} ')
                 net.Training(data=self.dataGen,
                     p=self.log_size-self.min_size,
                     dt=dt,

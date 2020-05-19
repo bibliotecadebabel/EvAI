@@ -1,8 +1,13 @@
 import numpy as np
 import copy
 
+def pcos(x):
+    if x>np.pi:
+        x-np.pi
+    return np.cos(x)
+
 class Alaising():
-    def __init__(self,min=0.0001,max=0.5,time=1,max_time=2000):
+    def __init__(self,min=0.0001,max=0.5,time=0,max_time=5):
         self.max=max
         self.min=min
         self.max_time=max_time
@@ -14,12 +19,12 @@ class Alaising():
         t_M=self.max_time
         t_o=self.time
         if size>0:
-            return [ m+1/2*(M-m)*(1+np.cos(t/t_M*np.pi))
+            return [ m+1/2*(M-m)*(1+pcos(t/t_M*np.pi))
                      for t in range(t_o,t_o+size)]
         elif size<0:
-            return [ m+1/2*(M-m)*(1+np.cos(t/t_M*np.pi))
+            return [ m+1/2*(M-m)*(1+pcos(t/t_M*np.pi))
                      for t in range(t_o+size,t_o)]
-        return m+1/2*(M-m)*(1+np.cos(t_o/t_M*np.pi))
+        return m+1/2*(M-m)*(1+pcos(t_o/t_M*np.pi))
 
     def update(self):
         self.time+=1
@@ -72,7 +77,7 @@ class Damped_Alaising():
                 Alai.rewind()
             ouput=output.reverse()
             return output
-        return m+1/2*(M-m)*(1+np.cos(t_o/t_M*np.pi))
+        return m+1/2*(M-m)*(1+pcos(t_o/t_M*np.pi))
 
     def update_amplitude(self):
         n=self.Max_iter
