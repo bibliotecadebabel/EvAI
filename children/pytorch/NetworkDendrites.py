@@ -230,7 +230,6 @@ class Network(nn.Module, na.NetworkAbstract):
             else:
 
                 if epoch % period_restart == 0:
-                    print("RESTART DT")
                     scheduler = optim.lr_scheduler.CosineAnnealingLR(self.optimizer, total_steps * period_restart, eta_min=etamin)
 
                 if period_show_accuracy is not None and epoch > 0:
