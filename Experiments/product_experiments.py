@@ -36,14 +36,14 @@ def run_cifar_user_input_bidi(save = False):
     status.dt_min=0.0001
     status.clear_period=200000
     status.max_iter=20001
-    status.restart_period=400
-    status.max_layer=8
+    status.restart_period=200
+    status.max_layer=8 
     status.max_filter=51
     from utilities.Abstract_classes.classes.centered_random_selector_bidi import(
         centered_random_selector as Selector)
     status.Selector_creator=Selector
     status.log_size=int(input("Log size : "))
-    status.min_log_size=12
+    status.min_log_size=100
     status.S=int(input("Batch size : "))
     status.cuda=True
     status.mutation_coefficient=float(input("mutation_coefficient : "))
