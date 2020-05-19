@@ -18,10 +18,10 @@ class CommandExperimentCifar_Restarts():
         self.__weight_decay = weight_decay
         self.__generateNetworks()
         self.__testName = testName
-        self.__testDao = TestDAO.TestDAO()
+        self.__testDao = TestDAO.TestDAO(db='database.db')
         self.__selector = selector
-        self.__testResultDao = TestResultDAO.TestResultDAO()
-        self.__testModelDao = TestModelDAO.TestModelDAO()
+        self.__testResultDao = TestResultDAO.TestResultDAO(db='database.db')
+        self.__testModelDao = TestModelDAO.TestModelDAO(db='database.db')
         self.__bestNetworkEpochs = 5
         self.__iterations_per_epoch = 0
 
