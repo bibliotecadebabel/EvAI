@@ -83,9 +83,6 @@ class Damped_Alaising():
         self.update_amplitude()
         if self.local_time>self.current_period:
            self.current_period=2*self.current_period
-           print(self.local_time)
-           print(f'current max is : {self.current_max}')
-           print(f'current min is : {self.current_min}')
            self.local_time=0
         else:
            self.local_time+=1
