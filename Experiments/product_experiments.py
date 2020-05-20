@@ -154,6 +154,7 @@ def run_cifar_user_input_save():
     status.save_space_period=int(input("save_space_period : "))
     status.save_net_period=float(input("save_space_net_period : "))
     status.save2database=True
+    status.restart_period=200
     program.run(status)
 
 

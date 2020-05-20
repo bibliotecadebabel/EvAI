@@ -278,7 +278,7 @@ def run(status):
             #status.print_difussion_filed()
     #        print_nets(status)
     #        time.sleep(0.5)
-            if k % self.restart_period == 0:
+            if k % status.restart_period == 0:
                 status.Alai.time=0
 
             if k % 20 ==0:
