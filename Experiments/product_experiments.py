@@ -32,12 +32,12 @@ from utilities.Abstract_classes.classes.Alaising_cosine import (
 def run_cifar_user_input_bidi(save = False):
     import Product_f_cifar_save_2 as program
     status=program.Status()
-    status.dt_Max=0.01
+    status.dt_Max=0.1
     status.dt_min=0.0001
     status.clear_period=200000
     status.max_iter=20001
     status.restart_period=200
-    status.max_layer=8 
+    status.max_layer=8
     status.max_filter=51
     from utilities.Abstract_classes.classes.centered_random_selector_bidi import(
         centered_random_selector as Selector)
@@ -89,7 +89,7 @@ def run_local_ac():
     status.min_log_size=25
     status.cuda=False
     status.restart_period=50
-    status.mutation_coefficient=10
+    status.mutation_coefficient=50
     status.experiment_name='experiment_test_2'
     status.save_space_period=100
     status.save_net_period=200

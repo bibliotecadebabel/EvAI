@@ -225,6 +225,7 @@ def create_objects(status):
         mutation_coefficient=status.mutation_coefficient,
         clear_period=status.clear_period,
         update_force_field=status.update_force_field)
+    status.stream=stream
     Phase_space.create_particles(status.n)
     Phase_space.beta=status.beta
     Phase_space.alpha=status.alpha
@@ -267,7 +268,11 @@ def run(status):
             if status.Alai:
                 status.Alai.update()
 
-            if k % status.restart_period == 0:
+            if k % 10 ==0:
+                print(f'The nunber of active nents is : {len(status.stream.Graph.key2node)}')
+                time.sleep(2)
+
+            if k % status.restart_period == 0 and False:
                 status.Alai.restart()
                 l=status.log_size
                 dt=status.Alai.get_increments(size=status.log_size)
@@ -275,12 +280,13 @@ def run(status):
                 time.sleep(4)
 
             else:
-                print('It did not restart')
-                l=status.log_size
-                dt=status.Alai.get_increments(size=status.log_size)
-                print(f'dt_max is {dt[0]} and dt min is {dt[l-1]}')
-                print(f'reset period is {status.restart_period}')
-                time.sleep(.5)
+                if False:
+                    print('It did not restart')
+                    l=status.log_size
+                    dt=status.Alai.get_increments(size=status.log_size)
+                    print(f'dt_max is {dt[0]} and dt min is {dt[l-1]}')
+                    print(f'reset period is {status.restart_period}')
+                    time.sleep(.5)
 
             #status.print_particles()
             #status.print_particles()

@@ -278,8 +278,13 @@ def run(status):
             #status.print_difussion_filed()
     #        print_nets(status)
     #        time.sleep(0.5)
-            if k % 200 == 0:
+            if k % self.restart_period == 0:
                 status.Alai.time=0
+
+            if k % 20 ==0:
+                print(f'The nunber of active nents is : {len(status.stream.Graph.key2node)}')
+                time.sleep(3)
+
 
             if status.save2database == True:
 
