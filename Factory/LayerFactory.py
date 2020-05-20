@@ -29,20 +29,17 @@ class LayerGenerator(AbstractFactory.FactoryClass):
         
         layer = torch.nn.Conv2d(tupleBody[1], tupleBody[2], (tupleBody[3], tupleBody[4]))
         self.__initConv2d(layer, (1, tupleBody[3], tupleBody[4]))
-        
+        batchNormalization = torch.nn.BatchNorm2d(tupleBody[2])
+
+        self.__verifyCuda(batchNormalization)
         self.__verifyCuda(layer)
         
         if propagate_mode == const.CONV2D_MULTIPLE_INPUTS:
-            value = ly.Layer(objectTorch=layer, propagate=functions.conv2d_propagate_multipleInputs, value=None, adn=tupleBody, cudaFlag=self.__cuda)
+            value = ly.Layer(objectTorch=layer, propagate=functions.conv2d_propagate_multipleInputs, value=None, adn=tupleBody, cudaFlag=self.__cuda, batchNorm=batchNormalization)
         elif propagate_mode == const.CONV2D_IMAGE_INPUTS:
-            value = ly.Layer(objectTorch=layer, propagate=functions.conv2d_propagate_images, value=None, adn=tupleBody, cudaFlag=self.__cuda)
+            value = ly.Layer(objectTorch=layer, propagate=functions.conv2d_propagate_images, value=None, adn=tupleBody, cudaFlag=self.__cuda, batchNorm=batchNormalization)
         else:
-            value = ly.Layer(objectTorch=layer, propagate=functions.conv2d_propagate, value=None, adn=tupleBody, cudaFlag=self.__cuda)
-        
-        batchNormalization = torch.nn.BatchNorm2d(tupleBody[2])
-        self.__verifyCuda(batchNormalization)
-
-        value.batchnorm = batchNormalization
+            value = ly.Layer(objectTorch=layer, propagate=functions.conv2d_propagate, value=None, adn=tupleBody, cudaFlag=self.__cuda, batchNorm=batchNormalization)
 
         return value
 
@@ -77,6 +74,7 @@ class LayerGenerator(AbstractFactory.FactoryClass):
 
         #kernel_product = math.sqrt(kernel_shape[0] * kernel_shape[1] * kernel_shape[2])
 
+        #torch.nn.init.kaiming_uniform_(layer.weight, mode='fan_in', nonlinearity='relu')
         torch.nn.init.xavier_uniform_(layer.weight)
         torch.nn.init.zeros_(layer.bias)
         #torch.nn.init.xavier_uniform_(layer.bias)

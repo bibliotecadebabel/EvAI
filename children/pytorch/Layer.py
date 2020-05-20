@@ -2,7 +2,7 @@ import torch
 
 class Layer():
 
-    def __init__(self, adn=None, node=None, objectTorch=None, propagate=None, value=None, label=None, cudaFlag=True):
+    def __init__(self, adn=None, node=None, objectTorch=None, propagate=None, value=None, label=None, cudaFlag=True, batchNorm=None):
         self.object = objectTorch
         self.node = node
         self.value =  value
@@ -11,7 +11,7 @@ class Layer():
         self.cudaFlag = cudaFlag
         self.image = None
         self.other_inputs = []
-        self.batchnorm = None
+        self.__batchnorm = batchNorm
 
         if self.cudaFlag == True:
             self.swap = torch.tensor([[0, 1], [1,0]], dtype=torch.float32, requires_grad=True).cuda()
@@ -73,6 +73,55 @@ class Layer():
 
         if self.object is not None:
             self.object.bias = torch.nn.Parameter(value)
+
+    def setBarchNorm(self, value):
+
+        if self.__batchnorm is not None and value is not None:
+            self.setBiasNorm(value.bias)
+            self.setWeightNorm(value.weight)
+            self.setVarNorm(value.running_var)
+            self.setMeanNorm(value.running_mean)
+            self.setBatchesTrackedNorm(value.num_batches_tracked)
+    
+    def setBiasNorm(self, value):
+        self.__batchnorm.bias = torch.nn.Parameter(value.clone())
+    
+    def setWeightNorm(self, value):
+        self.__batchnorm.weight = torch.nn.Parameter(value.clone())
+    
+    def setVarNorm(self, value):
+        self.__batchnorm.running_var.data = value.data.clone()
+
+    def setMeanNorm(self, value):
+        self.__batchnorm.running_mean.data = value.data.clone()
+    
+    def setBatchesTrackedNorm(self, value):
+        self.__batchnorm.num_batches_tracked.data = value.data.clone()
+
+    def getBatchNorm(self):
+
+        return self.__batchnorm
+
+    def getBiasNorm(self):
+        
+        return self.__batchnorm.bias
+    
+    def getWeightNorm(self):
+        
+        return self.__batchnorm.weight
+    
+    def getVarNorm(self):
+        
+        return self.__batchnorm.running_var
+
+    def getMeanNorm(self):
+        
+        return self.__batchnorm.running_mean
+
+    def doNormalize(self, tensor):
+
+        norm = self.__batchnorm(tensor)
+        return norm
 
     def __getParamValue(self, index, grad):
 

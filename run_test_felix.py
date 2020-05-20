@@ -11,6 +11,10 @@ MODEL_DAO = TestModelDAO.TestModelDAO()
 
 BASE_DT = 0.5
 MIN_DT = 0.0001
+
+BASE_DT_2 = 0.001
+MIN_DT_2 = 0.000001
+
 WEIGHT_DECAY = 0.0005
 MOMENTUM = 0.9
 
@@ -44,6 +48,11 @@ network = nw.Network(adn=ADN, cudaFlag=CUDA, momentum=MOMENTUM, weight_decay=WEI
 print("STARTING TRAINING")
 #test_id = TEST_DAO.insert(testName=TEST_NAME, periodSave=EPOCHS, dt=BASE_DT, total=EPOCHS, periodCenter=0)
 network.TrainingCosineLR_Restarts(dataGenerator=dataGen, max_dt=BASE_DT, min_dt=MIN_DT, epochs=10, restart_dt=10, show_accuarcy=True)
+network.generateEnergy(dataGen)
+print("ACCURACY BEFORE RESTART")
+print(network.getAcurracy())
+network.TrainingCosineLR_Restarts(dataGenerator=dataGen, max_dt=BASE_DT_2, min_dt=MIN_DT_2, epochs=100, restart_dt=50, show_accuarcy=True)
+
 print("FINISH TRAINING")
 
 network.generateEnergy(dataGen)

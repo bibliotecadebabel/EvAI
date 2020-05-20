@@ -46,7 +46,7 @@ def conv2d_propagate(layer):
     
     value = layer.object(parent.value)
 
-    value = layer.batchnorm(value)
+    value = layer.doNormalize(value)
 
     sigmoid = torch.nn.Sigmoid()
     
@@ -69,7 +69,7 @@ def conv2d_propagate_images(layer): ## MUTATION: ADDING IMAGE TO INPUT IN EVERY 
 
     value = layer.object(parent.value)
     
-    value = layer.batchnorm(value)
+    value = layer.doNormalize(value)
 
     sigmoid = torch.nn.Sigmoid()
     
@@ -105,7 +105,7 @@ def conv2d_propagate_multipleInputs(layer): ## MUTATION: Multiple inputs per con
     
     sigmoid = torch.nn.Sigmoid()
 
-    value = layer.batchnorm(value)
+    value = layer.doNormalize(value)
 
     layer.value = sigmoid(value) + torch.nn.functional.relu(value)
 

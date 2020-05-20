@@ -3,7 +3,7 @@ import children.pytorch.NetworkDendrites as nw_dendrites
 import children.Interfaces as Inter
 import children.pytorch.Functions as Functions
 import children.pytorch.MutateNetwork as MutateNetwork
-import children.pytorch.MutateNetwork_Dendrites as Mutate_Dendrites
+import children.pytorch.MutateNetwork_Dendrites_clone as Mutate_Dendrites
 from DAO import GeneratorFromImage, GeneratorFromCIFAR
 
 from DNA_conditions import max_layer
@@ -12,6 +12,7 @@ from DNA_Graph import DNA_Graph
 
 from DNA_creators import Creator_from_selection as Creator_s
 from utilities.Abstract_classes.classes.random_selector import random_selector
+import DNA_directions_clone as direction_dna
 
 
 def DNA_test_i(x,y):
@@ -57,81 +58,34 @@ def DNA_Creator_s(x,y):
     
     return space
 
-def Test_Mutacion_dendrites():
-
-    indexTarget = 0
-
-    dataGen = GeneratorFromCIFAR.GeneratorFromCIFAR(2,  50)
-    #dataGen = GeneratorFromImage.GeneratorFromImage(2, 100)
-    dataGen.dataConv2d()
-
-    print("creating DNAs")
-
-    #dna_list = spread_dendrites_test(dataGen.size[1], dataGen.size[2], indexTarget)
-
-    #networkADN = dna_list[0]
-    #mutate_adn = dna_list[1]
-
-    
-    networkADN = ((-1, 1, 3, 11, 11), (0, 3, 5, 11, 11), (1, 5, 2), (2,), (3, -1, 0), (3, 0, 1), (3, 1, 2))
-
-    mutate_adn = ((-1, 1, 3, 11, 11), (0, 3, 5, 3, 3), (0, 5, 5, 9, 9), (1, 5, 2), (2,), (3, -1, 0), (3, 0, 1), (3, 1, 2), (3, 2, 3))
-    
-
-    network = nw_dendrites.Network(networkADN, cudaFlag=True)
-    
-
-    print("adn=", networkADN)
-    print("mutateADN=", mutate_adn)
-
-    
-
-    network.Training(data=dataGen, p=100, dt=0.01, labels=None)
-    #print("Accuracy original (1)=", network.generateEnergy(dataGen))
-    #network.Training(data=dataGen, p=1900, dt=0.01, labels=None)
-    #print("Accuracy original (2)=", network.generateEnergy(dataGen))
-    network_1 = Mutate_Dendrites.executeMutation(oldNetwork=network, newAdn=mutate_adn)
-    network_1.Training(data=dataGen, p=200, dt=0.01, labels=None)
-    #print("Accuracy mutate (1)=", network_1.generateEnergy(dataGen))
-    #network_1.Training(data=dataGen, p=1900, dt=0.01, labels=None)
-    #print("Accuracy mutate (2)=", network_1.generateEnergy(dataGen))
-    network.Training(data=dataGen, p=100, dt=0.01, labels=None)
-
 def Test_Mutacion():
 
-    dataGen = GeneratorFromCIFAR.GeneratorFromCIFAR(2,  50)
-    #dataGen = GeneratorFromImage.GeneratorFromImage(2, 100, 10000)
+    dataGen = GeneratorFromCIFAR.GeneratorFromCIFAR(2,  128)
     dataGen.dataConv2d()
 
     print("creating DNAs")
-    #space = DNA_Creator_s(dataGen.size[1], dataGen.size[2])
 
-    parentDNA = ((-1, 1, 3, 32, 32), (0, 3, 5, 3, 3), (0, 8, 6, 3, 3), (0, 6, 4, 3, 3), (0, 13, 5, 3, 3), (0, 14, 7, 32, 32), (1, 7, 10), (2,), (3, -1, 0), (3, -1, 1), (3, 0, 1), (3, 1, 2), (3, 1, 3), (3, 2, 3), (3, -1, 3), (3, -1, 4), (3, 1, 4), (3, 3, 4), (3, 4, 5), (3, 5, 6))
-    mutate_dna = ((-1, 1, 3, 32, 32), (0, 3, 5, 3, 3), (0, 8, 6, 3, 3), (0, 6, 4, 3, 3), (0, 13, 5, 3, 3), (0, 11, 7, 9, 9), (1, 7, 2), (2,), (3, -1, 0), (3, -1, 1), (3, 0, 1), (3, 1, 2), (3, 1, 3), (3, 2, 3), (3, -1, 3), (3, 1, 4), (3, 3, 4), (3, 4, 5), (3, 5, 6))
-    dt =[0.1, 0.08, 0.06, 0.04, 0.02]
-    #dt = 0.01
+    parentDNA = ((-1,1,3,32,32),(0,3, 5, 3 , 3), (0,5, 8, 3,  3), (0,8, 10, 28, 28), (1, 10,10), (2,),
+                    (3,-1,0), (3,0,1), (3,1,2), (3,2,3), (3,3,4))
+
+    mutate_dna = direction_dna.spread_dendrites(1, parentDNA)
+
+    print("new dna=", mutate_dna)
+
     network = nw_dendrites.Network(parentDNA, cudaFlag=True)
-    for i in range(100):
-        network.Training(data=dataGen, p=5, dt=dt, labels=None, full_database=True)
-    #network_kid = Mutate_Dendrites.executeMutation(oldNetwork=network, newAdn=mutate_dna)
-    #network_kid.Training(data=dataGen, p=5, dt=dt, labels=None, full_database=True)
-    # Inter.trakPytorch(network, "pokemon-netmap", dataGen)
-    '''
-    for node in space.objects:
+    network.TrainingCosineLR_Restarts(dataGenerator=dataGen, max_dt=0.1, min_dt=0.01, epochs=1, restart_dt=1)
+    network.generateEnergy(dataGen)
+    print("accuracy= ", network.getAcurracy())
 
-        parentDNA = space.node2key(node)
-        if str(parentDNA) == str(space.center):
-            print("PARENT DNA= ", parentDNA)
-            network = nw_dendrites.Network(parentDNA, cudaFlag=True)
-            network.Training(data=dataGen, p=2, dt=0.01, labels=None, full_database=True)
+    network_kid = Mutate_Dendrites.executeMutation(oldNetwork=network, newAdn=mutate_dna)
+    network_kid.generateEnergy(dataGen)
+    print("accuracy after mutation=", network_kid.getAcurracy())
+    
+    network_kid.TrainingCosineLR_Restarts(dataGenerator=dataGen, max_dt=0.1, min_dt=0.01, epochs=2, restart_dt=2)
+    network_kid.generateEnergy(dataGen)
+    print("accuracy after training mutation=", network_kid.getAcurracy())
 
-            for nodeKid in node.kids:
 
-                kidDNA = space.node2key(nodeKid)
-                print("KID DNA= ", kidDNA)
-                network_kid = Mutate_Dendrites.executeMutation(oldNetwork=network, newAdn=kidDNA)
-                network_kid.Training(data=dataGen, p=2, dt=0.01, labels=None, full_database=True)
-    '''
 def Test_Save_Model():
     dataGen = GeneratorFromCIFAR.GeneratorFromCIFAR(2,  50)
     dataGen.dataConv2d()
@@ -164,6 +118,6 @@ def Test_Load_Model():
 
 #Test_Batch(dataGen)
 #Test_Mutacion_dendrites()
-#Test_Mutacion()
+Test_Mutacion()
 #Test_Save_Model()
-Test_Load_Model()
+#Test_Load_Model()

@@ -5,6 +5,7 @@ from mutations.Dictionary import MutationsDictionary
 import DNA_directions_clone as direction_dna
 import torch as torch
 import mutations.Convolution2d.Mutations as Conv2dMutations
+import mutations.BatchNormalization.BatchNormalization as batchMutate
 import const.mutation_type as m_type
 
 def executeMutation(oldNetwork, newAdn):
@@ -81,7 +82,7 @@ def __defaultMutationProcess(oldNetwork, network, lenghtAdn):
                 if oldLayer.adn[0] == 0:
                     oldFilter, oldBias = adjustFilterMutation.adjustEntryFilters(mutation_type=mutation_type)
 
-            __doMutate(oldFilter=oldFilter, oldBias=oldBias,
+            __doMutate(oldFilter=oldFilter, oldBias=oldBias, oldBatchnorm=oldLayer.getBatchNorm(),
                         newLayer=newLayer, flagCuda=network.cudaFlag, layerType=oldLayer.adn[0])
         
         if network.cudaFlag == True:
@@ -108,7 +109,7 @@ def __addLayerMutationProcess(oldNetwork, network, lenghtOldAdn, indexAdded):
         newLayer = network.nodes[indexNewLayer].objects[0]
 
         if oldLayer.getFilter() is not None:
-            __doMutate(oldFilter=oldLayer.getFilter(), oldBias=oldLayer.getBias(),
+            __doMutate(oldFilter=oldLayer.getFilter(), oldBias=oldLayer.getBias(), oldBatchnorm=oldLayer.getBatchNorm(),
                         newLayer=newLayer, flagCuda=network.cudaFlag, layerType=oldLayer.adn[0])
         
         if network.cudaFlag == True:
@@ -122,7 +123,6 @@ def __removeLayerMutationProcess(oldNetwork, network, lengthNewAdn, indexRemoved
 
     source_dendrites = __getSourceLayerDendrites(indexLayer=indexRemoved, oldAdn=oldNetwork.adn)
 
-    #print("source dendrites=", source_dendrites)
     for i in range(1, lengthNewAdn+1):
         
         indexNewLayer = i
@@ -148,39 +148,37 @@ def __removeLayerMutationProcess(oldNetwork, network, lengthNewAdn, indexRemoved
                 if oldLayer.adn[0] == 0:
                     oldFilter, oldBias = adjustFilterMutation.removeFilters()
 
-            __doMutate(oldFilter=oldFilter, oldBias=oldBias,
+            __doMutate(oldFilter=oldFilter, oldBias=oldBias, oldBatchnorm=oldLayer.getBatchNorm(),
                         newLayer=newLayer, flagCuda=network.cudaFlag, layerType=oldLayer.adn[0])
         
         if network.cudaFlag == True:
             torch.cuda.empty_cache()
 
-def __doMutate(oldFilter, oldBias, layerType, newLayer, flagCuda):
+def __doMutate(oldFilter, oldBias, oldBatchnorm, layerType,  newLayer, flagCuda):
     
     oldBias = oldBias.clone()
     oldFilter = oldFilter.clone()
-
-    #print("from: ", oldFilter.shape)
-    #print("to: ", newLayer.getFilter().shape)
 
     dictionaryMutation = MutationsDictionary()
 
     mutation_list = dictionaryMutation.getMutationList(layerType=layerType, 
         oldFilter=oldFilter, newFilter=newLayer.getFilter())
-    
 
     if mutation_list is not None:
 
         for mutation in mutation_list:
-            #print("oldFilter")
-            #print(oldFilter.shape)
+
             mutation.doMutate(oldFilter, oldBias, newLayer, cuda=flagCuda)
             oldFilter = newLayer.getFilter()
             oldBias = newLayer.getBias()
-            #print("oldFitler mutated")
-            #print(oldFilter.shape)
+
+        norm_mutation = batchMutate.MutateBatchNormalization()
+        norm_mutation.doMutate(oldBatchNorm=oldBatchnorm, newLayer=newLayer)
+
     else:
         newLayer.setFilter(oldFilter)
         newLayer.setBias(oldBias)
+        newLayer.setBarchNorm(oldBatchnorm)
 
 def __initNewConvolution(newConvolution):
     factor_n = 0.25
