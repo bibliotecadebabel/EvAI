@@ -22,14 +22,16 @@ PERIOD_NEWSPACE = 1
 # Every PERIOD_SAVE_MODEL iterations, the best network (current center) will be stored on filesystem
 PERIOD_SAVE_MODEL = 1
 
-# After EPOCHS, the experiment will stop.
-EPOCHS = 100
+# EPOCHS
+EPOCHS = 20
 
-# dt parameter
-DT = 0.001
+# MAX - MIN DTs FOR EPOCHS 1 TO 10
+MAX_DT = 0.05
+MIN_DT = 0.00001
 
-# min_dt parameter
-MIN_DT = 0.0001
+# MAX - MIN DTs FOR THE REST OF THE EXPERIMENT
+MAX_DT_2 = 0.001
+MIN_DT_2 = 0.000001
 
 # weight_decay parameter
 WEIGHT_DECAY = 0.0005
@@ -44,51 +46,42 @@ CUDA = True
 MAX_LAYERS = 15
 
 # MAX FILTERS MUTATION (CONDITION)
-MAX_FILTERS = 70
+MAX_FILTERS = 60
 
 # TEST_NAME, the name of the experiment (unique)
 TEST_NAME = "cifar_experiment_ver2"
 
+# INITIAL DNA
+DNA = ((-1,1,3,32,32),(0,3, 15, 3 , 3),(0,18, 15, 3,  3),(0,33, 50, 32, 32),(1, 50,10),(2,),(3,-1,0),(3,0,1),(3,-1,1), 
+        (3,1,2),(3,0,2),(3,-1,2),(3,2,3),(3,3,4))
 
-def DNA_Creator_s(x,y):
+
+def DNA_Creator_s(x,y, dna):
     def condition(DNA):
         return max_filter(max_layer(DNA,MAX_LAYERS),MAX_FILTERS)
 
-    center=((-1,1,3,x,y),(0,3, 15, 3 , 3),(0,18, 15, 3,  3),(0,33, 15, x, y),(1, 15, 10),
-             (2,),(3,-1,0),(3,0,1),(3,-1,1),(3,1,2),(3,0,2),(3,-1,2),(3,2,3),(3,3,4))
-
     selector = None
     selector=random_selector()
-    selector.update(center)
+    selector.update(dna)
     actions=selector.get_predicted_actions()
     version='final'
     #actions = ((0, (0,1,0,0)), (1, (0,1,0,0)), (0, (1,0,0,0)))
-    space=DNA_Graph(center,1,(x,y),condition,actions
+    space=DNA_Graph(dna,1,(x,y),condition,actions
         ,version,Creator_s)
 
     return [space, selector]
+
+
 
 dataCreator = CommandCreateDataGen.CommandCreateDataGen(cuda=CUDA)
 dataCreator.execute(compression=2, batchSize=BATCH_SIZE, source=DATA_SOURCE)
 dataGen = dataCreator.returnParam()
 
-stop = False
-space = None
-selector = None
-while stop == False:
-    space, selector = DNA_Creator_s(dataGen.size[1], dataGen.size[2])
+space, selector = DNA_Creator_s(dataGen.size[1], dataGen.size[2], dna=DNA)
 
-    for node in space.objects:
-
-        adn = space.node2key(node)
-
-        if str(adn) == str(space.center):
-
-            if len(node.kids) > 0:
-                stop = True
-    
-
-
-trainer = CommandExperimentCifar_Restarts.CommandExperimentCifar_Restarts(space=space, dataGen=dataGen, testName=TEST_NAME,selector=selector, cuda=CUDA, weight_decay=WEIGHT_DECAY, momentum=MOMENTUM)
+trainer = CommandExperimentCifar_Restarts.CommandExperimentCifar_Restarts(initialDNA=DNA, dataGen=dataGen, testName=TEST_NAME,
+                                                                            selector=selector, weight_decay=WEIGHT_DECAY, 
+                                                                                momentum=MOMENTUM, space=space, cuda=CUDA)
                                                                 
-trainer.execute(periodSave=PERIOD_SAVE, periodNewSpace=PERIOD_NEWSPACE, totalIterations=TOTAL_ITERATIONS, base_dt=DT, min_dt=MIN_DT, periodSaveModel=PERIOD_SAVE_MODEL)
+trainer.execute(periodSave=PERIOD_SAVE, periodNewSpace=PERIOD_NEWSPACE, periodSaveModel=PERIOD_SAVE_MODEL, 
+                epochs=EPOCHS, min_dt=MIN_DT, max_dt=MAX_DT, min_dt_2=MIN_DT_2, max_dt_2=MAX_DT_2)
