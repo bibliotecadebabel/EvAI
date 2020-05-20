@@ -270,7 +270,7 @@ def run(status):
 
             if k % 10 ==0:
                 print(f'The nunber of active nents is : {len(status.stream.Graph.key2node)}')
-                time.sleep(2)
+                time.sleep(10)
 
             if k % status.restart_period == 0 and False:
                 status.Alai.restart()

@@ -141,7 +141,7 @@ def run_cifar_user_no_image():
 def run_cifar_user_input_save():
     import Product_f_cifar_save_2 as program
     status=program.Status()
-    status.dt_Max=0.01
+    status.dt_Max=0.1
     status.dt_min=0.00001
     status.clear_period=200000
     status.max_iter=200000
