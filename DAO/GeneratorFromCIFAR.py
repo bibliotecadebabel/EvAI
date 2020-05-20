@@ -35,8 +35,6 @@ class GeneratorFromCIFAR(Generator):
 
             inputs, labels = data
 
-            inputs = inputs*255
-
             self.data = [inputs, labels]
 
             if i >= 0:

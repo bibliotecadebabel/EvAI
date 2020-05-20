@@ -39,6 +39,11 @@ class LayerGenerator(AbstractFactory.FactoryClass):
         else:
             value = ly.Layer(objectTorch=layer, propagate=functions.conv2d_propagate, value=None, adn=tupleBody, cudaFlag=self.__cuda)
         
+        batchNormalization = torch.nn.BatchNorm2d(tupleBody[2])
+        self.__verifyCuda(batchNormalization)
+
+        value.batchnorm = batchNormalization
+
         return value
 
     def __createLinear(self, tupleBody, propagate_mode=None):
@@ -70,21 +75,29 @@ class LayerGenerator(AbstractFactory.FactoryClass):
 
     def __initConv2d(self, layer, kernel_shape):
 
-        kernel_product = math.sqrt(kernel_shape[0] * kernel_shape[1] * kernel_shape[2])
+        #kernel_product = math.sqrt(kernel_shape[0] * kernel_shape[1] * kernel_shape[2])
 
-        with torch.no_grad():
-            torch.nn.init.normal_(layer.weight, mean=0.0, std=1.0)
-            torch.nn.init.normal_(layer.bias, mean=0.0, std=1.0)
-            layer.weight = torch.nn.Parameter(torch.div(torch.mul(layer.weight, math.sqrt(2)), kernel_product).clone())
-            layer.bias = torch.nn.Parameter(torch.div(torch.mul(layer.bias, math.sqrt(2)), kernel_product).clone())
-        
+        torch.nn.init.xavier_uniform_(layer.weight)
+        torch.nn.init.zeros_(layer.bias)
+        #torch.nn.init.xavier_uniform_(layer.bias)
+        '''
+        torch.nn.init.normal_(layer.weight, mean=0.0, std=1.0)
+        torch.nn.init.normal_(layer.bias, mean=0.0, std=1.0)
+        layer.weight = torch.nn.Parameter(torch.div(torch.mul(layer.weight, math.sqrt(2)), kernel_product).clone())
+        layer.bias = torch.nn.Parameter(torch.div(torch.mul(layer.bias, math.sqrt(2)), kernel_product).clone())
+            '''
+
     def __initLinear(self, layer, entrys):
 
-        entry_product = math.sqrt(entrys)
+        #entry_product = math.sqrt(entrys)
     
-        with torch.no_grad():
-            torch.nn.init.normal_(layer.weight, mean=0.0, std=1.0)
-            torch.nn.init.normal_(layer.bias, mean=0.0, std=1.0)
-            layer.weight = torch.nn.Parameter(torch.div(torch.mul(layer.weight, math.sqrt(2)), entry_product).clone())
-            layer.bias = torch.nn.Parameter(torch.div(torch.mul(layer.bias, math.sqrt(2)), entry_product).clone())
-
+  
+        torch.nn.init.xavier_uniform_(layer.weight)
+        torch.nn.init.zeros_(layer.bias)
+        #torch.nn.init.xavier_uniform_(layer.bias)
+        '''
+        torch.nn.init.normal_(layer.weight, mean=0.0, std=1.0)
+        torch.nn.init.normal_(layer.bias, mean=0.0, std=1.0)
+        layer.weight = torch.nn.Parameter(torch.div(torch.mul(layer.weight, math.sqrt(2)), entry_product).clone())
+        layer.bias = torch.nn.Parameter(torch.div(torch.mul(layer.bias, math.sqrt(2)), entry_product).clone())
+        '''

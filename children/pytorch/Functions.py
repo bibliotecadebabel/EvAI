@@ -40,15 +40,14 @@ def Nothing(layer):
 
 def conv2d_propagate(layer):
 
-    print("default mode")
     parent = layer.node.parents[0].objects[0]
 
     shapeFilter = layer.getFilter().shape
     
-    normalize = 1 * shapeFilter[2] * shapeFilter[3]
+    value = layer.object(parent.value)
 
-    value = layer.object(parent.value) / normalize
-    
+    value = layer.batchnorm(value)
+
     sigmoid = torch.nn.Sigmoid()
     
     layer.value = sigmoid(value) + torch.nn.functional.relu(value)
@@ -68,8 +67,10 @@ def conv2d_propagate_images(layer): ## MUTATION: ADDING IMAGE TO INPUT IN EVERY 
     
     normalize = shapeFilter[2] * shapeFilter[3]
 
-    value = layer.object(parent.value) / normalize
+    value = layer.object(parent.value)
     
+    value = layer.batchnorm(value)
+
     sigmoid = torch.nn.Sigmoid()
     
     layer.value = sigmoid(value) + torch.nn.functional.relu(value)
@@ -99,13 +100,13 @@ def conv2d_propagate_multipleInputs(layer): ## MUTATION: Multiple inputs per con
     current_input = __getInput(layer, parent.value)
 
     shapeFilter = layer.getFilter().shape
-    
-    normalize = 1 * shapeFilter[2] * shapeFilter[3]
 
-    value = layer.object(current_input) / normalize
+    value = layer.object(current_input) 
     
     sigmoid = torch.nn.Sigmoid()
-    
+
+    value = layer.batchnorm(value)
+
     layer.value = sigmoid(value) + torch.nn.functional.relu(value)
 
 def linear_propagate(layer):

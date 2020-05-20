@@ -11,6 +11,7 @@ class Layer():
         self.cudaFlag = cudaFlag
         self.image = None
         self.other_inputs = []
+        self.batchnorm = None
 
         if self.cudaFlag == True:
             self.swap = torch.tensor([[0, 1], [1,0]], dtype=torch.float32, requires_grad=True).cuda()

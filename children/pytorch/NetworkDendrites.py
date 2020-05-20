@@ -159,8 +159,6 @@ class Network(nn.Module, na.NetworkAbstract):
                 else:
                     inputs, labels_data = data[0], data[1]
 
-                inputs = inputs * 255
-
                 self.assignLabels(labels_data)
 
                 self.total_value = 0
@@ -192,8 +190,6 @@ class Network(nn.Module, na.NetworkAbstract):
                 inputs, labels_data = data[0].cuda(), data[1].cuda()
             else:
                 inputs, labels_data = data[0], data[1]
-
-            inputs = inputs * 255
 
             self.assignLabels(labels_data)
             self.total_value = 0
@@ -237,8 +233,6 @@ class Network(nn.Module, na.NetworkAbstract):
                     inputs, labels_data = data[0].cuda(), data[1].cuda()
                 else:
                     inputs, labels_data = data[0], data[1]
-
-                inputs = inputs * 255
 
                 self.assignLabels(labels_data)
                 self.total_value = 0
@@ -351,8 +345,6 @@ class Network(nn.Module, na.NetworkAbstract):
                     else:
                         inputs, labels_data = data[0], data[1]
 
-                    inputs = inputs * 255
-
                     self.__doTraining(inputs=inputs, labels_data=labels_data)
 
                 self.__currentEpoch = epoch
@@ -431,6 +423,7 @@ class Network(nn.Module, na.NetworkAbstract):
 
         accuracy = 0
         print("generate energy")
+        model = self.eval()
         with torch.no_grad():
 
             total = 0
@@ -443,11 +436,11 @@ class Network(nn.Module, na.NetworkAbstract):
                 else:
                     inputs, labels = data[0], data[1]
 
-                self.assignLabels(labels)
-                self.nodes[0].objects[0].value = inputs*255 # DESNORMALIZAR!
-                self(self.nodes[0].objects[0].value)
+                model.assignLabels(labels)
+                model.nodes[0].objects[0].value = inputs # DESNORMALIZAR!
+                model(model.nodes[0].objects[0].value)
 
-                linearValue = self.__getLayerProbability().value
+                linearValue = model.__getLayerProbability().value
 
                 _, predicted = torch.max(linearValue.data, 1)
 
@@ -457,6 +450,7 @@ class Network(nn.Module, na.NetworkAbstract):
             accuracy = correct / total
 
         self.__accuracy = accuracy
+        self.train()
 
     def getAcurracy(self):
 
