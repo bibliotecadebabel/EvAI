@@ -208,7 +208,7 @@ class Network(nn.Module, na.NetworkAbstract):
         print("end step=", start_step)
         print("end energy=", self.getAverageLoss(total_steps//4))
 
-    def TrainingCosineLR_Restarts(self, dataGenerator, max_dt, min_dt, epochs, restart_dt=1, show_accuarcy=False, modelDao=None, info_model=None):
+    def TrainingCosineLR_Restarts(self, dataGenerator, max_dt, min_dt, epochs, restart_dt=1, show_accuarcy=False):
 
         self.optimizer = optim.SGD(self.parameters(), lr=max_dt, momentum=self.momentum, weight_decay=self.weight_decay)
         total_steps = len(dataGenerator._trainoader)
@@ -228,27 +228,6 @@ class Network(nn.Module, na.NetworkAbstract):
                 if epoch % 5 == 0:
                     self.generateEnergy(dataGen=dataGenerator)
                     print("ACCURACY= ", self.getAcurracy())
-            
-            if modelDao is not None and epoch > 0 and epoch % 25 == 0:
-                
-                self.generateEnergy(dataGen=dataGenerator)
-
-                test_id = info_model[0]
-                testName = info_model[1]
-                epochs_model = epoch + info_model[2]
-                folder_1 = info_model[3]
-                folder_2 = info_model[4]
-
-                fileName = str(test_id)+"_"+testName+"_"+str(epochs_model)
-                path = os.path.join(folder_1, folder_2, fileName)
-                dna = str(self.adn)
-                accuarcy = self.getAcurracy()
-
-                modelDao.insert(idTest=test_id, dna=dna, iteration=epochs_model, 
-                        fileName=fileName, model_weight=accuarcy)
-
-                self.saveModel(path=path)
-
 
             for i, data in enumerate(dataGenerator._trainoader):
 

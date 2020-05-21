@@ -7,21 +7,22 @@ from utilities.Abstract_classes.classes.Alaising_cosine import (
 
 CUDA = True
 
-TEST_NAME = "experiment_batchnorm"
+TEST_NAME = "experiment_batchnorm_ver2"
 TEST_DAO = TestDAO.TestDAO(db='database.db')
 MODEL_DAO = TestModelDAO.TestModelDAO(db='database.db')
+
+EPOCHS_1 = 5
+EPOCHS_2 = 20
 
 WEIGHT_DECAY = 0.0005
 MOMENTUM = 0.9
 
 BASE_DT = 0.05
-MIN_DT = 0.00001
+MIN_DT = 0.0001
 
 BASE_DT_2 = 0.001
 MIN_DT_2 = 0.000001
 
-EPOCHS = 100
-RESTART_EPOCH_PERIOD = EPOCHS
 BATCH_SIZE = 128
 
 
@@ -45,28 +46,31 @@ ADN =  ((-1, 1, 3, 32, 32), (0, 3, 60, 3, 3), (0, 60, 60, 3, 3), (0, 60, 60, 3, 
 
 
 network = nw.Network(adn=ADN, cudaFlag=CUDA, momentum=MOMENTUM, weight_decay=WEIGHT_DECAY)
-test_id = TEST_DAO.insert(testName=TEST_NAME, periodSave=25, dt=BASE_DT, total=EPOCHS*2, periodCenter=0)
-
-info_model_1 = [test_id, TEST_NAME, 0, "saved_models", "cifar"]
-info_model_2 = [test_id, TEST_NAME, EPOCHS, "saved_models", "cifar"]
+test_id = TEST_DAO.insert(testName=TEST_NAME, periodSave=1, dt=BASE_DT, total=(EPOCHS_1+EPOCHS_2), periodCenter=0)
 
 print("STARTING TRAINING")
 network.TrainingCosineLR_Restarts(dataGenerator=dataGen, max_dt=BASE_DT, min_dt=MIN_DT, 
-                                    epochs=EPOCHS, restart_dt=RESTART_EPOCH_PERIOD, show_accuarcy=True, 
-                                    modelDao=MODEL_DAO, info_model=info_model_1)
+                                    epochs=EPOCHS_1, restart_dt=EPOCHS_1, show_accuarcy=False)
+
+network.generateEnergy(dataGen=dataGen)
+print("ACCURACY=", network.getAcurracy())
+FILE_NAME = str(test_id)+"_"+TEST_NAME+"_"+str(5)
+PATH_SAVE = os.path.join("saved_models", FOLDER, FILE_NAME)
+MODEL_DAO.insert(idTest=test_id, dna=str(ADN), iteration=5, 
+                        fileName=FILE_NAME, model_weight=network.getAcurracy())
+network.saveModel(path=PATH_SAVE)
 
 network.TrainingCosineLR_Restarts(dataGenerator=dataGen, max_dt=BASE_DT_2, min_dt=MIN_DT_2, 
-                                    epochs=EPOCHS, restart_dt=RESTART_EPOCH_PERIOD, show_accuarcy=True, 
-                                    modelDao=MODEL_DAO, info_model=info_model_2)
+                                    epochs=EPOCHS_2, restart_dt=EPOCHS_2, show_accuarcy=True)
 print("FINISH TRAINING")
 
 network.generateEnergy(dataGen)
 print("FINAL ACCURACY")
 print(network.getAcurracy())
 
-FILE_NAME = str(test_id)+"_"+TEST_NAME+"_"+str(EPOCHS*2)
+FILE_NAME = str(test_id)+"_"+TEST_NAME+"_"+str(25)
 PATH_SAVE = os.path.join("saved_models", FOLDER, FILE_NAME)
-MODEL_DAO.insert(idTest=test_id, dna=str(ADN), iteration=EPOCHS*2, 
+MODEL_DAO.insert(idTest=test_id, dna=str(ADN), iteration=25, 
                         fileName=FILE_NAME, model_weight=network.getAcurracy())
 network.saveModel(path=PATH_SAVE)
 
