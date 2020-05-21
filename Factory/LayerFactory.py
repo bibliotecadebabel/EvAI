@@ -29,7 +29,7 @@ class LayerGenerator(AbstractFactory.FactoryClass):
         
         layer = torch.nn.Conv2d(tupleBody[1], tupleBody[2], (tupleBody[3], tupleBody[4]))
         self.__initConv2d(layer, (1, tupleBody[3], tupleBody[4]))
-        batchNormalization = torch.nn.BatchNorm2d(tupleBody[2])
+        batchNormalization = torch.nn.BatchNorm2d(tupleBody[2], track_running_stats=False)
 
         self.__verifyCuda(batchNormalization)
         self.__verifyCuda(layer)
