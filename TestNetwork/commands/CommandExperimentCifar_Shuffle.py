@@ -49,7 +49,7 @@ class CommandExperimentCifar_Restarts():
             centerNetwork = nw.Network(centerAdn, cudaFlag=CUDA, momentum=self.__momentum, weight_decay=self.__weight_decay)
         else:
             print("new space's center: =", self.__bestNetwork.adn)
-            centerNetwork = self.__bestNetwork.clone()
+            centerNetwork = self.__bestNetwork
 
         self.__nodes.append(nodeCenter)
         self.__networks.append(centerNetwork)
@@ -158,7 +158,7 @@ class CommandExperimentCifar_Restarts():
         if highest_accuracy>self.accuracy_temp:
 
             print("bestNetwork accuracy=", highest_accuracy)
-
+            
             self.__bestNetwork_temp = bestNetwork.clone()
 
             self.accuracy_temp = highest_accuracy
@@ -171,7 +171,7 @@ class CommandExperimentCifar_Restarts():
 
             print('Best network did not change')
 
-            return  self.__bestNetwork_temp
+            return  self.__bestNetwork_temp.clone()
 
     def __defineNewCenter(self):
 
