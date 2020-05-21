@@ -90,13 +90,19 @@ class Layer():
         self.__batchnorm.weight = torch.nn.Parameter(value.clone())
     
     def setVarNorm(self, value):
-        self.__batchnorm.running_var.data = value.data.clone()
+
+        if value is not None:
+            self.__batchnorm.running_var.data = value.data.clone()
 
     def setMeanNorm(self, value):
-        self.__batchnorm.running_mean.data = value.data.clone()
+
+        if value is not None:
+            self.__batchnorm.running_mean.data = value.data.clone()
     
     def setBatchesTrackedNorm(self, value):
-        self.__batchnorm.num_batches_tracked.data = value.data.clone()
+
+        if value is not None:
+            self.__batchnorm.num_batches_tracked.data = value.data.clone()
 
     def getBatchNorm(self):
 
