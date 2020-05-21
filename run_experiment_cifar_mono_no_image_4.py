@@ -1,5 +1,5 @@
-from TestNetwork.commands import CommandCreateDataGen
-from TestNetwork.commands import  CommandExperimentCifar_Shuffle as CommandExperimentCifar_Restarts
+from TestNetwork.commands import CommandCreateDataGen, CommandExperimentCifar_Restarts_monotone
+from TestNetwork.commands import  CommandExperimentCifar_Restarts_monotone as CommandExperimentCifar_Restarts
 from DNA_conditions import max_layer,max_filter
 from DNA_creators import Creator
 from DNA_Graph import DNA_Graph
@@ -8,10 +8,8 @@ from utilities.Abstract_classes.classes.random_selector import random_selector
 
 ###### EXPERIMENT SETTINGS ######
 
-
-
 # BATCH SIZE
-BATCH_SIZE = int(input("Enter batchsize: "))
+BATCH_SIZE = 128
 
 # DATA SOURCE ('default' -> Pikachu, 'cifar' -> CIFAR)
 DATA_SOURCE = 'cifar'
@@ -26,15 +24,17 @@ PERIOD_NEWSPACE = 1
 PERIOD_SAVE_MODEL = 1
 
 # EPOCHS
-EPOCHS = int(input("Enter amount of epochs: "))
+EPOCHS = 200
+TRIAL_EPOCS=1
+INITIA_EPOCS=4
+# MAX - MIN DTs FOR EPOCHS 1 TO 10
+MAX_DT = 0.001
+MIN_DT = 0.0000001
 
-iter =2000
+# MAX - MIN DTs FOR THE REST OF THE EXPERIMENT
+MAX_DT_2 = 0.0001
+MIN_DT_2 = 0.0000001
 
-# DT ARRAY #1
-DT_ARRAY_1 = [ 10 ** (-k/iter) for k in range(iter)]
-
-# DT ARRAY #2
-DT_ARRAY_2 = [ 10 ** (-3-(k/iter)) for k in range(iter)]
 # weight_decay parameter
 WEIGHT_DECAY = 0.00001
 
@@ -47,32 +47,19 @@ CUDA = True
 # MAX LAYER MUTATION (CONDITION)
 MAX_LAYERS = 15
 
+
 # MAX FILTERS MUTATION (CONDITION)
-MAX_FILTERS = 41
+MAX_FILTERS = 49
 
 # TEST_NAME, the name of the experiment (unique)
-TEST_NAME = input("Enter TestName: ")
-
-# ENABLE_ACTIVATION, enable/disable sigmoid + relu
-ENABLE_ACTIVATION = int(input("Enable activation? (1 = yes, 0 = no): "))
-
-value = False
-if ENABLE_ACTIVATION == 1:
-    value = True
-ENABLE_ACTIVATION = value
+TEST_NAME = "cifar_experiment_ver2"
 
 # INITIAL DNA
-DNA = ((-1,1,3,32,32),
-        (0,3, 5, 3 , 3),
-        (0,5, 5, 3,  3),
-        (0,5, 41, 32-4, 32-4),
-        (1, 41,10),
-        (2,),
-        (3,-1,0),
-        (3,0,1),
-        (3,1,2),
-        (3,2,3),
-        (3,3,4))
+x=32
+y=32
+DNA = ((-1, 1, 3, 32, 32), (0, 3, 5, 4, 4), (0, 8, 5, 3, 3), (0, 5, 5, 3, 3), (0, 10, 10, 4, 4), (0, 10, 20, 3, 3), (0, 20, 5, 4, 4), (0, 43, 5, 7, 7), (0, 10, 5, 7, 7), (0, 5, 10, 3, 3), (0, 13, 10, 3, 3), (0, 25, 40, 8, 8), (0, 40, 48, 3, 3), (0, 88, 48, 3, 3), (0, 116, 48, 32, 32), (1, 48, 10), (2,), (3, -1, 0), (3, -1, 1), (3, 0, 1), (3, 1, 2), (3, 1, 3), (3, 2, 3), (3, 3, 4), (3, 4, 5), (3, -1, 6), (3, 1, 6), (3, 3, 6), (3, 4, 6), (3, 5, 6), (3, 6, 7), (3, 1, 7), (3, 7, 8), (3, 8, 9), (3, -1, 9), (3, 7, 10), (3, 8, 10), (3, 9, 10), (3, 10, 11), (3, 10, 12), (3, 11, 12), (3, 10, 13), (3, 7, 13), (3, 8, 13), (3, 9, 13), (3, 12, 13), (3, -1, 13), (3, 13, 14))
+
+
 
 
 def DNA_Creator_s(x,y, dna):
@@ -105,7 +92,8 @@ space, selector = DNA_Creator_s(dataGen.size[1], dataGen.size[2], dna=DNA)
 trainer = CommandExperimentCifar_Restarts.CommandExperimentCifar_Restarts(initialDNA=DNA, dataGen=dataGen, testName=TEST_NAME,
                                                                             selector=selector, weight_decay=WEIGHT_DECAY,
                                                                                 momentum=MOMENTUM, space=space, cuda=CUDA,
-                                                                                enable_activation=ENABLE_ACTIVATION)
+                                                                                trial_epocs=TRIAL_EPOCS,
+                                                                                epocs_initial=INITIA_EPOCS)
 
-trainer.execute(periodSave=PERIOD_SAVE, periodNewSpace=PERIOD_NEWSPACE, periodSaveModel=PERIOD_SAVE_MODEL, epochs=EPOCHS,
-                dt_array_1=DT_ARRAY_1, dt_array_2=DT_ARRAY_2)
+trainer.execute(periodSave=PERIOD_SAVE, periodNewSpace=PERIOD_NEWSPACE, periodSaveModel=PERIOD_SAVE_MODEL,
+                epochs=EPOCHS, min_dt=MIN_DT, max_dt=MAX_DT, min_dt_2=MIN_DT_2, max_dt_2=MAX_DT_2)

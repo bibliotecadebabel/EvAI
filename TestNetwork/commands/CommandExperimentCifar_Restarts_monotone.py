@@ -9,8 +9,9 @@ import os
 
 class CommandExperimentCifar_Restarts():
 
-    def __init__(self, initialDNA, dataGen, testName, selector, momentum, weight_decay, space, cuda=True,
-        trial_epocs=1):
+    def __init__(self, initialDNA, dataGen, testName,
+            selector, momentum, weight_decay, space, cuda=True,
+        trial_epocs=1,epocs_initial=5):
         self.__space = space
         self.__cuda = cuda
         self.__dataGen = dataGen
@@ -29,6 +30,7 @@ class CommandExperimentCifar_Restarts():
                                 momentum=self.__momentum, weight_decay=self.__weight_decay)
         self.__bestNetwork_temp = None
         self.trial_epocs=trial_epocs
+        self.__epocs_initial=epocs_initial
 
 
     def __generateNetworks(self):
@@ -105,9 +107,9 @@ class CommandExperimentCifar_Restarts():
 
         print("TRAINING INITIAL NETWORK")
         self.__bestNetwork.TrainingCosineLR_Restarts(dataGenerator=dataGen, max_dt=max_dt, min_dt=min_dt,
-                                                        epochs=5, restart_dt=5)
+                                                        epochs=self.__epocs_initial, restart_dt=5)
         self.__bestNetwork.TrainingCosineLR_Restarts(dataGenerator=dataGen, max_dt=max_dt_2, min_dt=min_dt_2,
-                                                        epochs=5, restart_dt=5)
+                                                        epochs=self.__epocs_initial, restart_dt=5)
 
         self.__saveModel(self.__bestNetwork, test_id=test_id, iteration=0)
 
@@ -132,6 +134,7 @@ class CommandExperimentCifar_Restarts():
             self.__testResultDao.insert(idTest=test_id, iteration=j, dna_graph=self.__space)
 
             self.__bestNetwork = self.__getBestNetwork()
+
 
 
             print("NOT TRAINING BEST NETWORK")
