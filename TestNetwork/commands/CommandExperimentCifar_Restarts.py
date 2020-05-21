@@ -101,9 +101,9 @@ class CommandExperimentCifar_Restarts():
 
         print("TRAINING INITIAL NETWORK")
         self.__bestNetwork.TrainingCosineLR_Restarts(dataGenerator=dataGen, max_dt=max_dt, min_dt=min_dt, 
-                                                        epochs=10, restart_dt=10)
+                                                        epochs=5, restart_dt=5)
         self.__bestNetwork.TrainingCosineLR_Restarts(dataGenerator=dataGen, max_dt=max_dt_2, min_dt=min_dt_2, 
-                                                        epochs=10, restart_dt=10)
+                                                        epochs=5, restart_dt=5)
 
         self.__saveModel(self.__bestNetwork, test_id=test_id, iteration=0)
 
@@ -118,7 +118,7 @@ class CommandExperimentCifar_Restarts():
             for network in self.__networks:
                 print("Training net #", i)
                 network.TrainingCosineLR_Restarts(dataGenerator=dataGen, max_dt=max_dt_2, min_dt=min_dt_2, 
-                                                        epochs=4, restart_dt=4)
+                                                        epochs=1, restart_dt=1)
                 i += 1
 
             self.__saveEnergy()
@@ -128,7 +128,7 @@ class CommandExperimentCifar_Restarts():
 
             print("TRAINING BEST NETWORK")
             self.__bestNetwork.TrainingCosineLR_Restarts(dataGenerator=dataGen, max_dt=max_dt_2, min_dt=min_dt_2, 
-                                                        epochs=20, restart_dt=20)
+                                                        epochs=1, restart_dt=1)
                 
                 
             self.__saveModel(network=self.__bestNetwork, test_id=test_id, iteration=j)
