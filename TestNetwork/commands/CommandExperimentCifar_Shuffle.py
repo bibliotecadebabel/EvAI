@@ -159,7 +159,7 @@ class CommandExperimentCifar_Restarts():
 
             print("bestNetwork accuracy=", highest_accuracy)
 
-            self.__bestNetwork_temp = bestNetwork
+            self.__bestNetwork_temp = bestNetwork.clone()
 
             self.accuracy_temp = highest_accuracy
 
