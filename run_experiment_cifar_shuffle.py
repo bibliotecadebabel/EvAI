@@ -31,7 +31,7 @@ EPOCHS = int(input("Enter amount of epochs: "))
 iter =2000
 
 # DT ARRAY #1
-DT_ARRAY_1 = [ 10 ** (-k/iter) for k in range(iter)]
+DT_ARRAY_1 = [ 10 ** (-1-k/iter) for k in range(iter)]
 
 # DT ARRAY #2
 DT_ARRAY_2 = [ 10 ** (-3-(k/iter)) for k in range(iter)]
@@ -48,7 +48,7 @@ CUDA = True
 MAX_LAYERS = 15
 
 # MAX FILTERS MUTATION (CONDITION)
-MAX_FILTERS = 41
+MAX_FILTERS = 42
 
 # TEST_NAME, the name of the experiment (unique)
 TEST_NAME = input("Enter TestName: ")
