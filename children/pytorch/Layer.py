@@ -2,7 +2,7 @@ import torch
 
 class Layer():
 
-    def __init__(self, adn=None, node=None, objectTorch=None, propagate=None, value=None, label=None, cudaFlag=True, batchNorm=None):
+    def __init__(self, adn=None, node=None, objectTorch=None, propagate=None, value=None, label=None, cudaFlag=True, batchNorm=None, enable_activation=True):
         self.object = objectTorch
         self.node = node
         self.value =  value
@@ -26,6 +26,7 @@ class Layer():
         self.bias_der_total = 0
         self.filter_der_total = 0
         self.adn = adn
+        self.enable_activation = enable_activation
         
     def getBiasDer(self):
 

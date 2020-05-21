@@ -41,16 +41,17 @@ def Nothing(layer):
 def conv2d_propagate(layer):
 
     parent = layer.node.parents[0].objects[0]
-
-    shapeFilter = layer.getFilter().shape
     
     value = layer.object(parent.value)
 
     value = layer.doNormalize(value)
-
-    sigmoid = torch.nn.Sigmoid()
     
-    layer.value = sigmoid(value) + torch.nn.functional.relu(value)
+    layer.value = value
+    
+    if layer.enable_activation == True:
+        
+        sigmoid = torch.nn.Sigmoid()
+        layer.value = sigmoid(value) + torch.nn.functional.relu(value)
     
 def conv2d_propagate_images(layer): ## MUTATION: ADDING IMAGE TO INPUT IN EVERY CONVOLUTION LAYER
     
@@ -61,19 +62,18 @@ def conv2d_propagate_images(layer): ## MUTATION: ADDING IMAGE TO INPUT IN EVERY 
     else:
         layer.image = parent.image
 
-    kid = layer.node.kids[0].objects[0]
-
-    shapeFilter = layer.getFilter().shape
-    
-    normalize = shapeFilter[2] * shapeFilter[3]
+    kid = layer.node.kids[0].objects[0]  
 
     value = layer.object(parent.value)
     
     value = layer.doNormalize(value)
 
-    sigmoid = torch.nn.Sigmoid()
+    layer.value = value
     
-    layer.value = sigmoid(value) + torch.nn.functional.relu(value)
+    if layer.enable_activation == True:
+        
+        sigmoid = torch.nn.Sigmoid()
+        layer.value = sigmoid(value) + torch.nn.functional.relu(value)
 
     if kid.adn is not None and kid.adn[0] == 0: #Check if is conv2d
 
@@ -99,15 +99,16 @@ def conv2d_propagate_multipleInputs(layer): ## MUTATION: Multiple inputs per con
     #print("current layer= ", layer.adn)
     current_input = __getInput(layer, parent.value)
 
-    shapeFilter = layer.getFilter().shape
-
     value = layer.object(current_input) 
-    
-    sigmoid = torch.nn.Sigmoid()
-
     value = layer.doNormalize(value)
-
-    layer.value = sigmoid(value) + torch.nn.functional.relu(value)
+    
+    layer.value = value
+    
+    if layer.enable_activation == True:
+        
+        sigmoid = torch.nn.Sigmoid()
+        layer.value = sigmoid(value) + torch.nn.functional.relu(value)
+    
 
 def linear_propagate(layer):
 

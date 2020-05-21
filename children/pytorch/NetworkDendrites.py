@@ -16,9 +16,9 @@ import os
 
 class Network(nn.Module, na.NetworkAbstract):
 
-    def __init__(self, adn, cudaFlag=True, momentum=0.0, weight_decay=0.0):
+    def __init__(self, adn, cudaFlag=True, momentum=0.0, weight_decay=0.0, enable_activation=True):
         nn.Module.__init__(self)
-        na.NetworkAbstract.__init__(self,adn=adn, cuda=cudaFlag, momentum=momentum, weight_decay=weight_decay)
+        na.NetworkAbstract.__init__(self,adn=adn, cuda=cudaFlag, momentum=momentum, weight_decay=weight_decay, enable_activaiton=enable_activation)
         self.__lenghNodes = 0
         self.__conv2d_propagate_mode = const.CONV2D_DEFAULT
         self.__accumulated_loss = 0
@@ -57,7 +57,7 @@ class Network(nn.Module, na.NetworkAbstract):
             tupleBody = adn
 
             if tupleBody[0] >= 0 and tupleBody[0] <= 2:
-                layer = self.factory.findValue(tupleBody, propagate_mode=self.__conv2d_propagate_mode)
+                layer = self.factory.findValue(tupleBody, propagate_mode=self.__conv2d_propagate_mode, enable_activation=self.enable_activation)
                 layer.node = self.nodes[indexNode]
                 self.nodes[indexNode].objects.append(layer)
                 attributeName = "layer"+str(indexNode)
@@ -292,6 +292,7 @@ class Network(nn.Module, na.NetworkAbstract):
 
             i=0
 
+            print_every = p // 4
             while i < p:
 
                 if dt is not None:
@@ -307,6 +308,10 @@ class Network(nn.Module, na.NetworkAbstract):
                 self.__currentEpoch = i
 
                 dataGenerator.update()
+
+                if print_every > 0:
+                    if i % print_every == print_every - 1:
+                        self.__printValues(1, i, avg=print_every)
 
                 i=i+1
 
@@ -418,6 +423,7 @@ class Network(nn.Module, na.NetworkAbstract):
         network.total_value = self.total_value
         network.momentum = self.momentum
         network.weight_decay = self.weight_decay
+        network.enable_activation = self.enable_activation
 
         return network
 

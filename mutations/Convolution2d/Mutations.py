@@ -352,18 +352,9 @@ class AlterDimensionKernel_Dendrite(Mutation):
             shape = oldFilter.shape
             old_normalize = 1 * shape[2] * shape[3]
 
-            if cuda == True:
-                resized = torch.zeros(shape[0], shape[1], shape[2]-newDimensions, shape[3]-newDimensions).cuda()
-            else:
-                resized = torch.zeros(shape[0], shape[1], shape[2]-newDimensions, shape[3]-newDimensions)
-            
-            for out_channel in range(shape[0]):
-                for in_channel in range(shape[1]):
-                    for kernel_x in range(shape[2]-newDimensions):
-                        for kernel_y in range(shape[3]-newDimensions):
-                            resized[out_channel][in_channel][kernel_x][kernel_y] = oldFilter[out_channel][in_channel][kernel_x][kernel_y].clone()
-        
-
+            new_x = shape[2] - newDimensions
+            new_y = shape[3] - newDimensions
+            resized = oldFilter[:, :, :new_x, :new_y]
 
             del oldFilter
 

@@ -10,7 +10,8 @@ import const.mutation_type as m_type
 
 def executeMutation(oldNetwork, newAdn):
     
-    network = nw.Network(newAdn, cudaFlag=oldNetwork.cudaFlag, momentum=oldNetwork.momentum, weight_decay=oldNetwork.weight_decay)
+    network = nw.Network(newAdn, cudaFlag=oldNetwork.cudaFlag, momentum=oldNetwork.momentum, 
+                            weight_decay=oldNetwork.weight_decay, enable_activation=oldNetwork.enable_activation)
 
 
     length_newadn = __generateLenghtADN(newAdn)

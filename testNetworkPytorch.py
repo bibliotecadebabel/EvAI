@@ -65,14 +65,14 @@ def Test_Mutacion():
 
     print("creating DNAs")
 
-    parentDNA = ((-1,1,3,32,32),(0,3, 5, 3 , 3), (0,5, 8, 3,  3), (0,8, 10, 28, 28), (1, 10,10), (2,),
+    parentDNA = ((-1,1,3,32,32),(0,3, 5, 3 , 3), (0,5, 10, 3,  3), (0,10, 15, 28, 28), (1, 15,10), (2,),
                     (3,-1,0), (3,0,1), (3,1,2), (3,2,3), (3,3,4))
 
-    mutate_dna = direction_dna.spread_dendrites(1, parentDNA)
+    mutate_dna = direction_dna.increase_filters(1, parentDNA)
 
     print("new dna=", mutate_dna)
 
-    network = nw_dendrites.Network(parentDNA, cudaFlag=True)
+    network = nw_dendrites.Network(parentDNA, cudaFlag=True, momentum=0.9, weight_decay=0.0005, enable_activation=False)
     network.TrainingCosineLR_Restarts(dataGenerator=dataGen, max_dt=0.1, min_dt=0.01, epochs=1, restart_dt=1)
     network.generateEnergy(dataGen)
     print("accuracy= ", network.getAcurracy())
