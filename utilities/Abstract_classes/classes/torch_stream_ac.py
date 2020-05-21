@@ -5,9 +5,19 @@ import torch
 import torch.nn as nn
 import torch.tensor as tensor
 import torch.optim as optim
-from DNA_graph_functions import DNA2size
+from DNA_graph_functions import DNA2size, net2file,file2net
+
 import time
 
+unload=True
+
+def unload_net(net):
+    if unload:
+        return net2file(net)
+
+def load(file,DNA):
+    if unload:
+        return file2net(net)
 
 
 class TorchStream(Stream):
@@ -20,6 +30,7 @@ class TorchStream(Stream):
                 self.log_size=None
                 self.dataGen=None
                 self.Alai=Alai
+                self.DNA=None
                 self.dt=0
             def get_net(self):
                 p=self.log_size-len(self.log)
@@ -55,6 +66,10 @@ class TorchStream(Stream):
         self.min_size=min_size
         self.Alai=Alai
         self.flags=True
+
+
+
+
 
     def flags_print(self,text):
         if self.flags==True:
@@ -142,6 +157,7 @@ class TorchStream(Stream):
         log.dataGen=self.dataGen
         log.log_size=self.log_size
         log.dt=self.dt
+        log.DNA=key
         if net is not None:
             log.old_net=net
             log.new_net=net

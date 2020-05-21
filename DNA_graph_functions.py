@@ -2,6 +2,37 @@ import utilities.Quadrants as qu
 import utilities.Node as nd
 import utilities.Graphs as gr
 import TangentPlane as tplane
+import children.pytorch.NetworkDendrites as nw
+import os
+import time
+
+def test():
+    print('done')
+
+"""def string2DNA(DNA):
+    return '('+ ','.join([ DNA2string(layer) if
+        type(layer)==tuple else str(layer)
+            for layer in DNA]) + ')'"""
+
+
+
+
+
+
+def net2file(net,file=None):
+    if not(file):
+        file=str(time.time()).replace(".", "")
+    final_path = os.path.join("temporary_nets", str(file))
+    net.saveModel(final_path)
+    return file
+
+def file2net(file, DNA, cudaFlag = False):
+    net= nw.Network(DNA,cudaFlag = False)
+    final_path = os.path.join("temporary_nets",file)
+    net.loadModel(final_path)
+    return net
+
+
 
 
 def num_layer2dim_output(DNA,layer):

@@ -24,6 +24,11 @@ class Selector(ABC):
         self.dt = 0.01
         self.current_path=[]
         self.center=0
+        self.flags=True
+
+    def print_flag(self,text):
+        if self.flags:
+            print(text)
 
     def update_current_path(self,space):
         self.current_path.append(self.space2action(space))
@@ -54,6 +59,7 @@ class Selector(ABC):
         self.update_current_path(space)
         self.update_current_center(space,new_center)
         self.train()
+        self.print_flag('Updating predicted actions')
         self.update_predicted_actions()
         self.current_time = self.current_time+1
         self.forget_observations()
