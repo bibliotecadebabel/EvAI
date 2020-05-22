@@ -1,12 +1,12 @@
 import torch
 
-x = torch.randn(3, 2, 5, 5)
-x = x.cuda()
-print("x")
-print(x)
+x = [1, 2, 3, 4, 5]
+x_2 = x[-10000:]
 
-x = x[:,:,:4,:4]
-print("test")
+print(x_2)
+
+x_2.append(10)
+print(x_2)
 print(x)
 '''
 x.resize_(3,2,4,4)

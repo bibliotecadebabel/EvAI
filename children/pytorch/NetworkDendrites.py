@@ -425,12 +425,14 @@ class Network(nn.Module, na.NetworkAbstract):
         network.weight_decay = self.weight_decay
         network.enable_activation = self.enable_activation
 
+        network.history_loss = self.history_loss[-200:]
+
         return network
 
     def generateEnergy(self, dataGen):
 
         accuracy = 0
-        print("generate energy")
+
         model = self.eval()
         with torch.no_grad():
 

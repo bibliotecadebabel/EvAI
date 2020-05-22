@@ -5,30 +5,30 @@ from DNA_Graph import DNA_Graph
 from utilities.Abstract_classes.classes.random_selector import random_selector
 from DNA_creator_duplicate_clone import Creator_from_selection_clone as Creator_s
 import const.path_models as const_path
+import TestNetwork.ExperimentSettings
 import os
 
 class CommandExperimentCifar_Restarts():
 
-    def __init__(self, initialDNA, dataGen, testName, selector, momentum, weight_decay, space, cuda=True,
-        trial_epocs=1, enable_activation=True):
-        self.__space = space
-        self.__cuda = cuda
-        self.__dataGen = dataGen
-        self.__testName = testName
+    def __init__(self, settings : TestNetwork.ExperimentSettings.ExperimentSettings):
+        self.__space = settings.initial_space
+        self.__selector = settings.selector
+        
+        self.__settings = settings
+        
         self.__testDao = TestDAO.TestDAO(db='database.db')
-        self.__selector = selector
         self.__testResultDao = TestResultDAO.TestResultDAO(db='database.db')
         self.__testModelDao = TestModelDAO.TestModelDAO(db='database.db')
 
         self.__bestNetwork = None
-        self.__momentum = momentum
-        self.__weight_decay = weight_decay
 
         self.__iterations_per_epoch = 0
-        self.__bestNetwork = nw.Network(adn=initialDNA, cudaFlag=cuda,
-                                momentum=self.__momentum, weight_decay=self.__weight_decay, enable_activation=enable_activation)
+        
+        self.__bestNetwork = nw.Network(adn=settings.initial_dna, cudaFlag=settings.cuda,
+                                momentum=settings.momentum, weight_decay=settings.weight_decay, 
+                                enable_activation=settings.enable_activation)
+
         self.__bestNetwork_temp = None
-        self.trial_epocs=trial_epocs
 
 
     def __generateNetworks(self):
@@ -37,19 +37,12 @@ class CommandExperimentCifar_Restarts():
         self.__nodes = []
 
         space = self.__space
-        CUDA = self.__cuda
-
         nodeCenter = self.__getNodeCenter(self.__space)
 
-        centerAdn = space.node2key(nodeCenter)
-
         centerNetwork = None
-        if self.__bestNetwork is None:
-            print("new network")
-            centerNetwork = nw.Network(centerAdn, cudaFlag=CUDA, momentum=self.__momentum, weight_decay=self.__weight_decay)
-        else:
-            print("new space's center: =", self.__bestNetwork.adn)
-            centerNetwork = self.__bestNetwork
+
+        print("new space's center: =", self.__bestNetwork.adn)
+        centerNetwork = self.__bestNetwork
 
         self.__nodes.append(nodeCenter)
         self.__networks.append(centerNetwork)
@@ -64,7 +57,7 @@ class CommandExperimentCifar_Restarts():
 
         i = 0
 
-        average_loss = self.__iterations_per_epoch // 4
+        average_loss = 200
 
         for network in self.__networks:
 
@@ -93,21 +86,52 @@ class CommandExperimentCifar_Restarts():
 
         return nodeCenter
 
+    def __trainNetwork(self, network : nw.Network, dt_array, max_iter):
 
-    def execute(self, periodSave, periodNewSpace, periodSaveModel, epochs, dt_array_1, dt_array_2):
+        best_network = network.clone()
+        
+        best_network.generateEnergy(self.__settings.dataGen)
+        best_accuracy = best_network.getAcurracy()
 
-        dataGen = self.__dataGen
+        print("best current accuracy= ", best_network.getAcurracy())
+
+        for i in range(max_iter):
+            print("iteration: ", i+1)
+            network.Training(data=self.__settings.dataGen, dt=dt_array, p=len(dt_array), full_database=True)
+            network.generateEnergy(self.__settings.dataGen)
+            current_accuracy = network.getAcurracy()
+
+            print("current accuracy=", current_accuracy)
+            if current_accuracy >= best_accuracy:
+                del best_network
+                best_accuracy = current_accuracy
+                best_network = network.clone()
+
+            else:
+                print("interrupted, lower accuracy.")
+                break
+        
+        best_network.generateEnergy(self.__settings.dataGen)
+        print("final best accuarcy=", best_network.getAcurracy())
+        return best_network
+
+
+    def execute(self):
+
+        dataGen = self.__settings.dataGen
         self.__iterations_per_epoch = len(dataGen._trainoader)
 
-        test_id = self.__testDao.insert(testName=self.__testName, periodSave=periodSave, dt=dt_array_1[0],
-                                          total=epochs, periodCenter=periodNewSpace)
+        test_id = self.__testDao.insert(testName=self.__settings.test_name, periodSave=self.__settings.period_save_space, 
+                                    dt=self.__settings.init_dt_array[0], total=self.__settings.epochs, 
+                                    periodCenter=self.__settings.period_new_space)
 
 
         print("TRAINING INITIAL NETWORK")
-        self.__bestNetwork.Training(data=dataGen, dt=dt_array_1, p=len(dt_array_1), full_database=True)
-        self.__bestNetwork.Training(data=dataGen, dt=dt_array_2, p=len(dt_array_2), full_database=True)
+        self.__bestNetwork = self.__trainNetwork(network=self.__bestNetwork, 
+                    dt_array=self.__settings.init_dt_array, max_iter=self.__settings.max_init_iter)
 
-        self.__bestNetwork.generateEnergy(dataGen)
+        self.__bestNetwork = self.__trainNetwork(network=self.__bestNetwork, 
+                    dt_array=self.__settings.best_dt_array, max_iter=self.__settings.max_best_iter)
 
         self.__bestNetwork_temp=self.__bestNetwork.clone()
         self.accuracy_temp=self.__bestNetwork_temp.getAcurracy()
@@ -117,15 +141,16 @@ class CommandExperimentCifar_Restarts():
         self.__generateNewSpace()
         self.__generateNetworks()
 
-        for j in range(1, epochs+1):
+        for j in range(1, self.__settings.epochs+1):
 
             print("---- EPOCH #", j)
 
-            i = 0
-            for network in self.__networks:
+            for i  in range(len(self.__networks)):
                 print("Training net #", i)
-                network.Training(data=dataGen, dt=dt_array_2, p=len(dt_array_2), full_database=True)
-                i += 1
+                
+                self.__networks[i] = self.__trainNetwork(network=self.__networks[i], dt_array=self.__settings.joined_dt_array,
+                                        max_iter=self.__settings.max_joined_iter)
+
 
             self.__saveEnergy()
             self.__testResultDao.insert(idTest=test_id, iteration=j, dna_graph=self.__space)
@@ -133,10 +158,10 @@ class CommandExperimentCifar_Restarts():
             self.__bestNetwork = self.__getBestNetwork()
 
 
-            print("NOT TRAINING BEST NETWORK")
-            #self.__bestNetwork.TrainingCosineLR_Restarts(dataGenerator=dataGen, max_dt=max_dt_2, min_dt=min_dt_2,
-            #                                            epochs=1, restart_dt=1)
+            print("TRAINING BEST NETWORK")
 
+            self.__bestNetwork = self.__trainNetwork(network=self.__bestNetwork, dt_array=self.__settings.best_dt_array,
+                                        max_iter=self.__settings.max_best_iter)
 
             self.__saveModel(network=self.__bestNetwork, test_id=test_id, iteration=j)
             self.__generateNewSpace()
@@ -149,7 +174,7 @@ class CommandExperimentCifar_Restarts():
         print('NEW VERSION')
         for network in self.__networks:
 
-            network.generateEnergy(self.__dataGen)
+            network.generateEnergy(self.__settings.dataGen)
             print("network accuracy=", network.getAcurracy())
             if network.getAcurracy() >= highest_accuracy:
                 bestNetwork = network
@@ -218,7 +243,8 @@ class CommandExperimentCifar_Restarts():
 
     def __saveModel(self, network, test_id, iteration):
 
-        fileName = str(test_id)+"_"+self.__testName+"_model_"+str(iteration)
+        network.generateEnergy(self.__settings.dataGen)
+        fileName = str(test_id)+"_"+self.__settings.test_name+"_model_"+str(iteration)
         final_path = os.path.join("saved_models","cifar", fileName)
 
         dna = str(network.adn)
