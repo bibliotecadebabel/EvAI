@@ -167,8 +167,9 @@ class CommandExperimentCifar_Restarts():
                                             max_iter=self.__settings.max_best_iter)
 
                 self.__saveModel(network=self.__bestNetwork, test_id=test_id, iteration=j)
-                self.__generateNewSpace()
-                self.__generateNetworks()
+            
+            self.__generateNewSpace()
+            self.__generateNetworks()
             
 
 
