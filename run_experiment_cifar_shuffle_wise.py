@@ -31,19 +31,19 @@ settings.period_save_model = 1
 settings.epochs = int(input("Enter amount of epochs: "))
 
 # INITIAL DT PARAMETERS
-INIT_ITER = 500
+INIT_ITER = 2000
 settings.init_dt_array = [ 10 ** (-1-k/INIT_ITER) for k in range(INIT_ITER)]
-settings.max_init_iter = 10
+settings.max_init_iter = 4
 
 # JOINED DT PARAMETERS
-JOINED_ITER = 500
+JOINED_ITER = 600
 settings.joined_dt_array = [ 10 ** (-3-(k/JOINED_ITER)) for k in range(JOINED_ITER)]
 settings.max_joined_iter = 2
 
 # BEST DT PARAMETERS
-BEST_ITER = 500
+BEST_ITER = 2000
 settings.best_dt_array = [ 10 ** (-3-(k/BEST_ITER)) for k in range(BEST_ITER)]
-settings.max_best_iter = 10
+settings.max_best_iter = 4
 
 # weight_decay parameter
 settings.weight_decay = 0.00001

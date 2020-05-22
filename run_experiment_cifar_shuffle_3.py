@@ -28,14 +28,14 @@ PERIOD_SAVE_MODEL = 1
 # EPOCHS
 EPOCHS = int(input("Enter amount of epochs: "))
 
-iter_init = 10000
-iter_final = 1200
+iter_init = 2000
+iter_final = 400
 
 # DT ARRAY #1
 DT_ARRAY_1 = [ 10 ** (-1-4*k/iter_init) for k in range(iter_init)]
 
 # DT ARRAY #2
-DT_ARRAY_2 = [ 10 ** (-3-3*(k/iter_final)) for k in range(iter_final)]
+DT_ARRAY_2 = [ 10 ** (-2-7*(k/iter_final)) for k in range(iter_final)]
 # weight_decay parameter
 WEIGHT_DECAY = 0.00001
 
@@ -63,7 +63,17 @@ if ENABLE_ACTIVATION == 1:
 ENABLE_ACTIVATION = value
 
 # INITIAL DNA
-DNA = ((-1, 1, 3, 32, 32), (0, 3, 40, 3, 3), (0, 43, 40, 3, 3), (0, 80, 20, 4, 4), (0, 60, 20, 3, 3), (0, 20, 41, 3, 3), (0, 41, 41, 3, 3), (0, 41, 41, 3, 3), (0, 123, 41, 3, 3), (0, 102, 41, 3, 3), (0, 82, 41, 3, 3), (0, 142, 41, 30, 30), (1, 41, 10), (2,), (3, -1, 0), (3, 0, 1), (3, -1, 1), (3, 0, 2), (3, 1, 2), (3, 0, 3), (3, 2, 3), (3, 3, 4), (3, 4, 5), (3, 5, 6), (3, 4, 7), (3, 5, 7), (3, 6, 7), (3, 3, 8), (3, 4, 8), (3, 7, 8), (3, 8, 9), (3, 7, 9), (3, 3, 10), (3, 0, 10), (3, 8, 10), (3, 9, 10), (3, 10, 11), (3, 11, 12))
+DNA = ((-1,1,3,32,32),
+        (0,3, 5, 3 , 3),
+        (0,8, 5, 3,  3),
+        (0,13, 41, 32, 32),
+        (1, 41,10),
+         (2,),
+        (3,-1,0),
+        (3,0,1),(3,-1,1),
+        (3,1,2),(3,0,2),(3,-1,2),
+        (3,2,3),
+        (3,3,4))
 
 
 def DNA_Creator_s(x,y, dna):
