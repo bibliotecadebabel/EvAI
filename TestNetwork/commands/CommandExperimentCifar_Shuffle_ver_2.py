@@ -155,23 +155,28 @@ class CommandExperimentCifar_Restarts():
             self.__saveEnergy()
             self.__testResultDao.insert(idTest=test_id, iteration=j, dna_graph=self.__space)
 
-            self.__bestNetwork = self.__getBestNetwork()
+            value = self.__getBestNetwork()
+            self.__bestNetwork = value[0]
+            newCenter = value[1]
 
 
-            print("TRAINING BEST NETWORK")
+            if newCenter == True:
+                print("TRAINING BEST NETWORK")
 
-            self.__bestNetwork = self.__trainNetwork(network=self.__bestNetwork, dt_array=self.__settings.best_dt_array,
-                                        max_iter=self.__settings.max_best_iter)
+                self.__bestNetwork = self.__trainNetwork(network=self.__bestNetwork, dt_array=self.__settings.best_dt_array,
+                                            max_iter=self.__settings.max_best_iter)
 
-            self.__saveModel(network=self.__bestNetwork, test_id=test_id, iteration=j)
-            self.__generateNewSpace()
-            self.__generateNetworks()
+                self.__saveModel(network=self.__bestNetwork, test_id=test_id, iteration=j)
+                self.__generateNewSpace()
+                self.__generateNetworks()
+            
 
 
     def __getBestNetwork(self):
         highest_accuracy = -1
         bestNetwork = None
         print('NEW VERSION')
+        newCenter = True
         for network in self.__networks:
 
             network.generateEnergy(self.__settings.dataGen)
@@ -181,41 +186,24 @@ class CommandExperimentCifar_Restarts():
                 highest_accuracy = network.getAcurracy()
 
         if highest_accuracy>self.accuracy_temp:
-
+            
+            newCenter = True
             print("bestNetwork accuracy=", highest_accuracy)
             
             self.__bestNetwork_temp = bestNetwork.clone()
 
             self.accuracy_temp = highest_accuracy
 
-            return bestNetwork
+            return [bestNetwork, newCenter]
 
         else:
-
+            
+            newCenter = False
             print("bestNetwork accuracy=", self.accuracy_temp)
 
             print('Best network did not change')
 
-            return  self.__bestNetwork_temp.clone()
-
-    def __defineNewCenter(self):
-
-        value = False
-        newBestNetwork = self.__getBestNetwork()
-
-        if self.__bestNetwork is None:
-
-            value = True
-            self.__bestNetwork = newBestNetwork
-
-        else:
-
-
-            if str(newBestNetwork.adn) != str(self.__bestNetwork.adn):
-                value = True
-                self.__bestNetwork = newBestNetwork
-
-        return value
+            return  [self.__bestNetwork_temp.clone(), newCenter]
 
     def __generateNewSpace(self):
         oldSpace = self.__space
