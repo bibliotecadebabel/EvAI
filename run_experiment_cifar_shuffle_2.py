@@ -35,7 +35,7 @@ iter_final = 400
 DT_ARRAY_1 = [ 10 ** (-1-k/iter_init) for k in range(iter_init)]
 
 # DT ARRAY #2
-DT_ARRAY_2 = [ 10 ** (-4-(k/iter_final)) for k in range(iter_final)]
+DT_ARRAY_2 = [ 10 ** (-2-(k/iter_final)) for k in range(iter_final)]
 # weight_decay parameter
 WEIGHT_DECAY = 0.00001
 
