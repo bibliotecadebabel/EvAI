@@ -31,9 +31,10 @@ settings.period_save_model = 1
 settings.epochs = int(input("Enter amount of epochs: "))
 
 # INITIAL DT PARAMETERS
-INIT_ITER = 2000
-settings.init_dt_array = [ 10 ** (-1-k/INIT_ITER) for k in range(INIT_ITER)]
 settings.max_init_iter = 4
+INIT_ITER = 7*300
+settings.init_dt_array = [ 10 ** (-1-k/INIT_ITER) for k in range(INIT_ITER)]
+
 
 # JOINED DT PARAMETERS
 JOINED_ITER = 600
@@ -75,8 +76,8 @@ settings.enable_activation = value
 settings.initial_dna = ((-1,1,3,32,32),
         (0,3, 5, 3 , 3),
         (0,8, 5, 3,  3),
-        (0,13, 10, 32, 32),
-        (1, 10,10),
+        (0,13, 41, 32, 32),
+        (1, 41,10),
          (2,),
         (3,-1,0),
         (3,0,1),(3,-1,1),
