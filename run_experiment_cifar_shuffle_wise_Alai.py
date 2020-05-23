@@ -1,6 +1,6 @@
 from TestNetwork.commands import CommandCreateDataGen
 from TestNetwork.commands import  CommandExperimentCifar_Shuffle_ver_2 as CommandExperimentCifar_Restarts
-from DNA_conditions import max_layer,max_filter
+from DNA_conditions import max_layer,max_filter,restrict_conections
 from DNA_creators import Creator
 from DNA_Graph import DNA_Graph
 from DNA_creator_duplicate_clone import Creator_from_selection_clone as Creator_s
@@ -19,9 +19,6 @@ def Alaising(M,m,ep):
     m=10**(-m)
     return [ m+1/2*(M-m)*(1+pcos(t/e*np.pi))
              for t in range(0,ep)]
-
-def exp_alai(r,I,t_M,t_m):
-    return [ 10 ** (-t_M-((t_m-t_M)*(k  %  int(I*r) )/I*r)) for k in range(I)]
 
 settings = ExperimentSettings.ExperimentSettings()
 
@@ -47,24 +44,22 @@ settings.epochs = int(input("Enter amount of epochs: "))
 
 e=300
 
-
-
 settings.max_init_iter = 10
 INIT_ITER = e
-#settings.init_dt_array = exp_alai(.5,INIT_ITER,1,5)
-settings.init_dt_array =  exp_alai(1,INIT_ITER,1,6)
+#settings.init_dt_array = [ 10 ** (-1-5*k/INIT_ITER) for k in range(INIT_ITER)]
+settings.init_dt_array =  Alaising(1.2,4,INIT_ITER)
 
 
 # JOINED DT PARAMETERS
-JOINED_ITER = 5*e
-#settings.joined_dt_array = Alaising(2,6,e)
-settings.joined_dt_array = exp_alai(.2,JOINED_ITER,1,6)
-settings.max_joined_iter = 1
+JOINED_ITER = 9*e
+settings.joined_dt_array = Alaising(3,6,JOINED_ITER)
+#settings.joined_dt_array = [ 10 ** (-2-6*(k/JOINED_ITER)) for k in range(JOINED_ITER)]
+settings.max_joined_iter = 2
 
 # BEST DT PARAMETERS
 BEST_ITER = e
-#settings.best_dt_array = Alaising(2,6,e)
-settings.best_dt_array = exp_alai(.1,BEST_ITER,1,6)
+settings.best_dt_array = Alaising(3,6,BEST_ITER)
+#settings.best_dt_array = [ 10 ** (-2-6*(k/BEST_ITER)) for k in range(BEST_ITER)]
 settings.max_best_iter = 10
 
 # weight_decay parameter
@@ -94,18 +89,8 @@ if ENABLE_ACTIVATION == 1:
 settings.enable_activation = value
 
 # INITIAL DNA
+settings.initial_dna =   ((-1, 1, 3, 32, 32), (0, 3, 5, 4, 4), (0, 5, 5, 3, 3), (0, 13, 5, 3, 3), (0, 13, 48, 32, 32), (1, 48, 10), (2,), (3, -1, 0), (3, 0, 1), (3, 0, 2), (3, -1, 2), (3, 1, 2), (3, 2, 3), (3, 0, 3), (3, -1, 3), (3, 3, 4), (3, 4, 5))
 
-settings.initial_dna =  ((-1,1,3,32,32),
-                        (0,3, 5, 3 , 3),
-                        (0,5, 5, 3,  3),
-                        (0,5, 10, 32-4, 32-4),
-                        (1, 10,10),
-                        (2,),
-                        (3,-1,0),
-                        (3,0,1),
-                        (3,1,2),
-                        (3,2,3),
-                        (3,3,4))
 
 
 
