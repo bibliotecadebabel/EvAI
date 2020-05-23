@@ -11,13 +11,13 @@ import numpy as np
 
 def pcos(x):
     if x>np.pi:
-        x-np.pi
+        x=x-np.pi
     return np.cos(x)
 
 def Alaising(M,m,ep):
     M=10**(-M)
     m=10**(-m)
-    return [ m+1/2*(M-m)*(1+pcos(t/e*np.pi))
+    return [ m+1/2*(M-m)*(1+pcos(t/(ep)*np.pi))
              for t in range(0,ep)]
 
 def exp_alai(r,I,t_M,t_m):
@@ -49,26 +49,27 @@ e=300
 
 
 
-settings.max_init_iter = 10
+settings.max_init_iter = 40
 INIT_ITER = e
-#settings.init_dt_array = exp_alai(.5,INIT_ITER,1,5)
-settings.init_dt_array =  exp_alai(1,INIT_ITER,1,6)
+settings.init_dt_array = Alaising(1,5,INIT_ITER)
+#settings.init_dt_array =  Alaising(1.2,5,INIT_ITER)
 
 
 # JOINED DT PARAMETERS
 JOINED_ITER = 5*e
 #settings.joined_dt_array = Alaising(2,6,e)
-settings.joined_dt_array = exp_alai(.2,JOINED_ITER,1,6)
-settings.max_joined_iter = 1
+settings.joined_dt_array = Alaising(2,5,JOINED_ITER)
+settings.max_joined_iter = 5
 
 # BEST DT PARAMETERS
-BEST_ITER = e
+settings.max_best_iter = 2
+BEST_ITER = 10*e
 #settings.best_dt_array = Alaising(2,6,e)
-settings.best_dt_array = exp_alai(.1,BEST_ITER,1,6)
-settings.max_best_iter = 10
+settings.best_dt_array = Alaising(2,5,BEST_ITER)
+
 
 # weight_decay parameter
-settings.weight_decay = 0.00001
+settings.weight_decay = 0.00005
 
 # momentum parameter
 settings.momentum = 0.9
@@ -80,7 +81,7 @@ settings.cuda = True
 MAX_LAYERS = 15
 
 # MAX FILTERS MUTATION (CONDITION)
-MAX_FILTERS = 51
+MAX_FILTERS = 54
 
 # TEST_NAME, the name of the experiment (unique)
 settings.test_name = input("Enter TestName: ")
@@ -101,17 +102,17 @@ if ALLOW_INTERRUPTS == 1:
 settings.allow_interupts = value
 
 # INITIAL DNA
-settings.initial_dna =  ((-1,1,3,32,32),
-                        (0,3, 5, 3 , 3),
-                        (0,5, 5, 3,  3),
-                        (0,5, 10, 32-4, 32-4),
-                        (1, 10,10),
-                        (2,),
-                        (3,-1,0),
-                        (3,0,1),
-                        (3,1,2),
-                        (3,2,3),
-                        (3,3,4))
+settings.initial_dna =   ((-1,1,3,32,32),
+        (0,3, 5, 3 , 3),
+        (0,8, 5, 3,  3),
+        (0,13, 10, 32, 32),
+        (1, 10,10),
+         (2,),
+        (3,-1,0),
+        (3,0,1),(3,-1,1),
+        (3,1,2),(3,0,2),(3,-1,2),
+        (3,2,3),
+        (3,3,4))
 
 
 
