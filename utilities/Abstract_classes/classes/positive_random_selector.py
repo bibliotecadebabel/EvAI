@@ -13,10 +13,10 @@ class centered_random_selector(Selector):
     def __init__(self,num_actions=5,directions=None,
         condition=None,
         mutations=(
-        (0,1,0,0),(0,-1,0,0)
-        (1,0,0,0),(-1,0,0,0)
-        (0,0,1,1),(0,0,-1-,1)
-        (0,0,1),(0,0,-1)
+        (0,1,0,0),(0,-1,0,0),
+        (1,0,0,0),(-1,0,0,0),
+        (0,0,1,1),(0,0,-1-,1),
+        (0,0,1),(0,0,-1),
         )):
         print('The condition is')
         print(condition)
