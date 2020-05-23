@@ -4,7 +4,7 @@ from DNA_conditions import max_layer,max_filter
 from DNA_creators import Creator
 from DNA_Graph import DNA_Graph
 from DNA_creator_duplicate_clone import Creator_from_selection_clone as Creator_s
-from utilities.Abstract_classes.classes.random_selector import random_selector
+from utilities.Abstract_classes.classes.positive_random_selector import positive_random_selector
 import TestNetwork.ExperimentSettings as ExperimentSettings
 import numpy as np
 ###### EXPERIMENT SETTINGS ######
@@ -102,16 +102,16 @@ settings.allow_interupts = value
 
 # INITIAL DNA
 settings.initial_dna =  ((-1,1,3,32,32),
-                        (0,3, 5, 3 , 3),
-                        (0,5, 5, 3,  3),
-                        (0,5, 10, 32-4, 32-4),
-                        (1, 10,10),
-                        (2,),
-                        (3,-1,0),
-                        (3,0,1),
-                        (3,1,2),
-                        (3,2,3),
-                        (3,3,4))
+                            (0,3, 5, 3 , 3),
+                            (0,8, 5, 3,  3),
+                            (0,13, 10, 32, 32),
+                            (1, 10,10),
+                             (2,),
+                            (3,-1,0),
+                            (3,0,1),(3,-1,1),
+                            (3,1,2),(3,0,2),(3,-1,2),
+                            (3,2,3),
+                            (3,3,4))
 
 
 
