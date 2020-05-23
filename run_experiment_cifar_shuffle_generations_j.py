@@ -43,7 +43,7 @@ if __name__ == '__main__':
     settings = ExperimentSettings.ExperimentSettings()
 
     # NUM OF THREADS
-    THREADS = 12
+    THREADS = 0
 
     # BATCH SIZE
     settings.batch_size = int(input("Enter batchsize: "))
