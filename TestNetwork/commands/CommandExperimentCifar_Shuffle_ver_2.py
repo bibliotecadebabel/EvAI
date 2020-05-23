@@ -87,34 +87,47 @@ class CommandExperimentCifar_Restarts():
         return nodeCenter
 
     def __trainNetwork(self, network : nw.Network, dt_array, max_iter):
-
-        best_network = network.clone()
         
-        best_network.generateEnergy(self.__settings.dataGen)
-        best_accuracy = best_network.getAcurracy()
+        print("Allow interrupts= ", self.__settings.allow_interupts)
 
-        print("best current accuracy= ", best_network.getAcurracy())
+        if self.__settings.allow_interupts == True:
+            best_network = network.clone()
+            
+            best_network.generateEnergy(self.__settings.dataGen)
+            best_accuracy = best_network.getAcurracy()
 
-        for i in range(max_iter):
-            print("iteration: ", i+1)
-            network.Training(data=self.__settings.dataGen, dt=dt_array, p=len(dt_array), full_database=True)
-            network.generateEnergy(self.__settings.dataGen)
-            current_accuracy = network.getAcurracy()
+            print("best current accuracy= ", best_network.getAcurracy())
 
-            print("current accuracy=", current_accuracy)
-            if current_accuracy >= best_accuracy:
-                del best_network
-                best_accuracy = current_accuracy
-                best_network = network.clone()
+            for i in range(max_iter):
+                print("iteration: ", i+1)
+                network.Training(data=self.__settings.dataGen, dt=dt_array, p=len(dt_array), full_database=True)
+                network.generateEnergy(self.__settings.dataGen)
+                current_accuracy = network.getAcurracy()
 
-            else:
-                print("interrupted, lower accuracy.")
-                break
+                print("current accuracy=", current_accuracy)
+                if current_accuracy >= best_accuracy:
+                    del best_network
+                    best_accuracy = current_accuracy
+                    best_network = network.clone()
+
+                else:
+                    print("interrupted, lower accuracy.")
+                    break
+            
+            best_network.generateEnergy(self.__settings.dataGen)
+            print("final best accuarcy=", best_network.getAcurracy())
+            return best_network
         
-        best_network.generateEnergy(self.__settings.dataGen)
-        print("final best accuarcy=", best_network.getAcurracy())
-        return best_network
+        else:
 
+            for i in range(max_iter):
+                print("iteration: ", i+1)
+                network.Training(data=self.__settings.dataGen, dt=dt_array, p=len(dt_array), full_database=True)
+                network.generateEnergy(self.__settings.dataGen)
+                current_accuracy = network.getAcurracy()
+                print("current accuracy=", current_accuracy)
+
+            return network
 
     def execute(self):
 

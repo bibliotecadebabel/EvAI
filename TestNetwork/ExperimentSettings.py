@@ -31,3 +31,4 @@ class ExperimentSettings():
         self.dataGen = None
 
         self.selector = None
+        self.allow_interupts = False

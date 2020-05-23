@@ -93,8 +93,14 @@ if ENABLE_ACTIVATION == 1:
     value = True
 settings.enable_activation = value
 
-# INITIAL DNA
+# ALLOW INTERRUPTS
+ALLOW_INTERRUPTS = int(input("Allow Interrupt while training? (1 = yes, 0 = no): "))
+value = False
+if ALLOW_INTERRUPTS == 1:
+    value = True
+settings.allow_interupts = value
 
+# INITIAL DNA
 settings.initial_dna =  ((-1,1,3,32,32),
                         (0,3, 5, 3 , 3),
                         (0,5, 5, 3,  3),
