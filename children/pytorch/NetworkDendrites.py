@@ -13,6 +13,7 @@ import utilities.Graphs as Graphs
 import torch.optim as optim
 
 import os
+import time
 
 class Network(nn.Module, na.NetworkAbstract):
 
@@ -254,6 +255,41 @@ class Network(nn.Module, na.NetworkAbstract):
             epoch+= 1
 
 
+    def iterTraining(self, dataGenerator, dt_array):
+
+        iters = len(dt_array)
+
+        print_every = iters // 4
+        start = time.time()
+        data_iter = iter(dataGenerator._trainoader)
+        
+        for i in range(iters):
+            
+            try:
+                
+                data = next(data_iter)
+
+                self.optimizer = optim.SGD(self.parameters(), lr=dt_array[i], momentum=self.momentum, weight_decay=self.weight_decay)
+
+                if self.cudaFlag == True:
+                    inputs, labels_data = data[0].cuda(), data[1].cuda()
+                else:
+                    inputs, labels_data = data[0], data[1]
+
+                self.__doTraining(inputs=inputs, labels_data=labels_data)
+
+                self.__currentEpoch = i
+
+                if print_every > 0:
+
+                    if i % print_every == print_every - 1:
+                        
+                        end_time = time.time() - start
+                        self.__printValues(epoch=1, i=i, avg=print_every, end_time=end_time)
+                        start = time.time()
+
+            except StopIteration:
+                data_iter = iter(dataGenerator._trainoader)
 
     def getLRCosine(self, total_steps, base_dt, etamin):
 
@@ -293,6 +329,7 @@ class Network(nn.Module, na.NetworkAbstract):
             i=0
 
             print_every = p // 4
+            start_time = time.time()
             while i < p:
 
                 if dt is not None:
@@ -311,7 +348,9 @@ class Network(nn.Module, na.NetworkAbstract):
 
                 if print_every > 0:
                     if i % print_every == print_every - 1:
-                        self.__printValues(1, i, avg=print_every)
+                        end_time = time.time() - start_time
+                        self.__printValues(1, i, avg=print_every, end_time=end_time)
+                        start_time = time.time()
 
                 i=i+1
 
@@ -481,5 +520,9 @@ class Network(nn.Module, na.NetworkAbstract):
         self.optimizer.load_state_dict(checkpoint['optimizer_state_dict'])
         self.train()
 
-    def __printValues(self, epoch, i, avg=1):
-        print("[{:d}, {:d}, lr={:.10f}, Loss={:.10f}]".format(epoch, i+1, self.optimizer.param_groups[0]['lr'], self.getAverageLoss(avg)))
+    def __printValues(self, epoch, i, avg=1, end_time=None):
+
+        if end_time is None:
+            print("[{:d}, {:d}, lr={:.10f}, Loss={:.10f}]".format(epoch, i+1, self.optimizer.param_groups[0]['lr'], self.getAverageLoss(avg)))
+        else:
+            print("[{:d}, {:d}, lr={:.10f}, Loss={:.10f}, Time={:.4f}]".format(epoch, i+1, self.optimizer.param_groups[0]['lr'], self.getAverageLoss(avg), end_time))

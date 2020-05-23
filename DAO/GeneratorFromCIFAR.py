@@ -13,17 +13,18 @@ import torch.optim as optim
 
 
 class GeneratorFromCIFAR(Generator):
-    def __init__(self, comp, batchSize, cuda=False):
+    def __init__(self, comp, batchSize, cuda=False, threads=0):
         super().__init__(comp, batchSize, "CIFAR", "folder", cuda=cuda)
 
         self.batchSize = batchSize
         self.transform = transforms.Compose([transforms.ToTensor(), transforms.Normalize((0.5, 0.5, 0.5), (0.5, 0.5, 0.5))])
         self.trainset = torchvision.datasets.CIFAR10(root='./cifar', train=True, download=False, transform=self.transform)
         self.testSet = torchvision.datasets.CIFAR10(root='./cifar', train=False, download=False, transform=self.transform)
-
-        self._trainoader = torch.utils.data.DataLoader(self.trainset, batch_size=self.batchSize, shuffle=True, num_workers=0)
-        self._testloader = torch.utils.data.DataLoader(self.testSet, batch_size=32, shuffle=False, num_workers=0)
+        print("threads = ", threads)
+        self._trainoader = torch.utils.data.DataLoader(self.trainset, batch_size=self.batchSize, shuffle=True, num_workers=threads)
+        self._testloader = torch.utils.data.DataLoader(self.testSet, batch_size=32, shuffle=False, num_workers=threads)
         self.type = datagen_type.DATABASE_IMAGES
+        self.total_steps = len(self._trainoader)
 
     def generateData(self):
 
@@ -40,7 +41,10 @@ class GeneratorFromCIFAR(Generator):
             if i >= 0:
                 break
 
-
+    
+    def getRandomSample(self, i):
+        pass
+        
     def __generateTestData(self):
 
         pass

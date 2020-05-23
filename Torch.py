@@ -1,16 +1,8 @@
 import torch
 
-x = [1, 2, 3, 4, 5]
-x_2 = x[-10000:]
 
-print(x_2)
-
-x_2.append(10)
-print(x_2)
-print(x)
-'''
-x.resize_(3,2,4,4)
-print("new x")
-print(x.shape)
-print(x)
-'''
+for i in range(200):
+    evens = list(range(i*32, (i+1)*32))
+    random_sample = torch.utils.data.SubsetRandomSampler(evens)
+    for j in random_sample:
+        print(j)
