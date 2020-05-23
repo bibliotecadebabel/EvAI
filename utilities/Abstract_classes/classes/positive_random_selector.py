@@ -23,7 +23,7 @@ class centered_random_selector(Selector):
         super().__init__(self.Observation_creator)
         self.mutations=mutations
         self.num_actions=num_actions
-        self.max_observation_size = 4
+        self.max_observation_size = 5
         self.current_num_layer=None
         if directions=='dupiclate':
             from DNA_directions_duplicate import directions
