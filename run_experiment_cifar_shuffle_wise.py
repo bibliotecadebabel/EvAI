@@ -4,7 +4,7 @@ from DNA_conditions import max_layer,max_filter
 from DNA_creators import Creator
 from DNA_Graph import DNA_Graph
 from DNA_creator_duplicate_clone import Creator_from_selection_clone as Creator_s
-from utilities.Abstract_classes.classes.positive_random_selector import positive_random_selector
+from utilities.Abstract_classes.classes.centered_random_selector import positive_random_selector
 import TestNetwork.ExperimentSettings as ExperimentSettings
 import numpy as np
 ###### EXPERIMENT SETTINGS ######
