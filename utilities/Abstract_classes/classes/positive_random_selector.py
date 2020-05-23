@@ -15,7 +15,7 @@ class centered_random_selector(Selector):
         mutations=(
         (0,1,0,0),(0,-1,0,0),
         (1,0,0,0),(-1,0,0,0),
-        (0,0,1,1),(0,0,-1-,1),
+        (0,0,1,1),(0,0,-1,-1),
         (0,0,1),(0,0,-1),
         )):
         print('The condition is')
