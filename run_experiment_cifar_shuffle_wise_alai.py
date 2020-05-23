@@ -1,6 +1,6 @@
 from TestNetwork.commands import CommandCreateDataGen
 from TestNetwork.commands import  CommandExperimentCifar_Shuffle_ver_2 as CommandExperimentCifar_Restarts
-from DNA_conditions import max_layer,max_filter
+from DNA_conditions import max_layer,max_filter,restrict_conections
 from DNA_creators import Creator
 from DNA_Graph import DNA_Graph
 from DNA_creator_duplicate_clone import Creator_from_selection_clone as Creator_s
@@ -42,23 +42,23 @@ settings.epochs = int(input("Enter amount of epochs: "))
 
 # INITIAL DT PARAMETERS
 
-e=600
+e=300
 
 settings.max_init_iter = 10
 INIT_ITER = e
 #settings.init_dt_array = [ 10 ** (-1-5*k/INIT_ITER) for k in range(INIT_ITER)]
-settings.init_dt_array =  Alaising(1,4,INIT_ITER)
+settings.init_dt_array =  Alaising(1.2,4,INIT_ITER)
 
 
 # JOINED DT PARAMETERS
-JOINED_ITER = 5*e
-settings.joined_dt_array = Alaising(2,6,JOINED_ITER)
+JOINED_ITER = 9*e
+settings.joined_dt_array = Alaising(3,6,JOINED_ITER)
 #settings.joined_dt_array = [ 10 ** (-2-6*(k/JOINED_ITER)) for k in range(JOINED_ITER)]
-settings.max_joined_iter = 1
+settings.max_joined_iter = 2
 
 # BEST DT PARAMETERS
 BEST_ITER = e
-settings.best_dt_array = Alaising(2,6,BEST_ITER)
+settings.best_dt_array = Alaising(3,6,BEST_ITER)
 #settings.best_dt_array = [ 10 ** (-2-6*(k/BEST_ITER)) for k in range(BEST_ITER)]
 settings.max_best_iter = 10
 
@@ -75,7 +75,7 @@ settings.cuda = True
 MAX_LAYERS = 15
 
 # MAX FILTERS MUTATION (CONDITION)
-MAX_FILTERS = 42
+MAX_FILTERS = 51
 
 # TEST_NAME, the name of the experiment (unique)
 settings.test_name = input("Enter TestName: ")
@@ -89,7 +89,9 @@ if ENABLE_ACTIVATION == 1:
 settings.enable_activation = value
 
 # INITIAL DNA
-settings.initial_dna = ((-1, 1, 3, 32, 32), (0, 3, 5, 3, 3), (0, 5, 5, 7, 7), (0, 10, 5, 4, 4), (0, 18, 5, 3, 3), (0, 18, 41, 32, 32), (1, 41, 10), (2,), (3, -1, 0), (3, 0, 1), (3, 0, 2), (3, 1, 2), (3, 0, 3), (3, -1, 3), (3, 2, 3), (3, 1, 3), (3, 3, 4), (3, 0, 4), (3, -1, 4), (3, 1, 4), (3, 4, 5), (3, 5, 6))
+settings.initial_dna =   ((-1, 1, 3, 32, 32), (0, 3, 5, 4, 4), (0, 5, 5, 3, 3), (0, 13, 5, 3, 3), (0, 13, 48, 32, 32), (1, 48, 10), (2,), (3, -1, 0), (3, 0, 1), (3, 0, 2), (3, -1, 2), (3, 1, 2), (3, 2, 3), (3, 0, 3), (3, -1, 3), (3, 3, 4), (3, 4, 5))
+
+
 
 
 

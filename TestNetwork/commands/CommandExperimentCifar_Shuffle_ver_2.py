@@ -87,8 +87,6 @@ class CommandExperimentCifar_Restarts():
         return nodeCenter
 
     def __trainNetwork(self, network : nw.Network, dt_array, max_iter):
-        
-        print("Allow interrupts= ", self.__settings.allow_interupts)
 
         if self.__settings.allow_interupts == True:
             best_network = network.clone()
@@ -140,6 +138,7 @@ class CommandExperimentCifar_Restarts():
 
 
         print("TRAINING INITIAL NETWORK")
+        print("Allow interrupts= ", self.__settings.allow_interupts)
         self.__bestNetwork = self.__trainNetwork(network=self.__bestNetwork, 
                     dt_array=self.__settings.init_dt_array, max_iter=self.__settings.max_init_iter)
 
