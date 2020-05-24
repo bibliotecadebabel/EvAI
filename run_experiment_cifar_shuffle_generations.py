@@ -87,7 +87,7 @@ if __name__ == '__main__':
     BEST_ITER = 30*e
     #settings.best_dt_array = Alaising(2,6,e)
     settings.best_dt_array = Alaising(1.2,5,BEST_ITER)
-    settings.max_best_iter = 1
+    settings.max_best_iter = 2
 
     # weight_decay parameter
     settings.weight_decay = float(input('weight_decay: '))
@@ -128,9 +128,9 @@ if __name__ == '__main__':
 
     # INITIAL DNA
     settings.initial_dna = ((-1,1,3,32,32),
-                                (0,3, 5, 3 , 3),
-                                (0,8, 5, 3,  3),
-                                (0,13, 48, 32, 32),
+                                (0,3, 15, 3 , 3),
+                                (0,18, 15, 3,  3),
+                                (0,33, 48, 32, 32),
                                 (1, 48,10),
                                  (2,),
                                 (3,-1,0),
