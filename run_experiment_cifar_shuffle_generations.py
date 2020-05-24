@@ -80,13 +80,13 @@ if __name__ == '__main__':
     JOINED_ITER = 5*e
     #settings.joined_dt_array = Alaising(2,6,e)
     settings.joined_dt_array = Alaising(1,5,JOINED_ITER)
-    settings.max_joined_iter = 2
+    settings.max_joined_iter = 3
 
     # BEST DT PARAMETERS
-    BEST_ITER = 10*e
+    BEST_ITER = 5*e
     #settings.best_dt_array = Alaising(2,6,e)
-    settings.best_dt_array = Alaising(2,5,BEST_ITER)
-    settings.max_best_iter = 2
+    settings.best_dt_array = Alaising(1,5,BEST_ITER)
+    settings.max_best_iter = 4
 
     # weight_decay parameter
     settings.weight_decay = 0.00001
