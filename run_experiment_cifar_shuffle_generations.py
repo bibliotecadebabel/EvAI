@@ -80,13 +80,13 @@ if __name__ == '__main__':
     # JOINED DT PARAMETERS
     JOINED_ITER = 5*e
     #settings.joined_dt_array = Alaising(2,6,e)
-    settings.joined_dt_array = Alaising(1.1,5,JOINED_ITER)
+    settings.joined_dt_array = Alaising(1.2,5,JOINED_ITER)
     settings.max_joined_iter = 1
 
     # BEST DT PARAMETERS
     BEST_ITER = 30*e
     #settings.best_dt_array = Alaising(2,6,e)
-    settings.best_dt_array = Alaising(1.1,5,BEST_ITER)
+    settings.best_dt_array = Alaising(1.2,5,BEST_ITER)
     settings.max_best_iter = 1
 
     # weight_decay parameter
@@ -127,7 +127,17 @@ if __name__ == '__main__':
     settings.enable_track_stats = value
 
     # INITIAL DNA
-    settings.initial_dna = ((-1, 1, 3, 32, 32), (0, 3, 8, 4, 4), (0, 11, 15, 3, 3), (0, 18, 15, 2, 2), (0, 33, 50, 32, 32), (1, 50, 10), (2,), (3, -1, 0), (3, -1, 1), (3, 0, 1), (3, 1, 2), (3, -1, 2), (3, 2, 3), (3, 1, 3), (3, -1, 3), (3, 3, 4), (3, 4, 5))
+    settings.initial_dna = ((-1,1,3,32,32),
+                                (0,3, 5, 3 , 3),
+                                (0,8, 5, 3,  3),
+                                (0,13, 48, 32, 32),
+                                (1, 48,10),
+                                 (2,),
+                                (3,-1,0),
+                                (3,0,1),(3,-1,1),
+                                (3,1,2),(3,0,2),(3,-1,2),
+                                (3,2,3),
+                                (3,3,4))
 
 
     dataCreator = CommandCreateDataGen.CommandCreateDataGen(cuda=settings.cuda)
