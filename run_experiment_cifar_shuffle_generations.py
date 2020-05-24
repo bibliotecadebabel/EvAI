@@ -132,7 +132,7 @@ if __name__ == '__main__':
                                 (2,),
                                 (3,-1,0),
                                 (3,0,1),
-                                (3,1,2)
+                                (3,1,2))
 
     dataCreator = CommandCreateDataGen.CommandCreateDataGen(cuda=settings.cuda)
     dataCreator.execute(compression=2, batchSize=settings.batch_size, source=DATA_SOURCE, threads=THREADS)
