@@ -73,20 +73,20 @@ if __name__ == '__main__':
     settings.max_init_iter = 10
     INIT_ITER = e
     #settings.init_dt_array = exp_alai(.5,INIT_ITER,1,5)
-    settings.init_dt_array =  exp_alai(1,INIT_ITER,1,6)
+    settings.init_dt_array =  Alaising(1,5,INIT_ITER)
 
 
     # JOINED DT PARAMETERS
     JOINED_ITER = 5*e
     #settings.joined_dt_array = Alaising(2,6,e)
-    settings.joined_dt_array = exp_alai(.2,JOINED_ITER,1,6)
-    settings.max_joined_iter = 1
+    settings.joined_dt_array = Alaising(2,5,JOINED_ITER)
+    settings.max_joined_iter = 3
 
     # BEST DT PARAMETERS
-    BEST_ITER = e
+    BEST_ITER = 10*e
     #settings.best_dt_array = Alaising(2,6,e)
-    settings.best_dt_array = exp_alai(.1,BEST_ITER,1,6)
-    settings.max_best_iter = 10
+    settings.best_dt_array = Alaising(2,5,BEST_ITER)
+    settings.max_best_iter = 4
 
     # weight_decay parameter
     settings.weight_decay = 0.00001
@@ -120,16 +120,16 @@ if __name__ == '__main__':
 
     # INITIAL DNA
     settings.initial_dna = ((-1,1,3,32,32),
-                            (0,3, 5, 3 , 3),
-                            (0,8, 5, 3,  3),
-                            (0,13, 48, 32, 32),
-                            (1, 48,10),
-                             (2,),
-                            (3,-1,0),
-                            (3,0,1),(3,-1,1),
-                            (3,1,2),(3,0,2),(3,-1,2),
-                            (3,2,3),
-                            (3,3,4))
+                                (0,3, 5, 3 , 3),
+                                (0,5, 5, 3,  3),
+                    	        (0,5, 10, 32-4, 32-4),
+                                (1, 10,10),
+                                (2,),
+                                (3,-1,0),
+                                (3,0,1),
+                                (3,1,2),
+                                (3,2,3),
+                                (3,3,4))
 
     dataCreator = CommandCreateDataGen.CommandCreateDataGen(cuda=settings.cuda)
     dataCreator.execute(compression=2, batchSize=settings.batch_size, source=DATA_SOURCE, threads=THREADS)

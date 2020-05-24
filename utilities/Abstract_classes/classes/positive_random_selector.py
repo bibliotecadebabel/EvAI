@@ -4,8 +4,7 @@ import DNA_graph_functions as Funct
 import numpy as np
 from DNA_conditions import max_layer,max_filter
 
-def condition_default(DNA):
-    return max_filter(max_layer(DNA,MAX_LAYERS),MAX_FILTERS)
+
 
 
 class centered_random_selector(Selector):
@@ -15,7 +14,7 @@ class centered_random_selector(Selector):
             super().__init__(time=time,path=path,weight=weight)
             self.num_layer=num_layer
     def __init__(self,num_actions=5,directions=None,
-        condition=condition_default,
+        condition=None,
         mutations=(
         (0,1,0,0),(0,-1,0,0),
         (1,0,0,0),(-1,0,0,0),
