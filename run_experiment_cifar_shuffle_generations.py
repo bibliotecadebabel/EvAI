@@ -79,13 +79,13 @@ if __name__ == '__main__':
     # JOINED DT PARAMETERS
     JOINED_ITER = 10*e
     #settings.joined_dt_array = Alaising(2,6,e)
-    settings.joined_dt_array = Alaising(2,5,JOINED_ITER)
+    settings.joined_dt_array = Alaising(1.1,5,JOINED_ITER)
     settings.max_joined_iter = 1
 
     # BEST DT PARAMETERS
     BEST_ITER = 20*e
     #settings.best_dt_array = Alaising(2,6,e)
-    settings.best_dt_array = Alaising(2,5,BEST_ITER)
+    settings.best_dt_array = Alaising(1.1,5,BEST_ITER)
     settings.max_best_iter = 4
 
     # weight_decay parameter
@@ -126,7 +126,7 @@ if __name__ == '__main__':
     settings.enable_track_stats = value
 
     # INITIAL DNA
-    settings.initial_dna = ((-1, 1, 3, 32, 32), (0, 3, 40, 4, 4), (0, 40, 40, 3, 3), (0, 40, 10, 3, 3), (0, 10, 20, 4, 4), (0, 63, 20, 3, 3), (0, 23, 40, 2, 2), (0, 63, 40, 6, 6), (0, 83, 10, 3, 3), (0, 13, 20, 8, 8), (0, 63, 40, 3, 3), (0, 80, 5, 4, 4), (0, 45, 3, 3, 3), (0, 106, 5, 3, 3), (0, 10, 48, 4, 4), (0, 141, 48, 32, 32), (1, 48, 10), (2,), (3, -1, 0), (3, 0, 1), (3, 1, 2), (3, 2, 3), (3, -1, 4), (3, 1, 4), (3, 3, 4), (3, -1, 5), (3, 4, 5), (3, -1, 6), (3, 5, 6), (3, 4, 6), (3, 6, 7), (3, 1, 7), (3, -1, 7), (3, -1, 8), (3, 7, 8), (3, -1, 9), (3, 6, 9), (3, 8, 9), (3, 9, 10), (3, 6, 10), (3, 10, 11), (3, 6, 11), (3, 9, 12), (3, -1, 12), (3, 6, 12), (3, 8, 12), (3, 11, 12), (3, 12, 13), (3, 10, 13), (3, 12, 14), (3, 9, 14), (3, -1, 14), (3, 13, 14), (3, 10, 14), (3, 6, 14), (3, 14, 15), (3, 15, 16))
+    settings.initial_dna = ((-1, 1, 3, 32, 32), (0, 3, 40, 3, 3), (0, 43, 40, 3, 3), (0, 80, 20, 4, 4), (0, 60, 20, 3, 3), (0, 20, 41, 3, 3), (0, 41, 41, 3, 3), (0, 41, 41, 3, 3), (0, 123, 41, 3, 3), (0, 102, 41, 3, 3), (0, 82, 41, 3, 3), (0, 142, 41, 30, 30), (1, 41, 10), (2,), (3, -1, 0), (3, 0, 1), (3, -1, 1), (3, 0, 2), (3, 1, 2), (3, 0, 3), (3, 2, 3), (3, 3, 4), (3, 4, 5), (3, 5, 6), (3, 4, 7), (3, 5, 7), (3, 6, 7), (3, 3, 8), (3, 4, 8), (3, 7, 8), (3, 8, 9), (3, 7, 9), (3, 3, 10), (3, 0, 10), (3, 8, 10), (3, 9, 10), (3, 10, 11), (3, 11, 12))
 
     dataCreator = CommandCreateDataGen.CommandCreateDataGen(cuda=settings.cuda)
     dataCreator.execute(compression=2, batchSize=settings.batch_size, source=DATA_SOURCE, threads=THREADS)
