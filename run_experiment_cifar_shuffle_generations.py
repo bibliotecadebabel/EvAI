@@ -89,7 +89,7 @@ if __name__ == '__main__':
     settings.max_best_iter = 4
 
     # weight_decay parameter
-    settings.weight_decay = 0.00001
+    settings.weight_decay = 0.000005
 
     # momentum parameter
     settings.momentum = 0.9
