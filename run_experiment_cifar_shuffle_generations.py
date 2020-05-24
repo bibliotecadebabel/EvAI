@@ -17,7 +17,7 @@ def pcos(x):
 def Alaising(M,m,ep):
     M=10**(-M)
     m=10**(-m)
-    return [ m+1/2*(M-m)*(1+pcos(t/e*np.pi))
+    return [ m+1/2*(M-m)*(1+pcos(t/ep*np.pi))
              for t in range(0,ep)]
 
 def exp_alai(r,I,t_M,t_m):

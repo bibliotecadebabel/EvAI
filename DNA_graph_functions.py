@@ -6,6 +6,14 @@ import children.pytorch.NetworkDendrites as nw
 import os
 import time
 
+
+def Alaising(M,m,ep):
+    M=10**(-M)
+    m=10**(-m)
+    return [ m+1/2*(M-m)*(1+pcos(t/e*np.pi))
+             for t in range(0,ep)]
+
+
 def test():
     print('done')
 
