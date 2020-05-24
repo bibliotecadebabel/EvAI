@@ -25,6 +25,8 @@ class CommandExperimentCifar_Restarts():
         self.__bestNetwork = nw.Network(adn=settings.initial_dna, cudaFlag=settings.cuda,
                                 momentum=settings.momentum, weight_decay=settings.weight_decay, 
                                 enable_activation=settings.enable_activation)
+        
+        self.__actions = []
                             
 
 
@@ -83,31 +85,61 @@ class CommandExperimentCifar_Restarts():
 
         return nodeCenter
 
-    def __trainNetwork(self, network : nw.Network, dt_array, max_iter):
+    def __trainNetwork(self, network : nw.Network, dt_array, max_iter, keep_clone=False):
 
         if self.__settings.allow_interupts == True:
-            
-            network.generateEnergy(self.__settings.dataGen)
-            best_accuracy = network.getAcurracy()
 
-            print("initial accuracy= ", best_accuracy)
+            if keep_clone == True:
+                best_network = network.clone()
+                
+                best_network.generateEnergy(self.__settings.dataGen)
+                best_accuracy = best_network.getAcurracy()
 
-            for i in range(max_iter):
-                print("iteration: ", i+1)
-                network.iterTraining(self.__settings.dataGen, dt_array)
+                print("best current accuracy= ", best_network.getAcurracy())
+
+                for i in range(max_iter):
+                    print("iteration: ", i+1)
+                    network.iterTraining(self.__settings.dataGen, dt_array)
+                    network.generateEnergy(self.__settings.dataGen)
+                    current_accuracy = network.getAcurracy()
+
+                    print("current accuracy=", current_accuracy)
+                    if current_accuracy >= best_accuracy:
+                        del best_network
+                        best_accuracy = current_accuracy
+                        best_network = network.clone()
+
+                    else:
+                        print("interrupted, lower accuracy.")
+                        break
+                
+                best_network.generateEnergy(self.__settings.dataGen)
+                print("final best accuarcy=", best_network.getAcurracy())
+                return best_network
+
+            else:
+
                 network.generateEnergy(self.__settings.dataGen)
-                current_accuracy = network.getAcurracy()
+                best_accuracy = network.getAcurracy()
 
-                print("current accuracy=", current_accuracy)
-                if current_accuracy >= best_accuracy:
-                    best_accuracy = current_accuracy
-                else:
-                    print("interrupted, lower accuracy.")
-                    break
-            
-            network.generateEnergy(self.__settings.dataGen)
-            print("final accuarcy=", network.getAcurracy())
-            return network
+                print("initial accuracy= ", best_accuracy)
+
+                for i in range(max_iter):
+                    print("iteration: ", i+1)
+                    network.iterTraining(self.__settings.dataGen, dt_array)
+                    network.generateEnergy(self.__settings.dataGen)
+                    current_accuracy = network.getAcurracy()
+
+                    print("current accuracy=", current_accuracy)
+                    if current_accuracy >= best_accuracy:
+                        best_accuracy = current_accuracy
+                    else:
+                        print("interrupted, lower accuracy.")
+                        break
+                
+                network.generateEnergy(self.__settings.dataGen)
+                print("final accuarcy=", network.getAcurracy())
+                return network
         
         else:
             
@@ -133,10 +165,10 @@ class CommandExperimentCifar_Restarts():
 
         
         self.__bestNetwork = self.__trainNetwork(network=self.__bestNetwork, 
-                    dt_array=self.__settings.init_dt_array, max_iter=self.__settings.max_init_iter)
+                    dt_array=self.__settings.init_dt_array, max_iter=self.__settings.max_init_iter, keep_clone=True)
 
         self.__bestNetwork = self.__trainNetwork(network=self.__bestNetwork, 
-                    dt_array=self.__settings.best_dt_array, max_iter=self.__settings.max_best_iter)
+                    dt_array=self.__settings.best_dt_array, max_iter=self.__settings.max_best_iter, keep_clone=True)
 
         
         
@@ -150,7 +182,7 @@ class CommandExperimentCifar_Restarts():
             print("---- EPOCH #", j)
         
             for i  in range(1, len(self.__networks)):
-                print("Training net #", i)
+                print("Training net #", i, " - direction: ", self.__actions[i-1])
                 self.__networks[i] = self.__trainNetwork(network=self.__networks[i], dt_array=self.__settings.joined_dt_array, max_iter=self.__settings.max_joined_iter)
 
             self.__saveEnergy()
@@ -161,7 +193,7 @@ class CommandExperimentCifar_Restarts():
             print("TRAINING BEST NETWORK")
 
             self.__bestNetwork = self.__trainNetwork(network=self.__bestNetwork, dt_array=self.__settings.best_dt_array,
-                                        max_iter=self.__settings.max_best_iter)
+                                        max_iter=self.__settings.max_best_iter, keep_clone=True)
 
             self.__saveModel(network=self.__bestNetwork, test_id=test_id, iteration=j)
             
@@ -196,6 +228,9 @@ class CommandExperimentCifar_Restarts():
                                                 condition=self.__selector.condition)
             self.__selector.update(newCenter)
             predicted_actions = self.__selector.get_predicted_actions()
+
+            self.__actions = []
+            self.__actions = predicted_actions
 
             newSpace = DNA_Graph(center=newCenter, size=oldSpace.size, dim=(oldSpace.x_dim, oldSpace.y_dim),
                                     condition=oldSpace.condition, typos=predicted_actions,
