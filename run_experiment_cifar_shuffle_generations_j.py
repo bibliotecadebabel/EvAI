@@ -4,7 +4,7 @@ from DNA_conditions import max_layer,max_filter
 from DNA_creators import Creator
 from DNA_Graph import DNA_Graph
 from DNA_creator_duplicate_clone import Creator_from_selection_clone as Creator_s
-from utilities.Abstract_classes.classes.random_selector import random_selector
+from utilities.Abstract_classes.classes.positive_random_selector import centered_random_selector as random_selector
 import TestNetwork.ExperimentSettings as ExperimentSettings
 import numpy as np
 ###### EXPERIMENT SETTINGS ######
@@ -25,13 +25,14 @@ def exp_alai(r,I,t_M,t_m):
 
 def DNA_Creator_s(x,y, dna):
     def condition(DNA):
-        return max_filter(max_layer(DNA,MAX_LAYERS),MAX_FILTERS)
+        return max_filter(max_layer(DNA, MAX_LAYERS), MAX_FILTERS)
 
+    version='clone'
     selector = None
-    selector=random_selector()
+    selector=random_selector(condition=condition,
+        directions=version, num_actions=8)
     selector.update(dna)
     actions=selector.get_predicted_actions()
-    version='final'
     #actions = ((0, (0,1,0,0)), (1, (0,1,0,0)), (0, (1,0,0,0)))
     space=DNA_Graph(dna,1,(x,y),condition,actions
         ,version,Creator_s)
@@ -114,7 +115,7 @@ if __name__ == '__main__':
     ALLOW_INTERRUPTS = int(input("Allow Interrupt while training? (1 = yes, 0 = no): "))
     value = False
     if ALLOW_INTERRUPTS == 1:
-        value = False
+        value = True
     settings.allow_interupts = value
 
     # INITIAL DNA
