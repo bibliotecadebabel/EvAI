@@ -472,7 +472,7 @@ directions.update({type:creator})
 directions_labels.update({creator:type})
 
 def select_old_index2retract(num_layer,landscape,size):
-    if len(landscape)<1:
+    if len(landscape)<6:
         return None
     else:
         return num_layer+max(landscape)+1

@@ -127,18 +127,12 @@ if __name__ == '__main__':
 
     # INITIAL DNA
     settings.initial_dna = ((-1,1,3,32,32),
-                                (0,3, 5, 3 , 3),
-                                (0,5, 5, 3,  3),
-                                (0,5, 5, 3,  3),
-                    	        (0,5, 10, 32-6, 32-6),
-                                (1, 10,10),
+                                (0,3, 48, 32 , 32),
+                                (1, 48,10),
                                 (2,),
                                 (3,-1,0),
                                 (3,0,1),
-                                (3,1,2),
-                                (3,2,3),
-                                (3,3,4),
-                                (3,4,5))
+                                (3,1,2)
 
     dataCreator = CommandCreateDataGen.CommandCreateDataGen(cuda=settings.cuda)
     dataCreator.execute(compression=2, batchSize=settings.batch_size, source=DATA_SOURCE, threads=THREADS)
