@@ -4,10 +4,11 @@ import Factory.TensorFactory as tensorFactory
 
 class NetworkAbstract(ABC):
 
-    def __init__(self, adn, cuda, momentum, weight_decay, enable_activaiton):
+    def __init__(self, adn, cuda, momentum, weight_decay, enable_activaiton, enable_track_stats=True):
         self.cudaFlag = cuda
         self.adn = adn
         self.nodes = []
+        self.enable_track_stats = enable_track_stats
         self.momentum = momentum 
         self.weight_decay = weight_decay
         self.enable_activation = enable_activaiton 

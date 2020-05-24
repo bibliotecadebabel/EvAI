@@ -11,6 +11,7 @@ class LayerGenerator(AbstractFactory.FactoryClass):
         super().__init__()
         
         self.__cuda = cuda
+        self.__track_stats = None
 
     def createDictionary(self):
 
@@ -18,10 +19,12 @@ class LayerGenerator(AbstractFactory.FactoryClass):
         self.dictionary[1] = self.__createLinear
         self.dictionary[2] = self.__createCrossEntropyLoss
 
-    def findValue(self, tupleBody, propagate_mode, enable_activation):
+    def findValue(self, tupleBody, propagate_mode, enable_activation, enable_track_stats):
         key = tupleBody[0]
 
         value = self.dictionary[key]
+
+        self.__track_stats = enable_track_stats
 
         return value(tupleBody, propagate_mode, enable_activation)
 
@@ -29,7 +32,8 @@ class LayerGenerator(AbstractFactory.FactoryClass):
         
         layer = torch.nn.Conv2d(tupleBody[1], tupleBody[2], (tupleBody[3], tupleBody[4]))
         self.__initConv2d(layer, (1, tupleBody[3], tupleBody[4]))
-        batchNormalization = torch.nn.BatchNorm2d(tupleBody[2])
+
+        batchNormalization = torch.nn.BatchNorm2d(tupleBody[2], track_running_stats=self.__track_stats)
 
         self.__verifyCuda(batchNormalization)
         self.__verifyCuda(layer)

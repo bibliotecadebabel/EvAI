@@ -10,8 +10,8 @@ class MutateBatchNormalization():
 
             new_batchNorm = newLayer.getBatchNorm()
 
-            shape_oldBatch = oldBatchNorm.running_var.shape[0]
-            shape_newBatch = new_batchNorm.running_var.shape[0]
+            shape_oldBatch = oldBatchNorm.weight.shape[0]
+            shape_newBatch = new_batchNorm.weight.shape[0]
 
             value = shape_newBatch - shape_oldBatch
 
@@ -26,10 +26,15 @@ class MutateBatchNormalization():
 
                 new_batchNorm.bias[i] = oldBatchNorm.bias[i].clone()
                 new_batchNorm.weight[i] = oldBatchNorm.weight[i].clone()
-                new_batchNorm.running_var[i] = oldBatchNorm.running_var[i].clone()
-                new_batchNorm.running_mean[i] = oldBatchNorm.running_mean[i].clone()
+
+                if oldBatchNorm.running_var is not None:
+                    new_batchNorm.running_var[i] = oldBatchNorm.running_var[i].clone()
+                
+                if oldBatchNorm.running_mean is not None:
+                    new_batchNorm.running_mean[i] = oldBatchNorm.running_mean[i].clone()
             
-            new_batchNorm.num_batches_tracked = oldBatchNorm.num_batches_tracked.clone()
+            if oldBatchNorm.num_batches_tracked is not None:
+                new_batchNorm.num_batches_tracked = oldBatchNorm.num_batches_tracked.clone()
             
             newLayer.setBarchNorm(new_batchNorm)
 

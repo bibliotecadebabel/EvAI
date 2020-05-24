@@ -24,7 +24,8 @@ class CommandExperimentCifar_Restarts():
         self.__bestNetwork = None
         self.__bestNetwork = nw.Network(adn=settings.initial_dna, cudaFlag=settings.cuda,
                                 momentum=settings.momentum, weight_decay=settings.weight_decay, 
-                                enable_activation=settings.enable_activation)
+                                enable_activation=settings.enable_activation, 
+                                enable_track_stats=self.__settings.enable_track_stats)
         
         self.__actions = []
                             
