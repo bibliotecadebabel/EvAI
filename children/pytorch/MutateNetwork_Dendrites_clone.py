@@ -186,7 +186,7 @@ def __initNewConvolution(newConvolution):
     factor_n = 0.25
     entries = newConvolution.adn[1]
 
-    torch.nn.init.constant_(newConvolution.object.weight, factor_n / entries)
+    torch.nn.init.constant_(newConvolution.object.weight, 0)
     torch.nn.init.constant_(newConvolution.object.bias, 0)
 
 def __getMutationTypeAndTargetIndex(oldAdn, newAdn):
