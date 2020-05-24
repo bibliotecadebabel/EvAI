@@ -118,6 +118,13 @@ if __name__ == '__main__':
         value = True
     settings.allow_interupts = value
 
+    # ALLOW TRACK BATCHNORM
+    ENABLE_TRACK = int(input("Enable tracking var/mean batchnorm? (1 = yes, 0 = no): "))
+    value = False
+    if ENABLE_TRACK == 1:
+        value = True
+    settings.enable_track_stats = value
+
     # INITIAL DNA
     settings.initial_dna = ((-1,1,3,32,32),
                                 (0,3, 5, 3 , 3),
