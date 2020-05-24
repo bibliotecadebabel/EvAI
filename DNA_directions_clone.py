@@ -365,7 +365,7 @@ directions.update({type:creator})
 directions_labels.update({creator:type})
 
 def select_old_index2spread(num_layer,landscape,size):
-    if len(landscape)<1:
+    if len(landscape)<5:
         return None
     else:
         k=0
@@ -451,10 +451,10 @@ def retract_dendrites(num_layer,source_DNA):
 #    print(f'The idex to add is {new_index}')
     if new_index and not(new_index==old_index) and (
         not(new_index==num_layer or new_index==num_layer+1)):
-        g.add_edges(num_layer,[new_index])
-        t_node=g.key2node.get(new_index)
-        t_layer=t_node.objects[0]
-        t_node.objects[0]=layer_chanel(t_layer,node.objects[0][2])
+        #g.add_edges(num_layer,[new_index])
+        #t_node=g.key2node.get(new_index)
+        #t_layer=t_node.objects[0]
+        #t_node.objects[0]=layer_chanel(t_layer,node.objects[0][2])
 #        print('The new graph is')
         fix_fully_conected(g)
         #imprimir(g)
@@ -472,10 +472,10 @@ directions.update({type:creator})
 directions_labels.update({creator:type})
 
 def select_old_index2retract(num_layer,landscape,size):
-    if len(landscape)<6:
+    if len(landscape)<1:
         return None
     else:
-        return num_layer+max(landscape)+1
+        return num_layer+min(landscape)+1
 
 def select_new_index2retract(num_layer,landscape,size,old_index=None):
     if len(landscape)<1:
