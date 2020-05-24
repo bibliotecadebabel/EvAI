@@ -84,10 +84,10 @@ if __name__ == '__main__':
     settings.max_joined_iter = 1
 
     # BEST DT PARAMETERS
-    BEST_ITER = 10*e
+    BEST_ITER = 15*e
     #settings.best_dt_array = Alaising(2,6,e)
     settings.best_dt_array = Alaising(1.2,5,BEST_ITER)
-    settings.max_best_iter = 2
+    settings.max_best_iter = 1
 
     # weight_decay parameter
     settings.weight_decay = float(input('weight_decay: '))
