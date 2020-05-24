@@ -86,12 +86,11 @@ class CommandExperimentCifar_Restarts():
     def __trainNetwork(self, network : nw.Network, dt_array, max_iter):
 
         if self.__settings.allow_interupts == True:
-            best_network = network.clone()
             
-            best_network.generateEnergy(self.__settings.dataGen)
-            best_accuracy = best_network.getAcurracy()
+            network.generateEnergy(self.__settings.dataGen)
+            best_accuracy = network.getAcurracy()
 
-            print("best current accuracy= ", best_network.getAcurracy())
+            print("initial accuracy= ", best_accuracy)
 
             for i in range(max_iter):
                 print("iteration: ", i+1)
@@ -101,17 +100,14 @@ class CommandExperimentCifar_Restarts():
 
                 print("current accuracy=", current_accuracy)
                 if current_accuracy >= best_accuracy:
-                    del best_network
                     best_accuracy = current_accuracy
-                    best_network = network.clone()
-
                 else:
                     print("interrupted, lower accuracy.")
                     break
             
-            best_network.generateEnergy(self.__settings.dataGen)
-            print("final best accuarcy=", best_network.getAcurracy())
-            return best_network
+            network.generateEnergy(self.__settings.dataGen)
+            print("final accuarcy=", network.getAcurracy())
+            return network
         
         else:
             
