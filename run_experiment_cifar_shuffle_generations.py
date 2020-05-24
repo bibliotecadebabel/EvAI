@@ -70,7 +70,7 @@ if __name__ == '__main__':
     # INITIAL DT PARAMETERS
 
     e=300
-    settings.max_init_iter = 10
+    settings.max_init_iter = 40
     INIT_ITER = e
     #settings.init_dt_array = exp_alai(.5,INIT_ITER,1,5)
     settings.init_dt_array =  Alaising(1,5,INIT_ITER)
