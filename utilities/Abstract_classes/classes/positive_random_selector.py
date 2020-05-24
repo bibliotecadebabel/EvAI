@@ -17,7 +17,7 @@ class centered_random_selector(Selector):
         condition=None,
         mutations=(
         (0,1,0,0),(0,-1,0,0),
-        (-1,0,0,0),
+        (1,0,0,0),(-1,0,0,0),
         (0,0,1,1),(0,0,-1,-1),
         (0,0,1),(0,0,-1),
         )):
