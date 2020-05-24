@@ -84,10 +84,10 @@ if __name__ == '__main__':
     settings.max_joined_iter = 1
 
     # BEST DT PARAMETERS
-    BEST_ITER = 20*e
+    BEST_ITER = 30*e
     #settings.best_dt_array = Alaising(2,6,e)
     settings.best_dt_array = Alaising(1.1,5,BEST_ITER)
-    settings.max_best_iter = 2
+    settings.max_best_iter = 1
 
     # weight_decay parameter
     settings.weight_decay = float(input('weight_decay: '))
@@ -127,17 +127,8 @@ if __name__ == '__main__':
     settings.enable_track_stats = value
 
     # INITIAL DNA
-    settings.initial_dna = ((-1,1,3,32,32),
-                                (0,3, 15, 3 , 3),
-                                (0,18, 15, 3,  3),
-                                (0,33, 50, 32, 32),
-                                (1, 50,10),
-                                 (2,),
-                                (3,-1,0),
-                                (3,0,1),(3,-1,1),
-                                (3,1,2),(3,0,2),(3,-1,2),
-                                (3,2,3),
-                                (3,3,4))
+    settings.initial_dna = ((-1, 1, 3, 32, 32), (0, 3, 8, 4, 4), (0, 11, 15, 3, 3), (0, 18, 15, 2, 2), (0, 33, 50, 32, 32), (1, 50, 10), (2,), (3, -1, 0), (3, -1, 1), (3, 0, 1), (3, 1, 2), (3, -1, 2), (3, 2, 3), (3, 1, 3), (3, -1, 3), (3, 3, 4), (3, 4, 5))
+
 
     dataCreator = CommandCreateDataGen.CommandCreateDataGen(cuda=settings.cuda)
     dataCreator.execute(compression=2, batchSize=settings.batch_size, source=DATA_SOURCE, threads=THREADS)
