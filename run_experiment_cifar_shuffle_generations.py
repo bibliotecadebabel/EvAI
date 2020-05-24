@@ -79,14 +79,14 @@ if __name__ == '__main__':
     # JOINED DT PARAMETERS
     JOINED_ITER = 5*e
     #settings.joined_dt_array = Alaising(2,6,e)
-    settings.joined_dt_array = Alaising(2,5,JOINED_ITER)
-    settings.max_joined_iter = 3
+    settings.joined_dt_array = Alaising(1,5,JOINED_ITER)
+    settings.max_joined_iter = 2
 
     # BEST DT PARAMETERS
     BEST_ITER = 10*e
     #settings.best_dt_array = Alaising(2,6,e)
     settings.best_dt_array = Alaising(2,5,BEST_ITER)
-    settings.max_best_iter = 4
+    settings.max_best_iter = 2
 
     # weight_decay parameter
     settings.weight_decay = 0.00001
@@ -122,6 +122,7 @@ if __name__ == '__main__':
     settings.initial_dna = ((-1,1,3,32,32),
                                 (0,3, 5, 3 , 3),
                                 (0,5, 5, 3,  3),
+                                (0,5, 10, 32-4, 32-4),
                     	        (0,5, 10, 32-4, 32-4),
                                 (1, 10,10),
                                 (2,),
@@ -129,7 +130,8 @@ if __name__ == '__main__':
                                 (3,0,1),
                                 (3,1,2),
                                 (3,2,3),
-                                (3,3,4))
+                                (3,3,4),
+                                (3,4,5))
 
     dataCreator = CommandCreateDataGen.CommandCreateDataGen(cuda=settings.cuda)
     dataCreator.execute(compression=2, batchSize=settings.batch_size, source=DATA_SOURCE, threads=THREADS)

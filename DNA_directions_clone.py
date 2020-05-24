@@ -365,7 +365,7 @@ directions.update({type:creator})
 directions_labels.update({creator:type})
 
 def select_old_index2spread(num_layer,landscape,size):
-    if len(landscape)<5:
+    if len(landscape)<1:
         return None
     else:
         k=0
