@@ -12,7 +12,6 @@ import children.Data_generator as dgen
 import children.Interfaces as Inter
 import children.Operations as Op
 import children.net2.Network as nw
-from DAO import GeneratorFromCIFAR
 from DNA_Graph import DNA_Graph
 from DNA_Phase_space_f_ac import DNA_Phase_space
 from Dynamic_DNA_f import Dynamic_DNA
@@ -37,6 +36,10 @@ update_force_field=None
 
 class Status():
     def __init__(self, display_size=None):
+
+
+        self.remote=True
+
         self.dt_Max=0.01
         self.dt_min=0.0001
         self.max_iter=250
@@ -177,8 +180,12 @@ def create_objects(status):
     status.Alai=Alai(min=status.dt_min,
          max=status.dt_Max,
             max_time=status.restart_period)
-    status.Data_gen=GeneratorFromCIFAR.GeneratorFromCIFAR(
-    status.Comp, status.S, cuda=status.cuda)
+    if status.remote:
+        from DAO import GeneratorFromCIFAR
+        status.Data_gen=GeneratorFromCIFAR.GeneratorFromCIFAR(
+        status.Comp, status.S, cuda=status.cuda)
+    else:
+        pass
     status.Data_gen.dataConv2d()
     dataGen=status.Data_gen
     x = dataGen.size[1]
