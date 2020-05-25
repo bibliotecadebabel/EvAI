@@ -86,7 +86,7 @@ if __name__ == '__main__':
     # BEST DT PARAMETERS
     BEST_ITER = 5*e
     #settings.best_dt_array = Alaising(2,6,e)
-    settings.best_dt_array = Alaising(1,5,5,BEST_ITER)
+    settings.best_dt_array = Alaising(1,5,BEST_ITER)
     settings.max_best_iter = 1
 
     # weight_decay parameter
