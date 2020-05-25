@@ -51,6 +51,21 @@ def run_cifar_user_input_bidi(save = False):
         status.experiment_name=input("insert experiment name : ")
         status.save_space_period=int(input("save_space_period : "))
         status.save_net_period=int(input("save_space_net_period : "))
+    status.save2database=save
+    x=32
+    y=32
+    status.Center=((-1,1,3,x,y),
+            (0,3, 15, 3 , 3),
+            (0,18, 15, 3,  3),
+            (0,33, 50, x, y),
+            (1, 50,10),
+             (2,),
+            (3,-1,0),
+            (3,0,1),(3,-1,1),
+            (3,1,2),(3,0,2),(3,-1,2),
+            (3,2,3),
+            (3,3,4))
+    program.run(status)
 
 def run_cifar_user_input_bidi_back_up(save = False):
     import Product_f_cifar_save_2 as program
