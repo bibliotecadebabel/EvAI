@@ -2,6 +2,7 @@ import utilities.Quadrants as qu
 import utilities.Node as nd
 import utilities.Graphs as gr
 import TangentPlane as tplane
+import random
 
 
 def imprimir(g):
@@ -475,7 +476,11 @@ def select_old_index2retract(num_layer,landscape,size):
     if len(landscape)<1:
         return None
     else:
-        return num_layer+min(landscape)+1
+        b=random.randint(0,2)
+        if b==0:
+            return num_layer+min(landscape)+1
+        else:
+            return num_layer+max(landscape)+1
 
 def select_new_index2retract(num_layer,landscape,size,old_index=None):
     if len(landscape)<1:
