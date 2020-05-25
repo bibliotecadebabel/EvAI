@@ -96,7 +96,7 @@ if __name__ == '__main__':
     settings.momentum = 0.9
 
     # MAX LAYER MUTATION (CONDITION)
-    MAX_LAYERS = 15
+    MAX_LAYERS = 30
 
     # MAX FILTERS MUTATION (CONDITION)
     MAX_FILTERS = 51
