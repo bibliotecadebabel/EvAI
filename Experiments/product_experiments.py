@@ -45,7 +45,7 @@ def run_cifar_user_input_bidi(save = False):
     status.log_size=int(input("Log size : "))
     status.min_log_size=100
     status.S=int(input("Batch size : "))
-    status.cuda=True
+    status.cuda=False
     status.mutation_coefficient=float(input("mutation_coefficient : "))
     if save:
         status.experiment_name=input("insert experiment name : ")
@@ -127,7 +127,7 @@ def run_local_ac():
     status.min_log_size=25
     status.cuda=False
     status.restart_period=50
-    status.mutation_coefficient=float(input(Mutation))
+    status.mutation_coefficient=float(input('Mutation : '))
     status.experiment_name='experiment_test_2'
     status.save_space_period=100
     status.save_net_period=200
