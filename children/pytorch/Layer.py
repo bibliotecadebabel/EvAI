@@ -2,7 +2,8 @@ import torch
 
 class Layer():
 
-    def __init__(self, adn=None, node=None, objectTorch=None, propagate=None, value=None, label=None, cudaFlag=True, batchNorm=None, enable_activation=True):
+    def __init__(self, adn=None, node=None, objectTorch=None, propagate=None, value=None, label=None, cudaFlag=True, 
+                    batchNorm=None, enable_activation=True, dropout_value=0):
         self.object = objectTorch
         self.node = node
         self.value =  value
@@ -12,6 +13,7 @@ class Layer():
         self.image = None
         self.other_inputs = []
         self.__batchnorm = batchNorm
+        self.dropout_value = dropout_value
 
         if self.cudaFlag == True:
             self.swap = torch.tensor([[0, 1], [1,0]], dtype=torch.float32, requires_grad=True).cuda()

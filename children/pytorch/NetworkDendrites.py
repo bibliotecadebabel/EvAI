@@ -17,9 +17,10 @@ import time
 
 class Network(nn.Module, na.NetworkAbstract):
 
-    def __init__(self, adn, cudaFlag=True, momentum=0.0, weight_decay=0.0, enable_activation=True, enable_track_stats=True):
+    def __init__(self, adn, cudaFlag=True, momentum=0.0, weight_decay=0.0, enable_activation=True, enable_track_stats=True, dropout_value=0):
         nn.Module.__init__(self)
-        na.NetworkAbstract.__init__(self,adn=adn, cuda=cudaFlag, momentum=momentum, weight_decay=weight_decay, enable_activaiton=enable_activation, enable_track_stats=enable_track_stats)
+        na.NetworkAbstract.__init__(self,adn=adn, cuda=cudaFlag, momentum=momentum, weight_decay=weight_decay, 
+                                enable_activaiton=enable_activation, enable_track_stats=enable_track_stats, dropout_value=dropout_value)
         self.__lenghNodes = 0
         self.__conv2d_propagate_mode = const.CONV2D_DEFAULT
         self.__accumulated_loss = 0
@@ -57,8 +58,9 @@ class Network(nn.Module, na.NetworkAbstract):
         for adn in self.adn:
             tupleBody = adn
 
-            if tupleBody[0] >= 0 and tupleBody[0] <= 2:
-                layer = self.factory.findValue(tupleBody, propagate_mode=self.__conv2d_propagate_mode, enable_activation=self.enable_activation, enable_track_stats=self.enable_track_stats)
+            if tupleBody[0] != -1 and tupleBody[0] != 3:
+                layer = self.factory.findValue(tupleBody, propagate_mode=self.__conv2d_propagate_mode, 
+                                        enable_activation=self.enable_activation, enable_track_stats=self.enable_track_stats, dropout_value=self.dropout_value)
                 layer.node = self.nodes[indexNode]
                 self.nodes[indexNode].objects.append(layer)
                 attributeName = "layer"+str(indexNode)
@@ -449,7 +451,7 @@ class Network(nn.Module, na.NetworkAbstract):
 
         network = Network(newADN,cudaFlag=self.cudaFlag, momentum=self.momentum, 
             weight_decay=self.weight_decay, enable_activation=self.enable_activation, 
-            enable_track_stats=self.enable_track_stats)
+            enable_track_stats=self.enable_track_stats, dropout_value=self.dropout_value)
 
         for i in range(len(self.nodes) - 1):
             layerToClone = self.nodes[i].objects[0]

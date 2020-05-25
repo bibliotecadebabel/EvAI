@@ -42,11 +42,13 @@ def conv2d_propagate(layer):
 
     parent = layer.node.parents[0].objects[0]
     
-    dropout = torch.nn.Dropout2d(p=0.5)
-    
-    output_dropout = dropout(parent.vaue)
+    if layer.dropout_value > 0:
+        dropout = torch.nn.Dropout2d(p=layer.dropout_value)
+        output_dropout = dropout(parent.value)
+        value = layer.object(output_dropout)
+    else:
+        value = layer.object(parent.value)
 
-    value = layer.object(output_dropout)
 
     value = layer.doNormalize(value)
     
@@ -68,11 +70,12 @@ def conv2d_propagate_images(layer): ## MUTATION: ADDING IMAGE TO INPUT IN EVERY 
 
     kid = layer.node.kids[0].objects[0]  
 
-    dropout = torch.nn.Dropout2d(p=0.5)
-    
-    output_dropout = dropout(parent.vaue)
-
-    value = layer.object(output_dropout)
+    if layer.dropout_value > 0:
+        dropout = torch.nn.Dropout2d(p=layer.dropout_value)
+        output_dropout = dropout(parent.value)
+        value = layer.object(output_dropout)
+    else:
+        value = layer.object(parent.value)
     
     value = layer.doNormalize(value)
 
@@ -107,11 +110,12 @@ def conv2d_propagate_multipleInputs(layer): ## MUTATION: Multiple inputs per con
     #print("current layer= ", layer.adn)
     current_input = __getInput(layer, parent.value)
 
-    dropout = torch.nn.Dropout2d(p=0.5)
-    
-    output_dropout = dropout(current_input)
-
-    value = layer.object(output_dropout)
+    if layer.dropout_value > 0:
+        dropout = torch.nn.Dropout2d(p=layer.dropout_value)
+        output_dropout = dropout(current_input)
+        value = layer.object(output_dropout)
+    else:
+        value = layer.object(current_input)
 
     value = layer.doNormalize(value)
     
@@ -119,8 +123,10 @@ def conv2d_propagate_multipleInputs(layer): ## MUTATION: Multiple inputs per con
     
     if layer.enable_activation == True:
         
+        #print("sin sigmoid")
         sigmoid = torch.nn.Sigmoid()
         layer.value = sigmoid(value) + torch.nn.functional.relu(value)
+        #layer.value = torch.nn.functional.relu(value)
     
 
 def linear_propagate(layer):

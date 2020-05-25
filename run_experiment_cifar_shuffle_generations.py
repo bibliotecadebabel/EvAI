@@ -89,6 +89,9 @@ if __name__ == '__main__':
     settings.best_dt_array = Alaising(1,5,BEST_ITER)
     settings.max_best_iter = 1
 
+    # dropout parameter
+    settings.dropout_value = float(input("dropout value: "))
+
     # weight_decay parameter
     settings.weight_decay = float(input('weight_decay: '))
 

@@ -33,3 +33,5 @@ class ExperimentSettings():
         self.selector = None
         self.allow_interupts = False
         self.enable_track_stats = True
+
+        self.dropout_value = 0

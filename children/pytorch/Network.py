@@ -13,7 +13,7 @@ import torch.optim as optim
 
 class Network(nn.Module, na.NetworkAbstract):
 
-    def __init__(self, adn, cudaFlag=True, momentum=0.0, weight_decay=0.0, enable_activation=True):
+    def __init__(self, adn, cudaFlag=True, momentum=0.0, weight_decay=0.0, enable_activation=True, dropout_value=0):
         nn.Module.__init__(self)
         na.NetworkAbstract.__init__(self,adn=adn, cuda=cudaFlag, momentum=momentum, weight_decay=weight_decay, enable_activaiton=enable_activation)
 

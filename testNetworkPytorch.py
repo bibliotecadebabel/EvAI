@@ -58,32 +58,24 @@ def DNA_Creator_s(x,y):
     
     return space
 
+
 def Test_Mutacion():
 
-    dataGen = GeneratorFromCIFAR.GeneratorFromCIFAR(2,  128)
+    dataGen = GeneratorFromCIFAR.GeneratorFromCIFAR(2,  64, threads=2)
     dataGen.dataConv2d()
 
     print("creating DNAs")
 
-    parentDNA = ((-1,1,3,32,32),(0,3, 5, 3 , 3), (0,5, 10, 3,  3), (0,10, 15, 28, 28), (1, 15,10), (2,),
-                    (3,-1,0), (3,0,1), (3,1,2), (3,2,3), (3,3,4))
+    parentDNA = ((-1,1,3,32,32),(0,3, 32, 3 , 3),(0,32, 32, 3,  3), (0,32, 64, 3, 3), 
+                (0,64, 64, 3, 3), (0,64, 128, 24, 24), (1, 128,10), (2,), (3, -1, 0), (3, 0, 1), (3, 1, 2),
+                (3, 2, 3), (3, 3, 4), (3, 4, 5), (3, 5, 6))
 
-    mutate_dna = direction_dna.increase_filters(1, parentDNA)
+    network = nw_dendrites.Network(parentDNA, cudaFlag=True, momentum=0.9, weight_decay=0.0, 
+                                    enable_activation=True, enable_track_stats=True, dropout_value=0.05)
 
-    print("new dna=", mutate_dna)
-
-    network = nw_dendrites.Network(parentDNA, cudaFlag=True, momentum=0.9, weight_decay=0.0005, enable_activation=False)
-    network.TrainingCosineLR_Restarts(dataGenerator=dataGen, max_dt=0.1, min_dt=0.01, epochs=1, restart_dt=1)
+    network.TrainingCosineLR_Restarts(dataGenerator=dataGen, max_dt=0.001, min_dt=0.001, epochs=50, restart_dt=50, show_accuarcy=True)
     network.generateEnergy(dataGen)
     print("accuracy= ", network.getAcurracy())
-
-    network_kid = Mutate_Dendrites.executeMutation(oldNetwork=network, newAdn=mutate_dna)
-    network_kid.generateEnergy(dataGen)
-    print("accuracy after mutation=", network_kid.getAcurracy())
-    
-    network_kid.TrainingCosineLR_Restarts(dataGenerator=dataGen, max_dt=0.1, min_dt=0.01, epochs=2, restart_dt=2)
-    network_kid.generateEnergy(dataGen)
-    print("accuracy after training mutation=", network_kid.getAcurracy())
 
 
 def Test_Save_Model():
@@ -114,10 +106,15 @@ def Test_Load_Model():
     network.TrainingCosineLR(dataGenerator=dataGen, epochs=1, dt=0.1)
     network.generateEnergy(dataGen)
     print("Accuracy after training again=", network.getAcurracy())
-#Test_pytorchNetwork()
 
-#Test_Batch(dataGen)
-#Test_Mutacion_dendrites()
-Test_Mutacion()
-#Test_Save_Model()
-#Test_Load_Model()
+
+
+if __name__ == "__main__":
+    
+    #Test_pytorchNetwork()
+
+    #Test_Batch(dataGen)
+    #Test_Mutacion_dendrites()
+    Test_Mutacion()
+    #Test_Save_Model()
+    #Test_Load_Model()

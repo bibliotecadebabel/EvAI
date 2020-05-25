@@ -12,6 +12,7 @@ class LayerGenerator(AbstractFactory.FactoryClass):
         
         self.__cuda = cuda
         self.__track_stats = None
+        self.__dropout_value = 0
 
     def createDictionary(self):
 
@@ -19,12 +20,13 @@ class LayerGenerator(AbstractFactory.FactoryClass):
         self.dictionary[1] = self.__createLinear
         self.dictionary[2] = self.__createCrossEntropyLoss
 
-    def findValue(self, tupleBody, propagate_mode, enable_activation, enable_track_stats):
+    def findValue(self, tupleBody, propagate_mode, enable_activation, enable_track_stats, dropout_value):
         key = tupleBody[0]
 
         value = self.dictionary[key]
 
         self.__track_stats = enable_track_stats
+        self.__dropout_value = dropout_value
 
         return value(tupleBody, propagate_mode, enable_activation)
 
@@ -40,13 +42,13 @@ class LayerGenerator(AbstractFactory.FactoryClass):
         
         if propagate_mode == const.CONV2D_MULTIPLE_INPUTS:
             value = ly.Layer(objectTorch=layer, propagate=functions.conv2d_propagate_multipleInputs, value=None, adn=tupleBody, 
-                cudaFlag=self.__cuda, batchNorm=batchNormalization, enable_activation=enable_activation)
+                cudaFlag=self.__cuda, batchNorm=batchNormalization, enable_activation=enable_activation, dropout_value=self.__dropout_value)
         elif propagate_mode == const.CONV2D_IMAGE_INPUTS:
             value = ly.Layer(objectTorch=layer, propagate=functions.conv2d_propagate_images, value=None, adn=tupleBody, 
-                cudaFlag=self.__cuda, batchNorm=batchNormalization, enable_activation=enable_activation)
+                cudaFlag=self.__cuda, batchNorm=batchNormalization, enable_activation=enable_activation, dropout_value=self.__dropout_value)
         else:
             value = ly.Layer(objectTorch=layer, propagate=functions.conv2d_propagate, value=None, adn=tupleBody, 
-                cudaFlag=self.__cuda, batchNorm=batchNormalization, enable_activation=enable_activation)
+                cudaFlag=self.__cuda, batchNorm=batchNormalization, enable_activation=enable_activation, dropout_value=self.__dropout_value)
 
         return value
 

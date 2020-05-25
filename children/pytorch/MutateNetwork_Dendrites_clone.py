@@ -12,7 +12,7 @@ def executeMutation(oldNetwork, newAdn):
     
     network = nw.Network(newAdn, cudaFlag=oldNetwork.cudaFlag, momentum=oldNetwork.momentum, 
                             weight_decay=oldNetwork.weight_decay, enable_activation=oldNetwork.enable_activation,
-                            enable_track_stats=oldNetwork.enable_track_stats)
+                            enable_track_stats=oldNetwork.enable_track_stats, dropout_value=oldNetwork.dropout_value)
 
     network.history_loss = oldNetwork.history_loss[-200:]
 
