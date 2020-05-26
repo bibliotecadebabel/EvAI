@@ -6,10 +6,10 @@ class CommandCreateDataGen():
         self.__dataGen = None
         self.__cuda = cuda
 
-    def execute(self, compression, batchSize, source='default', threads=0):
+    def execute(self, compression, batchSize, source='default', threads=0, dataAugmentation=False):
         
         if source == 'cifar':
-            self.__dataGen = GeneratorFromCIFAR.GeneratorFromCIFAR(compression, batchSize, cuda=self.__cuda, threads=threads)
+            self.__dataGen = GeneratorFromCIFAR.GeneratorFromCIFAR(compression, batchSize, cuda=self.__cuda, threads=threads, dataAugmentation=dataAugmentation)
         else:
             self.__dataGen = GeneratorFromImage.GeneratorFromImage(compression, batchSize, cuda=self.__cuda)
 

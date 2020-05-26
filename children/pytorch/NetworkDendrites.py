@@ -60,11 +60,27 @@ class Network(nn.Module, na.NetworkAbstract):
 
             if tupleBody[0] != -1 and tupleBody[0] != 3:
                 layer = self.factory.findValue(tupleBody, propagate_mode=self.__conv2d_propagate_mode, 
-                                        enable_activation=self.enable_activation, enable_track_stats=self.enable_track_stats, dropout_value=self.dropout_value)
+                                        enable_activation=self.enable_activation, dropout_value=self.dropout_value)
                 layer.node = self.nodes[indexNode]
                 self.nodes[indexNode].objects.append(layer)
                 attributeName = "layer"+str(indexNode)
                 self.setAttribute(attributeName, layer.object)
+
+                if tupleBody[0] == 0:
+                    conv2d_batchnorm = torch.nn.BatchNorm2d(tupleBody[2], track_running_stats=self.enable_track_stats)
+                    conv2d_dropout = torch.nn.Dropout2d(p=layer.dropout_value)
+
+                    if self.cudaFlag == True:
+                        conv2d_batchnorm = conv2d_batchnorm.cuda()
+                        conv2d_dropout = conv2d_dropout.cuda()
+                    
+                    layer.setBatchNormObject(conv2d_batchnorm)
+                    layer.setDropoutObject(conv2d_dropout)
+                    attributeName_batch = "layer_batchnorm"+str(indexNode)
+                    attributeName_dropout = "layer_batchnorm"+str(indexNode)
+                    self.setAttribute(attributeName_batch, layer.getBatchNormObject())
+                    self.setAttribute(attributeName_dropout, layer.getDropoutObject())
+
 
                 indexNode += 1
 
@@ -79,7 +95,7 @@ class Network(nn.Module, na.NetworkAbstract):
 
             tupleBody = self.adn[i]
 
-            if tupleBody[0] >= 0 and tupleBody[0] <= 2:
+            if tupleBody[0] != -1 and tupleBody[0] != 3:
                 self.__lenghNodes += 1
 
             if tupleBody[0] == 3:

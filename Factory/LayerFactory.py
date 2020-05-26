@@ -19,13 +19,13 @@ class LayerGenerator(AbstractFactory.FactoryClass):
         self.dictionary[0] = self.__createConv2d
         self.dictionary[1] = self.__createLinear
         self.dictionary[2] = self.__createCrossEntropyLoss
+        self.dictionary[4] = self.__createMaxPooling
 
-    def findValue(self, tupleBody, propagate_mode, enable_activation, enable_track_stats, dropout_value):
+    def findValue(self, tupleBody, propagate_mode, enable_activation, dropout_value):
         key = tupleBody[0]
 
         value = self.dictionary[key]
 
-        self.__track_stats = enable_track_stats
         self.__dropout_value = dropout_value
 
         return value(tupleBody, propagate_mode, enable_activation)
@@ -35,20 +35,17 @@ class LayerGenerator(AbstractFactory.FactoryClass):
         layer = torch.nn.Conv2d(tupleBody[1], tupleBody[2], (tupleBody[3], tupleBody[4]))
         self.__initConv2d(layer, (1, tupleBody[3], tupleBody[4]))
 
-        batchNormalization = torch.nn.BatchNorm2d(tupleBody[2], track_running_stats=self.__track_stats)
-
-        self.__verifyCuda(batchNormalization)
         self.__verifyCuda(layer)
         
         if propagate_mode == const.CONV2D_MULTIPLE_INPUTS:
             value = ly.Layer(objectTorch=layer, propagate=functions.conv2d_propagate_multipleInputs, value=None, adn=tupleBody, 
-                cudaFlag=self.__cuda, batchNorm=batchNormalization, enable_activation=enable_activation, dropout_value=self.__dropout_value)
+                cudaFlag=self.__cuda, enable_activation=enable_activation, dropout_value=self.__dropout_value)
         elif propagate_mode == const.CONV2D_IMAGE_INPUTS:
             value = ly.Layer(objectTorch=layer, propagate=functions.conv2d_propagate_images, value=None, adn=tupleBody, 
-                cudaFlag=self.__cuda, batchNorm=batchNormalization, enable_activation=enable_activation, dropout_value=self.__dropout_value)
+                cudaFlag=self.__cuda, enable_activation=enable_activation, dropout_value=self.__dropout_value)
         else:
             value = ly.Layer(objectTorch=layer, propagate=functions.conv2d_propagate, value=None, adn=tupleBody, 
-                cudaFlag=self.__cuda, batchNorm=batchNormalization, enable_activation=enable_activation, dropout_value=self.__dropout_value)
+                cudaFlag=self.__cuda, enable_activation=enable_activation, dropout_value=self.__dropout_value)
 
         return value
 
@@ -73,6 +70,15 @@ class LayerGenerator(AbstractFactory.FactoryClass):
 
         return value
 
+    def __createMaxPooling(self, tupleBody, propagate_mode=None, enable_activation=False):
+
+        layer = torch.nn.MaxPool2d((tupleBody[3], tupleBody[4]), stride=None)
+
+        self.__verifyCuda(layer)
+        
+        value = ly.Layer(objectTorch=layer, adn=tupleBody, propagate=functions.maxpooling_propagate, value=None, cudaFlag=self.__cuda)
+
+        return value
 
     def __verifyCuda(self, layer):
 

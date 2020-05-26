@@ -2,8 +2,7 @@ import torch
 
 class Layer():
 
-    def __init__(self, adn=None, node=None, objectTorch=None, propagate=None, value=None, label=None, cudaFlag=True, 
-                    batchNorm=None, enable_activation=True, dropout_value=0):
+    def __init__(self, adn=None, node=None, objectTorch=None, propagate=None, value=None, label=None, cudaFlag=True, enable_activation=True, dropout_value=0):
         self.object = objectTorch
         self.node = node
         self.value =  value
@@ -12,7 +11,6 @@ class Layer():
         self.cudaFlag = cudaFlag
         self.image = None
         self.other_inputs = []
-        self.__batchnorm = batchNorm
         self.dropout_value = dropout_value
 
         if self.cudaFlag == True:
@@ -30,12 +28,16 @@ class Layer():
         self.adn = adn
         self.enable_activation = enable_activation
         
+        self.__batchnorm = None
+        self.__dropout = None
+
     def getBiasDer(self):
 
         value = None
 
-        if self.object is not None:
-            value = self.object.bias.grad
+        if self.adn is not None:
+            if self.adn[0] == 0 or self.adn[0] == 1:
+                value = self.object.bias.grad
 
         return value
 
@@ -43,8 +45,9 @@ class Layer():
 
         value = None
         
-        if self.object is not None:
-            value = self.object.weight.grad
+        if self.adn is not None:
+            if self.adn[0] == 0 or self.adn[0] == 1:
+                value = self.object.weight.grad
 
         return value
        
@@ -53,29 +56,45 @@ class Layer():
  
         value = None
         
-        if self.object is not None:
-            value = self.object.weight
+        if self.adn is not None:
+            if self.adn[0] == 0 or self.adn[0] == 1:
+                value = self.object.weight
 
         return value
     
     def setFilter(self, value):
 
-        if self.object is not None:
-            self.object.weight = torch.nn.Parameter(value)
+        if self.adn is not None:
+            if self.adn[0] == 0 or self.adn[0] == 1:
+                self.object.weight = torch.nn.Parameter(value)
 
     def getBias(self):
 
         value = None
         
-        if self.object is not None:
-            value = self.object.bias
+        if self.adn is not None:
+            if self.adn[0] == 0 or self.adn[0] == 1:
+                value = self.object.bias
 
         return value
     
     def setBias(self, value):
 
-        if self.object is not None:
-            self.object.bias = torch.nn.Parameter(value)
+        if self.adn is not None:
+            if self.adn[0] == 0 or self.adn[0] == 1:
+                self.object.bias = torch.nn.Parameter(value)
+    
+    def setBatchNormObject(self, object_torch):
+        self.__batchnorm = object_torch
+    
+    def setDropoutObject(self, object_torch):
+        self.__dropout = object_torch
+    
+    def getBatchNormObject(self):
+        return self.__batchnorm
+    
+    def getDropoutObject(self):
+        return self.__dropout
 
     def setBarchNorm(self, value):
 
@@ -131,6 +150,11 @@ class Layer():
 
         norm = self.__batchnorm(tensor)
         return norm
+
+    def doDropout(self, tensor):
+        
+        dropout = self.__dropout(tensor)
+        return dropout
 
     def __getParamValue(self, index, grad):
 

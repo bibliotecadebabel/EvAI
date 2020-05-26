@@ -115,6 +115,14 @@ if __name__ == '__main__':
         value = True
     settings.enable_activation = value
 
+    # ENABLE_AUGMENTATION, enable/disable data augmentation
+    ENABLE_AUGMENTATION = int(input("Enable Data augmentation? (1 = yes, 0 = no): "))
+
+    value = False
+    if ENABLE_AUGMENTATION == 1:
+        value = True
+    ENABLE_AUGMENTATION = value
+
     # ALLOW INTERRUPTS
     ALLOW_INTERRUPTS = int(input("Allow Interrupt while training? (1 = yes, 0 = no): "))
     value = False
@@ -143,7 +151,7 @@ if __name__ == '__main__':
                                 (3,3,4))
 
     dataCreator = CommandCreateDataGen.CommandCreateDataGen(cuda=settings.cuda)
-    dataCreator.execute(compression=2, batchSize=settings.batch_size, source=DATA_SOURCE, threads=THREADS)
+    dataCreator.execute(compression=2, batchSize=settings.batch_size, source=DATA_SOURCE, threads=THREADS, dataAugmentation=ENABLE_AUGMENTATION)
     dataGen = dataCreator.returnParam()
 
     space, selector = DNA_Creator_s(dataGen.size[1], dataGen.size[2], dna=settings.initial_dna)

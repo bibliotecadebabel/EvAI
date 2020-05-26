@@ -110,13 +110,11 @@ def conv2d_propagate_images(layer): ## MUTATION: ADDING IMAGE TO INPUT IN EVERY 
 def conv2d_propagate_multipleInputs(layer): ## MUTATION: Multiple inputs per convolutional layer
     
     parent = layer.node.parents[0].objects[0]
-    
-    #print("current layer= ", layer.adn)
+
     current_input = __getInput(layer, parent.value)
 
     if layer.dropout_value > 0:
-        dropout = torch.nn.Dropout2d(p=layer.dropout_value)
-        output_dropout = dropout(current_input)
+        output_dropout = layer.doDropout(current_input)
         value = layer.object(output_dropout)
     else:
         value = layer.object(current_input)
@@ -127,19 +125,19 @@ def conv2d_propagate_multipleInputs(layer): ## MUTATION: Multiple inputs per con
     
     if layer.enable_activation == True:
         
-        #print("sin sigmoid")
-        #sigmoid = torch.nn.Sigmoid()
-        #layer.value = sigmoid(value) + torch.nn.functional.relu(value)
         layer.value = torch.nn.functional.relu(value)
-    
+
+def maxpooling_propagate(layer):
+
+    parent = layer.node.parents[0].objects[0]
+    current_input = __getInput(layer, parent.value)
+    layer.value = layer.object(current_input)
 
 def linear_propagate(layer):
 
     parent = layer.node.parents[0].objects[0]
 
     shape = parent.value.shape
-    
-    #print("value last conv2d= ", shape)
 
     layer.value = layer.object(parent.value.view(shape[0], -1 ))
 

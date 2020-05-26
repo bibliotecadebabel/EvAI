@@ -13,13 +13,31 @@ import torch.optim as optim
 
 
 class GeneratorFromCIFAR(Generator):
-    def __init__(self, comp, batchSize, cuda=False, threads=0):
+    def __init__(self, comp, batchSize, cuda=False, threads=0, dataAugmentation=False):
         super().__init__(comp, batchSize, "CIFAR", "folder", cuda=cuda)
 
+        self.train_transform = transforms.Compose([
+            transforms.RandomCrop(32, padding=4),
+            transforms.RandomHorizontalFlip(),
+            transforms.ToTensor(),
+            transforms.Normalize((0.5, 0.5, 0.5), (0.5, 0.5, 0.5)),
+        ])
+
+        self.test_transform = transforms.Compose([
+            transforms.ToTensor(), 
+            transforms.Normalize((0.5, 0.5, 0.5), (0.5, 0.5, 0.5))
+        ])
+
+        if dataAugmentation == False:
+            print("Data augmentation is disabled")
+            self.train_transform = transforms.Compose([
+                transforms.ToTensor(), 
+                transforms.Normalize((0.5, 0.5, 0.5), (0.5, 0.5, 0.5))
+            ])
+
         self.batchSize = batchSize
-        self.transform = transforms.Compose([transforms.ToTensor(), transforms.Normalize((0.5, 0.5, 0.5), (0.5, 0.5, 0.5))])
-        self.trainset = torchvision.datasets.CIFAR10(root='./cifar', train=True, download=True, transform=self.transform)
-        self.testSet = torchvision.datasets.CIFAR10(root='./cifar', train=False, download=False, transform=self.transform)
+        self.trainset = torchvision.datasets.CIFAR10(root='./cifar', train=True, download=True, transform=self.train_transform)
+        self.testSet = torchvision.datasets.CIFAR10(root='./cifar', train=False, download=False, transform=self.test_transform)
         print("threads = ", threads)
         self._trainoader = torch.utils.data.DataLoader(self.trainset, batch_size=self.batchSize, shuffle=True, num_workers=threads)
         self._testloader = torch.utils.data.DataLoader(self.testSet, batch_size=32, shuffle=False, num_workers=threads)
