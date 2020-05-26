@@ -213,18 +213,20 @@ class Network(nn.Module, na.NetworkAbstract):
 
     def TrainingCosineLR_Restarts(self, dataGenerator, max_dt, min_dt, epochs, restart_dt=1, show_accuarcy=False):
 
+        print("momentum=", self.momentum)
+        print("weight decay=", self.weight_decay)
         self.optimizer = optim.SGD(self.parameters(), lr=max_dt, momentum=self.momentum, weight_decay=self.weight_decay)
         total_steps = len(dataGenerator._trainoader)
 
         print_every = total_steps // 4
         epoch = 0
 
-        scheduler = optim.lr_scheduler.CosineAnnealingLR(self.optimizer, total_steps * restart_dt, eta_min=min_dt)
+        #scheduler = optim.lr_scheduler.CosineAnnealingLR(self.optimizer, total_steps * restart_dt, eta_min=min_dt)
 
         while epoch < epochs:
 
-            if epoch % restart_dt == 0:
-                scheduler = optim.lr_scheduler.CosineAnnealingLR(self.optimizer, total_steps * restart_dt, eta_min=min_dt)
+            #if epoch % restart_dt == 0:
+            #    scheduler = optim.lr_scheduler.CosineAnnealingLR(self.optimizer, total_steps * restart_dt, eta_min=min_dt)
 
             if show_accuarcy == True and epoch > 0:
 
@@ -244,7 +246,7 @@ class Network(nn.Module, na.NetworkAbstract):
                 self.optimizer.zero_grad()
                 self.Train(inputs, 1, 1)
                 self.optimizer.step()
-                scheduler.step()
+                #scheduler.step()
 
                 self.total_value = self.__getLossLayer().value.item()
                 self.__accumulated_loss += self.total_value
@@ -477,8 +479,8 @@ class Network(nn.Module, na.NetworkAbstract):
 
         accuracy = 0
 
-        model = self.clone()
-        model = model.eval()
+        model = self.eval()
+        #model = model.eval()
 
         with torch.no_grad():
 

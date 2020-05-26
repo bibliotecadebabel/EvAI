@@ -12,36 +12,37 @@ class Net(torch.nn.Module):
         self.conv3 = nn.Conv2d(32, 64, 3).cuda()
         self.conv4 = nn.Conv2d(64, 64, 3).cuda()
         self.pool2 = nn.MaxPool2d(2, stride=None).cuda()
-        self.fc1 = nn.Linear(64 * 5 * 5, 128).cuda()
+        self.conv5 = nn.Conv2d(64, 128, 24).cuda()
+        #self.fc1 = nn.Linear(64 * 24 * 24, 128).cuda()
         self.fc2 = nn.Linear(128, 10).cuda()    
     def forward(self, x):
 
-        dropout = torch.nn.Dropout2d(p=0.10)
+        dropout = torch.nn.Dropout2d(p=0.05)
         x = dropout(x)
         x = F.relu(self.conv1(x))
 
-        dropout = torch.nn.Dropout2d(p=0.10)
+        dropout = torch.nn.Dropout2d(p=0.05)
         x = dropout(x)
         x = F.relu(self.conv2(x))
 
-        x = self.pool1(x)
+        #x = self.pool1(x)
 
-        dropout = torch.nn.Dropout2d(p=0.10)
+        dropout = torch.nn.Dropout2d(p=0.05)
         x = dropout(x)
         x = F.relu(self.conv3(x))
 
-        dropout = torch.nn.Dropout2d(p=0.10)
+        dropout = torch.nn.Dropout2d(p=0.05)
         x = dropout(x)
         x = F.relu(self.conv4(x))
         
-        x = self.pool2(x)
+        #x = self.pool2(x)
 
-        dropout = torch.nn.Dropout2d(p=0.10)
+        dropout = torch.nn.Dropout2d(p=0.05)
         x = dropout(x)
+        x = F.relu(self.conv5(x))
 
-        x = x.view(-1, 64 * 5 * 5)
-
-        x = F.relu(self.fc1(x))
+        shape = x.shape
+        x = x.view(shape[0], -1)
 
         x = self.fc2(x)
 

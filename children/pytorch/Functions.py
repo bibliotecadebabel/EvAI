@@ -39,7 +39,9 @@ def Nothing(layer):
 ############### FUNCIONES PROPAGATE ###############
 
 def conv2d_propagate(layer):
-
+    print("ERROR NO PROPAGATE")
+    pass
+    '''
     parent = layer.node.parents[0].objects[0]
     
     if layer.dropout_value > 0:
@@ -50,7 +52,7 @@ def conv2d_propagate(layer):
         value = layer.object(parent.value)
 
 
-    value = layer.doNormalize(value)
+    #value = layer.doNormalize(value)
     
     layer.value = value
     
@@ -58,9 +60,11 @@ def conv2d_propagate(layer):
         
         sigmoid = torch.nn.Sigmoid()
         layer.value = sigmoid(value) + torch.nn.functional.relu(value)
-    
+    '''
 def conv2d_propagate_images(layer): ## MUTATION: ADDING IMAGE TO INPUT IN EVERY CONVOLUTION LAYER
-    
+    print("ERROR NO PROPAGATE")
+    pass
+    '''
     parent = layer.node.parents[0].objects[0]
 
     if parent.adn is None:
@@ -77,7 +81,7 @@ def conv2d_propagate_images(layer): ## MUTATION: ADDING IMAGE TO INPUT IN EVERY 
     else:
         value = layer.object(parent.value)
     
-    value = layer.doNormalize(value)
+    #value = layer.doNormalize(value)
 
     layer.value = value
     
@@ -102,7 +106,7 @@ def conv2d_propagate_images(layer): ## MUTATION: ADDING IMAGE TO INPUT IN EVERY 
                 layer.value = torch.cat((layer.image, newValue), dim=1)
         else:
             print("OUTPUT LARGER THAN INPUTS")
-        
+    '''
 def conv2d_propagate_multipleInputs(layer): ## MUTATION: Multiple inputs per convolutional layer
     
     parent = layer.node.parents[0].objects[0]
@@ -115,7 +119,7 @@ def conv2d_propagate_multipleInputs(layer): ## MUTATION: Multiple inputs per con
         output_dropout = dropout(current_input)
         value = layer.object(output_dropout)
     else:
-        value = layer.object(current_input)
+        value = layer.object(None)
 
     value = layer.doNormalize(value)
     
@@ -124,9 +128,9 @@ def conv2d_propagate_multipleInputs(layer): ## MUTATION: Multiple inputs per con
     if layer.enable_activation == True:
         
         #print("sin sigmoid")
-        sigmoid = torch.nn.Sigmoid()
-        layer.value = sigmoid(value) + torch.nn.functional.relu(value)
-        #layer.value = torch.nn.functional.relu(value)
+        #sigmoid = torch.nn.Sigmoid()
+        #layer.value = sigmoid(value) + torch.nn.functional.relu(value)
+        layer.value = torch.nn.functional.relu(value)
     
 
 def linear_propagate(layer):
@@ -225,38 +229,36 @@ def __getInput(layer, parentOutput):
     value = parentOutput
 
     if len_other_inputs > 0:
+
+        #normal_input = parentOutput.clone()
+
+        #biggest_input = __getBiggestInput(normal_input, layer.other_inputs)
         
-        with torch.no_grad():   
+        biggest_input = __getBiggestInput(layer.other_inputs)
+        #normal_input = __doPad(normal_input, biggest_input)
 
-            #normal_input = parentOutput.clone()
+        concat_tensor_list = []
 
-            #biggest_input = __getBiggestInput(normal_input, layer.other_inputs)
+        for i in range(len(layer.other_inputs)):
             
-            biggest_input = __getBiggestInput(layer.other_inputs)
-            #normal_input = __doPad(normal_input, biggest_input)
+            #print("concat layer=", layer.other_inputs[i].adn)
+            current_input = layer.other_inputs[i].value.clone()
+            #print("concat input= ", current_input.shape)
 
-            concat_tensor_list = []
+            current_input = __doPad(current_input, biggest_input)
+            #print("concat input padded= ", current_input.shape)
 
-            for i in range(len(layer.other_inputs)):
-                
-                #print("concat layer=", layer.other_inputs[i].adn)
-                current_input = layer.other_inputs[i].value.clone()
-                #print("concat input= ", current_input.shape)
-
-                current_input = __doPad(current_input, biggest_input)
-                #print("concat input padded= ", current_input.shape)
-
-                concat_tensor_list.append(current_input)
+            concat_tensor_list.append(current_input)
 
 
-            value = torch.cat(tuple(concat_tensor_list), dim=1)
+        value = torch.cat(tuple(concat_tensor_list), dim=1)
 
-            #print("final input size=", value.shape)
+        #print("final input size=", value.shape)
 
-            for tensorPadded in concat_tensor_list:
-                del tensorPadded
-            
-            del concat_tensor_list
+        for tensorPadded in concat_tensor_list:
+            del tensorPadded
+        
+        del concat_tensor_list
 
     return value
 
