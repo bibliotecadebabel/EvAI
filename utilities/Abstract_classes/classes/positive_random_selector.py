@@ -17,7 +17,7 @@ class centered_random_selector(Selector):
         condition=None,
         mutations=(
         (0,1,0,0),(0,-1,0,0),
-        (1,0,0,0),
+        (1,0,0,0),(4,0,0,0),
         (0,0,1,1),(0,0,-1,-1),
         (0,0,1),(0,0,-1),
         )):
@@ -33,6 +33,9 @@ class centered_random_selector(Selector):
             self.directions=directions
         elif directions=='clone':
             from DNA_directions_clone import directions as directions
+            self.directions=directions
+        elif directions=='pool':
+            from DNA_directions_pool import directions as directions
             self.directions=directions
         else:
             from DNA_directions_f import directions as directions

@@ -100,6 +100,9 @@ class Creator_from_selection():
         elif type_add_layer=='clone':
             from DNA_directions_clone import directions,directions_labels
             self.directions_labels=directions_labels
+        elif type_add_layer=='pool':
+            from DNA_directions_pool import directions,directions_labels
+            self.directions_labels=directions_labels
         else:
             from DNA_directions_f import directions,directions_labels
             self.directions_labels=directions_labels
