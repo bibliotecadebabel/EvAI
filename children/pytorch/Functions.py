@@ -119,7 +119,7 @@ def conv2d_propagate_multipleInputs(layer): ## MUTATION: Multiple inputs per con
         output_dropout = dropout(current_input)
         value = layer.object(output_dropout)
     else:
-        value = layer.object(None)
+        value = layer.object(current_input)
 
     value = layer.doNormalize(value)
     
