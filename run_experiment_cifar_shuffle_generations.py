@@ -78,13 +78,13 @@ if __name__ == '__main__':
 
 
     # JOINED DT PARAMETERS
-    JOINED_ITER = 5*e
+    JOINED_ITER = 3*e
     #settings.joined_dt_array = Alaising(2,6,e)
     settings.joined_dt_array = Alaising(1,5,JOINED_ITER)
     settings.max_joined_iter = 1
 
     # BEST DT PARAMETERS
-    BEST_ITER = 10*e
+    BEST_ITER = 3*e
     #settings.best_dt_array = Alaising(2,6,e)
     settings.best_dt_array = Alaising(1,5,BEST_ITER)
     settings.max_best_iter = 1
