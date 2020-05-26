@@ -144,6 +144,7 @@ class centered_random_selector(Selector):
         num_mutations=len(self.mutations)
         k=0
         l=0
+        print(self.mutations)
         while len(self.predicted_actions)<self.num_actions:
             layer=int(np.random.normal(0, self.current_num_layer))+self.center
             if layer>-1 and layer<self.current_num_layer+1:

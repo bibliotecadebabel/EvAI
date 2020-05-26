@@ -26,8 +26,9 @@ def DNA_pool(x,y):
             (3,3,4),
             (3,4,5))
     version='pool'
+    mutations=((4,0,0,0),(1,0,0,0),(0,1,0,0),(0,1,0,0))
     selector=Selector_creator(condition=condition_b,
-        directions=version)
+        directions=version,mutations=mutations,num_actions=10)
     selector.update(center)
     actions=selector.get_predicted_actions()
     creator=Creator_s
