@@ -24,7 +24,7 @@ def max_filter(DNA,max):
             return DNA
         else:
             return False
-"""            
+"""
 
 def max_filter(DNA,max):
     u=True
@@ -32,7 +32,7 @@ def max_filter(DNA,max):
         return False
     else:
         num_layer=len([0 for layer in DNA if layer[0] == 0])
-        if all([DNA[k][2]<max for k in range(N-1)]):
+        if all([DNA[k][2]<max for k in range(num_layer-1)]):
             return DNA
         else:
             return False
