@@ -2,6 +2,7 @@ import utilities.Quadrants as qu
 import utilities.Node as nd
 import utilities.Graphs as gr
 import DNA_graph_functions as Fun
+import DNA_graph_functions as Fun
 
 
 def max_layer(DNA,max):
@@ -13,13 +14,25 @@ def max_layer(DNA,max):
             return DNA
         else:
             return False
-
+"""
 def max_filter(DNA,max):
     u=True
     if not(DNA):
         return False
     else:
         if all([layer[2]<max for layer in DNA if layer[0] == 0]):
+            return DNA
+        else:
+            return False
+"""            
+
+def max_filter(DNA,max):
+    u=True
+    if not(DNA):
+        return False
+    else:
+        num_layer=len([0 for layer in DNA if layer[0] == 0])
+        if all([DNA[k][2]<max for k in range(N-1)]):
             return DNA
         else:
             return False
