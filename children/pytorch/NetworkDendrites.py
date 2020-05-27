@@ -88,7 +88,7 @@ class Network(nn.Module, na.NetworkAbstract):
                     self.setAttribute(attributeName_dropout, layer.getDropoutObject())
 
                     if len(tupleBody) > 5:
-                        conv2d_pool = torch.nn.MaxPool2d((tupleBody[5], tupleBody[5]), stride=None)
+                        conv2d_pool = torch.nn.MaxPool2d((tupleBody[5], tupleBody[5]), stride=None, ceil_mode=True)
 
                         if self.cudaFlag == True:
                             conv2d_pool = conv2d_pool.cuda()
