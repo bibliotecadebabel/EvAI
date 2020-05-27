@@ -10,8 +10,8 @@ import numpy as np
 ###### EXPERIMENT SETTINGS ######
 
 def dropout_function(base_p, total_conv2d, index_conv2d):
-    
-    value = base_p / (total_conv2d - index_conv2d)
+
+    value = base_p / (total_conv2d - index_conv2d) + 0.1
     print("conv2d: ", index_conv2d, " - dropout: ", value)
     return value
 
@@ -108,7 +108,7 @@ if __name__ == '__main__':
     MAX_LAYERS = 30
 
     # MAX FILTERS MUTATION (CONDITION)
-    MAX_FILTERS = 65
+    MAX_FILTERS = 130
 
     MAX_FILTERS_DENSE = 130
 
@@ -149,7 +149,7 @@ if __name__ == '__main__':
 
     settings.dropout_function = dropout_function
     # INITIAL DNA
-    settings.initial_dna =   ((-1, 1, 3, 32, 32), (0, 3, 16, 3, 3),(0, 16, 32, 3, 3, 2), (0, 32, 64, 3, 3, 2),
+    settings.initial_dna =   ((-1, 1, 3, 32, 32), (0, 3, 16, 3, 3),(0, 16, 32, 3, 3, 2), (0, 32, 18, 3, 3, 2),
                                 (0, 128, 128, 5, 5),
                                 (1, 128, 10),
                                  (2,),
