@@ -60,16 +60,15 @@ def DNA2graph_test(x,y):
     dire.imprimir(dire.DNA2graph(DNA))
 
 def compute_output_test():
-    DNA=((-1,1,3,11,11),(0, 3, 5, 3, 3),(0, 5, 8, 3,3),(4,13,13,2,2),(0,13,5, 5, 5),
-            (1, 5, 2),
+    DNA=((-1,1,3,11,11),(0, 3, 5, 3, 3),(0, 5, 8, 3,3),(0,11,13,2,2,2),
+            (1, 13, 2),
             (2,),
             (3,-1,0),
             (3,0,1),
             (3,1,2),
             (3,0,2),
             (3,2,3),
-            (3,3,4),
-            (3,4,5))
+            (3,3,4))
     g=dire.DNA2graph(DNA)
     full_node=dire.graph2full_node(g)
     dire.compute_output(g,full_node)
@@ -109,19 +108,7 @@ def decrease_filters_test(x,y):
         DNA=dire.decrease_filters(0,DNA)
         print(DNA)
 
-def add_pool_layer_test(x,y):
-    DNA=((-1,1,3,x,y),(0, 3, 5, 3, 3),(0, 5, 8, 3,3),(0,13,5, 5,5 ),
-            (1, 5, 2), (2,),
-            (3,-1,0),
-            (3,0,1),(3,0,2),
-            (3,1,2),
-            (3,2,3),
-            (3,3,4),
-            (3,4,5))
-    print('old DNA is : ')
-    print(DNA)
-    print('new DNA is : ')
-    print(dire.add_pool_layer(2,DNA))
+
 
 def remove_layer_test(x,y):
     DNA=((-1,1,3,x,y),(0, 3, 5, 3, 3),(0, 5, 8, 3,3),(0,13,5, 7, 7),
@@ -133,6 +120,50 @@ def remove_layer_test(x,y):
     while DNA:
         DNA=dire.remove_layer(0,DNA)
         print(DNA)
+
+def add_layer_test(x,y):
+    DNA=((-1,1,3,11,11),(0, 3, 5, 3, 3),(0, 5, 8,2,2,2),(0,8,120,4,4),
+            (1, 13, 2),
+            (2,),
+            (3,-1,0),
+            (3,0,1),
+            (3,1,2),
+            (3,2,3),
+            (3,3,4))
+    g=dire.DNA2graph(DNA)
+    print('The old DNA is')
+    print(DNA)
+    #while DNA:
+    print('The new DNA is')
+    DNA=dire.add_layer(2,DNA)
+    print(DNA)
+    #g=dire.DNA2graph(DNA)
+    #full_node=dire.graph2full_node(g)
+    #dire.compute_output(g,full_node)
+    #dire.imprimir(g)
+
+def add_pool_layer_test(x,y):
+    DNA=((-1,1,3,11,11),(0, 3, 5, 3, 3),(0, 5, 8,2,2,2),(0,8,120,4,4),
+            (1, 13, 2),
+            (2,),
+            (3,-1,0),
+            (3,0,1),
+            (3,1,2),
+            (3,2,3),
+            (3,3,4))
+    g=dire.DNA2graph(DNA)
+    print('The old DNA is')
+    print(DNA)
+    #while DNA:
+    print('The new DNA is')
+    DNA=dire.add_pool_layer(2,DNA)
+    print(DNA)
+    #g=dire.DNA2graph(DNA)
+    #full_node=dire.graph2full_node(g)
+    #dire.compute_output(g,full_node)
+    #dire.imprimir(g)
+
+
 
 def remove_layer_test_2(x,y):
     DNA=((-1,1,3,x,y),(0, 3, 5, 3, 3),(4,5,5,2,2),(0, 5, 5, 4, 4),
@@ -150,11 +181,13 @@ def remove_layer_test_2(x,y):
         print(DNA)
 
 def fix_fully_conected_test(x,y):
-    DNA=((-1,1,3,x,y),(0, 3, 5, 3, 3),(4,5,5,2,2),(0, 5, 5, 3, 3),
-            (1, 5, 2), (2,),
+    DNA=((-1,1,3,11,11),(0, 3, 5, 3, 3),(0, 5, 8, 3,3),(0,11,13,5,5,2),
+            (1, 13, 2),
+            (2,),
             (3,-1,0),
             (3,0,1),
             (3,1,2),
+            (3,0,2),
             (3,2,3),
             (3,3,4))
     g=dire.DNA2graph(DNA)
@@ -224,9 +257,9 @@ def spread_dendrites_test_5(x,y):
 def spread_dendrites_test_6(x,y):
     DNA=((-1,1,3,x,y),(0, 3, 5, 2, 2),(0, 5, 5, 2,2),
             (0,5,5, 2, 2),
+            (0,5,5, 2, 2,2),
             (0,5,5, 2, 2),
-            (0,5,5, 2, 2),
-            (4,5,5, 2, 2),
+            (0,5,5, 2, 2,2),
             (0,5,5, 3, 3),
             (1, 5, 2), (2,),
             (3,-1,0),
@@ -276,11 +309,11 @@ def retract_dendrites_test(x,y):
         print(DNA)
         k=k-1
 
-remove_layer_test_2(11,11)
+#remove_layer_test_2(11,11)
 #add_pool_layer_test(11,11)
 #compute_output_test()
 #retract_dendrites_test(11,11)
-#spread_dendrites_test_6(11,11)
+spread_dendrites_test_6(32,32)
 #spread_dendrites_test_5(11,11)
 #spread_dendrites_test_4(11,11)
 #spread_dendrites_test_3(11,11)
@@ -289,6 +322,8 @@ remove_layer_test_2(11,11)
 ##decrease_kernel_test(11,11)
 #Persistent_synapse_condition_test(11,11)
 #add_layer_test(11,11)
+#add_layer_test(11,11)
+#add_pool_layer_test(32,32)
 #fix_fully_conected_test(11,11)
 #compute_num_layers_test(11,11)
 #remove_layer_test(11,11)

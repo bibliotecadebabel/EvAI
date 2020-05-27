@@ -32,15 +32,19 @@ def DNA2synapses(DNA):
 
 def signal_layer2output(signal_x,signal_y,layer):
     layer
-    x_l = layer[3]
-    y_l = layer[4]
     x=signal_x
     y=signal_y
-    if layer[0]==0:
+    if layer[0]==0 and len(layer)==5:
+        x_l = layer[3]
+        y_l = layer[4]
         return [x-x_l+1, y-y_l+1]
-    elif layer[0]==4:
-        x = (x+(x % x_l))/x_l
-        y = (y+(y % y_l))/y_l
+    elif layer[0]==0 and len(layer)==6:
+        x_l = layer[5]
+        y_l = layer[5]
+        x_k = layer[3]
+        y_k = layer[4]
+        x = (x+(x % x_l))/x_l-y_k+1
+        y = (y+(y % y_l))/y_l-y_k+1
         return [int(x),int(y)]
 
 def compute_output(g, node):
@@ -89,11 +93,20 @@ def fix_fully_conected(g):
     compute_output(g, full_node)
     output = full_node.objects[1]
     layer = full_node.objects[0]
-    full_node.objects[0] = (layer[0],
-                            layer[1],
-                            layer[2],
-                            output[0] + layer[3] - 1,
-                            output[0] + layer[4] - 1)
+    if len(layer)==5:
+        full_node.objects[0] = (layer[0],
+                                layer[1],
+                                layer[2],
+                                output[0] + layer[3] - 1,
+                                output[0] + layer[4] - 1)
+    elif len(layer)==6:
+        print('second case')
+        full_node.objects[0] = (layer[0],
+                                layer[1],
+                                layer[2],
+                                output[0],
+                                output[0],
+                                 layer[5])
 
 def Persistent_synapse_condition(DNA):
     if DNA:
@@ -303,6 +316,8 @@ def add_layer(num_layer,source_DNA):
         else:
             o_node=g.key2node.get(num_layer-1)
             clone_node=g.key2node.get(num_layer)
+            if graph2full_node(g)==clone_node:
+                clone_node=o_node
             o_layer=o_node.objects[0]
             clone_layer = clone_node.objects[0]
             node=nd.Node()
@@ -380,17 +395,19 @@ def add_pool_layer(num_layer,source_DNA):
         if num_layer==0:
             clone_node=g.key2node.get(num_layer-1)
             clone_layer = clone_node.objects[0]
-            node.objects.append((4,clone_layer[2],clone_layer[2],2,2))
+            node.objects.append((0,clone_layer[2],clone_layer[2],2,2,2))
             g.add_node(-2,node)
             g.add_edges(-1,[-2])
             g.add_edges(-2,[num_layer])
         else:
             o_node=g.key2node.get(num_layer-1)
             clone_node=g.key2node.get(num_layer-1)
+            if graph2full_node(g)==clone_node:
+                clone_node=o_node
             o_layer=o_node.objects[0]
             clone_layer = clone_node.objects[0]
             node=nd.Node()
-            node.objects.append((4,o_layer[2],clone_layer[2],2,2))
+            node.objects.append((0,clone_layer[2],clone_layer[2],2,2,2))
             g.add_node(-2,node)
             g.add_edges(num_layer-1,[-2])
             g.add_edges(-2,[num_layer])
@@ -410,7 +427,7 @@ def index2pool(g,index):
     if index:
         tf_node=g.key2node.get(index-1)
         t_layer=tf_node.objects[0]
-        if t_layer[0]==4:
+        if len(t_layer)==6:
             return index-1
         else:
             return index
