@@ -5,7 +5,7 @@ from DNA_creators import Creator
 from DNA_Graph import DNA_Graph
 from DNA_creators import Creator_from_selection as Creator_s
 from utilities.Abstract_classes.classes.positive_random_selector import centered_random_selector as random_selector
-import TestNetwork.ExperimentSettings as ExperimentSetting
+import TestNetwork.ExperimentSettings as ExperimentSettings
 import numpy as np
 ###### EXPERIMENT SETTINGS ######
 
@@ -41,7 +41,7 @@ def DNA_Creator_s(x,y, dna):
 
 if __name__ == '__main__':
 
-    settings = ExperimentSetting.ExperimentSetting()
+    settings = ExperimentSettings.ExperimentSettings()
 
     # NUM OF THREADS
     THREADS = int(input("Enter threads: "))
