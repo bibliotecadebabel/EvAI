@@ -149,7 +149,7 @@ if __name__ == '__main__':
 
     settings.dropout_function = dropout_function
     # INITIAL DNA
-    settings.initial_dna =   ((-1, 1, 3, 32, 32), (0, 3, 16, 3, 3),(0, 16, 32, 3, 3, 2), (0, 32, 18, 3, 3, 2),
+    settings.initial_dna =   ((-1, 1, 3, 32, 32), (0, 3, 16, 3, 3),(0, 16, 32, 3, 3, 2), (0, 32, 128, 3, 3, 2),
                                 (0, 128, 128, 5, 5),
                                 (1, 128, 10),
                                  (2,),
