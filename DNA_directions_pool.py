@@ -563,7 +563,7 @@ def retract_dendrites(num_layer,source_DNA):
             for node_k in dendrites]
     new_index=select_new_index2retract(num_layer,
         landscape,total_layers-num_layer-5,old_index)
-    index2pool(g,new_index)
+    index2pool(g,node,new_index)
 #    print(f'The idex to add is {new_index}')
     if new_index and not(new_index==old_index) and (
         not(new_index==num_layer or new_index==num_layer+1)):
