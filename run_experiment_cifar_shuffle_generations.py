@@ -102,7 +102,7 @@ if __name__ == '__main__':
     MAX_LAYERS = 30
 
     # MAX FILTERS MUTATION (CONDITION)
-    MAX_FILTERS = 51
+    MAX_FILTERS = 65
 
     MAX_FILTERS_DENSE = 130
 
