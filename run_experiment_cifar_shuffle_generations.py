@@ -41,7 +41,7 @@ def DNA_Creator_s(x,y, dna):
 
 if __name__ == '__main__':
 
-    settings = ExperimentSettings.ExperimentSettings()
+    settings = ExperimentSetting.ExperimentSetting()
 
     # NUM OF THREADS
     THREADS = int(input("Enter threads: "))
