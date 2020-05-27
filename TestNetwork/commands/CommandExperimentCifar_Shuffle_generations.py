@@ -3,7 +3,7 @@ import children.pytorch.NetworkDendrites as nw
 from DAO.database.dao import TestDAO, TestResultDAO, TestModelDAO
 from DNA_Graph import DNA_Graph
 from utilities.Abstract_classes.classes.positive_random_selector import centered_random_selector as random_selector
-from DNA_creator_duplicate_clone import Creator_from_selection_clone as Creator_s
+from DNA_creators import Creator_from_selection as Creator_s
 import const.path_models as const_path
 import TestNetwork.ExperimentSettings
 import os

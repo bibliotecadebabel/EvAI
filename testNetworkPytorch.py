@@ -6,56 +6,45 @@ import children.pytorch.MutateNetwork as MutateNetwork
 import children.pytorch.MutateNetwork_Dendrites_clone as Mutate_Dendrites
 from DAO import GeneratorFromImage, GeneratorFromCIFAR
 
-from DNA_conditions import max_layer
-from DNA_creators import Creator
 from DNA_Graph import DNA_Graph
+from DNA_creators import Creator_from_selection as Creator_s
+from utilities.Abstract_classes.classes.random_selector import random_selector
+from utilities.Abstract_classes.classes.positive_random_selector import(
+    centered_random_selector as Selector_creator)
+from DNA_conditions import max_layer,max_filter
 
 from DNA_creators import Creator_from_selection as Creator_s
 from utilities.Abstract_classes.classes.random_selector import random_selector
 import DNA_directions_pool as direction_dna
 
 
-def DNA_test_i(x,y):
-    def condition(DNA):
-        output=True
-        if DNA:
-            for num_layer in range(0,len(DNA)-3):
-                layer=DNA[num_layer]
-                x_l=layer[3]
-                y_l=layer[4]
-                output=output and (x_l<x) and (y_l<y)
-        if output:
-            return max_layer(DNA, 3)
-    center=((0, 3, 5, 3, 3),(0, 8, 8, 3,3),(0,11,5, x, y), (1, 5, 10), (2,))
-    version='inclusion'
-    space=space=DNA_Graph(center,2,(x,y),condition,(0,(1,0,0,0)),version)
-    return space
-
-def DNA_Creator_s(x,y):
-    def condition(DNA):
-        output=True
-        if DNA:
-            for num_layer in range(0,len(DNA)-3):
-                layer=DNA[num_layer]
-                
-                if layer[0] == 0:
-                    x_l=layer[3]
-                    y_l=layer[4]
-                    output=output and (x_l<x) and (y_l<y)
-        if output:
-            return max_layer(DNA,15)
-    #center=((-1, 1, 3, 11, 11), (0, 3, 5, 3, 3), (0, 5, 5, 3, 3), (0, 5, 5, 7, 7), (1, 5, 10), (2,), (3, -1, 0),(3, 0, 1), (3, 1, 2), (3, 2, 3), (3, 3, 4))
-    center=((-1,1,3,x,y),(0, 3, 5, 3, 3),(0,5, 5, x-2, y-2),
-            (1, 5, 10), (2,),(3,-1,0),(3,0,1),
-            (3,1,2),(3,2,3))
-    selector=random_selector()
+def DNA_pool(x,y):
+    max_layers=10
+    max_filters=60
+    def condition_b(z):
+        return max_filter(max_layer(z,max_layers),max_filters)
+    center=((-1,1,3,x,y),
+            (0,3, 15, 3 , 3),
+            (0,15, 15, 3,  3),
+            (0,15,33,2,2,2),
+            (0,33, 50, 13, 13),
+            (1, 50,10),
+             (2,),
+            (3,-1,0),
+            (3,0,1),
+            (3,1,2),
+            (3,2,3),
+            (3,3,4),
+            (3,4,5))
+    version='pool'
+    mutations=((4,0,0,0),(1,0,0,0),(0,1,0,0),(0,1,0,0))
+    selector=Selector_creator(condition=condition_b,
+        directions=version,mutations=mutations,num_actions=10)
     selector.update(center)
-    actions=((0, (0,1,0,0)), (1, (0,1,0,0)), (0, (0,-1,0,0)), (1, (0,-1,0,0)), (0, (-1,0,0,0)))
-    #actions=((1, (-1,0,0,0)), )
-    version='final'
-    space=DNA_Graph(center,1,(x,y),condition,actions, version,Creator_s)
-
-    
+    actions=selector.get_predicted_actions()
+    creator=Creator_s
+    space=DNA_Graph(center,1,(x,y),condition_b,actions,
+        version,creator)
     return space
 
 
@@ -66,31 +55,37 @@ def Test_Mutacion():
 
     print("creating DNAs")
 
-    
-    #parentDNA = ((-1,1,3,32,32),(0,3, 32, 3 , 3),(0,32, 32, 3,  3), (4, 32, 32, 2, 2), (0,32, 64, 3, 3), 
-    #            (0,64, 64, 3, 3), (4, 64, 64, 2, 2), (0, 64, 128, 5, 5), (1, 128,10), (2,), (3, -1, 0), (3, 0, 1), (3, 1, 2),
-    #            (3, 2, 3), (3, 3, 4), (3, 4, 5), (3, 5, 6), (3, 6, 7), (3, 7, 8))
-    
-    parentDNA = ((-1, 1, 3, 32, 32), (0, 3, 5, 3, 3), (0, 5, 10, 3, 3, 2), (0, 10, 5, 13, 13), 
-                    (1, 5, 10), (2,), (3, -1, 0), (3, 0, 1), (3, 1, 2), (3, 2, 3),(3, 3, 4))
+    space = DNA_pool(32, 32)
 
-    mutateDNA = ((-1, 1, 3, 32, 32), (0, 3, 5, 3, 3), (0, 5, 15, 3, 3, 2), (0, 15, 5, 13, 13), 
-                    (1, 5, 10), (2,), (3, -1, 0), (3, 0, 1), (3, 1, 2), (3, 2, 3),(3, 3, 4))
+    for node in space.objects:
+        
+        parentDNA = space.node2key(node)
 
-    print("original DNA: ", parentDNA)
-    print("new DNA: ", mutateDNA)
-    
-    
-    network = nw_dendrites.Network(parentDNA, cudaFlag=True, momentum=0.9, weight_decay=0.0, 
+        print("current DNA: ", parentDNA)
+        network = nw_dendrites.Network(parentDNA, cudaFlag=True, momentum=0.9, weight_decay=0.0, 
                                     enable_activation=True, enable_track_stats=True, dropout_value=0.20)
+        
+        network.TrainingCosineLR_Restarts(dataGenerator=dataGen, max_dt=0.001, min_dt=0.001, 
+                    epochs=1, restart_dt=1, show_accuarcy=True)
 
-    network.TrainingCosineLR_Restarts(dataGenerator=dataGen, max_dt=0.001, min_dt=0.001, epochs=2, restart_dt=2, show_accuarcy=True)
-    
-    network.generateEnergy(dataGen)
-    print("accuracy= ", network.getAcurracy())
-    mutate_network = Mutate_Dendrites.executeMutation(network, mutateDNA)
-    mutate_network.generateEnergy(dataGen)
-    print("accuracy after mutate= ", mutate_network.getAcurracy())
+        network.generateEnergy(dataGen)
+        print("accuracy: ", network.getAcurracy())
+        
+        for nodek in node.kids:
+            
+            mutate_dna = space.node2key(nodek)
+            print("mutate dna: ", mutate_dna)
+            network_kid =  Mutate_Dendrites.executeMutation(network, mutate_dna)
+            network_kid.generateEnergy(dataGen)
+            print("accuracy after mutate: ", network_kid.getAcurracy())
+            network_kid.TrainingCosineLR_Restarts(dataGenerator=dataGen, max_dt=0.001, min_dt=0.001, 
+                                                epochs=1, restart_dt=1, show_accuarcy=True)
+            network_kid.generateEnergy(dataGen)
+            print("accuracy after training mutate: ", network_kid.getAcurracy())
+
+    #mutate_network = Mutate_Dendrites.executeMutation(network, mutateDNA)
+    #mutate_network.generateEnergy(dataGen)
+    #print("accuracy after mutate= ", mutate_network.getAcurracy())
     
 
 def Test_Save_Model():

@@ -256,13 +256,12 @@ class Network(nn.Module, na.NetworkAbstract):
         self.optimizer = optim.SGD(self.parameters(), lr=max_dt, momentum=self.momentum, weight_decay=self.weight_decay)
         total_steps = len(dataGenerator._trainoader)
 
-        print_every = total_steps // 4
+        print_every = total_steps // 8
         epoch = 0
 
         #scheduler = optim.lr_scheduler.CosineAnnealingLR(self.optimizer, total_steps * restart_dt, eta_min=min_dt)
-
         while epoch < epochs:
-
+            start_time = time.time()
             #if epoch % restart_dt == 0:
             #    scheduler = optim.lr_scheduler.CosineAnnealingLR(self.optimizer, total_steps * restart_dt, eta_min=min_dt)
 
@@ -295,7 +294,10 @@ class Network(nn.Module, na.NetworkAbstract):
                     self.__printValues(epoch + 1, i, avg=(total_steps//4))
 
             epoch+= 1
+            
+            end_time = time.time()
 
+            print("epoch time: ", (end_time - start_time))
 
     def iterTraining(self, dataGenerator, dt_array):
 

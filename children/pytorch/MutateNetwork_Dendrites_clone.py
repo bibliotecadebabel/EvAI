@@ -2,7 +2,7 @@ import children.pytorch.NetworkDendrites as nw
 import children.Interfaces as Inter
 import children.pytorch.Functions as Functions
 from mutations.Dictionary import MutationsDictionary
-import DNA_directions_clone as direction_dna
+import DNA_directions_pool as direction_dna
 import torch as torch
 import mutations.Convolution2d.Mutations as Conv2dMutations
 import mutations.BatchNormalization.BatchNormalization as batchMutate
@@ -30,6 +30,10 @@ def executeMutation(oldNetwork, newAdn):
     elif length_newadn > length_oldadn: # add layer
         #print("add layer mutation")
         index_layer = __getTargetIndex(oldAdn=oldNetwork.adn, newAdn=newAdn, direction_function=direction_dna.add_layer)
+
+        if index_layer == None:
+            index_layer = __getTargetIndex(oldAdn=oldNetwork.adn, newAdn=newAdn, direction_function=direction_dna.add_pool_layer)
+
         __addLayerMutationProcess(oldNetwork=oldNetwork, network=network, lenghtOldAdn=length_oldadn, indexAdded=index_layer)
 
     elif length_oldadn > length_newadn: # remove layer

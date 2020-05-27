@@ -3,7 +3,7 @@ from TestNetwork.commands import  CommandExperimentCifar_Shuffle_generations as 
 from DNA_conditions import max_layer,max_filter
 from DNA_creators import Creator
 from DNA_Graph import DNA_Graph
-from DNA_creator_duplicate_clone import Creator_from_selection_clone as Creator_s
+from DNA_creators import Creator_from_selection as Creator_s
 from utilities.Abstract_classes.classes.positive_random_selector import centered_random_selector as random_selector
 import TestNetwork.ExperimentSettings as ExperimentSettings
 import numpy as np
@@ -27,7 +27,7 @@ def DNA_Creator_s(x,y, dna):
     def condition(DNA):
         return max_filter(max_layer(DNA, MAX_LAYERS), MAX_FILTERS)
 
-    version='clone'
+    version='pool'
     selector = None
     selector=random_selector(condition=condition,
         directions=version, num_actions=num_actions)
@@ -138,8 +138,8 @@ if __name__ == '__main__':
     settings.enable_track_stats = value
 
     # INITIAL DNA
-    settings.initial_dna =   ((-1, 1, 3, 32, 32), (0, 3, 20, 3, 3), (0, 20, 40, 3, 3), (0, 60, 20, 3, 3), (0, 63, 20, 3, 3), (0, 23, 5, 4, 4), (0, 5, 5, 2, 2), (0, 5, 5, 3, 3), (0, 18, 5, 4, 4), (0, 5, 10, 3, 3), (0, 18, 20, 4, 4), (0, 20, 48, 3, 3), (0, 76, 48, 32, 32), (1, 48, 10), (2,), (3, -1, 0), (3, 0, 1), (3, 1, 2), (3, 0, 2), (3, -1, 3), (3, 1, 3), (3, 2, 3), (3, -1, 4), (3, 3, 4), (3, 4, 5), (3, 5, 6), (3, -1, 7), (3, 4, 7), (3, 5, 7), (3, 6, 7), (3, 7, 8), (3, 7, 9), (3, -1, 9), (3, 8, 9), (3, 9, 10), (3, 9, 11), (3, 7, 11), (3, -1, 11), (3, 10, 11), (3, 11, 12), (3, 12, 13))
-
+    settings.initial_dna =   ((-1, 1, 3, 32, 32), (0, 3, 6, 3, 3),(0, 6, 9, 3, 3, 2), (0, 9, 18, 6, 6, 2), (1, 18, 10), (2,),
+                                (3, -1, 0), (3, 0, 1), (3, 1, 2), (3, 2, 3), (3, 3, 4))
     dataCreator = CommandCreateDataGen.CommandCreateDataGen(cuda=settings.cuda)
     dataCreator.execute(compression=2, batchSize=settings.batch_size, source=DATA_SOURCE, threads=THREADS, dataAugmentation=ENABLE_AUGMENTATION)
     dataGen = dataCreator.returnParam()

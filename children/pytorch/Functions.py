@@ -213,7 +213,6 @@ def __doPad(targetTensor, refferenceTensor):
 
     if diff_kernel > 0:
         pad_tensor = torch.nn.functional.pad(targetTensor,(0, diff_kernel, 0, diff_kernel),"constant", 0)
-        del targetTensor
     
     return pad_tensor
 
@@ -225,31 +224,18 @@ def __getInput(layer, parentOutput):
 
     if len_other_inputs > 0:
 
-        #normal_input = parentOutput.clone()
-
-        #biggest_input = __getBiggestInput(normal_input, layer.other_inputs)
-        
         biggest_input = __getBiggestInput(layer.other_inputs)
-        #normal_input = __doPad(normal_input, biggest_input)
 
         concat_tensor_list = []
 
         for i in range(len(layer.other_inputs)):
             
-            #print("concat layer=", layer.other_inputs[i].adn)
             current_input = layer.other_inputs[i].value.clone()
-            #print("concat input= ", current_input.shape)
-
-            current_input = __doPad(current_input, biggest_input)
-            #print("concat input padded= ", current_input.shape)
-
-            concat_tensor_list.append(current_input)
-
+            padded_input = __doPad(current_input, biggest_input)
+            del current_input
+            concat_tensor_list.append(padded_input)
 
         value = torch.cat(tuple(concat_tensor_list), dim=1)
-
-        #print("final input size=", value.shape)
-
         for tensorPadded in concat_tensor_list:
             del tensorPadded
         
