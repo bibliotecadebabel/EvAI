@@ -423,11 +423,11 @@ creator=add_pool_layer
 directions.update({type:creator})
 directions_labels.update({creator:type})
 
-def index2pool(g,index):
+def index2pool(g,node,index):
     if index:
-        tf_node=g.key2node.get(index-1)
-        t_layer=tf_node.objects[0]
-        if len(t_layer)==6:
+        t_node=g.key2node.get(index-1)
+        t_layer=t_node.objects[0]
+        if len(t_layer)==6 and not(t_node in node.kids):
             return index-1
         else:
             return index
@@ -458,7 +458,7 @@ def spread_dendrites(num_layer,source_DNA):
     new_index=select_new_index2spread(num_layer,
         landscape,total_layers-num_layer-5)
 #    print(f'The idex to add is {new_index}')
-    new_index=index2pool(g,new_index)
+    new_index=index2pool(g,node,new_index)
     if new_index and not(new_index==old_index) and (
         not(new_index==num_layer or new_index==num_layer+1)):
         g.add_edges(num_layer,[new_index])
