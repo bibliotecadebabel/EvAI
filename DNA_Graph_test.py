@@ -5,14 +5,15 @@ from DNA_creators import Creator_from_selection as Creator_s
 from utilities.Abstract_classes.classes.random_selector import random_selector
 from utilities.Abstract_classes.classes.positive_random_selector import(
     centered_random_selector as Selector_creator)
-from DNA_conditions import max_layer,max_filter
+from DNA_conditions import max_layer,max_filter,max_filter_dense
 
 
 def DNA_pool(x,y):
     max_layers=10
     max_filters=60
+    max_dense=100
     def condition_b(z):
-        return max_filter(max_layer(z,max_layers),max_filters)
+        return max_filter_dense(max_filter(max_layer(z,max_layers),max_filters),max_dense)
     center=((-1,1,3,x,y),
             (0,3, 15, 3 , 3),
             (0,18, 15, 3,  3),

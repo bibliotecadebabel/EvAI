@@ -1,6 +1,6 @@
 from TestNetwork.commands import CommandCreateDataGen
 from TestNetwork.commands import  CommandExperimentCifar_Shuffle_generations as CommandExperimentCifar_Restarts
-from DNA_conditions import max_layer,max_filter
+from DNA_conditions import max_layer,max_filter,max_filter_dense
 from DNA_creators import Creator
 from DNA_Graph import DNA_Graph
 from DNA_creators import Creator_from_selection as Creator_s
@@ -25,7 +25,7 @@ def exp_alai(r,I,t_M,t_m):
 
 def DNA_Creator_s(x,y, dna):
     def condition(DNA):
-        return max_filter(max_layer(DNA, MAX_LAYERS), MAX_FILTERS)
+        return max_filter_dense(max_filter(max_layer(DNA, MAX_LAYERS), MAX_FILTERS), MAX_FILTERS_DENSE)
 
     version='pool'
     selector = None
@@ -71,8 +71,8 @@ if __name__ == '__main__':
     num_actions=5
 
     e=300
-    settings.max_init_iter = 40
-    INIT_ITER = e
+    settings.max_init_iter = 4
+    INIT_ITER = 10*e
     #settings.init_dt_array = exp_alai(.5,INIT_ITER,1,5)
     settings.init_dt_array =  Alaising(1,5,INIT_ITER)
 
@@ -80,13 +80,13 @@ if __name__ == '__main__':
     # JOINED DT PARAMETERS
     JOINED_ITER = 3*e
     #settings.joined_dt_array = Alaising(2,6,e)
-    settings.joined_dt_array = Alaising(1,5,JOINED_ITER)
+    settings.joined_dt_array = Alaising(1.2,5,JOINED_ITER)
     settings.max_joined_iter = 1
 
     # BEST DT PARAMETERS
     BEST_ITER = 3*e
     #settings.best_dt_array = Alaising(2,6,e)
-    settings.best_dt_array = Alaising(1,5,BEST_ITER)
+    settings.best_dt_array = Alaising(1.2,5,BEST_ITER)
     settings.max_best_iter = 1
 
     # dropout parameter
@@ -103,6 +103,8 @@ if __name__ == '__main__':
 
     # MAX FILTERS MUTATION (CONDITION)
     MAX_FILTERS = 51
+
+    MAX_FILTERS_DENSE = 130
 
     # TEST_NAME, the name of the experiment (unique)
     settings.test_name = input("Enter TestName: ")

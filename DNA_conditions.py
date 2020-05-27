@@ -37,6 +37,17 @@ def max_filter(DNA,max):
         else:
             return False
 
+def max_filter_dense(DNA,max):
+    u=True
+    if not(DNA):
+        return False
+    else:
+        num_layer=len([0 for layer in DNA if layer[0] == 0])
+        if DNA[num_layer-1][2]<max:
+            return DNA
+        else:
+            return False
+
 def restrict_conections(DNA):
     return no_con_last_layer(
         no_con_image(DNA))
