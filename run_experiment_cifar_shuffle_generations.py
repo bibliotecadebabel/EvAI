@@ -110,7 +110,7 @@ if __name__ == '__main__':
     # MAX FILTERS MUTATION (CONDITION)
     MAX_FILTERS = 130
 
-    MAX_FILTERS_DENSE = 65
+    MAX_FILTERS_DENSE = 130
 
     # TEST_NAME, the name of the experiment (unique)
     settings.test_name = input("Enter TestName: ")
