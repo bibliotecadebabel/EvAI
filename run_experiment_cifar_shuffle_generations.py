@@ -5,7 +5,7 @@ from DNA_creators import Creator
 from DNA_Graph import DNA_Graph
 from DNA_creators import Creator_from_selection as Creator_s
 from utilities.Abstract_classes.classes.positive_random_selector import centered_random_selector as random_selector
-import TestNetwork.ExperimentSettings as ExperimentSettings
+import TestNetwork.ExperimentSettings as ExperimentSetting
 import numpy as np
 ###### EXPERIMENT SETTINGS ######
 
@@ -138,8 +138,16 @@ if __name__ == '__main__':
     settings.enable_track_stats = value
 
     # INITIAL DNA
-    settings.initial_dna =   ((-1, 1, 3, 32, 32), (0, 3, 6, 3, 3),(0, 6, 9, 3, 3, 2), (0, 9, 18, 6, 6, 2), (1, 18, 10), (2,),
-                                (3, -1, 0), (3, 0, 1), (3, 1, 2), (3, 2, 3), (3, 3, 4))
+    settings.initial_dna =   ((-1, 1, 3, 32, 32), (0, 3, 6, 3, 3),(0, 6, 6, 3, 3, 2), (0, 6, 6, 3, 3, 2),
+                                (0, 6, 50, 5, 5),
+                                (1, 50, 10),
+                                 (2,),
+                                (3, -1, 0),
+                                (3, 0, 1),
+                                (3, 1, 2),
+                                (3, 2, 3),
+                                (3, 3, 4),
+                                (3, 4, 5))
     dataCreator = CommandCreateDataGen.CommandCreateDataGen(cuda=settings.cuda)
     dataCreator.execute(compression=2, batchSize=settings.batch_size, source=DATA_SOURCE, threads=THREADS, dataAugmentation=ENABLE_AUGMENTATION)
     dataGen = dataCreator.returnParam()
