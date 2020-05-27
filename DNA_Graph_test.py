@@ -7,6 +7,7 @@ from utilities.Abstract_classes.classes.positive_random_selector import(
     centered_random_selector as Selector_creator)
 from DNA_conditions import max_layer,max_filter
 
+
 def DNA_pool(x,y):
     max_layers=10
     max_filters=60
@@ -16,12 +17,12 @@ def DNA_pool(x,y):
             (0,3, 15, 3 , 3),
             (0,18, 15, 3,  3),
             (0,33,33,2,2,2),
-            (0,33, 50, 15, 15),
+            (0,33, 50, 13, 13),
             (1, 50,10),
              (2,),
             (3,-1,0),
-            (3,0,1),(3,-1,1),
-            (3,1,2),(3,0,2),
+            (3,0,1),
+            (3,1,2),
             (3,2,3),
             (3,3,4),
             (3,4,5))
