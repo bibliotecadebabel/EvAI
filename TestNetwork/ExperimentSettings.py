@@ -35,3 +35,4 @@ class ExperimentSettings():
         self.enable_track_stats = True
 
         self.dropout_value = 0
+        self.dropout_function = None

@@ -17,6 +17,13 @@ from DNA_creators import Creator_from_selection as Creator_s
 from utilities.Abstract_classes.classes.random_selector import random_selector
 import DNA_directions_pool as direction_dna
 
+def dropout_function(base_p, total_conv2d, index_conv2d):
+    
+    print("index: ", index_conv2d)
+    value = base_p / (total_conv2d - index_conv2d)
+    value = value * 2
+
+    return value
 
 def DNA_pool(x,y):
     max_layers=10
@@ -55,8 +62,23 @@ def Test_Mutacion():
 
     print("creating DNAs")
 
-    space = DNA_pool(32, 32)
+    parent = ((-1, 1, 3, 32, 32), (0, 3, 16, 4, 4), (0, 16, 32, 3, 3), (0, 48, 32, 3, 3, 2), (0, 32, 32, 3, 3, 2), 
+                    (0, 64, 64, 3, 3, 2), (0, 96, 64, 2, 2, 2), (0, 128, 128, 6, 6), (1, 128, 10), (2,), 
+                        (3, -1, 0), (3, 0, 1), (3, 0, 2), (3, 1, 2), (3, 2, 3), (3, 2, 4), (3, 3, 4),
+                         (3, 4, 5), (3, 2, 5), (3, 4, 6), (3, 5, 6), (3, 6, 7), (3, 7, 8))
 
+    child = direction_dna.spread_dendrites(3, parent)
+    network = nw_dendrites.Network(child, cudaFlag=True, momentum=0.9, weight_decay=0.0, 
+                                    enable_activation=True, enable_track_stats=True, dropout_value=0.20)
+        
+    network.TrainingCosineLR_Restarts(dataGenerator=dataGen, max_dt=0.001, min_dt=0.001, 
+                    epochs=1, restart_dt=1, show_accuarcy=True)
+    
+    print("child: ", child)
+    
+    '''
+    space = DNA_pool(32, 32)
+    
     for node in space.objects:
         
         parentDNA = space.node2key(node)
@@ -87,7 +109,7 @@ def Test_Mutacion():
     #mutate_network.generateEnergy(dataGen)
     #print("accuracy after mutate= ", mutate_network.getAcurracy())
     
-
+    '''
 def Test_Save_Model():
     dataGen = GeneratorFromCIFAR.GeneratorFromCIFAR(2,  50)
     dataGen.dataConv2d()

@@ -9,6 +9,12 @@ import TestNetwork.ExperimentSettings as ExperimentSettings
 import numpy as np
 ###### EXPERIMENT SETTINGS ######
 
+def dropout_function(base_p, total_conv2d, index_conv2d):
+    
+    value = base_p / (total_conv2d - index_conv2d)
+    print("conv2d: ", index_conv2d, " - dropout: ", value)
+    return value
+
 def pcos(x):
     if x>np.pi:
         x-np.pi
@@ -139,6 +145,9 @@ if __name__ == '__main__':
         value = True
     settings.enable_track_stats = value
 
+    # DROPOUT FUNCTION
+
+    settings.dropout_function = dropout_function
     # INITIAL DNA
     settings.initial_dna =   ((-1, 1, 3, 32, 32), (0, 3, 16, 3, 3),(0, 16, 32, 3, 3, 2), (0, 32, 64, 3, 3, 2),
                                 (0, 128, 128, 5, 5),
@@ -150,6 +159,7 @@ if __name__ == '__main__':
                                 (3, 2, 3),
                                 (3, 3, 4),
                                 (3, 4, 5))
+
     dataCreator = CommandCreateDataGen.CommandCreateDataGen(cuda=settings.cuda)
     dataCreator.execute(compression=2, batchSize=settings.batch_size, source=DATA_SOURCE, threads=THREADS, dataAugmentation=ENABLE_AUGMENTATION)
     dataGen = dataCreator.returnParam()

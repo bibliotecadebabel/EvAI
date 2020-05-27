@@ -17,10 +17,16 @@ import time
 
 class Network(nn.Module, na.NetworkAbstract):
 
-    def __init__(self, adn, cudaFlag=True, momentum=0.0, weight_decay=0.0, enable_activation=True, enable_track_stats=True, dropout_value=0):
+    def __init__(self, adn, cudaFlag=True, momentum=0.0, weight_decay=0.0, enable_activation=True, enable_track_stats=True, dropout_value=0, dropout_function=None):
         nn.Module.__init__(self)
         na.NetworkAbstract.__init__(self,adn=adn, cuda=cudaFlag, momentum=momentum, weight_decay=weight_decay, 
                                 enable_activaiton=enable_activation, enable_track_stats=enable_track_stats, dropout_value=dropout_value)
+        
+        self.dropout_function = dropout_function
+
+        if dropout_function == None:
+            self.dropout_function = self.__defaultDropoutFunction
+
         self.__lenghNodes = 0
         self.__amount_conv2d = 0
         self.__conv2d_propagate_mode = const.CONV2D_DEFAULT
@@ -29,6 +35,14 @@ class Network(nn.Module, na.NetworkAbstract):
         self.createStructure()
         self.__currentEpoch = 0
         self.optimizer = optim.SGD(self.parameters(), lr=0.1, momentum=self.momentum, weight_decay=self.weight_decay)
+
+    
+    def __defaultDropoutFunction(self, base_p, max_conv2d, index_conv2d):
+        
+        print("## using default dropout function ##")
+        value = base_p / (max_conv2d - index_conv2d)
+
+        return value
 
     def createStructure(self):
 
@@ -72,7 +86,7 @@ class Network(nn.Module, na.NetworkAbstract):
                 if tupleBody[0] == 0:
                     conv2d_batchnorm = torch.nn.BatchNorm2d(tupleBody[2], track_running_stats=self.enable_track_stats)
 
-                    dropout_value = self.dropout_value / (self.__amount_conv2d - indexConv2d)
+                    dropout_value = self.dropout_function(self.dropout_value, self.__amount_conv2d, indexConv2d)
                     layer.dropout_value = dropout_value
                     conv2d_dropout = torch.nn.Dropout2d(p=layer.dropout_value)
 
@@ -493,7 +507,8 @@ class Network(nn.Module, na.NetworkAbstract):
 
         network = Network(newADN,cudaFlag=self.cudaFlag, momentum=self.momentum, 
             weight_decay=self.weight_decay, enable_activation=self.enable_activation, 
-            enable_track_stats=self.enable_track_stats, dropout_value=self.dropout_value)
+            enable_track_stats=self.enable_track_stats, dropout_value=self.dropout_value, 
+            dropout_function=self.dropout_function)
 
         for i in range(len(self.nodes) - 1):
             layerToClone = self.nodes[i].objects[0]
