@@ -12,21 +12,17 @@ class LayerGenerator(AbstractFactory.FactoryClass):
         
         self.__cuda = cuda
         self.__track_stats = None
-        self.__dropout_value = 0
 
     def createDictionary(self):
 
         self.dictionary[0] = self.__createConv2d
         self.dictionary[1] = self.__createLinear
         self.dictionary[2] = self.__createCrossEntropyLoss
-        self.dictionary[4] = self.__createMaxPooling
 
-    def findValue(self, tupleBody, propagate_mode, enable_activation, dropout_value):
+    def findValue(self, tupleBody, propagate_mode, enable_activation):
         key = tupleBody[0]
 
         value = self.dictionary[key]
-
-        self.__dropout_value = dropout_value
 
         return value(tupleBody, propagate_mode, enable_activation)
 
@@ -39,13 +35,13 @@ class LayerGenerator(AbstractFactory.FactoryClass):
         
         if propagate_mode == const.CONV2D_MULTIPLE_INPUTS:
             value = ly.Layer(objectTorch=layer, propagate=functions.conv2d_propagate_multipleInputs, value=None, adn=tupleBody, 
-                cudaFlag=self.__cuda, enable_activation=enable_activation, dropout_value=self.__dropout_value)
+                cudaFlag=self.__cuda, enable_activation=enable_activation)
         elif propagate_mode == const.CONV2D_IMAGE_INPUTS:
             value = ly.Layer(objectTorch=layer, propagate=functions.conv2d_propagate_images, value=None, adn=tupleBody, 
-                cudaFlag=self.__cuda, enable_activation=enable_activation, dropout_value=self.__dropout_value)
+                cudaFlag=self.__cuda, enable_activation=enable_activation)
         else:
             value = ly.Layer(objectTorch=layer, propagate=functions.conv2d_propagate, value=None, adn=tupleBody, 
-                cudaFlag=self.__cuda, enable_activation=enable_activation, dropout_value=self.__dropout_value)
+                cudaFlag=self.__cuda, enable_activation=enable_activation)
 
         return value
 
@@ -67,16 +63,6 @@ class LayerGenerator(AbstractFactory.FactoryClass):
         self.__verifyCuda(layer)
 
         value = ly.Layer(objectTorch=layer, adn=tupleBody, propagate=functions.MSEloss_propagate, cudaFlag=self.__cuda)
-
-        return value
-
-    def __createMaxPooling(self, tupleBody, propagate_mode=None, enable_activation=False):
-
-        layer = torch.nn.MaxPool2d((tupleBody[3], tupleBody[4]), stride=None)
-
-        self.__verifyCuda(layer)
-        
-        value = ly.Layer(objectTorch=layer, adn=tupleBody, propagate=functions.maxpooling_propagate, value=None, cudaFlag=self.__cuda)
 
         return value
 

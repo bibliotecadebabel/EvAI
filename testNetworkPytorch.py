@@ -12,7 +12,7 @@ from DNA_Graph import DNA_Graph
 
 from DNA_creators import Creator_from_selection as Creator_s
 from utilities.Abstract_classes.classes.random_selector import random_selector
-import DNA_directions_clone as direction_dna
+import DNA_directions_pool as direction_dna
 
 
 def DNA_test_i(x,y):
@@ -61,33 +61,37 @@ def DNA_Creator_s(x,y):
 
 def Test_Mutacion():
 
-    dataGen = GeneratorFromCIFAR.GeneratorFromCIFAR(2,  128, threads=2)
+    dataGen = GeneratorFromCIFAR.GeneratorFromCIFAR(2,  128, threads=2, dataAugmentation=True)
     dataGen.dataConv2d()
 
     print("creating DNAs")
 
     
-    parentDNA = ((-1,1,3,32,32),(0,3, 32, 3 , 3),(0,32, 32, 3,  3), (4, 32, 32, 2, 2), (0,32, 64, 3, 3), 
-                (0,64, 64, 3, 3), (4, 64, 64, 2, 2), (0, 64, 128, 5, 5), (1, 128,10), (2,), (3, -1, 0), (3, 0, 1), (3, 1, 2),
-                (3, 2, 3), (3, 3, 4), (3, 4, 5), (3, 5, 6), (3, 6, 7), (3, 7, 8))
+    #parentDNA = ((-1,1,3,32,32),(0,3, 32, 3 , 3),(0,32, 32, 3,  3), (4, 32, 32, 2, 2), (0,32, 64, 3, 3), 
+    #            (0,64, 64, 3, 3), (4, 64, 64, 2, 2), (0, 64, 128, 5, 5), (1, 128,10), (2,), (3, -1, 0), (3, 0, 1), (3, 1, 2),
+    #            (3, 2, 3), (3, 3, 4), (3, 4, 5), (3, 5, 6), (3, 6, 7), (3, 7, 8))
     
+    parentDNA = ((-1, 1, 3, 32, 32), (0, 3, 5, 3, 3), (0, 5, 10, 3, 3, 2), (0, 10, 5, 13, 13), 
+                    (1, 5, 10), (2,), (3, -1, 0), (3, 0, 1), (3, 1, 2), (3, 2, 3),(3, 3, 4))
 
-    #mutateDNA = direction_dna.increase_filters(1, parentDNA)
+    mutateDNA = ((-1, 1, 3, 32, 32), (0, 3, 5, 3, 3), (0, 5, 15, 3, 3, 2), (0, 15, 5, 13, 13), 
+                    (1, 5, 10), (2,), (3, -1, 0), (3, 0, 1), (3, 1, 2), (3, 2, 3),(3, 3, 4))
 
     print("original DNA: ", parentDNA)
-    #print("new DNA: ", mutateDNA)
-
+    print("new DNA: ", mutateDNA)
+    
+    
     network = nw_dendrites.Network(parentDNA, cudaFlag=True, momentum=0.9, weight_decay=0.0, 
-                                    enable_activation=True, enable_track_stats=True, dropout_value=0.10)
+                                    enable_activation=True, enable_track_stats=True, dropout_value=0.20)
 
-    network.TrainingCosineLR_Restarts(dataGenerator=dataGen, max_dt=0.001, min_dt=0.001, epochs=50, restart_dt=50, show_accuarcy=True)
-    print("state: ", network.state_dict())
+    network.TrainingCosineLR_Restarts(dataGenerator=dataGen, max_dt=0.001, min_dt=0.001, epochs=2, restart_dt=2, show_accuarcy=True)
+    
     network.generateEnergy(dataGen)
     print("accuracy= ", network.getAcurracy())
-    #mutate_network = Mutate_Dendrites.executeMutation(network, mutateDNA)
-    #mutate_network.generateEnergy(dataGen)
-    #print("accuracy after mutate= ", mutate_network.getAcurracy())
-
+    mutate_network = Mutate_Dendrites.executeMutation(network, mutateDNA)
+    mutate_network.generateEnergy(dataGen)
+    print("accuracy after mutate= ", mutate_network.getAcurracy())
+    
 
 def Test_Save_Model():
     dataGen = GeneratorFromCIFAR.GeneratorFromCIFAR(2,  50)

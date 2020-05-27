@@ -113,6 +113,9 @@ def conv2d_propagate_multipleInputs(layer): ## MUTATION: Multiple inputs per con
 
     current_input = __getInput(layer, parent.value)
 
+    if layer.getPool() is not None:
+        current_input = layer.doPool(current_input)
+
     if layer.dropout_value > 0:
         output_dropout = layer.doDropout(current_input)
         value = layer.object(output_dropout)
@@ -126,12 +129,6 @@ def conv2d_propagate_multipleInputs(layer): ## MUTATION: Multiple inputs per con
     if layer.enable_activation == True:
         
         layer.value = torch.nn.functional.relu(value)
-
-def maxpooling_propagate(layer):
-
-    parent = layer.node.parents[0].objects[0]
-    current_input = __getInput(layer, parent.value)
-    layer.value = layer.object(current_input)
 
 def linear_propagate(layer):
 

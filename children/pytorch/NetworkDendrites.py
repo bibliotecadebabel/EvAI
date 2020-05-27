@@ -22,6 +22,7 @@ class Network(nn.Module, na.NetworkAbstract):
         na.NetworkAbstract.__init__(self,adn=adn, cuda=cudaFlag, momentum=momentum, weight_decay=weight_decay, 
                                 enable_activaiton=enable_activation, enable_track_stats=enable_track_stats, dropout_value=dropout_value)
         self.__lenghNodes = 0
+        self.__amount_conv2d = 0
         self.__conv2d_propagate_mode = const.CONV2D_DEFAULT
         self.__accumulated_loss = 0
         self.__accuracy = 0
@@ -55,12 +56,14 @@ class Network(nn.Module, na.NetworkAbstract):
         self.nodes[0].objects.append(ly.Layer(node=self.nodes[0], value=None, propagate=functions.Nothing, cudaFlag=self.cudaFlag))
 
         indexNode = 1
+        indexConv2d = 0
+
         for adn in self.adn:
             tupleBody = adn
 
             if tupleBody[0] != -1 and tupleBody[0] != 3:
                 layer = self.factory.findValue(tupleBody, propagate_mode=self.__conv2d_propagate_mode, 
-                                        enable_activation=self.enable_activation, dropout_value=self.dropout_value)
+                                        enable_activation=self.enable_activation)
                 layer.node = self.nodes[indexNode]
                 self.nodes[indexNode].objects.append(layer)
                 attributeName = "layer"+str(indexNode)
@@ -68,6 +71,9 @@ class Network(nn.Module, na.NetworkAbstract):
 
                 if tupleBody[0] == 0:
                     conv2d_batchnorm = torch.nn.BatchNorm2d(tupleBody[2], track_running_stats=self.enable_track_stats)
+
+                    dropout_value = self.dropout_value / (self.__amount_conv2d - indexConv2d)
+                    layer.dropout_value = dropout_value
                     conv2d_dropout = torch.nn.Dropout2d(p=layer.dropout_value)
 
                     if self.cudaFlag == True:
@@ -81,6 +87,18 @@ class Network(nn.Module, na.NetworkAbstract):
                     self.setAttribute(attributeName_batch, layer.getBatchNormObject())
                     self.setAttribute(attributeName_dropout, layer.getDropoutObject())
 
+                    if len(tupleBody) > 5:
+                        conv2d_pool = torch.nn.MaxPool2d((tupleBody[5], tupleBody[5]), stride=None)
+
+                        if self.cudaFlag == True:
+                            conv2d_pool = conv2d_pool.cuda()
+
+                        layer.setPool(conv2d_pool)
+                        attributeName_pool = "layer_pool"+str(indexNode)
+                        self.setAttribute(attributeName_pool, layer.getPool())
+
+                    indexConv2d += 1
+
 
                 indexNode += 1
 
@@ -91,12 +109,16 @@ class Network(nn.Module, na.NetworkAbstract):
 
     def __generateLengthNodes(self):
 
+        self.__amount_conv2d = 0
         for i in range(len(self.adn)):
 
             tupleBody = self.adn[i]
 
             if tupleBody[0] != -1 and tupleBody[0] != 3:
                 self.__lenghNodes += 1
+
+                if tupleBody[0] == 0:
+                    self.__amount_conv2d += 1
 
             if tupleBody[0] == 3:
                 self.__conv2d_propagate_mode = const.CONV2D_MULTIPLE_INPUTS

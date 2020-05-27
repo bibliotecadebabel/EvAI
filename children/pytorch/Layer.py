@@ -30,6 +30,7 @@ class Layer():
         
         self.__batchnorm = None
         self.__dropout = None
+        self.__pool = None
 
     def getBiasDer(self):
 
@@ -84,6 +85,12 @@ class Layer():
             if self.adn[0] == 0 or self.adn[0] == 1:
                 self.object.bias = torch.nn.Parameter(value)
     
+    def setPool(self, object_torch):
+        self.__pool = object_torch
+    
+    def getPool(self):
+        return self.__pool
+
     def setBatchNormObject(self, object_torch):
         self.__batchnorm = object_torch
     
@@ -150,6 +157,11 @@ class Layer():
 
         norm = self.__batchnorm(tensor)
         return norm
+    
+    def doPool(self, tensor):
+        
+        value = self.__pool(tensor)
+        return value
 
     def doDropout(self, tensor):
         
