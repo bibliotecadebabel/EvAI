@@ -28,6 +28,7 @@ class centered_random_selector(Selector):
         self.num_actions=num_actions
         self.max_observation_size = 5
         self.current_num_layer=None
+        self.version = directions
         if directions=='dupiclate':
             from DNA_directions_duplicate import directions
             self.directions=directions
