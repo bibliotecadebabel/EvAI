@@ -110,7 +110,7 @@ if __name__ == '__main__':
     # MAX FILTERS MUTATION (CONDITION)
     MAX_FILTERS = 130
 
-    MAX_FILTERS_DENSE = 130
+    MAX_FILTERS_DENSE = 65
 
     # TEST_NAME, the name of the experiment (unique)
     settings.test_name = input("Enter TestName: ")
@@ -150,8 +150,8 @@ if __name__ == '__main__':
     settings.dropout_function = dropout_function
     # INITIAL DNA
     settings.initial_dna =   ((-1, 1, 3, 32, 32), (0, 3, 16, 3, 3),(0, 16, 32, 3, 3, 2), (0, 32, 128, 3, 3, 2),
-                                (0, 128, 128, 5, 5),
-                                (1, 128, 10),
+                                (0, 128, 64, 5, 5),
+                                (1, 64, 10),
                                  (2,),
                                 (3, -1, 0),
                                 (3, 0, 1),
