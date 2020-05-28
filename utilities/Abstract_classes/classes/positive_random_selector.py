@@ -150,7 +150,7 @@ class centered_random_selector(Selector):
         l=0
         print(self.mutations)
         while len(self.predicted_actions)<self.num_actions:
-            layer=int(np.random.normal(0, self.current_num_layer))+self.center
+            layer=int(np.random.normal(0, 3*self.current_num_layer))+self.center
             if layer>-1 and layer<self.current_num_layer+1:
                 mutation=random.randint(0,num_mutations-1)
                 DNA=self.center_key
