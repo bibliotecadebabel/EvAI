@@ -62,7 +62,7 @@ def DNA_pool(x,y):
 
 def Test_Mutacion():
 
-    dataGen = GeneratorFromCIFAR.GeneratorFromCIFAR(2,  64, threads=6, dataAugmentation=True)
+    dataGen = GeneratorFromCIFAR.GeneratorFromCIFAR(2,  64, threads=2, dataAugmentation=True)
     dataGen.dataConv2d()
     
     adn = ((-1, 1, 3, 32, 32), (0, 3, 32, 3, 3),(0, 32, 32, 3, 3), (0, 32, 64, 3, 3, 2), 

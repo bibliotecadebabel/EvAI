@@ -524,6 +524,8 @@ class Network(nn.Module, na.NetworkAbstract):
 
             if layerToClone.getFilter() is not None:
                 layer.setFilter(layerToClone.getFilter().clone())
+            
+            layer.setBarchNorm(layerToClone.getBatchNormObject())
 
         network.total_value = self.total_value
         network.momentum = self.momentum
