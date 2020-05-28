@@ -77,7 +77,7 @@ if __name__ == '__main__':
     num_actions=5
 
     e=300
-    settings.max_init_iter = 4
+    settings.max_init_iter = 1
     INIT_ITER = 20*e
     #settings.init_dt_array = exp_alai(.5,INIT_ITER,1,5)
     settings.init_dt_array =  Alaising(1,5,INIT_ITER)
@@ -86,13 +86,13 @@ if __name__ == '__main__':
     # JOINED DT PARAMETERS
     JOINED_ITER = 2*e
     #settings.joined_dt_array = Alaising(2,6,e)
-    settings.joined_dt_array = Alaising(1.2,5,JOINED_ITER)
+    settings.joined_dt_array = Alaising(1.5,5,JOINED_ITER)
     settings.max_joined_iter = 1
 
     # BEST DT PARAMETERS
-    BEST_ITER = 10*e
+    BEST_ITER = 5*e
     #settings.best_dt_array = Alaising(2,6,e)
-    settings.best_dt_array = Alaising(1.2,5,BEST_ITER)
+    settings.best_dt_array = Alaising(1.5,5,BEST_ITER)
     settings.max_best_iter = 1
 
     # dropout parameter
@@ -108,7 +108,7 @@ if __name__ == '__main__':
     MAX_LAYERS = 30
 
     # MAX FILTERS MUTATION (CONDITION)
-    MAX_FILTERS = 130
+    MAX_FILTERS = 65
 
     MAX_FILTERS_DENSE = 130
 
@@ -149,10 +149,10 @@ if __name__ == '__main__':
 
     settings.dropout_function = dropout_function
     # INITIAL DNA
-    settings.initial_dna =   ((-1, 1, 3, 32, 32), (0, 3, 16, 3, 3),(0, 16, 32, 3, 3, 2), (0, 32, 128, 3, 3, 2),
-                                (0, 128, 64, 5, 5),
-                                (1, 64, 10),
-                                 (2,),
+    settings.initial_dna =   ((-1, 1, 3, 32, 32), (0, 3, 16, 3, 3),(0, 16, 32, 3, 3, 2), (0, 32, 64, 3, 3, 2),
+                                (0, 64, 128, 5, 5),
+                                (1, 128, 10),
+                                (2,),
                                 (3, -1, 0),
                                 (3, 0, 1),
                                 (3, 1, 2),
