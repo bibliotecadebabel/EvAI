@@ -74,6 +74,8 @@ def Test_Mutacion():
 
     network.TrainingCosineLR_Restarts(dataGenerator=dataGen, max_dt=0.001, min_dt=0.001, epochs=400, restart_dt=400, show_accuarcy=True)
 
+    network.generateEnergy(dataGen)
+    print("Final accuracy: ", network.getAcurracy())
 
 
 if __name__ == "__main__":
