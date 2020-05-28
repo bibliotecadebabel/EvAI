@@ -11,7 +11,7 @@ import numpy as np
 
 def dropout_function(base_p, total_conv2d, index_conv2d):
 
-    value = base_p / (total_conv2d - index_conv2d)
+    value = base_p / (total_conv2d - index_conv2d)+0.1
     print("conv2d: ", index_conv2d, " - dropout: ", value)
     return value
 
