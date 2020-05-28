@@ -2,7 +2,7 @@ import utilities.Quadrants as qu
 import utilities.Node as nd
 import utilities.Graphs as gr
 import TangentPlane as tplane
-import DNA_directions_pool as dire
+import DNA_directions_h as dire
 
 
 def Persistent_synapse_condition_test(x,y):
@@ -60,13 +60,12 @@ def DNA2graph_test(x,y):
     dire.imprimir(dire.DNA2graph(DNA))
 
 def compute_output_test():
-    DNA=((-1,1,3,11,11),(0, 3, 5, 3, 3),(0, 5, 8, 3,3),(0,11,13,2,2,2),
+    DNA=((-1,1,3,11,11),(0, 3, 5, 3, 3),(0, 5, 5, 3,3),(0,5,13,2,2,2),
             (1, 13, 2),
             (2,),
             (3,-1,0),
             (3,0,1),
             (3,1,2),
-            (3,0,2),
             (3,2,3),
             (3,3,4))
     g=dire.DNA2graph(DNA)
@@ -181,13 +180,12 @@ def remove_layer_test_2(x,y):
         print(DNA)
 
 def fix_fully_conected_test(x,y):
-    DNA=((-1,1,3,11,11),(0, 3, 5, 3, 3),(0, 5, 8, 3,3),(0,11,13,5,5,2),
+    DNA=((-1,1,3,11,11),(0, 3, 5, 3, 3),(0, 5, 5, 3,3),(0,5,13,5,5,2),
             (1, 13, 2),
             (2,),
             (3,-1,0),
             (3,0,1),
             (3,1,2),
-            (3,0,2),
             (3,2,3),
             (3,3,4))
     g=dire.DNA2graph(DNA)
@@ -313,7 +311,7 @@ def retract_dendrites_test(x,y):
 #add_pool_layer_test(11,11)
 #compute_output_test()
 #retract_dendrites_test(11,11)
-spread_dendrites_test_6(32,32)
+#spread_dendrites_test_6(32,32)
 #spread_dendrites_test_5(11,11)
 #spread_dendrites_test_4(11,11)
 #spread_dendrites_test_3(11,11)
@@ -322,7 +320,7 @@ spread_dendrites_test_6(32,32)
 ##decrease_kernel_test(11,11)
 #Persistent_synapse_condition_test(11,11)
 #add_layer_test(11,11)
-#add_layer_test(11,11)
+add_layer_test(11,11)
 #add_pool_layer_test(32,32)
 #fix_fully_conected_test(11,11)
 #compute_num_layers_test(11,11)
