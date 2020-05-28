@@ -7,6 +7,37 @@ from utilities.Abstract_classes.classes.positive_random_selector import(
     centered_random_selector as Selector_creator)
 from DNA_conditions import max_layer,max_filter,max_filter_dense
 
+def DNA_h(x,y):
+    max_layers=10
+    max_filters=60
+    max_dense=100
+    def condition_b(z):
+        return max_filter_dense(max_filter(max_layer(z,max_layers),max_filters),max_dense)
+    center=((-1,1,3,x,y),
+            (0,3, 15, 3 , 3),
+            (0,18, 15, 3,  3),
+            (0,33,33,2,2,2),
+            (0,33, 50, 13, 13),
+            (1, 50,10),
+             (2,),
+            (3,-1,0),
+            (3,0,1),
+            (3,1,2),
+            (3,2,3),
+            (3,3,4),
+            (3,4,5))
+    version='h'
+    mutations=((4,0,0,0),(1,0,0,0),(0,1,0,0),(0,1,0,0))
+    selector=Selector_creator(condition=condition_b,
+        directions=version,mutations=mutations,num_actions=10)
+    selector.update(center)
+    actions=selector.get_predicted_actions()
+    creator=Creator_s
+    space=DNA_Graph(center,1,(x,y),condition_b,actions,
+        version,creator)
+    space.imprimir()
+
+
 
 def DNA_pool(x,y):
     max_layers=10
@@ -230,7 +261,8 @@ def linear_kernel_width(x,y):
     return space
 
 #DNA_test_f(11,11)
-DNA_pool(11,11)
+#DNA_pool(11,11)
+DNA_h(11,11)
 #DNA_Creator_s(11,11)
 #DNA_test_i(11,11)
 #layer_increase_i(11,11)
