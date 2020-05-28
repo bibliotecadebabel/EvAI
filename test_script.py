@@ -62,7 +62,7 @@ def DNA_pool(x,y):
 
 def Test_Mutacion():
 
-    dataGen = GeneratorFromCIFAR.GeneratorFromCIFAR(2,  64, threads=2, dataAugmentation=True)
+    dataGen = GeneratorFromCIFAR.GeneratorFromCIFAR(2,  64, threads=6, dataAugmentation=True)
     dataGen.dataConv2d()
     
     adn = ((-1, 1, 3, 32, 32), (0, 3, 32, 3, 3),(0, 32, 32, 3, 3), (0, 32, 64, 3, 3, 2), 
@@ -74,6 +74,8 @@ def Test_Mutacion():
 
     network.TrainingCosineLR_Restarts(dataGenerator=dataGen, max_dt=0.001, min_dt=0.001, epochs=400, restart_dt=400, show_accuarcy=True)
 
+    network.generateEnergy(dataGen)
+    print("Final accuracy: ", network.getAcurracy())
 
 
 if __name__ == "__main__":
