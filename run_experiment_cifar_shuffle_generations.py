@@ -77,7 +77,7 @@ if __name__ == '__main__':
     num_actions=5
 
     e=300
-    settings.max_init_iter = 1
+    settings.max_init_iter = 2
     INIT_ITER = 20*e
     #settings.init_dt_array = exp_alai(.5,INIT_ITER,1,5)
     settings.init_dt_array =  Alaising(1,5,INIT_ITER)
@@ -86,13 +86,13 @@ if __name__ == '__main__':
     # JOINED DT PARAMETERS
     JOINED_ITER = 4*e
     #settings.joined_dt_array = Alaising(2,6,e)
-    settings.joined_dt_array = Alaising(1.5,5,JOINED_ITER)
+    settings.joined_dt_array = Alaising(2,5,JOINED_ITER)
     settings.max_joined_iter = 1
 
     # BEST DT PARAMETERS
     BEST_ITER = 7*e
     #settings.best_dt_array = Alaising(2,6,e)
-    settings.best_dt_array = Alaising(1.5,5,BEST_ITER)
+    settings.best_dt_array = Alaising(2,5,BEST_ITER)
     settings.max_best_iter = 1
 
     # dropout parameter
