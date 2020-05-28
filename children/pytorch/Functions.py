@@ -136,7 +136,15 @@ def linear_propagate(layer):
 
     shape = parent.value.shape
 
-    layer.value = layer.object(parent.value.view(shape[0], -1 ))
+    value = parent.value.view(shape[0], -1 )
+
+    if layer.dropout_value > 0:
+        output_dropout = layer.doDropout(value)
+        value = layer.object(output_dropout)
+    else:
+        value = layer.object(value)
+
+    layer.value = value
 
 def MSEloss_propagate(layer):
 
