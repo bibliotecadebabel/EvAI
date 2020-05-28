@@ -11,7 +11,7 @@ import numpy as np
 
 def dropout_function(base_p, total_conv2d, index_conv2d):
 
-    value = base_p / (total_conv2d - index_conv2d)+0.1
+    value = base_p / (total_conv2d - index_conv2d)+base_p/2
     #print("conv2d: ", index_conv2d, " - dropout: ", value)
     return value
 
@@ -86,13 +86,13 @@ if __name__ == '__main__':
     # JOINED DT PARAMETERS
     JOINED_ITER = 4*e
     #settings.joined_dt_array = Alaising(2,6,e)
-    settings.joined_dt_array = Alaising(2,5,JOINED_ITER)
+    settings.joined_dt_array = Alaising(1.2,5,JOINED_ITER)
     settings.max_joined_iter = 1
 
     # BEST DT PARAMETERS
     BEST_ITER = 7*e
     #settings.best_dt_array = Alaising(2,6,e)
-    settings.best_dt_array = Alaising(2,5,BEST_ITER)
+    settings.best_dt_array = Alaising(1.2,5,BEST_ITER)
     settings.max_best_iter = 1
 
     # dropout parameter
