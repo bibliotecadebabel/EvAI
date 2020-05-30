@@ -93,24 +93,8 @@ def graph2full_node(g):
 def fix_fully_conected(g):
     full_node = g.key2node.get(len(list(g.key2node.values()))-4)
     compute_output(g, full_node)
-    output = full_node.objects[1]
-    layer = full_node.objects[0]
-    if len(layer)==5:
-        full_node.objects[0] = (layer[0],
-                                layer[1],
-                                layer[2],
-                                output[0],
-                                output[1])
-    elif len(layer)==6:
-        print('second case')
-        full_node.objects[0] = (layer[0],
-                                layer[1],
-                                layer[2],
-                                output[0],
-                                output[0],
-                                 layer[5])
     for node in list(g.key2node.values()):
-        if len(node.objects)>1:
+        if len(node.objects)>1 and not(node==full_node):
             if node.objects[1][0]==0 or node.objects[1][1]==0:
                 layer=node.objects[0]
                 x = max([parent.objects[1][0] for parent in node.parents])
@@ -120,6 +104,25 @@ def fix_fully_conected(g):
                                         layer[2],
                                         x,
                                         y)
+    DNA=graph2DNA(g)
+    g=DNA2graph(DNA)
+    full_node = g.key2node.get(len(list(g.key2node.values()))-4)
+    compute_output(g, full_node)
+    output = full_node.objects[1]
+    layer = full_node.objects[0]
+    if len(layer)==5:
+        full_node.objects[0] = (layer[0],
+                                layer[1],
+                                layer[2],
+                                output[0],
+                                output[1])
+    elif len(layer)==6:
+        full_node.objects[0] = (layer[0],
+                                layer[1],
+                                layer[2],
+                                output[0],
+                                output[0],
+                                 layer[5])
 
 
 def Persistent_synapse_condition(DNA):

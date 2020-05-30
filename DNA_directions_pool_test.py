@@ -4,7 +4,8 @@ import utilities.Graphs as gr
 import TangentPlane as tplane
 import DNA_directions_pool as dire
 from DNA_conditions import max_layer,max_filter,max_filter_dense
-from test_DNAs import DNA_ep20
+from test_DNAs import DNA_ep20, DNA_h
+
 
 
 MAX_LAYERS = 30
@@ -150,23 +151,17 @@ def add_layer_test(x,y):
     #dire.imprimir(g)
 
 def add_pool_layer_test(x,y):
-    DNA=    DNA=((-1, 1, 3, 32, 32), (0, 3, 32, 3, 3),(0, 32, 64, 3, 3, 2),
-                                    (0, 64, 128, 3, 3, 2),
-                                    (0, 128, 32, 5, 5),
-                                    (1, 32, 10),
-                                    (2,),
-                                    (3, -1, 0),
-                                    (3, 0, 1),
-                                    (3, 1, 2),
-                                    (3, 2, 3),
-                                    (3, 3, 4),
-                                    (3, 4, 5))
+    DNA=   DNA_h
     g=dire.DNA2graph(DNA)
     print('The old DNA is')
     print(DNA)
     #while DNA:
     print('The new DNA is')
     DNA=dire.add_pool_layer(0,DNA)
+    g=dire.DNA2graph(DNA)
+    full_node=dire.graph2full_node(g)
+    dire.compute_output(g,full_node)
+    dire.imprimir(g)
     print(DNA)
     #g=dire.DNA2graph(DNA)
     #full_node=dire.graph2full_node(g)
