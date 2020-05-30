@@ -115,13 +115,21 @@ if __name__ == '__main__':
     # TEST_NAME, the name of the experiment (unique)
     settings.test_name = input("Enter TestName: ")
 
-    # ENABLE_ACTIVATION, enable/disable sigmoid + relu
+    # ENABLE_ACTIVATION, enable/disable relu
     ENABLE_ACTIVATION = int(input("Enable activation? (1 = yes, 0 = no): "))
 
     value = False
     if ENABLE_ACTIVATION == 1:
         value = True
     settings.enable_activation = value
+
+    # ENABLE_LAST_ACTIVATION, enable/disable last layer relu
+    ENABLE_LAST_ACTIVATION = int(input("Enable last layer activation? (1 = yes, 0 = no): "))
+
+    value = False
+    if ENABLE_LAST_ACTIVATION == 1:
+        value = True
+    settings.enable_last_activation = value
 
     # ENABLE_AUGMENTATION, enable/disable data augmentation
     ENABLE_AUGMENTATION = int(input("Enable Data augmentation? (1 = yes, 0 = no): "))

@@ -4,7 +4,7 @@ import Factory.TensorFactory as tensorFactory
 
 class NetworkAbstract(ABC):
 
-    def __init__(self, adn, cuda, momentum, weight_decay, enable_activaiton, enable_track_stats=True, dropout_value=0):
+    def __init__(self, adn, cuda, momentum, weight_decay, enable_activaiton, enable_track_stats=True, dropout_value=0, enable_last_activation=True):
         self.cudaFlag = cuda
         self.adn = adn
         self.nodes = []
@@ -18,6 +18,7 @@ class NetworkAbstract(ABC):
         self.total_value = 0
         self.history_loss = []
         self.dropout_value = dropout_value
+        self.enable_last_activation = enable_last_activation
 
     #@abstractmethod
     #def train(self):

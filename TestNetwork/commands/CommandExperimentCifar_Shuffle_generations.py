@@ -26,7 +26,7 @@ class CommandExperimentCifar_Restarts():
                                 momentum=settings.momentum, weight_decay=settings.weight_decay, 
                                 enable_activation=settings.enable_activation, 
                                 enable_track_stats=self.__settings.enable_track_stats, dropout_value=settings.dropout_value,
-                                dropout_function=settings.dropout_function)
+                                dropout_function=settings.dropout_function, enable_last_activation=settings.enable_last_activation)
         
         self.__actions = []
                             

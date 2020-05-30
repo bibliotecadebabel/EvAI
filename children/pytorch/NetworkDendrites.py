@@ -17,10 +17,12 @@ import time
 
 class Network(nn.Module, na.NetworkAbstract):
 
-    def __init__(self, adn, cudaFlag=True, momentum=0.0, weight_decay=0.0, enable_activation=True, enable_track_stats=True, dropout_value=0, dropout_function=None):
+    def __init__(self, adn, cudaFlag=True, momentum=0.0, weight_decay=0.0, 
+                enable_activation=True, enable_track_stats=True, dropout_value=0, dropout_function=None, enable_last_activation=True):
         nn.Module.__init__(self)
         na.NetworkAbstract.__init__(self,adn=adn, cuda=cudaFlag, momentum=momentum, weight_decay=weight_decay, 
-                                enable_activaiton=enable_activation, enable_track_stats=enable_track_stats, dropout_value=dropout_value)
+                                enable_activaiton=enable_activation, enable_track_stats=enable_track_stats, dropout_value=dropout_value,
+                                enable_last_activation=enable_last_activation)
         
         self.dropout_function = dropout_function
 
@@ -73,6 +75,7 @@ class Network(nn.Module, na.NetworkAbstract):
         index_layer = 0
 
         for adn in self.adn:
+
             tupleBody = adn
 
             if tupleBody[0] != -1 and tupleBody[0] != 3:
@@ -85,6 +88,9 @@ class Network(nn.Module, na.NetworkAbstract):
                 attributeName = "layer"+str(indexNode)
                 self.setAttribute(attributeName, layer.object)
                 
+                if index_layer == self.__total_layers - 2 and self.enable_last_activation == False:
+                    layer.enable_activation = False
+
                 if tupleBody[0] == 0 or tupleBody[0] == 1:
 
                     dropout_value = self.dropout_function(self.dropout_value, self.__total_layers, index_layer)
@@ -515,7 +521,7 @@ class Network(nn.Module, na.NetworkAbstract):
         network = Network(newADN,cudaFlag=self.cudaFlag, momentum=self.momentum, 
             weight_decay=self.weight_decay, enable_activation=self.enable_activation, 
             enable_track_stats=self.enable_track_stats, dropout_value=self.dropout_value, 
-            dropout_function=self.dropout_function)
+            dropout_function=self.dropout_function, enable_last_activation=self.enable_last_activation)
 
         for i in range(len(self.nodes) - 1):
             layerToClone = self.nodes[i].objects[0]

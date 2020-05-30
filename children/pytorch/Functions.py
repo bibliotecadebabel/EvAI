@@ -127,7 +127,6 @@ def conv2d_propagate_multipleInputs(layer): ## MUTATION: Multiple inputs per con
     layer.value = value
     
     if layer.enable_activation == True:
-        
         layer.value = torch.nn.functional.relu(value)
 
 def linear_propagate(layer):
