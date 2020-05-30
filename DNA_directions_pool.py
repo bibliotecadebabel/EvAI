@@ -140,7 +140,8 @@ def Persistent_synapse_condition(DNA):
         full_node = g.key2node.get(len(list(g.key2node.values()))-4)
         compute_output(g, full_node)
         output = full_node.objects[1]
-        if (output[0] > 0) or (output[1] > 0):
+        linear=full_node.kids[0]
+        if ((output[0] > 0) or (output[1] > 0)) and len(linear.parents)==1:
             return DNA
         else:
             return
