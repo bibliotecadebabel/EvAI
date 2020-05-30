@@ -151,7 +151,7 @@ def add_layer_test(x,y):
     #dire.imprimir(g)
 
 def add_pool_layer_test(x,y):
-    DNA=   DNA_h
+    DNA=  DNA_h
     g=dire.DNA2graph(DNA)
     print('The old DNA is')
     print(DNA)
@@ -160,8 +160,8 @@ def add_pool_layer_test(x,y):
     DNA=dire.add_pool_layer(0,DNA)
     g=dire.DNA2graph(DNA)
     full_node=dire.graph2full_node(g)
-    dire.compute_output(g,full_node)
-    dire.imprimir(g)
+    #dire.compute_output(g,full_node)
+    #dire.imprimir(g)
     print(DNA)
     #g=dire.DNA2graph(DNA)
     #full_node=dire.graph2full_node(g)

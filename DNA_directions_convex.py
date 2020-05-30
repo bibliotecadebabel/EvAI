@@ -100,7 +100,6 @@ def fix_fully_conected(g):
                                 output[0] + layer[3] - 1,
                                 output[0] + layer[4] - 1)
     elif len(layer)==6:
-        print('second case')
         full_node.objects[0] = (layer[0],
                                 layer[1],
                                 layer[2],
