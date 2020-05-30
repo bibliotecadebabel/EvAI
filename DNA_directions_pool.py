@@ -54,16 +54,18 @@ def compute_output(g, node):
         pass
     elif key == -1:
         image = layer
-        node.objects.append([image[3], image[4]])
+        if len(node.objects)==1:
+            node.objects.append([image[3], image[4]])
     else:
-        x = 0
-        y = 0
-        for parent in node.parents:
-            compute_output(g, parent)
-            p_out = parent.objects[1]
-            x = max(x, p_out[0])
-            y = max(y, p_out[1])
-        node.objects.append(signal_layer2output(x,y,layer))
+        if len(node.objects)==1:
+            x = 0
+            y = 0
+            for parent in node.parents:
+                compute_output(g, parent)
+                p_out = parent.objects[1]
+                x = max(x, p_out[0])
+                y = max(y, p_out[1])
+            node.objects.append(signal_layer2output(x,y,layer))
 
 """
 def compute_output(g, node):
@@ -97,8 +99,8 @@ def fix_fully_conected(g):
         full_node.objects[0] = (layer[0],
                                 layer[1],
                                 layer[2],
-                                output[0] + layer[3] - 1,
-                                output[0] + layer[4] - 1)
+                                output[0],
+                                output[1])
     elif len(layer)==6:
         print('second case')
         full_node.objects[0] = (layer[0],
@@ -107,23 +109,36 @@ def fix_fully_conected(g):
                                 output[0],
                                 output[0],
                                  layer[5])
+    for node in list(g.key2node.values()):
+        if len(node.objects)>1:
+            if node.objects[1][0]==0 or node.objects[1][1]==0:
+                layer=node.objects[0]
+                x = max([parent.objects[1][0] for parent in node.parents])
+                y = max([parent.objects[1][1] for parent in node.parents])
+                node.objects[0] = (layer[0],
+                                        layer[1],
+                                        layer[2],
+                                        x,
+                                        y)
+
 
 def Persistent_synapse_condition(DNA):
     if DNA:
         g = DNA2graph(DNA)
         full_node = g.key2node.get(len(list(g.key2node.values()))-4)
         compute_output(g, full_node)
-        k = 0
-        condition = True
-        while k < len(list(g.key2node.values()))-4:
-            node = g.key2node.get(k)
-            output = node.objects[1]
-            condition = (condition and (output[0] > 1)
-                and (output[1] > 1))
-            if not condition:
-                return
-            k += 1
-        return DNA
+        imprimir(g)
+        output = full_node.objects[1]
+        if (output[0] > 0) or (output[1] > 0):
+            return DNA
+        else:
+            return
+
+def clean_lost_conections(DNA):
+    g = DNA2graph(DNA)
+    full_node = g.key2node.get(len(list(g.key2node.values()))-4)
+    compute_output(g, full_node)
+
 
 
 

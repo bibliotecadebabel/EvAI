@@ -4,14 +4,15 @@ import utilities.Graphs as gr
 import TangentPlane as tplane
 import DNA_directions_pool as dire
 from DNA_conditions import max_layer,max_filter,max_filter_dense
+from test_DNAs import DNA_ep20
 
 
 MAX_LAYERS = 30
 
 # MAX FILTERS MUTATION (CONDITION)
-MAX_FILTERS = 130
+MAX_FILTERS = 500
 
-MAX_FILTERS_DENSE = 130
+MAX_FILTERS_DENSE = 500
 
 def condition(DNA):
     return max_filter_dense(max_filter(max_layer(DNA, MAX_LAYERS), MAX_FILTERS), MAX_FILTERS_DENSE)
@@ -133,23 +134,13 @@ def remove_layer_test(x,y):
         print(DNA)
 
 def add_layer_test(x,y):
-    DNA=((-1, 1, 3, 32, 32), (0, 3, 32, 3, 3),(0, 32, 64, 3, 3, 2),
-                                (0, 64, 128, 3, 3, 2),
-                                (0, 128, 32, 5, 5),
-                                (1, 32, 10),
-                                (2,),
-                                (3, -1, 0),
-                                (3, 0, 1),
-                                (3, 1, 2),
-                                (3, 2, 3),
-                                (3, 3, 4),
-                                (3, 4, 5))
+    DNA=DNA_ep20
     g=dire.DNA2graph(DNA)
     print('The old DNA is')
     print(DNA)
     #while DNA:
     print('The new DNA is')
-    DNA=dire.add_layer(3,DNA)
+    DNA=dire.add_layer(14,DNA)
     print(DNA)
     print('The validity of the new DNA is')
     print(condition(DNA))
@@ -340,8 +331,8 @@ def retract_dendrites_test(x,y):
 ##decrease_kernel_test(11,11)
 #Persistent_synapse_condition_test(11,11)
 #add_layer_test(11,11)
-#add_layer_test(11,11)
-add_pool_layer_test(32,32)
+add_layer_test(11,11)
+#add_pool_layer_test(32,32)
 #fix_fully_conected_test(11,11)
 #compute_num_layers_test(11,11)
 #remove_layer_test(11,11)
