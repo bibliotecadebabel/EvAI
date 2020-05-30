@@ -5,6 +5,7 @@ import TangentPlane as tplane
 import DNA_directions_pool as dire
 from DNA_conditions import max_layer,max_filter,max_filter_dense
 from test_DNAs import DNA_ep20, DNA_h, DNA_ep6
+import test_DNAs as DNAs
 
 
 
@@ -135,34 +136,34 @@ def remove_layer_test(x,y):
         print(DNA)
 
 def add_layer_test(x,y):
-    DNA=DNA_ep20
+    DNA=DNAs.DNA_ep10
     g=dire.DNA2graph(DNA)
     print('The old DNA is')
     print(DNA)
     #while DNA:
     print('The new DNA is')
-    DNA=dire.add_layer(14,DNA)
-    print(DNA)
-    print('The validity of the new DNA is')
-    print(condition(DNA))
+    for k in range(8):
+        DNA=dire.add_layer(k,DNA)
+        print(DNA)
+        print('The validity of the new DNA is')
+        print(condition(DNA))
     #g=dire.DNA2graph(DNA)
     #full_node=dire.graph2full_node(g)
     #dire.compute_output(g,full_node)
     #dire.imprimir(g)
 
 def add_pool_layer_test(x,y):
-    DNA=  DNA_h
+    DNA=DNAs.DNA_ep10
     g=dire.DNA2graph(DNA)
     print('The old DNA is')
     print(DNA)
     #while DNA:
     print('The new DNA is')
-    DNA=dire.add_pool_layer(0,DNA)
-    g=dire.DNA2graph(DNA)
-    full_node=dire.graph2full_node(g)
-    #dire.compute_output(g,full_node)
-    #dire.imprimir(g)
-    print(DNA)
+    for k in range(8):
+        DNA=dire.add_pool_layer(k,DNA)
+        print(DNA)
+        print('The validity of the new DNA is')
+        print(condition(DNA))
     #g=dire.DNA2graph(DNA)
     #full_node=dire.graph2full_node(g)
     #dire.compute_output(g,full_node)
