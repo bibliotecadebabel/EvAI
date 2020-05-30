@@ -268,7 +268,7 @@ class Network(nn.Module, na.NetworkAbstract):
         print("end step=", start_step)
         print("end energy=", self.getAverageLoss(total_steps//4))
 
-    def TrainingCosineLR_Restarts(self, dataGenerator, max_dt, min_dt, epochs, restart_dt=1, show_accuarcy=False):
+    def TrainingCosineLR_Restarts(self, dataGenerator, max_dt, min_dt, epochs, restart_dt=1, show_accuarcy=False, fileManager=None):
 
         print("momentum=", self.momentum)
         print("weight decay=", self.weight_decay)
@@ -289,6 +289,8 @@ class Network(nn.Module, na.NetworkAbstract):
                 if epoch % 5 == 0:
                     self.generateEnergy(dataGen=dataGenerator)
                     print("ACCURACY= ", self.getAcurracy())
+                    fileManager.appendFile("epoch: "+str(epoch)+" - Acc: "+str(self.getAcurracy()))
+
 
             for i, data in enumerate(dataGenerator._trainoader):
 
