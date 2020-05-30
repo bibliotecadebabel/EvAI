@@ -4,7 +4,7 @@ import utilities.Graphs as gr
 import TangentPlane as tplane
 import DNA_directions_pool as dire
 from DNA_conditions import max_layer,max_filter,max_filter_dense
-from test_DNAs import DNA_ep20, DNA_h
+from test_DNAs import DNA_ep20, DNA_h, DNA_ep6
 
 
 
@@ -214,13 +214,17 @@ def decrease_kernel_test(x,y):
     print('The new DNA is')
     print(dire.decrease_kernel(1,DNA))
 
-def spread_dendrites_test_1(x,y):
-    DNA=((-1,1,3,x,y),(0, 3, 5, 3, 3),(0, 5, 8, 7,7),(0,8,5, 2, 2),
-            (1, 5, 2), (2,),(3,-1,0),(3,0,1),
-            (3,1,2),(3,2,3),(3,3,4))
-    #while DNA:
+def spread_dendrites_test_50(x,y):
+    DNA=DNA_ep6
+    print('The old DNA is:')
+    print(DNA)
     print('The new DNA is')
-    print(dire.spread_dendrites(1  ,DNA))
+    new_DNA=dire.spread_dendrites(3,DNA)
+    g=dire.DNA2graph(new_DNA)
+    full_node=dire.graph2full_node(g)
+    #dire.compute_output(g, full_node)
+    #dire.imprimir(g)
+    print(new_DNA)
 
 def spread_dendrites_test_2(x,y):
     DNA=((-1,1,3,x,y),(0, 3, 5, 3, 3),(0, 5, 8, 7,7),(0,8,5, 2, 2),
@@ -321,12 +325,12 @@ def retract_dendrites_test(x,y):
 #spread_dendrites_test_5(11,11)
 #spread_dendrites_test_4(11,11)
 #spread_dendrites_test_3(11,11)
-#spread_dendrites_test_1(11,11)
+#spread_dendrites_test_50(0,0)
 #increase_kernel_test(11,11)
 ##decrease_kernel_test(11,11)
 #Persistent_synapse_condition_test(11,11)
-#add_layer_test(11,11)
 add_layer_test(11,11)
+#add_layer_test(11,11)
 #add_pool_layer_test(32,32)
 #fix_fully_conected_test(11,11)
 #compute_num_layers_test(11,11)

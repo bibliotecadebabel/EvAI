@@ -48,6 +48,7 @@ def signal_layer2output(signal_x,signal_y,layer):
         return [int(x),int(y)]
 
 def compute_output(g, node):
+    clear_output(g)
     key = g.node2key.get(node)
     layer=node.objects[0]
     if len(layer) < 2:
@@ -66,6 +67,12 @@ def compute_output(g, node):
                 x = max(x, p_out[0])
                 y = max(y, p_out[1])
             node.objects.append(signal_layer2output(x,y,layer))
+
+def clear_output(g):
+    for node in list(g.key2node.values()):
+        if len(node.objects)>1:
+            if node.objects[0][0]==0:
+                node.objects.pop(-1)
 
 """
 def compute_output(g, node):
@@ -104,12 +111,9 @@ def fix_fully_conected(g):
                                         layer[2],
                                         x,
                                         y)
-    DNA=graph2DNA(g)
-    g=DNA2graph(DNA)
-    full_node = g.key2node.get(len(list(g.key2node.values()))-4)
     compute_output(g, full_node)
-    output = full_node.objects[1]
-    layer = full_node.objects[0]
+    output = list(full_node.objects[1])
+    layer = list(full_node.objects[0])
     if len(layer)==5:
         full_node.objects[0] = (layer[0],
                                 layer[1],
@@ -121,7 +125,7 @@ def fix_fully_conected(g):
                                 layer[1],
                                 layer[2],
                                 output[0],
-                                output[0],
+                                output[1],
                                  layer[5])
 
 
@@ -492,7 +496,11 @@ def spread_dendrites(num_layer,source_DNA):
         t_layer=t_node.objects[0]
         t_node.objects[0]=layer_chanel(t_layer,node.objects[0][2])
 #        print('The new graph is')
+        print('Before the fix g is')
+        imprimir(g)
         fix_fully_conected(g)
+        print('After the fix g is')
+        imprimir(g)
         #imprimir(g)
         return Persistent_synapse_condition(graph2DNA(g))
     else:
