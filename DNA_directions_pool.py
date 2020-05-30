@@ -404,7 +404,7 @@ def add_pool_layer(num_layer,source_DNA):
         if num_layer==0:
             clone_node=g.key2node.get(num_layer-1)
             clone_layer = clone_node.objects[0]
-            node.objects.append((0,clone_layer[2],clone_layer[3],2,2,2))
+            node.objects.append((0,clone_layer[2],clone_layer[2],2,2,2))
             g.add_node(-2,node)
             g.add_edges(-1,[-2])
             g.add_edges(-2,[num_layer])
