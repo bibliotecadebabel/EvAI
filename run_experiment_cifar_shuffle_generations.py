@@ -114,9 +114,9 @@ if __name__ == '__main__':
     MAX_LAYERS = 30
 
     # MAX FILTERS MUTATION (CONDITION)
-    MAX_FILTERS = 64
+    MAX_FILTERS = 65
 
-    MAX_FILTERS_DENSE = 64
+    MAX_FILTERS_DENSE = 65
 
     # TEST_NAME, the name of the experiment (unique)
     settings.test_name = input("Enter TestName: ")
