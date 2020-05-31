@@ -42,7 +42,7 @@ def DNA_Creator_s(x,y, dna):
         (1,0,0,0),(4,0,0,0),
         (0,0,1,1),(0,0,-1,-1),
         (0,0,1),(0,0,-1),
-        ))        
+        ))
     selector.update(dna)
     actions=selector.get_predicted_actions()
     #actions = ((0, (0,1,0,0)), (1, (0,1,0,0)), (0, (1,0,0,0)))
@@ -80,7 +80,7 @@ if __name__ == '__main__':
     settings.epochs = int(input("Enter amount of epochs: "))
 
     # INITIAL DT PARAMETERS
-    num_actions=2
+    num_actions=5
 
     e=300
     settings.max_init_iter = 1
