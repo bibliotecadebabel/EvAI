@@ -37,7 +37,7 @@ def DNA_Creator_s(x,y, dna):
     selector = None
     selector=random_selector(condition=condition,
         directions=version, num_actions=num_actions,
-        mutations=(0,
+        mutations=(
         (1,0,0,0),
         ))
     selector.update(dna)
