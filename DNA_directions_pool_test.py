@@ -290,6 +290,11 @@ def spread_dendrites_test_6(x,y):
         k=k+1
         print(k)
 
+def retract_h_test():
+    DNA=DNAs.DNA_h
+    DNA=dire.retract_dendrites(4,DNA)
+    print(DNA)
+
 def retract_dendrites_test(x,y):
     DNA=((-1,1,3,x,y),(0, 3, 5, 2, 2),(0, 5, 5, 2,2),
             (0,5,5, 2, 2),
@@ -332,7 +337,8 @@ def retract_dendrites_test(x,y):
 #increase_kernel_test(11,11)
 ##decrease_kernel_test(11,11)
 #Persistent_synapse_condition_test(11,11)
-add_layer_test(11,11)
+retract_h_test()
+#add_layer_test(11,11)
 #add_layer_test(11,11)
 #add_pool_layer_test(32,32)
 #fix_fully_conected_test(11,11)

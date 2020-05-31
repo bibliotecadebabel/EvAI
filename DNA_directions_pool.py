@@ -583,6 +583,8 @@ def retract_dendrites(num_layer,source_DNA):
     g=DNA2graph(source_DNA)
     node=g.key2node.get(num_layer)
     dendrites=node.kids.copy()
+    if len(dendrites)==1:
+        return None
     dendrites.remove(g.key2node.get(num_layer+1))
     landscape=[g.node2key.get(node_k)-num_layer-1
         for node_k in dendrites]

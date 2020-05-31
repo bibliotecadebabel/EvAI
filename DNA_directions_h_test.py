@@ -3,6 +3,7 @@ import utilities.Node as nd
 import utilities.Graphs as gr
 import TangentPlane as tplane
 import DNA_directions_h as dire
+import test_DNAs as DNAs
 
 
 def Persistent_synapse_condition_test(x,y):
@@ -83,6 +84,11 @@ def DNA2graph_relable_test(x,y):
     g=dire.DNA2graph(DNA)
     g.relable(map)
     dire.imprimir(g)
+
+def retract_h_test():
+    DNA=DNAs.DNA_h
+    DNA=dire.retract_dendrites(4,DNA)
+    print(DNA)
 
 def graph2DNA_test(x,y):
     DNA=((-1,1,3,x,y),(0, 3, 5, 3, 3),(0, 8, 8, 3,3),(0,11,5, 7, 7),
@@ -321,7 +327,8 @@ def retract_dendrites_test(x,y):
 #Persistent_synapse_condition_test(11,11)
 #add_layer_test(11,11)
 #add_layer_test(11,11)
-add_pool_layer_test(32,32)
+retract_h_test()
+#add_pool_layer_test(32,32)
 #fix_fully_conected_test(11,11)
 #compute_num_layers_test(11,11)
 #remove_layer_test(11,11)
