@@ -36,7 +36,10 @@ def DNA_Creator_s(x,y, dna):
     version='pool'
     selector = None
     selector=random_selector(condition=condition,
-        directions=version, num_actions=num_actions)
+        directions=version, num_actions=num_actions,
+        mutations=(0,
+        (1,0,0,0),
+        ))
     selector.update(dna)
     actions=selector.get_predicted_actions()
     #actions = ((0, (0,1,0,0)), (1, (0,1,0,0)), (0, (1,0,0,0)))
@@ -74,7 +77,7 @@ if __name__ == '__main__':
     settings.epochs = int(input("Enter amount of epochs: "))
 
     # INITIAL DT PARAMETERS
-    num_actions=5
+    num_actions=2
 
     e=300
     settings.max_init_iter = 1
