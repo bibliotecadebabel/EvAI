@@ -13,11 +13,11 @@ def DNA_h(x,y):
     max_dense=100
     def condition_b(z):
         return max_filter_dense(max_filter(max_layer(z,max_layers),max_filters),max_dense)
-    center=((-1,1,3,x,y),
+    center=((-1,1,3,32,32),
             (0,3, 15, 3 , 3),
             (0,18, 15, 3,  3),
             (0,33,33,2,2,2),
-            (0,33, 50, 13, 13),
+            (0,33, 50, 16, 16),
             (1, 50,10),
              (2,),
             (3,-1,0),

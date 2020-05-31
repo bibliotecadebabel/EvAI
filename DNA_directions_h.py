@@ -2,6 +2,11 @@ import utilities.Quadrants as qu
 import utilities.Node as nd
 import utilities.Graphs as gr
 import TangentPlane as tplane
+import random
+
+
+def initialize_kernel():
+    return random.randint(3,5)
 
 
 def imprimir(g):
