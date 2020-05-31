@@ -18,7 +18,8 @@ class GeneratorFromCIFAR(Generator):
 
         if transforms_mode == None:
             self.train_transform = transforms.Compose([
-                transforms.RandomCrop(32, padding=4),
+                #transforms.RandomCrop(32, padding=4),
+                transforms.RandomAffine(0, translate=(0.1, 0.1)),
                 transforms.RandomHorizontalFlip(),
                 transforms.ToTensor(),
                 transforms.Normalize((0.5, 0.5, 0.5), (0.5, 0.5, 0.5)),
