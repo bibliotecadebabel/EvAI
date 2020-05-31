@@ -62,19 +62,29 @@ def DNA_pool(x,y):
 
 def Test_Mutacion():
 
-    dataGen = GeneratorFromCIFAR.GeneratorFromCIFAR(2,  64, threads=2, dataAugmentation=True)
+    dataGen = GeneratorFromCIFAR.GeneratorFromCIFAR(2,  128, threads=2, dataAugmentation=True)
     dataGen.dataConv2d()
     
-    adn = ((-1, 1, 3, 32, 32), (0, 3, 32, 3, 3),(0, 32, 32, 3, 3), (0, 32, 64, 3, 3, 2), 
-            (0, 64, 64, 3, 3), (0, 64, 128, 3, 3, 2), (0, 128, 128, 3, 3), (0, 128, 128, 1, 1, 2), (1, 128, 10), (2,), 
-            (3, -1, 0), (3, 0, 1), (3, 1, 2), (3, 2, 3), (3, 3, 4), (3, 4, 5), (3, 5, 6), (3, 6, 7), (3, 7, 8))
+    DNA =  ((-1, 1, 3, 32, 32), (0, 3, 32, 3, 3),(0, 32, 64, 3, 3, 2), (0, 64, 128, 3, 3, 2), (0, 128, 32, 5, 5),
+                (1, 32, 10),(2,),(3, -1, 0),(3, 0, 1),(3, 1, 2),(3, 2, 3),(3, 3, 4),(3, 4, 5))
 
-    network = nw_dendrites.Network(adn=adn, cudaFlag=True, momentum=0.9, weight_decay=0, 
-                enable_activation=True, enable_track_stats=True, dropout_value=0.2, dropout_function=dropout_function)
+    mutate_DNA = direction_dna.spread_dendrites(0, DNA)
 
-    network.TrainingCosineLR_Restarts(dataGenerator=dataGen, max_dt=0.001, min_dt=0.001, epochs=400, restart_dt=400, show_accuarcy=True)
+    network = nw_dendrites.Network(adn=DNA, cudaFlag=True, momentum=0.9, weight_decay=0, 
+            enable_activation=True, enable_track_stats=True, dropout_value=0.2, dropout_function=None)
+    
+    network.TrainingCosineLR_Restarts(dataGenerator=dataGen, max_dt=0.001, min_dt=0.001, epochs=5, restart_dt=5, show_accuarcy=True)
 
+    network.generateEnergy(dataGen)
+    print("Original accuracy: ", network.getAcurracy())
 
+    mutate_network = Mutate_Dendrites.executeMutation(network, mutate_DNA)
+    mutate_network.generateEnergy(dataGen)
+
+    print("Accuracy after mutation: ", mutate_network.getAcurracy())
+    #mutate_network.TrainingCosineLR_Restarts(dataGenerator=dataGen, max_dt=0.001, min_dt=0.001, epochs=1, restart_dt=1, show_accuarcy=True)
+
+    
 
 if __name__ == "__main__":
     Test_Mutacion()

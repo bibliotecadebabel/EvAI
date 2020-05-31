@@ -227,7 +227,7 @@ class CommandExperimentCifar_Restarts():
         while stop == False:
 
             self.__selector = random_selector(num_actions=self.__selector.num_actions, directions=self.__selector.version,
-                                                condition=self.__selector.condition)
+                                                condition=self.__selector.condition, mutations=self.__selector.mutations)
             self.__selector.update(newCenter)
             predicted_actions = self.__selector.get_predicted_actions()
 
