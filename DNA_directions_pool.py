@@ -344,7 +344,7 @@ def add_layer(num_layer,source_DNA):
         if num_layer==0:
             clone_node=g.key2node.get(num_layer)
             clone_layer = clone_node.objects[0]
-            node.objects.append((0,3,clone_layer[2],3,3))
+            node.objects.append((0,3,int(clone_layer[2]/2),3,3))
             g.add_node(-2,node)
             g.add_edges(-1,[-2])
             g.add_edges(-2,[num_layer])
@@ -356,13 +356,13 @@ def add_layer(num_layer,source_DNA):
             o_layer=o_node.objects[0]
             clone_layer = clone_node.objects[0]
             node=nd.Node()
-            node.objects.append((0,o_layer[2],clone_layer[2],3,3))
+            node.objects.append((0,o_layer[2],int(clone_layer[2]/2),3,3))
             g.add_node(-2,node)
             g.add_edges(num_layer-1,[-2])
             g.add_edges(-2,[num_layer])
         t_node=g.key2node.get(num_layer)
         t_layer=t_node.objects[0]
-        t_layer=layer_chanel(t_layer,clone_layer[2])
+        t_layer=layer_chanel(t_layer,int(clone_layer[2]/2))
         t_node.objects[0]=t_layer
         node.objects[0]=un_pool(list(node.objects[0]).copy())
         g.relable(relabler)

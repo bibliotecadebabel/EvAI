@@ -12,9 +12,9 @@ import test_DNAs as DNAs
 MAX_LAYERS = 30
 
 # MAX FILTERS MUTATION (CONDITION)
-MAX_FILTERS = 500
+MAX_FILTERS = 65
 
-MAX_FILTERS_DENSE = 500
+MAX_FILTERS_DENSE = 130
 
 def condition(DNA):
     return max_filter_dense(max_filter(max_layer(DNA, MAX_LAYERS), MAX_FILTERS), MAX_FILTERS_DENSE)
@@ -136,20 +136,17 @@ def remove_layer_test(x,y):
         print(DNA)
 
 def add_layer_test(x,y):
-    DNA=DNAs.DNA_ep5
+    DNA=DNAs.DNA_h
     g=dire.DNA2graph(DNA)
     print('The old DNA is')
     print(DNA)
     #while DNA:
     print('The new DNA is')
-    DNA=dire.add_layer(6,DNA)
-    g=dire.DNA2graph(DNA)
-    dire.compute_output(g)
-    dire.imprimir(g)
+    DNA=dire.add_layer(3,DNA)
+    print(DNA)
     print(condition(DNA))
     #g=dire.DNA2graph(DNA)
-    #full_node=dire.graph2full_node(g)
-    #dire.compute_output(g,full_node)
+    #dire.compute_output(g)
     #dire.imprimir(g)
 
 def add_pool_layer_test(x,y):
