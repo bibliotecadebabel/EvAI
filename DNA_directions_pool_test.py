@@ -142,9 +142,10 @@ def add_layer_test(x,y):
     print(DNA)
     #while DNA:
     print('The new DNA is')
-    for k in range(8):
+    for k in range(10):
+        DNA=DNAs.DNA_ep10
+        print(k)
         DNA=dire.add_layer(k,DNA)
-        print(DNA)
         print('The validity of the new DNA is')
         print(condition(DNA))
     #g=dire.DNA2graph(DNA)
@@ -161,6 +162,7 @@ def add_pool_layer_test(x,y):
     print('The new DNA is')
     for k in range(8):
         DNA=dire.add_pool_layer(k,DNA)
+        print(k)
         print(DNA)
         print('The validity of the new DNA is')
         print(condition(DNA))
