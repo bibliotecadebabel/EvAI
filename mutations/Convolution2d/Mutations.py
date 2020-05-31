@@ -393,6 +393,7 @@ class AdjustEntryFilters_Dendrite():
 
         #print("range to remove=", value)
         newEntries = shape[1] - (abs(value[0] - value[1]) + 1)
+        #print("new entries: ", newEntries)
 
         if self.network.cudaFlag == True:
             adjustedOldFilter = torch.zeros(shape[0], newEntries, shape[2], shape[3]).cuda()
@@ -410,6 +411,7 @@ class AdjustEntryFilters_Dendrite():
                     index_accepted += 1
 
         value = self.__normalize(oldFilter=adjustedOldFilter, oldBias=oldBias, originalShape=shape)
+        #print("value shape: ", value[0].shape)
         return value
 
     def adjustEntryFilters(self, mutation_type):

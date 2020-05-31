@@ -129,6 +129,37 @@ def conv2d_propagate_multipleInputs(layer): ## MUTATION: Multiple inputs per con
     if layer.enable_activation == True:
         layer.value = torch.nn.functional.relu(value)
 
+def conv2d_propagate_padding(layer):
+    
+    parent = layer.node.parents[0].objects[0]
+
+    current_input = __getInput(layer, parent.value)
+
+    if layer.getPool() is not None:
+        current_input = layer.doPool(current_input)
+
+    kernel = layer.adn[3]
+    #print("kernel: ", kernel)
+    
+    #print("original shape: ", current_input.shape)
+
+    if layer.node.kids[0].objects[0].adn[0] == 0:
+        current_input = __padInput(targetTensor=current_input, kernel_size=kernel)
+
+    if layer.dropout_value > 0:
+        output_dropout = layer.doDropout(current_input)
+        value = layer.object(output_dropout)
+    else:
+        value = layer.object(current_input)
+
+    #print("output shape: ", value.shape)
+    value = layer.doNormalize(value)
+    
+    layer.value = value
+    
+    if layer.enable_activation == True:
+        layer.value = torch.nn.functional.relu(value)
+
 def linear_propagate(layer):
 
     parent = layer.node.parents[0].objects[0]
@@ -189,6 +220,18 @@ def deleteLastTensorDimension(oldTensor, newShape):
         newFilter[i] = oldTensor[i]
 
     return newFilter
+
+def __padInput(targetTensor, kernel_size):
+    pad_tensor = targetTensor
+    
+    target_shape = targetTensor.shape
+    refference_size = kernel_size - 1
+
+    if refference_size > 0:
+        pad_tensor = torch.nn.functional.pad(targetTensor,(0, refference_size, 0, refference_size),"constant", 0)
+    
+    #print("pad shape: ", pad_tensor.shape)
+    return pad_tensor
 
 def __getBiggestInput(layerList):
 
