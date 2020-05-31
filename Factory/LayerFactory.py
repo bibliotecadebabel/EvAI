@@ -39,6 +39,10 @@ class LayerGenerator(AbstractFactory.FactoryClass):
         elif propagate_mode == const.CONV2D_IMAGE_INPUTS:
             value = ly.Layer(objectTorch=layer, propagate=functions.conv2d_propagate_images, value=None, adn=tupleBody, 
                 cudaFlag=self.__cuda, enable_activation=enable_activation)
+        
+        elif propagate_mode == const.CONV2D_PADDING:
+            value = ly.Layer(objectTorch=layer, propagate=functions.conv2d_propagate_padding, value=None, adn=tupleBody, 
+                cudaFlag=self.__cuda, enable_activation=enable_activation)
         else:
             value = ly.Layer(objectTorch=layer, propagate=functions.conv2d_propagate, value=None, adn=tupleBody, 
                 cudaFlag=self.__cuda, enable_activation=enable_activation)
