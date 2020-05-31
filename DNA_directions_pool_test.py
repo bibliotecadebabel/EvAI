@@ -136,18 +136,17 @@ def remove_layer_test(x,y):
         print(DNA)
 
 def add_layer_test(x,y):
-    DNA=DNAs.DNA_ep10
+    DNA=DNAs.DNA_ep5
     g=dire.DNA2graph(DNA)
     print('The old DNA is')
     print(DNA)
     #while DNA:
     print('The new DNA is')
-    for k in range(10):
-        DNA=DNAs.DNA_ep10
-        print(k)
-        DNA=dire.add_layer(k,DNA)
-        print('The validity of the new DNA is')
-        print(condition(DNA))
+    DNA=dire.add_layer(6,DNA)
+    g=dire.DNA2graph(DNA)
+    dire.compute_output(g)
+    dire.imprimir(g)
+    print(condition(DNA))
     #g=dire.DNA2graph(DNA)
     #full_node=dire.graph2full_node(g)
     #dire.compute_output(g,full_node)
@@ -337,8 +336,8 @@ def retract_dendrites_test(x,y):
 #increase_kernel_test(11,11)
 ##decrease_kernel_test(11,11)
 #Persistent_synapse_condition_test(11,11)
-retract_h_test()
-#add_layer_test(11,11)
+#retract_h_test()
+add_layer_test(11,11)
 #add_layer_test(11,11)
 #add_pool_layer_test(32,32)
 #fix_fully_conected_test(11,11)

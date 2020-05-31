@@ -147,6 +147,8 @@ def add_layer_test(x,y):
     #dire.compute_output(g,full_node)
     #dire.imprimir(g)
 
+
+
 def add_pool_layer_test(x,y):
     DNA=((-1,1,3,11,11),(0, 3, 5, 3, 3),(0, 5, 8,2,2,2),(0,8,120,4,4),
             (1, 13, 2),

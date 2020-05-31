@@ -106,7 +106,7 @@ def fix_fully_conected(g):
     layer = list(full_node.objects[0])
     for node in list(g.key2node.values()):
         if len(node.objects)>1 and not(node==full_node):
-            if node.objects[1][0]==0 or node.objects[1][1]==0:
+            if node.objects[1][0]<1 or node.objects[1][1]<1:
                 layer=node.objects[0]
                 x = max([parent.objects[1][0] for parent in node.parents])
                 y = max([parent.objects[1][1] for parent in node.parents])
