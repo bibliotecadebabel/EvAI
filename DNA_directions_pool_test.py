@@ -136,13 +136,13 @@ def remove_layer_test(x,y):
         print(DNA)
 
 def add_layer_test(x,y):
-    DNA=DNAs.DNA_h
+    DNA=DNAs.DNA_ep9
     g=dire.DNA2graph(DNA)
     print('The old DNA is')
     print(DNA)
     #while DNA:
     print('The new DNA is')
-    DNA=dire.add_layer(3,DNA)
+    DNA=dire.add_layer(4,DNA)
     print(DNA)
     print(condition(DNA))
     #g=dire.DNA2graph(DNA)

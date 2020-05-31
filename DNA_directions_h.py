@@ -47,7 +47,9 @@ def signal_layer2output(signal_x,signal_y,layer):
         y = (y+(y % y_l))/y_l
         return [int(x),int(y)]
 
-def compute_output(g, node):
+def compute_output(g, node=None):
+    if node==None:
+        node=graph2full_node(g)
     key = g.node2key.get(node)
     layer=node.objects[0]
     if len(layer) < 2:
@@ -91,22 +93,22 @@ def graph2full_node(g):
 def fix_fully_conected(g):
     full_node = g.key2node.get(len(list(g.key2node.values()))-4)
     compute_output(g, full_node)
-    output = full_node.objects[1]
-    layer = full_node.objects[0]
+    output = list(full_node.objects[1])
+    layer = list(full_node.objects[0])
     if len(layer)==5:
         full_node.objects[0] = (layer[0],
                                 layer[1],
                                 layer[2],
-                                output[0] + layer[3] - 1,
-                                output[0] + layer[4] - 1)
+                                output[0],
+                                output[1])
     elif len(layer)==6:
         print('second case')
         full_node.objects[0] = (layer[0],
                                 layer[1],
                                 layer[2],
-                                output[0],
-                                output[0],
-                                 layer[5])
+                                layer[3]+output[0]-1,
+                                layer[4]+output[1]-1,
+                                layer[5])
 
 def Persistent_synapse_condition(DNA):
     if DNA:

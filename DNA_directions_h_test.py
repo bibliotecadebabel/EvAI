@@ -127,7 +127,7 @@ def remove_layer_test(x,y):
         print(DNA)
 
 def add_layer_test(x,y):
-    DNA=((-1,1,3,11,11),(0, 3, 5, 3, 3),(0, 5, 8,2,2,2),(0,8,120,4,4),
+    DNA=((-1,1,3,11,11),(0, 3, 5, 3, 3),(0, 5, 8,2,2,2),(0,8,120,6,6),
             (1, 13, 2),
             (2,),
             (3,-1,0),
@@ -140,11 +140,10 @@ def add_layer_test(x,y):
     print(DNA)
     #while DNA:
     print('The new DNA is')
-    DNA=dire.add_layer(0,DNA)
+    DNA=dire.add_layer(3,DNA)
     print(DNA)
     #g=dire.DNA2graph(DNA)
-    #full_node=dire.graph2full_node(g)
-    #dire.compute_output(g,full_node)
+    #dire.compute_output(g)
     #dire.imprimir(g)
 
 
@@ -217,12 +216,14 @@ def decrease_kernel_test(x,y):
     print(dire.decrease_kernel(1,DNA))
 
 def spread_dendrites_test_1(x,y):
-    DNA=((-1,1,3,x,y),(0, 3, 5, 3, 3),(0, 5, 8, 7,7),(0,8,5, 2, 2),
-            (1, 5, 2), (2,),(3,-1,0),(3,0,1),
-            (3,1,2),(3,2,3),(3,3,4))
+    DNA=DNAs.DNA_base
     #while DNA:
-    print('The new DNA is')
-    print(dire.spread_dendrites(1  ,DNA))
+    print('The old DNA is')
+    print(DNA)
+    for k in range(2):
+        print('The new DNA is')
+        DNA=dire.spread_dendrites(0 ,DNA)
+        print(DNA)
 
 def spread_dendrites_test_2(x,y):
     DNA=((-1,1,3,x,y),(0, 3, 5, 3, 3),(0, 5, 8, 7,7),(0,8,5, 2, 2),
@@ -323,11 +324,11 @@ def retract_dendrites_test(x,y):
 #spread_dendrites_test_5(11,11)
 #spread_dendrites_test_4(11,11)
 #spread_dendrites_test_3(11,11)
-#spread_dendrites_test_1(11,11)
+spread_dendrites_test_1(11,11)
 #increase_kernel_test(11,11)
 ##decrease_kernel_test(11,11)
 #Persistent_synapse_condition_test(11,11)
-add_layer_test(11,11)
+#add_layer_test(11,11)
 #add_layer_test(11,11)
 #retract_h_test()
 #add_pool_layer_test(32,32)
