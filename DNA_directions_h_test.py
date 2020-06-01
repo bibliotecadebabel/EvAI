@@ -144,7 +144,7 @@ def add_layer_test(x,y):
     print(DNA)
     #while DNA:
     print('The new DNA is')
-    DNA=dire.add_layer(3,DNA)
+    DNA=dire.add_layer(0,DNA)
     print(DNA)
     #g=dire.DNA2graph(DNA)
     #dire.compute_output(g)
@@ -321,7 +321,7 @@ def retract_dendrites_test(x,y):
         k=k-1
 
 
-initialize_kernel_test()
+#initialize_kernel_test()
 #remove_layer_test_2(11,11)
 #add_pool_layer_test(11,11)
 #compute_output_test()
@@ -334,7 +334,7 @@ initialize_kernel_test()
 #increase_kernel_test(11,11)
 ##decrease_kernel_test(11,11)
 #Persistent_synapse_condition_test(11,11)
-#add_layer_test(11,11)
+add_layer_test(11,11)
 #add_layer_test(11,11)
 #retract_h_test()
 #add_pool_layer_test(32,32)

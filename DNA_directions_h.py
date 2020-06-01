@@ -304,9 +304,17 @@ creator=decrease_kernel
 directions.update({type:creator})
 directions_labels.update({creator:type})
 
+def swap_kids(node,kid_a,kid_b):
+    kids=node.parents
+    index_a=kids.index(kid_a)
+    index_b=kids.index(kid_b)
+    kids[index_a], kids[index_b] = kids[index_b], kids[index_a]
+
+
+
 type=(1,0,0,0)
 def add_layer(num_layer,source_DNA):
-    if num_layer>len(DNA2layers(source_DNA))-3:
+    if num_layer>len(DNA2layers(source_DNA))-4:
         return None
     def relabler(k):
         if k==-2:
@@ -328,6 +336,10 @@ def add_layer(num_layer,source_DNA):
             g.add_node(-2,node)
             g.add_edges(-1,[-2])
             g.add_edges(-2,[num_layer])
+            parent=g.key2node.get(0)
+            node_a=g.key2node.get(-1)
+            node_b=g.key2node.get(-2)
+            swap_kids(parent,node_a,node_b)
             g.remove_edge(-1,0)
         else:
             o_node=g.key2node.get(num_layer-1)
@@ -341,6 +353,10 @@ def add_layer(num_layer,source_DNA):
             g.add_node(-2,node)
             g.add_edges(num_layer-1,[-2])
             g.add_edges(-2,[num_layer])
+            parent=g.key2node.get(num_layer)
+            node_a=g.key2node.get(num_layer-1)
+            node_b=g.key2node.get(-2)
+            swap_kids(parent,node_a,node_b)
             g.remove_edge(num_layer-1,num_layer)
         t_node=g.key2node.get(num_layer)
         t_layer=t_node.objects[0]
