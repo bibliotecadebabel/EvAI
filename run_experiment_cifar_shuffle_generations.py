@@ -57,7 +57,7 @@ if __name__ == '__main__':
     settings = ExperimentSettings.ExperimentSettings()
 
     # DIRECTIONS VERSION
-    settings.version = directions_version.POOL_VERSION
+    settings.version = directions_version.H_VERSION
     # NUM OF THREADS
     THREADS = int(input("Enter threads: "))
 
