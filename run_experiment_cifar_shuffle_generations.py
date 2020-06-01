@@ -85,7 +85,7 @@ if __name__ == '__main__':
     num_actions=5
 
     e=300
-    settings.max_init_iter = 1
+    settings.max_init_iter = 40
     INIT_ITER = 20*e
     #settings.init_dt_array = exp_alai(.5,INIT_ITER,1,5)
     settings.init_dt_array =  Alaising(1,5,INIT_ITER)
