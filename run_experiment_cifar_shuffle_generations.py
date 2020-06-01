@@ -56,8 +56,7 @@ if __name__ == '__main__':
     settings = ExperimentSettings.ExperimentSettings()
 
     # DIRECTIONS VERSION
-    settings.version = directions_version.POOL_VERSION
-
+    settings.version = directions_version.H_VERSION
     # NUM OF THREADS
     THREADS = int(input("Enter threads: "))
 
@@ -192,9 +191,9 @@ if __name__ == '__main__':
                                             (3, 23, 24), (3, 12, 24), (3, 23, 25), (3, 24, 25), (3, 25, 26), (3, 24, 26), (3, 26, 27), (3, 20, 28), (3, 23, 28), (3, 27, 28),
                                              (3, 28, 29), (3, 23, 29), (3, 27, 29), (3, 29, 30), (3, 30, 31))
     '''
-    
-    settings.initial_dna =   ((-1, 1, 3, 32, 32), (0, 3, 16, 3, 3),(0, 16, 32, 3, 3, 2), (0, 32, 64, 3, 3, 2),
-                                (0, 64, 32, 5, 5),
+
+    settings.initial_dna =   ((-1, 1, 3, 32, 32), (0, 3, 16, 3, 3),(0, 16, 32, 3, 3, 2), (0, 32, 128, 3, 3, 2),
+                                (0, 128, 32, 8, 8),
                                 (1, 32, 10),
                                 (2,),
                                 (3, -1, 0),
