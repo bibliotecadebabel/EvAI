@@ -1,6 +1,7 @@
 from TestNetwork.commands import CommandCreateDataGen
 from TestNetwork.commands import  CommandExperimentCifar_Shuffle_generations as CommandExperimentCifar_Restarts
 from DNA_conditions import max_layer,max_filter,max_filter_dense
+import DNA_conditions
 from DNA_creators import Creator
 from DNA_Graph import DNA_Graph
 from DNA_creators import Creator_from_selection as Creator_s
@@ -32,14 +33,14 @@ def exp_alai(r,I,t_M,t_m):
 
 def DNA_Creator_s(x,y, dna, version):
     def condition(DNA):
-        return max_filter_dense(max_filter(max_layer(DNA, MAX_LAYERS), MAX_FILTERS), MAX_FILTERS_DENSE)
+        return DNA_conditions.dict2condition(DNA,list_conditions)
 
     selector = None
     selector=random_selector(condition=condition,
         directions=version, num_actions=num_actions,
         mutations=(
         (0,1,0,0),(0,-1,0,0),
-        (1,0,0,0),
+        (1,0,0,0),(4,0,0,0)
         (0,0,1,1),(0,0,-1,-1),
         (0,0,1),(0,0,-1),
         ))
@@ -85,7 +86,7 @@ if __name__ == '__main__':
     num_actions=5
 
     e=300
-    settings.max_init_iter = 40
+    settings.max_init_iter = 1
     INIT_ITER = 20*e
     #settings.init_dt_array = exp_alai(.5,INIT_ITER,1,5)
     settings.init_dt_array =  Alaising(1,5,INIT_ITER)
@@ -119,6 +120,12 @@ if __name__ == '__main__':
     MAX_FILTERS = 130
 
     MAX_FILTERS_DENSE = 130
+
+    list_conditions={DNA_conditions.max_filter : 130,
+            DNA_conditions.max_filter_dense : 257,
+            DNA_conditions.max_kernel_dense : 9,
+            DNA_conditions.max_layer : 30,
+            DNA_conditions.max_parents : 2}
 
     # TEST_NAME, the name of the experiment (unique)
     settings.test_name = input("Enter TestName: ")
@@ -166,7 +173,7 @@ if __name__ == '__main__':
     settings.dropout_function = dropout_function
     # INITIAL DNA
 
-
+    """
     settings.initial_dna = ((-1, 1, 3, 32, 32), (0, 3, 6, 3, 3),
                                 (0, 9, 12, 3, 3), (0, 12, 24, 3, 3, 2),
                                  (0, 36, 24, 3, 3, 2), (0, 39, 6, 3, 3),
@@ -192,16 +199,16 @@ if __name__ == '__main__':
                                              (3, 28, 29), (3, 23, 29), (3, 27, 29), (3, 29, 30), (3, 30, 31))
 
     """
-    settings.initial_dna =   ((-1, 1, 3, 32, 32), (0, 3, 16, 3, 3),(0, 16, 32, 3, 3, 2), (0, 32, 128, 3, 3, 2),
-                                (0, 128, 32, 8, 8),
-                                (1, 32, 10),
+    settings.initial_dna =   ((-1, 1, 3, 32, 32), (0, 3, 8, 3, 3),(0, 8, 16, 3, 3, 2), (0, 16, 32, 3, 3, 2),
+                                (0, 32, 256, 8, 8),
+                                (1, 256, 10),
                                 (2,),
                                 (3, -1, 0),
                                 (3, 0, 1),
                                 (3, 1, 2),
                                 (3, 2, 3),
                                 (3, 3, 4),
-                                (3, 4, 5)) """
+                                (3, 4, 5))
 
     dataCreator = CommandCreateDataGen.CommandCreateDataGen(cuda=settings.cuda)
     dataCreator.execute(compression=2, batchSize=settings.batch_size, source=DATA_SOURCE, threads=THREADS, dataAugmentation=ENABLE_AUGMENTATION)

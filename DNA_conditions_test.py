@@ -1,5 +1,6 @@
 from DNA_conditions import max_layer, max_filter
-
+import test_DNAs as DNAs
+import DNA_conditions
 
 def DNA_max_filter(x,y):
     center=((0, 3, 5, 3, 3),(0, 8, 8, 3,3),(0,11,5, x, y), (1, 5, 2), (2,))
@@ -17,9 +18,28 @@ def DNA_max_filter(x,y):
     print(max_filter(center,M_filter))
 
 
+def max_parents_test():
+    DNA=DNAs.DNA_h
+    print(DNA_conditions.max_parents(DNA,1))
 
+def max_kernel_dense_test():
+    DNA=DNAs.DNA_h
+    print(DNA_conditions.max_kernel_dense(DNA,5))
+
+def dict2condition_test():
+    dict={DNA_conditions.max_kernel_dense : 5,
+            DNA_conditions.max_parents : 1}
+    def condition(DNA):
+        return DNA_conditions.dict2condition(DNA,dict)
+    DNA=DNAs.DNA_h
+    print(condition(DNA))
+
+
+dict2condition_test()
+#max_kernel_dense_test()
+#max_parents_test()
 #DNA_Creator_s(11,11)
-DNA_max_filter(11,11)
+#DNA_max_filter(11,11)
 #layer_increase_i(11,11)
 #kernel_increase_i(11,11)
 #add_filter_i(11,11)
