@@ -6,6 +6,7 @@ from DNA_Graph import DNA_Graph
 from DNA_creators import Creator_from_selection as Creator_s
 from utilities.Abstract_classes.classes.uniform_random_selector import centered_random_selector as random_selector
 import TestNetwork.ExperimentSettings as ExperimentSettings
+import const.versions as directions_version
 import numpy as np
 ###### EXPERIMENT SETTINGS ######
 
@@ -29,11 +30,10 @@ def Alaising(M,m,ep):
 def exp_alai(r,I,t_M,t_m):
     return [ 10 ** (-t_M-((t_m-t_M)*(k  %  int(I*r) )/I*r)) for k in range(I)]
 
-def DNA_Creator_s(x,y, dna):
+def DNA_Creator_s(x,y, dna, version):
     def condition(DNA):
         return max_filter_dense(max_filter(max_layer(DNA, MAX_LAYERS), MAX_FILTERS), MAX_FILTERS_DENSE)
 
-    version='pool'
     selector = None
     selector=random_selector(condition=condition,
         directions=version, num_actions=num_actions,
@@ -54,6 +54,9 @@ def DNA_Creator_s(x,y, dna):
 if __name__ == '__main__':
 
     settings = ExperimentSettings.ExperimentSettings()
+
+    # DIRECTIONS VERSION
+    settings.version = directions_version.POOL_VERSION
 
     # NUM OF THREADS
     THREADS = int(input("Enter threads: "))
@@ -164,7 +167,7 @@ if __name__ == '__main__':
     settings.dropout_function = dropout_function
     # INITIAL DNA
 
-
+    '''
     settings.initial_dna = ((-1, 1, 3, 32, 32), (0, 3, 6, 3, 3),
                                 (0, 9, 12, 3, 3), (0, 12, 24, 3, 3, 2),
                                  (0, 36, 24, 3, 3, 2), (0, 39, 6, 3, 3),
@@ -188,8 +191,8 @@ if __name__ == '__main__':
                                             (3, 12, 20), (3, 15, 20), (3, 18, 20), (3, 16, 20), (3, 19, 20), (3, 20, 21), (3, 21, 22), (3, 20, 23), (3, 21, 23), (3, 22, 23),
                                             (3, 23, 24), (3, 12, 24), (3, 23, 25), (3, 24, 25), (3, 25, 26), (3, 24, 26), (3, 26, 27), (3, 20, 28), (3, 23, 28), (3, 27, 28),
                                              (3, 28, 29), (3, 23, 29), (3, 27, 29), (3, 29, 30), (3, 30, 31))
-
-    """
+    '''
+    
     settings.initial_dna =   ((-1, 1, 3, 32, 32), (0, 3, 16, 3, 3),(0, 16, 32, 3, 3, 2), (0, 32, 64, 3, 3, 2),
                                 (0, 64, 32, 5, 5),
                                 (1, 32, 10),
@@ -199,13 +202,13 @@ if __name__ == '__main__':
                                 (3, 1, 2),
                                 (3, 2, 3),
                                 (3, 3, 4),
-                                (3, 4, 5))"""
+                                (3, 4, 5))
 
     dataCreator = CommandCreateDataGen.CommandCreateDataGen(cuda=settings.cuda)
     dataCreator.execute(compression=2, batchSize=settings.batch_size, source=DATA_SOURCE, threads=THREADS, dataAugmentation=ENABLE_AUGMENTATION)
     dataGen = dataCreator.returnParam()
 
-    space, selector = DNA_Creator_s(dataGen.size[1], dataGen.size[2], dna=settings.initial_dna)
+    space, selector = DNA_Creator_s(dataGen.size[1], dataGen.size[2], dna=settings.initial_dna, version=settings.version)
 
     settings.dataGen = dataGen
     settings.selector = selector

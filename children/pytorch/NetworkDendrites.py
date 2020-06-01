@@ -4,6 +4,7 @@ import children.pytorch.Functions as functions
 import children.pytorch.NetworkAbastract as na
 import const.propagate_mode as const
 import const.datagenerator_type as datagen_type
+import const.versions as directions_version
 
 import torch
 import torch.nn as nn
@@ -18,30 +19,34 @@ import time
 class Network(nn.Module, na.NetworkAbstract):
 
     def __init__(self, adn, cudaFlag=True, momentum=0.0, weight_decay=0.0, 
-                enable_activation=True, enable_track_stats=True, dropout_value=0, dropout_function=None, enable_last_activation=True):
+                enable_activation=True, enable_track_stats=True, dropout_value=0, dropout_function=None, enable_last_activation=True, version=None):
         nn.Module.__init__(self)
         na.NetworkAbstract.__init__(self,adn=adn, cuda=cudaFlag, momentum=momentum, weight_decay=weight_decay, 
                                 enable_activaiton=enable_activation, enable_track_stats=enable_track_stats, dropout_value=dropout_value,
                                 enable_last_activation=enable_last_activation)
         
         self.dropout_function = dropout_function
+        self.version = version
 
         if dropout_function == None:
             self.dropout_function = self.__defaultDropoutFunction
 
         self.__lenghNodes = 0
         self.__total_layers = 0
-        self.__conv2d_propagate_mode = const.CONV2D_DEFAULT
         self.__accumulated_loss = 0
         self.__accuracy = 0
+
+        self.__conv2d_propagate_mode = const.CONV2D_MULTIPLE_INPUTS
+
+        if self.version == directions_version.H_VERSION:
+            self.__conv2d_propagate_mode = const.CONV2D_PADDING
+
         self.createStructure()
         self.__currentEpoch = 0
-        self.optimizer = optim.SGD(self.parameters(), lr=0.1, momentum=self.momentum, weight_decay=self.weight_decay)
-
-    
+        self.optimizer = optim.SGD(self.parameters(), lr=0.1, momentum=self.momentum, weight_decay=self.weight_decay)  
+          
     def __defaultDropoutFunction(self, base_p, max_conv2d, index_conv2d):
         
-        print("## using default dropout function ##")
         value = base_p / (max_conv2d - index_conv2d)
 
         return value
@@ -144,9 +149,6 @@ class Network(nn.Module, na.NetworkAbstract):
 
                 if tupleBody[0] == 0 or tupleBody[0] == 1:
                     self.__total_layers += 1
-
-            if tupleBody[0] == 3:
-                self.__conv2d_propagate_mode = const.CONV2D_MULTIPLE_INPUTS
 
         self.__lenghNodes += 1
 
@@ -521,7 +523,8 @@ class Network(nn.Module, na.NetworkAbstract):
         network = Network(newADN,cudaFlag=self.cudaFlag, momentum=self.momentum, 
             weight_decay=self.weight_decay, enable_activation=self.enable_activation, 
             enable_track_stats=self.enable_track_stats, dropout_value=self.dropout_value, 
-            dropout_function=self.dropout_function, enable_last_activation=self.enable_last_activation)
+            dropout_function=self.dropout_function, enable_last_activation=self.enable_last_activation,
+            version=self.version)
 
         for i in range(len(self.nodes) - 1):
             layerToClone = self.nodes[i].objects[0]

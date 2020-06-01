@@ -37,3 +37,4 @@ class ExperimentSettings():
         self.dropout_value = 0
         self.dropout_function = None
         self.enable_last_activation = True
+        self.version = None

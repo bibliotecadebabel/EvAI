@@ -1,4 +1,4 @@
-import children.pytorch.MutateNetwork_Dendrites_clone as MutateNetwork
+import children.pytorch.MutationManager as mutation_manager
 import children.pytorch.NetworkDendrites as nw
 from DAO.database.dao import TestDAO, TestResultDAO, TestModelDAO
 from DNA_Graph import DNA_Graph
@@ -25,9 +25,12 @@ class CommandExperimentCifar_Restarts():
         self.__bestNetwork = nw.Network(adn=settings.initial_dna, cudaFlag=settings.cuda,
                                 momentum=settings.momentum, weight_decay=settings.weight_decay, 
                                 enable_activation=settings.enable_activation, 
-                                enable_track_stats=self.__settings.enable_track_stats, dropout_value=settings.dropout_value,
-                                dropout_function=settings.dropout_function, enable_last_activation=settings.enable_last_activation)
+                                enable_track_stats=settings.enable_track_stats, dropout_value=settings.dropout_value,
+                                dropout_function=settings.dropout_function, enable_last_activation=settings.enable_last_activation,
+                                version=settings.version)
         
+        self.mutation_manager = mutation_manager.MutationManager(directions_version=settings.version)
+
         self.__actions = []
                             
 
@@ -50,7 +53,7 @@ class CommandExperimentCifar_Restarts():
 
         for nodeKid in nodeCenter.kids:
             kidADN = space.node2key(nodeKid)
-            kidNetwork = MutateNetwork.executeMutation(centerNetwork, kidADN)
+            kidNetwork = self.mutation_manager.executeMutation(centerNetwork, kidADN)
             self.__nodes.append(nodeKid)
             self.__networks.append(kidNetwork)
 

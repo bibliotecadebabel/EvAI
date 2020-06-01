@@ -13,7 +13,8 @@ def executeMutation(oldNetwork, newAdn):
     network = nw.Network(newAdn, cudaFlag=oldNetwork.cudaFlag, momentum=oldNetwork.momentum, 
                             weight_decay=oldNetwork.weight_decay, enable_activation=oldNetwork.enable_activation,
                             enable_track_stats=oldNetwork.enable_track_stats, dropout_value=oldNetwork.dropout_value,
-                            dropout_function=oldNetwork.dropout_function, enable_last_activation=oldNetwork.enable_last_activation)
+                            dropout_function=oldNetwork.dropout_function, enable_last_activation=oldNetwork.enable_last_activation,
+                            version=oldNetwork.version)
 
     network.history_loss = oldNetwork.history_loss[-200:]
 
@@ -37,11 +38,14 @@ def executeMutation(oldNetwork, newAdn):
             index_layer = __getTargetIndex(oldAdn=oldNetwork.adn, newAdn=newAdn, direction_function=direction_dna.add_pool_layer)
             mutation_type = m_type.ADD_POOL_LAYER
         
+        __addLayerMutationProcess(oldNetwork=oldNetwork, network=network, lenghtOldAdn=length_oldadn, 
+                                        indexAdded=index_layer, mutation_type=mutation_type)
+
         #print("index added: ", index_layer)
-        if mutation_type == m_type.ADD_POOL_LAYER:
-            __addPoolLayerMutationProcess(oldNetwork=oldNetwork, network=network, lenghtOldAdn=length_oldadn, indexAdded=index_layer)
-        else:
-            __addLayerMutationProcess(oldNetwork=oldNetwork, network=network, lenghtOldAdn=length_oldadn, indexAdded=index_layer)
+        #if mutation_type == m_type.ADD_POOL_LAYER:
+        #    __addPoolLayerMutationProcess(oldNetwork=oldNetwork, network=network, lenghtOldAdn=length_oldadn, indexAdded=index_layer)
+        #else:
+        #    __addLayerMutationProcess(oldNetwork=oldNetwork, network=network, lenghtOldAdn=length_oldadn, indexAdded=index_layer)
     
 
     elif length_oldadn > length_newadn: # remove layer
@@ -103,13 +107,18 @@ def __defaultMutationProcess(oldNetwork, network, lenghtAdn):
         if network.cudaFlag == True:
             torch.cuda.empty_cache()
 
-def __addPoolLayerMutationProcess(oldNetwork, network, lenghtOldAdn, indexAdded):
+def __addLayerMutationProcess(oldNetwork, network, lenghtOldAdn, indexAdded, mutation_type):
 
     indexOldLayer = 0
     indexNewLayer = 0
     addedFound = False
 
-    __initNewPoolConvolution(network.nodes[indexAdded+1].objects[0])
+    if mutation_type == m_type.ADD_POOL_LAYER:
+        print("adding pool")
+        __initNewPoolConvolution(network.nodes[indexAdded+1].objects[0])
+    else:
+        print("adding convolution")
+        __initNewConvolution(network.nodes[indexAdded+1].objects[0])
     
     for i in range(1, lenghtOldAdn+1):
 
@@ -130,6 +139,7 @@ def __addPoolLayerMutationProcess(oldNetwork, network, lenghtOldAdn, indexAdded)
         if network.cudaFlag == True:
             torch.cuda.empty_cache()
 
+'''
 def __addLayerMutationProcess(oldNetwork, network, lenghtOldAdn, indexAdded):
 
     indexOldLayer = 0
@@ -172,7 +182,7 @@ def __addLayerMutationProcess(oldNetwork, network, lenghtOldAdn, indexAdded):
         
         if network.cudaFlag == True:
             torch.cuda.empty_cache()
-
+'''
 
 def __removeLayerMutationProcess(oldNetwork, network, lengthNewAdn, indexRemoved):
 
