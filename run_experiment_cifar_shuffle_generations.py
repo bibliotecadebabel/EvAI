@@ -40,7 +40,7 @@ def DNA_Creator_s(x,y, dna, version):
         directions=version, num_actions=num_actions,
         mutations=(
         (0,1,0,0),(0,-1,0,0),
-        (1,0,0,0),(4,0,0,0)
+        (1,0,0,0),(4,0,0,0),
         (0,0,1,1),(0,0,-1,-1),
         (0,0,1),(0,0,-1),
         ))
