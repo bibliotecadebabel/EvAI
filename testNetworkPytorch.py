@@ -10,7 +10,7 @@ from DNA_conditions import max_layer,max_filter
 
 from DNA_creators import Creator_from_selection as Creator_s
 from utilities.Abstract_classes.classes.random_selector import random_selector
-import DNA_directions_h as direction_dna
+import DNA_directions_f as direction_dna
 import children.pytorch.MutationManager as MutationManager
 import const.versions as directions_version
 
@@ -66,16 +66,9 @@ def Test_Mutacion():
 
     mutation_manager = MutationManager.MutationManager(directions_version=version)
     
-    DNA =  ((-1,1,3,32,32),(0, 3, 5, 3, 3),(0, 5, 8,2,2,2),(0,8,120,16,16),
-            (1, 120, 10),
-            (2,),
-            (3,-1,0),
-            (3,0,1),
-            (3,1,2),
-            (3,2,3),
-            (3,3,4))
+    DNA =  ((-1, 1, 3, 32, 32), (0, 3, 16, 3, 3), (0, 16, 32, 3, 3, 2), (0, 32, 128, 3, 3, 2), (0, 128, 32, 8, 8), (1, 32, 10), (2,), (3, -1, 0), (3, 0, 1), (3, 1, 2), (3, 2, 3), (3, 3, 4), (3, 4, 5))
 
-    mutate_DNA = direction_dna.increase_kernel(1, DNA)
+    mutate_DNA = direction_dna.spread_dendrites(2, DNA)
 
     print("DNA: ", DNA)
     print("new DNA: ", mutate_DNA)

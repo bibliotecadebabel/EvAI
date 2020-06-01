@@ -595,12 +595,26 @@ class Network(nn.Module, na.NetworkAbstract):
         torch.save({
             'model_state_dict': self.state_dict(),
             'optimizer_state_dict': self.optimizer.state_dict(),
+            'adn': self.adn,
+            'cuda': self.cudaFlag,
+            'momentum': self.momentum,
+            'weight_decay': self.weight_decay,
+            'enable_activation': self.enable_activation,
+            'enable_track_stats': self.enable_track_stats,
+            'dropout_value': self.dropout_value,
+            'enable_last_activation': self.enable_last_activation,
+            'version': self.version
             }, path)
 
 
     def loadModel(self, path):
 
         checkpoint = torch.load(path)
+        self.load_state_dict(checkpoint['model_state_dict'])
+        self.optimizer.load_state_dict(checkpoint['optimizer_state_dict'])
+        self.train()
+
+    def loadParameters(self, checkpoint):
         self.load_state_dict(checkpoint['model_state_dict'])
         self.optimizer.load_state_dict(checkpoint['optimizer_state_dict'])
         self.train()

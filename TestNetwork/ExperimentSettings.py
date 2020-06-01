@@ -20,21 +20,21 @@ class ExperimentSettings():
         self.epochs = 100
         self.test_name = None
 
-        self.weight_decay = 0.00001
-        self.momentum = 0.9
+        self.weight_decay = None
+        self.momentum = None
         self.cuda = True
 
-        self.enable_activation = True
+        self.enable_activation = None
         self.initial_dna = None
         self.initial_space = None
 
         self.dataGen = None
 
         self.selector = None
-        self.allow_interupts = False
-        self.enable_track_stats = True
+        self.allow_interupts = None
+        self.enable_track_stats = None
 
-        self.dropout_value = 0
+        self.dropout_value = None
         self.dropout_function = None
-        self.enable_last_activation = True
+        self.enable_last_activation = None
         self.version = None
