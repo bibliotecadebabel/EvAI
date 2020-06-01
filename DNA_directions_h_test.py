@@ -226,7 +226,7 @@ def spread_dendrites_test_1(x,y):
     print(DNA)
     for k in range(2):
         print('The new DNA is')
-        DNA=dire.spread_dendrites(0 ,DNA)
+        DNA=dire.spread_dendrites(2 ,DNA)
         print(DNA)
 
 def spread_dendrites_test_2(x,y):
@@ -330,11 +330,11 @@ def retract_dendrites_test(x,y):
 #spread_dendrites_test_5(11,11)
 #spread_dendrites_test_4(11,11)
 #spread_dendrites_test_3(11,11)
-#spread_dendrites_test_1(11,11)
+spread_dendrites_test_1(11,11)
 #increase_kernel_test(11,11)
 ##decrease_kernel_test(11,11)
 #Persistent_synapse_condition_test(11,11)
-add_layer_test(11,11)
+#add_layer_test(11,11)
 #add_layer_test(11,11)
 #retract_h_test()
 #add_pool_layer_test(32,32)

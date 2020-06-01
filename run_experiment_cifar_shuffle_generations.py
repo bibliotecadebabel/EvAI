@@ -56,7 +56,7 @@ if __name__ == '__main__':
     settings = ExperimentSettings.ExperimentSettings()
 
     # DIRECTIONS VERSION
-    settings.version = directions_version.H_VERSION
+    settings.version = directions_version.POOL_VERSION
     # NUM OF THREADS
     THREADS = int(input("Enter threads: "))
 
@@ -166,7 +166,7 @@ if __name__ == '__main__':
     settings.dropout_function = dropout_function
     # INITIAL DNA
 
-    '''
+
     settings.initial_dna = ((-1, 1, 3, 32, 32), (0, 3, 6, 3, 3),
                                 (0, 9, 12, 3, 3), (0, 12, 24, 3, 3, 2),
                                  (0, 36, 24, 3, 3, 2), (0, 39, 6, 3, 3),
@@ -182,7 +182,7 @@ if __name__ == '__main__':
                                        (0, 320, 128, 2, 2), (0, 160, 128, 2, 2, 2),
                                         (0, 256, 128, 3, 3), (0, 256, 64, 2, 2, 2),
                                          (0, 64, 128, 4, 4), (0, 384, 128, 3, 3, 2),
-                                         (0, 384, 32, 12, 12), (1, 32, 10),
+                                         (0, 384, 128, 12, 12), (1, 128, 10),
                                           (2,), (3, -1, 0), (3, -1, 1), (3, 0, 1), (3, 1, 2), (3, 1, 3), (3, 2, 3), (3, -1, 4), (3, 1, 4), (3, 3, 4), (3, 4, 5),
                                           (3, -1, 6), (3, 4, 6), (3, 5, 6), (3, 6, 7), (3, 4, 7), (3, 6, 8), (3, 7, 8), (3, -1, 9), (3, 6, 9), (3, 8, 9), (3, 9, 10),
                                            (3, 6, 10), (3, 10, 11), (3, -1, 12), (3, 10, 12), (3, 9, 12), (3, 11, 12), (3, 12, 13), (3, 12, 14), (3, 13, 14), (3, 12, 15),
@@ -201,7 +201,7 @@ if __name__ == '__main__':
                                 (3, 1, 2),
                                 (3, 2, 3),
                                 (3, 3, 4),
-                                (3, 4, 5))
+                                (3, 4, 5)) """
 
     dataCreator = CommandCreateDataGen.CommandCreateDataGen(cuda=settings.cuda)
     dataCreator.execute(compression=2, batchSize=settings.batch_size, source=DATA_SOURCE, threads=THREADS, dataAugmentation=ENABLE_AUGMENTATION)
