@@ -220,14 +220,15 @@ def decrease_kernel_test(x,y):
     print(dire.decrease_kernel(1,DNA))
 
 def spread_dendrites_test_1(x,y):
-    DNA=DNAs.DNA_base
+    DNA=((-1, 1, 3, 32, 32), (0, 3, 128, 4, 4), (0, 131, 128, 5, 5, 2), (0, 128, 128, 7, 7, 2), (0, 128, 128, 3, 3), (0, 256, 64, 8, 8), (1, 64, 10), (2,), (3, -1, 0), (3, 0, 1), (3, -1, 1), (3, 1, 2), (3, 2, 3), (3, 3, 4), (3, 2, 4), (3, 4, 5), (3, 5, 6))
+
     #while DNA:
     print('The old DNA is')
     print(DNA)
-    for k in range(2):
-        print('The new DNA is')
-        DNA=dire.spread_dendrites(2 ,DNA)
-        print(DNA)
+    print('The new DNA is')
+    print(dire.spread_dendrites(1 ,DNA))
+
+
 
 def spread_dendrites_test_2(x,y):
     DNA=((-1,1,3,x,y),(0, 3, 5, 3, 3),(0, 5, 8, 7,7),(0,8,5, 2, 2),
@@ -291,46 +292,25 @@ def spread_dendrites_test_6(x,y):
         print(k)
 
 def retract_dendrites_test(x,y):
-    DNA=((-1,1,3,x,y),(0, 3, 5, 2, 2),(0, 5, 5, 2,2),
-            (0,5,5, 2, 2),
-            (0,5,5, 2, 2),
-            (0,5,5, 2, 2),
-            (4,5,5, 2, 2),
-            (0,5,5, 3, 3),
-            (1, 5, 2), (2,),
-            (3,-1,0),
-            (3,0,1),
-            (3,1,2),
-            (3,2,3),
-            (3,3,4),
-            (3,4,5),
-            (3,5,6),
-            (3,6,7),
-            (3,7,8))
+    print('The old DNA is')
+    DNA=((-1, 1, 3, 32, 32), (0, 3, 128, 4, 4), (0, 131, 128, 5, 5, 2), (0, 128, 128, 7, 7, 2), (0, 128, 128, 3, 3), (0, 256, 64, 8, 8), (1, 64, 10), (2,), (3, -1, 0), (3, 0, 1), (3, -1, 1), (3, 1, 2), (3, 2, 3), (3, 3, 4), (3, 2, 4), (3, 4, 5), (3, 5, 6))
+    print(DNA)
     print('The new DNA is')
-    k=0
-    while k<3 and DNA:
-        DNA=dire.spread_dendrites(0,DNA)
-        print(DNA)
-        k=k+1
-        #print(k)
-    #print(DNA)
-    while 0<k and DNA:
-        DNA=dire.retract_dendrites(0,DNA)
-        print(DNA)
-        k=k-1
+    DNA=dire.retract_dendrites(0,DNA)
+    print(DNA)
+
 
 
 #initialize_kernel_test()
 #remove_layer_test_2(11,11)
-#add_pool_layer_test(11,11)
+add_pool_layer_test(11,11)
 #compute_output_test()
 #retract_dendrites_test(11,11)
 #spread_dendrites_test_6(32,32)
 #spread_dendrites_test_5(11,11)
 #spread_dendrites_test_4(11,11)
 #spread_dendrites_test_3(11,11)
-spread_dendrites_test_1(11,11)
+#spread_dendrites_test_1(11,11)
 #increase_kernel_test(11,11)
 ##decrease_kernel_test(11,11)
 #Persistent_synapse_condition_test(11,11)

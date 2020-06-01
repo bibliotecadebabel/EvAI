@@ -125,6 +125,7 @@ if __name__ == '__main__':
             DNA_conditions.max_filter_dense : 257,
             DNA_conditions.max_kernel_dense : 9,
             DNA_conditions.max_layer : 30,
+            DNA_conditions.min_filter : 5,
             DNA_conditions.max_parents : 2}
 
     # TEST_NAME, the name of the experiment (unique)
