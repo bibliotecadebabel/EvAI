@@ -27,7 +27,7 @@ def DNA_h(x,y):
             (3,3,4),
             (3,4,5))
     version='h'
-    mutations=((4,0,0,0),(1,0,0,0),(0,1,0,0),(0,1,0,0))
+    mutations=((4,0,0,0),(1,0,0,0),(0,1,0,0),(0,1,0,0),(0,0,1))
     selector=Selector_creator(condition=condition_b,
         directions=version,mutations=mutations,num_actions=10)
     selector.update(center)
