@@ -10,7 +10,7 @@ from DNA_conditions import max_layer,max_filter
 
 from DNA_creators import Creator_from_selection as Creator_s
 from utilities.Abstract_classes.classes.random_selector import random_selector
-import DNA_directions_f as direction_dna
+import DNA_directions_h as direction_dna
 import children.pytorch.MutationManager as MutationManager
 import const.versions as directions_version
 
@@ -66,27 +66,36 @@ def Test_Mutacion():
 
     mutation_manager = MutationManager.MutationManager(directions_version=version)
     
-    DNA =  ((-1, 1, 3, 32, 32), (0, 3, 16, 3, 3), (0, 16, 32, 3, 3, 2), (0, 32, 128, 3, 3, 2), (0, 128, 32, 8, 8), (1, 32, 10), (2,), (3, -1, 0), (3, 0, 1), (3, 1, 2), (3, 2, 3), (3, 3, 4), (3, 4, 5))
+    for i in range(0, 4):
+        print("index: ", i)
+        DNA =  ((-1, 1, 3, 32, 32), (0, 3, 16, 3, 3),(0, 16, 16, 3, 3, 2), (0, 16, 32, 3, 3, 2),
+                                    (0, 32, 32, 8, 8),
+                                    (1, 32, 10),
+                                    (2,),
+                                    (3, -1, 0),
+                                    (3, 0, 1),
+                                    (3, 1, 2),
+                                    (3, 2, 3),
+                                    (3, 3, 4),
+                                    (3, 4, 5))
 
-    mutate_DNA = direction_dna.spread_dendrites(2, DNA)
 
-    print("DNA: ", DNA)
-    print("new DNA: ", mutate_DNA)
-    network = nw_dendrites.Network(adn=DNA, cudaFlag=True, momentum=0.9, weight_decay=0, 
-            enable_activation=True, enable_track_stats=True, dropout_value=0.2, dropout_function=None, version=version)
-    
-    network.TrainingCosineLR_Restarts(dataGenerator=dataGen, max_dt=0.001, min_dt=0.001, epochs=5, restart_dt=5, show_accuarcy=True)
+        mutate_DNA = direction_dna.spread_dendrites(i, DNA)
 
-    network.generateEnergy(dataGen)
-    print("Original accuracy: ", network.getAcurracy())
+        print("DNA: ", DNA)
+        print("new DNA: ", mutate_DNA)
+        network = nw_dendrites.Network(adn=DNA, cudaFlag=True, momentum=0.9, weight_decay=0, 
+                enable_activation=True, enable_track_stats=True, dropout_value=0.2, dropout_function=None, version=version)
 
-    mutate_network = mutation_manager.executeMutation(network, mutate_DNA)
-    mutate_network.generateEnergy(dataGen)
-    print("Accuracy after mutation: ", mutate_network.getAcurracy())
+        network.TrainingCosineLR_Restarts(dataGenerator=dataGen, max_dt=0.001, min_dt=0.001, epochs=1, restart_dt=1, show_accuarcy=True)
 
-    mutate_network.TrainingCosineLR_Restarts(dataGenerator=dataGen, max_dt=0.001, min_dt=0.001, epochs=5, restart_dt=5, show_accuarcy=True)
-    mutate_network.generateEnergy(dataGen)
-    print("Accuracy after mutation training: ", mutate_network.getAcurracy())
+        network.generateEnergy(dataGen)
+        print("Original accuracy: ", network.getAcurracy())
+
+        mutate_network = mutation_manager.executeMutation(network, mutate_DNA)
+        mutate_network.generateEnergy(dataGen)
+        print("Accuracy after mutation: ", mutate_network.getAcurracy())
+
     #mutate_network.TrainingCosineLR_Restarts(dataGenerator=dataGen, max_dt=0.001, min_dt=0.001, epochs=1, restart_dt=1, show_accuarcy=True)
 
     

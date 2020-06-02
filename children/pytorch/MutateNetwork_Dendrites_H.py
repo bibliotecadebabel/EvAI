@@ -31,26 +31,14 @@ def executeMutation(oldNetwork, newAdn):
 
     elif length_newadn > length_oldadn: # add layer
         #print("add layer mutation")
-        index_layer = __getTargetIndex(oldAdn=oldNetwork.adn, newAdn=newAdn, direction_function=direction_dna.add_layer)
-        mutation_type = m_type.ADD_LAYER
-
-        if index_layer == None:
-            index_layer = __getTargetIndex(oldAdn=oldNetwork.adn, newAdn=newAdn, direction_function=direction_dna.add_pool_layer)
-            mutation_type = m_type.ADD_POOL_LAYER
+        index_layer, mutation_type = __getTargetIndex(oldAdn=oldNetwork.adn, newAdn=newAdn)
         
         __addLayerMutationProcess(oldNetwork=oldNetwork, network=network, lenghtOldAdn=length_oldadn, 
                                         indexAdded=index_layer, mutation_type=mutation_type)
 
-        #print("index added: ", index_layer)
-        #if mutation_type == m_type.ADD_POOL_LAYER:
-        #    __addPoolLayerMutationProcess(oldNetwork=oldNetwork, network=network, lenghtOldAdn=length_oldadn, indexAdded=index_layer)
-        #else:
-        #    __addLayerMutationProcess(oldNetwork=oldNetwork, network=network, lenghtOldAdn=length_oldadn, indexAdded=index_layer)
-    
-
     elif length_oldadn > length_newadn: # remove layer
         #print("remove layer mutation")
-        index_layer = __getTargetIndex(oldAdn=oldNetwork.adn, newAdn=newAdn, direction_function=direction_dna.remove_layer)
+        index_layer = __getTargetRemoved(oldAdn=oldNetwork.adn, newAdn=newAdn)
         __removeLayerMutationProcess(oldNetwork=oldNetwork, network=network, lengthNewAdn=length_newadn, indexRemoved=index_layer)
 
     oldNetwork.updateGradFlag(True)
@@ -114,10 +102,10 @@ def __addLayerMutationProcess(oldNetwork, network, lenghtOldAdn, indexAdded, mut
     addedFound = False
 
     if mutation_type == m_type.ADD_POOL_LAYER:
-        #print("adding pool")
+        print("adding pool")
         __initNewPoolConvolution(network.nodes[indexAdded+1].objects[0])
     else:
-        #print("adding convolution")
+        print("adding convolution")
         __initNewConvolution(network.nodes[indexAdded+1].objects[0])
     
     for i in range(1, lenghtOldAdn+1):
@@ -138,51 +126,6 @@ def __addLayerMutationProcess(oldNetwork, network, lenghtOldAdn, indexAdded, mut
         
         if network.cudaFlag == True:
             torch.cuda.empty_cache()
-
-'''
-def __addLayerMutationProcess(oldNetwork, network, lenghtOldAdn, indexAdded):
-
-    indexOldLayer = 0
-    indexNewLayer = 0
-    addedFound = False
-
-    __initNewConvolution(network.nodes[indexAdded+1].objects[0])
-    
-    removed_dendrite = (3, indexAdded-1, indexAdded)
-
-    #print("removed dendrite: ", removed_dendrite)
-
-    for i in range(1, lenghtOldAdn+1):
-
-        indexNewLayer = i
-        indexOldLayer = i
-
-        if i == indexAdded + 1 or addedFound == True:
-            addedFound = True
-            indexNewLayer += 1
-
-        oldLayer = oldNetwork.nodes[indexOldLayer].objects[0]
-        newLayer = network.nodes[indexNewLayer].objects[0]
-
-        if oldLayer.getFilter() is not None:
-
-            adjustFilterMutation = __getAdjustFilterMutation(indexLayer=i, source_dendrites=[removed_dendrite],
-                                                                network=oldNetwork, adjustLayer=oldLayer, newFilter=newLayer.getFilter())
-            
-            oldFilter = oldLayer.getFilter()
-            oldBias = oldLayer.getBias()
-
-            if adjustFilterMutation is not None:
-                
-                if oldLayer.adn[0] == 0:
-                    oldFilter, oldBias = adjustFilterMutation.adjustEntryFilters(mutation_type=m_type.DEFAULT_REMOVE_DENDRITE)
-
-            __doMutate(oldFilter=oldFilter, oldBias=oldBias, oldBatchnorm=oldLayer.getBatchNorm(),
-                        newLayer=newLayer, flagCuda=network.cudaFlag, layerType=oldLayer.adn[0])
-        
-        if network.cudaFlag == True:
-            torch.cuda.empty_cache()
-'''
 
 def __removeLayerMutationProcess(oldNetwork, network, lengthNewAdn, indexRemoved):
 
@@ -334,14 +277,52 @@ def __getRemovedDendrite(oldAdn, newAdn):
     
 
 
-def __getTargetIndex(oldAdn, newAdn, direction_function):
+def __getTargetIndex(oldAdn, newAdn):
 
+    targetLayer = None
+    indexConv2d = 0
+    stop = False
+    iterations = 0
+    mutation_type = None
+    while not stop:
+
+        indexConv2d = 0
+        for i in range(len(oldAdn)):
+
+            if oldAdn[i][0] == 0: #check if is conv2d
+                generated_dna = direction_dna.add_layer(indexConv2d, oldAdn)
+                if str(generated_dna) == str(newAdn):  
+                    targetLayer = indexConv2d
+                    mutation_type = m_type.ADD_LAYER
+                    stop = True
+                    break
+            
+            if oldAdn[i][0] == 0: #check if is conv2d
+                generated_dna = direction_dna.add_pool_layer(indexConv2d, oldAdn)
+                if str(generated_dna) == str(newAdn):  
+                    targetLayer = indexConv2d
+                    mutation_type = m_type.ADD_POOL_LAYER
+                    stop = True
+                    break
+        
+                indexConv2d += 1
+
+
+        if iterations > 100:
+            print("WARNING STUCK TRYING TO FINDING ADDED OR REMOVED LAYER")
+            iterations = 0
+
+        iterations += 1
+
+    return [targetLayer, mutation_type]
+
+def __getTargetRemoved(oldAdn, newAdn):
     targetLayer = None
     indexConv2d = 0
     for i in range(len(oldAdn)):
 
         if oldAdn[i][0] == 0: #check if is conv2d
-            generated_dna = direction_function(indexConv2d, oldAdn)
+            generated_dna = direction_dna.remove_layer(indexConv2d, oldAdn)
             if str(generated_dna) == str(newAdn):  
                 targetLayer = indexConv2d
                 break

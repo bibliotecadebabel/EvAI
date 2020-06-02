@@ -39,10 +39,9 @@ def DNA_Creator_s(x,y, dna, version):
     selector=random_selector(condition=condition,
         directions=version, num_actions=num_actions,
         mutations=(
-        (0,1,0,0),(0,-1,0,0),
+        (4,0,0,0),
         (1,0,0,0),
-        (0,0,1,1),(0,0,-1,-1),
-        (0,0,1),(0,0,-1),
+        (0,0,1),
         ))
     selector.update(dna)
     actions=selector.get_predicted_actions()
@@ -125,7 +124,7 @@ if __name__ == '__main__':
             DNA_conditions.max_filter_dense : 257,
             DNA_conditions.max_kernel_dense : 9,
             DNA_conditions.max_layer : 30,
-            DNA_conditions.min_filter : 5,
+            DNA_conditions.min_filter : 0,
             DNA_conditions.max_parents : 2}
 
     # TEST_NAME, the name of the experiment (unique)
@@ -200,8 +199,8 @@ if __name__ == '__main__':
                                              (3, 28, 29), (3, 23, 29), (3, 27, 29), (3, 29, 30), (3, 30, 31))
 
     """
-    settings.initial_dna =   ((-1, 1, 3, 32, 32), (0, 3, 32, 3, 3),(0, 32, 64, 3, 3, 2), (0, 64, 128, 3, 3, 2),
-                                (0, 128, 32, 8, 8),
+    settings.initial_dna =   ((-1, 1, 3, 32, 32), (0, 3, 16, 3, 3),(0, 16, 16, 3, 3, 2), (0, 16, 32, 3, 3, 2),
+                                (0, 32, 32, 8, 8),
                                 (1, 32, 10),
                                 (2,),
                                 (3, -1, 0),
