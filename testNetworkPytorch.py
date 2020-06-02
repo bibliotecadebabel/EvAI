@@ -14,6 +14,10 @@ import DNA_directions_h as direction_dna
 import children.pytorch.MutationManager as MutationManager
 import const.versions as directions_version
 
+import os
+import utilities.NetworkStorage as StorageManager
+import TestNetwork.ExperimentSettings as ExperimentSettings
+
 def dropout_function(base_p, total_conv2d, index_conv2d):
     value = 0
     if index_conv2d == 2:
@@ -66,39 +70,51 @@ def Test_Mutacion():
 
     mutation_manager = MutationManager.MutationManager(directions_version=version)
     
-    for i in range(0, 4):
-        print("index: ", i)
-        DNA =  ((-1, 1, 3, 32, 32), (0, 3, 16, 3, 3),(0, 16, 16, 3, 3, 2), (0, 16, 32, 3, 3, 2),
-                                    (0, 32, 32, 8, 8),
-                                    (1, 32, 10),
-                                    (2,),
-                                    (3, -1, 0),
-                                    (3, 0, 1),
-                                    (3, 1, 2),
-                                    (3, 2, 3),
-                                    (3, 3, 4),
-                                    (3, 4, 5))
+    DNA =  ((-1, 1, 3, 32, 32), (0, 3, 16, 3, 3),(0, 16, 16, 3, 3, 2), (0, 16, 32, 3, 3, 2),
+                                (0, 32, 32, 8, 8),
+                                (1, 32, 10),
+                                (2,),
+                                (3, -1, 0),
+                                (3, 0, 1),
+                                (3, 1, 2),
+                                (3, 2, 3),
+                                (3, 3, 4),
+                                (3, 4, 5))
 
+    network = nw_dendrites.Network(adn=DNA, cudaFlag=True, momentum=0.9, weight_decay=0, 
+            enable_activation=True, enable_track_stats=True, dropout_value=0.2, dropout_function=None, version=version)
 
-        mutate_DNA = direction_dna.spread_dendrites(i, DNA)
+    network.TrainingCosineLR_Restarts(dataGenerator=dataGen, max_dt=0.001, min_dt=0.001, epochs=5, restart_dt=5, show_accuarcy=True)
 
-        print("DNA: ", DNA)
-        print("new DNA: ", mutate_DNA)
-        network = nw_dendrites.Network(adn=DNA, cudaFlag=True, momentum=0.9, weight_decay=0, 
-                enable_activation=True, enable_track_stats=True, dropout_value=0.2, dropout_function=None, version=version)
+    network.generateEnergy(dataGen)
+    print("Final accuracy: ", network.getAcurracy())
 
-        network.TrainingCosineLR_Restarts(dataGenerator=dataGen, max_dt=0.001, min_dt=0.001, epochs=1, restart_dt=1, show_accuarcy=True)
+    path = os.path.join("saved_models","cifar", "test_red_storage_1")
+    network.saveModel(path)
 
-        network.generateEnergy(dataGen)
-        print("Original accuracy: ", network.getAcurracy())
-
-        mutate_network = mutation_manager.executeMutation(network, mutate_DNA)
-        mutate_network.generateEnergy(dataGen)
-        print("Accuracy after mutation: ", mutate_network.getAcurracy())
 
     #mutate_network.TrainingCosineLR_Restarts(dataGenerator=dataGen, max_dt=0.001, min_dt=0.001, epochs=1, restart_dt=1, show_accuarcy=True)
 
+def Test_Storage():
     
+    settings = ExperimentSettings.ExperimentSettings()
+    settings.momentum = 0.9
+
+    network = StorageManager.loadNetwork(fileName="test_red_storage_1", settings=settings)
+    
+    print("network version: ", network.version)
+
+    dataGen = GeneratorFromCIFAR.GeneratorFromCIFAR(2,  128, threads=2, dataAugmentation=True)
+    dataGen.dataConv2d()
+
+    network.generateEnergy(dataGen)
+    print("Load accuracy: ", network.getAcurracy())
+
+    network.TrainingCosineLR_Restarts(dataGenerator=dataGen, max_dt=0.001, min_dt=0.001, epochs=5, restart_dt=5, show_accuarcy=True)
+
+    network.generateEnergy(dataGen)
+    print("Final accuracy: ", network.getAcurracy())
 
 if __name__ == "__main__":
-    Test_Mutacion()
+    #Test_Mutacion()
+    Test_Storage()

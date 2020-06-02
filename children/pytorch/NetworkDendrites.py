@@ -320,7 +320,7 @@ class Network(nn.Module, na.NetworkAbstract):
 
 
                 if i % print_every == print_every - 1:
-                    self.__printValues(epoch + 1, i, avg=(total_steps//4))
+                    self.__printValues(epoch + 1, i, avg=(print_every))
 
             epoch+= 1
             
