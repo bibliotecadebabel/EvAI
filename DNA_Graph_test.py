@@ -16,8 +16,8 @@ def DNA_h(x,y):
     center=((-1,1,3,32,32),
             (0,3, 15, 3 , 3),
             (0,18, 15, 3,  3),
-            (0,33,33,2,2,2),
-            (0,33, 50, 16, 16),
+            (0,33,33,2,2),
+            (0,33, 50, 32, 32),
             (1, 50,10),
              (2,),
             (3,-1,0),
@@ -27,7 +27,8 @@ def DNA_h(x,y):
             (3,3,4),
             (3,4,5))
     version='h'
-    mutations=((4,0,0,0),(1,0,0,0),(0,1,0,0),(0,1,0,0),(0,0,1))
+    mutations=((4,0,0,0),(1,0,0,0),(0,0,1))
+    #mutations=((4,0,0,0),(1,0,0,0),(0,1,0,0),(0,1,0,0),(0,0,1))
     selector=Selector_creator(condition=condition_b,
         directions=version,mutations=mutations,num_actions=10)
     selector.update(center)
