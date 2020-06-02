@@ -20,9 +20,9 @@ def dropout_function(base_p, total_conv2d, index_conv2d):
 """
 
 def dropout_function(base_p, total_conv2d, index_conv2d):
-
     value = 3/5*base_p +(base_p-3/5*base_p)*1/ (total_conv2d - index_conv2d)
     print("conv2d: ", index_conv2d, " - dropout: ", value)
+    return value
 
 def pcos(x):
     if x>np.pi:
