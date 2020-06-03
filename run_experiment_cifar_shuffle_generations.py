@@ -11,18 +11,20 @@ import const.versions as directions_version
 import numpy as np
 import test_DNAs as DNAs
 ###### EXPERIMENT SETTINGS ######
-"""
+
 def dropout_function(base_p, total_conv2d, index_conv2d):
 
     value = base_p / (total_conv2d - index_conv2d)+base_p/2
     #print("conv2d: ", index_conv2d, " - dropout: ", value)
     return value
-"""
 
+
+"""
 def dropout_function(base_p, total_conv2d, index_conv2d):
     value = base_p +(3/5*base_p-base_p)*(total_conv2d - index_conv2d)/total_conv2d
     #print("conv2d: ", index_conv2d, " - dropout: ", value)
     return value
+"""
 
 def pcos(x):
     if x>np.pi:
@@ -128,12 +130,12 @@ if __name__ == '__main__':
 
     MAX_FILTERS_DENSE = 130
 
-    list_conditions={DNA_conditions.max_filter : 65,
-            DNA_conditions.max_filter_dense : 260,
+    list_conditions={DNA_conditions.max_filter : 270,
+            DNA_conditions.max_filter_dense : 530,
             DNA_conditions.max_kernel_dense : 9,
             DNA_conditions.max_layer : 30,
             DNA_conditions.min_filter : 4,
-            DNA_conditions.max_parents : 4}
+            DNA_conditions.max_parents : 2}
 
     # TEST_NAME, the name of the experiment (unique)
     settings.test_name = input("Enter TestName: ")
@@ -210,8 +212,8 @@ if __name__ == '__main__':
     #settings.initial_dna =   DNAs.DNA_ep166_h_ag
 
 
-    settings.initial_dna =   ((-1, 1, 3, 32, 32), (0, 3, 16, 3, 3),(0, 16, 32, 3, 3, 2), (0, 32, 64, 3, 3, 2),
-                                (0, 64, 256, 8, 8),
+    settings.initial_dna =   ((-1, 1, 3, 32, 32), (0, 3, 32, 3, 3),(0, 32, 64, 3, 3, 2), (0, 64, 128, 3, 3, 2),
+                                (0, 128, 256, 8, 8),
                                 (1, 256, 10),
                                 (2,),
                                 (3, -1, 0),
