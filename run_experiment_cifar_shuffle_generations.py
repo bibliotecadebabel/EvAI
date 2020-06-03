@@ -21,7 +21,7 @@ def dropout_function(base_p, total_conv2d, index_conv2d):
 
 def dropout_function(base_p, total_conv2d, index_conv2d):
     value = base_p +(3/5*base_p-base_p)*(total_conv2d - index_conv2d)/total_conv2d
-    print("conv2d: ", index_conv2d, " - dropout: ", value)
+    #print("conv2d: ", index_conv2d, " - dropout: ", value)
     return value
 
 def pcos(x):
@@ -92,7 +92,7 @@ if __name__ == '__main__':
     num_actions=5
 
     e=300
-    settings.max_init_iter = 40
+    settings.max_init_iter = 1
     INIT_ITER = 20*e
     #settings.init_dt_array = exp_alai(.5,INIT_ITER,1,5)
     settings.init_dt_array =  Alaising(1,5,INIT_ITER)
