@@ -127,12 +127,12 @@ if __name__ == '__main__':
 
     MAX_FILTERS_DENSE = 130
 
-    list_conditions={DNA_conditions.max_filter : 520,
-            DNA_conditions.max_filter_dense : 520,
+    list_conditions={DNA_conditions.max_filter : 65,
+            DNA_conditions.max_filter_dense : 260,
             DNA_conditions.max_kernel_dense : 9,
             DNA_conditions.max_layer : 30,
-            DNA_conditions.min_filter : 0,
-            DNA_conditions.max_parents : 2}
+            DNA_conditions.min_filter : 4,
+            DNA_conditions.max_parents : 4}
 
     # TEST_NAME, the name of the experiment (unique)
     settings.test_name = input("Enter TestName: ")
@@ -206,13 +206,12 @@ if __name__ == '__main__':
                                              (3, 28, 29), (3, 23, 29), (3, 27, 29), (3, 29, 30), (3, 30, 31))
 
     """
-    settings.initial_dna =   DNAs.DNA_ep166_h_ag
+    #settings.initial_dna =   DNAs.DNA_ep166_h_ag
 
-    """
 
-    settings.initial_dna =   ((-1, 1, 3, 32, 32), (0, 3, 16, 3, 3),(0, 16, 16, 3, 3, 2), (0, 16, 32, 3, 3, 2),
-                                (0, 32, 32, 8, 8),
-                                (1, 32, 10),
+    settings.initial_dna =   ((-1, 1, 3, 32, 32), (0, 3, 16, 3, 3),(0, 16, 32, 3, 3, 2), (0, 32, 64, 3, 3, 2),
+                                (0, 64, 256, 8, 8),
+                                (1, 256, 10),
                                 (2,),
                                 (3, -1, 0),
                                 (3, 0, 1),
@@ -220,7 +219,7 @@ if __name__ == '__main__':
                                 (3, 2, 3),
                                 (3, 3, 4),
                                 (3, 4, 5))
-    """
+
 
     dataCreator = CommandCreateDataGen.CommandCreateDataGen(cuda=settings.cuda)
     dataCreator.execute(compression=2, batchSize=settings.batch_size, source=DATA_SOURCE, threads=THREADS, dataAugmentation=ENABLE_AUGMENTATION)
