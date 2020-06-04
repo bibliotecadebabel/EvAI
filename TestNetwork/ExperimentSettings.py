@@ -38,3 +38,5 @@ class ExperimentSettings():
         self.dropout_function = None
         self.enable_last_activation = None
         self.version = None
+
+        self.loadedNetwork = None

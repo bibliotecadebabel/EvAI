@@ -70,28 +70,24 @@ def Test_Mutacion():
 
     mutation_manager = MutationManager.MutationManager(directions_version=version)
     
-    DNA =  ((-1, 1, 3, 32, 32), (0, 3, 16, 3, 3),(0, 16, 16, 3, 3, 2), (0, 16, 32, 3, 3, 2),
-                                (0, 32, 32, 8, 8),
-                                (1, 32, 10),
-                                (2,),
-                                (3, -1, 0),
-                                (3, 0, 1),
-                                (3, 1, 2),
-                                (3, 2, 3),
-                                (3, 3, 4),
-                                (3, 4, 5))
+    for i in range(0, 6):
 
-    network = nw_dendrites.Network(adn=DNA, cudaFlag=True, momentum=0.9, weight_decay=0, 
-            enable_activation=True, enable_track_stats=True, dropout_value=0.2, dropout_function=None, version=version)
+        DNA =  ((-1, 1, 3, 32, 32), (0, 3, 16, 3, 3), (0, 16, 16, 3, 3, 2), (0, 16, 32, 3, 3, 2), (0, 32, 32, 4, 4, 2), 
+                    (0, 64, 32, 8, 8), (1, 32, 10), (2,), (3, -1, 0), (3, 0, 1), (3, 1, 2), (3, 2, 3), (3, 2, 4),
+                    (3, 3, 4), (3, 4, 5), (3, 5, 6))
 
-    network.TrainingCosineLR_Restarts(dataGenerator=dataGen, max_dt=0.001, min_dt=0.001, epochs=5, restart_dt=5, show_accuarcy=True)
+        #MUTATE_DNA_1 = direction_dna.add_layer(i, DNA)
+        MUTATE_DNA_2 = direction_dna.add_pool_layer(i, DNA)
 
-    network.generateEnergy(dataGen)
-    print("Final accuracy: ", network.getAcurracy())
+        network = nw_dendrites.Network(adn=DNA, cudaFlag=True, momentum=0.9, weight_decay=0, 
+                enable_activation=True, enable_track_stats=True, dropout_value=0.2, dropout_function=None, version=version)
 
-    path = os.path.join("saved_models","cifar", "test_red_storage_1")
-    network.saveModel(path)
+        
+        #print("add convolution: ", i)
+        #mutate_network_1 = mutation_manager.executeMutation(network, MUTATE_DNA_1)
 
+        print("add max pool: ", i)
+        mutate_network_2 = mutation_manager.executeMutation(network, MUTATE_DNA_2)
 
     #mutate_network.TrainingCosineLR_Restarts(dataGenerator=dataGen, max_dt=0.001, min_dt=0.001, epochs=1, restart_dt=1, show_accuarcy=True)
 
@@ -116,5 +112,5 @@ def Test_Storage():
     print("Final accuracy: ", network.getAcurracy())
 
 if __name__ == "__main__":
-    #Test_Mutacion()
-    Test_Storage()
+    Test_Mutacion()
+    #Test_Storage()

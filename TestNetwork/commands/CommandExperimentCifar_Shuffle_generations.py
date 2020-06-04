@@ -22,12 +22,16 @@ class CommandExperimentCifar_Restarts():
         self.__testModelDao = TestModelDAO.TestModelDAO(db='database.db')
 
         self.__bestNetwork = None
-        self.__bestNetwork = nw.Network(adn=settings.initial_dna, cudaFlag=settings.cuda,
-                                momentum=settings.momentum, weight_decay=settings.weight_decay, 
-                                enable_activation=settings.enable_activation, 
-                                enable_track_stats=settings.enable_track_stats, dropout_value=settings.dropout_value,
-                                dropout_function=settings.dropout_function, enable_last_activation=settings.enable_last_activation,
-                                version=settings.version)
+
+        if self.__settings.loadedNetwork == None:
+            self.__bestNetwork = nw.Network(adn=settings.initial_dna, cudaFlag=settings.cuda,
+                                    momentum=settings.momentum, weight_decay=settings.weight_decay, 
+                                    enable_activation=settings.enable_activation, 
+                                    enable_track_stats=settings.enable_track_stats, dropout_value=settings.dropout_value,
+                                    dropout_function=settings.dropout_function, enable_last_activation=settings.enable_last_activation,
+                                    version=settings.version)
+        else:
+            self.__bestNetwork = self.__settings.loadedNetwork
         
         self.mutation_manager = mutation_manager.MutationManager(directions_version=settings.version)
 

@@ -17,7 +17,7 @@ from DNA_creators import Creator_from_selection as Creator_s
 from utilities.Abstract_classes.classes.random_selector import random_selector
 import DNA_directions_pool as direction_dna
 import utilities.FileManager as FileManager
-import torchvision.transforms as transforms
+import TestNetwork.AugmentationSettings as AugmentationSettings
 
 def dropout_function(base_p, total_conv2d, index_conv2d):
     value = 0
@@ -64,14 +64,17 @@ def DNA_pool(x,y):
 
 def Test_Mutacion():
 
-    transform_mode = transforms.Compose([
-                transforms.RandomAffine(0, translate=(0.1, 0.1)),
-                transforms.RandomHorizontalFlip(),
-                transforms.ToTensor(),
-                transforms.Normalize((0.5, 0.5, 0.5), (0.5, 0.5, 0.5)),
-            ])
+    augmentation_settings = AugmentationSettings.AugmentationSettings()
 
-    dataGen = GeneratorFromCIFAR.GeneratorFromCIFAR(2,  64, threads=2, dataAugmentation=True, transforms_mode=transform_mode)
+    transform_list = { 
+        ## DEFAULT
+        augmentation_settings.randomAffine : True,
+        augmentation_settings.randomHorizontalFlip : True       
+    }
+
+    transform_compose = augmentation_settings.generateTransformCompose(transform_list, fiveCrop=True)
+
+    dataGen = GeneratorFromCIFAR.GeneratorFromCIFAR(2,  64, threads=2, dataAugmentation=True, transforms_mode=transform_compose)
     dataGen.dataConv2d()
 
     fileManager = FileManager.FileManager()

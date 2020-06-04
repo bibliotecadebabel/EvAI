@@ -187,7 +187,7 @@ class Network(nn.Module, na.NetworkAbstract):
         self.__doBackward()
         self.updateGradFlag(False)
 
-    def __doTraining(self, inputs, labels_data):
+    def __doTraining(self, inputs, labels_data, doView=False):
 
         self.assignLabels(labels_data)
         self.total_value = 0
@@ -348,7 +348,7 @@ class Network(nn.Module, na.NetworkAbstract):
                     inputs, labels_data = data[0].cuda(), data[1].cuda()
                 else:
                     inputs, labels_data = data[0], data[1]
-
+                    
                 self.__doTraining(inputs=inputs, labels_data=labels_data)
 
                 self.__currentEpoch = i

@@ -309,7 +309,7 @@ def __getTargetIndex(oldAdn, newAdn):
 
 
         if iterations > 100:
-            print("WARNING STUCK TRYING TO FINDING ADDED OR REMOVED LAYER")
+            print("WARNING STUCK TRYING TO FINDING ADDED LAYER")
             iterations = 0
 
         iterations += 1
