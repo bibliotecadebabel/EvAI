@@ -11,7 +11,7 @@ import const.versions as directions_version
 import numpy as np
 import test_DNAs as DNAs
 ###### EXPERIMENT SETTINGS ######
-
+"""
 def dropout_function(base_p, total_conv2d, index_conv2d):
 
     value = base_p / (total_conv2d - index_conv2d)+base_p/2
@@ -24,7 +24,7 @@ def dropout_function(base_p, total_conv2d, index_conv2d):
     value = base_p +(3/5*base_p-base_p)*(total_conv2d - index_conv2d)/total_conv2d
     #print("conv2d: ", index_conv2d, " - dropout: ", value)
     return value
-"""
+
 
 def pcos(x):
     if x>np.pi:
@@ -95,8 +95,8 @@ if __name__ == '__main__':
     num_actions=5
 
     e=300
-    settings.max_init_iter = 1
-    INIT_ITER = 20*e
+    settings.max_init_iter = 16
+    INIT_ITER = 50*e
     #settings.init_dt_array = exp_alai(.5,INIT_ITER,1,5)
     settings.init_dt_array =  Alaising(1,5,INIT_ITER)
 
@@ -209,9 +209,9 @@ if __name__ == '__main__':
                                              (3, 28, 29), (3, 23, 29), (3, 27, 29), (3, 29, 30), (3, 30, 31))
 
     """
-    #settings.initial_dna =   DNAs.DNA_ep166_h_ag
+    settings.initial_dna =   DNA_calibration_2
 
-
+    """
     settings.initial_dna =   ((-1, 1, 3, 32, 32), (0, 3, 32, 3, 3),(0, 32, 64, 3, 3, 2), (0, 64, 128, 3, 3, 2),
                                 (0, 128, 256, 8, 8),
                                 (1, 256, 10),
@@ -222,6 +222,7 @@ if __name__ == '__main__':
                                 (3, 2, 3),
                                 (3, 3, 4),
                                 (3, 4, 5))
+    """
 
 
     dataCreator = CommandCreateDataGen.CommandCreateDataGen(cuda=settings.cuda)
