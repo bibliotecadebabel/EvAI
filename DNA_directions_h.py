@@ -414,7 +414,7 @@ directions_labels.update({creator:type})
 type=(4,0,0,0)
 def add_pool_layer(num_layer,source_DNA):
     k_d=initialize_kernel()
-    if num_layer>len(DNA2layers(source_DNA))-3:
+    if num_layer>len(DNA2layers(source_DNA))-4:
         return None
     def relabler(k):
         if k==-2:

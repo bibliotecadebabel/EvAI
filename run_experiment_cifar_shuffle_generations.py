@@ -17,12 +17,14 @@ def dropout_function(base_p, total_conv2d, index_conv2d):
     value = base_p / (total_conv2d - index_conv2d)+base_p/2
     #print("conv2d: ", index_conv2d, " - dropout: ", value)
     return value
-"""
 
+
+"""
 def dropout_function(base_p, total_conv2d, index_conv2d):
-    value = 3/5*base_p +(base_p-3/5*base_p)*1/ (total_conv2d - index_conv2d)
+    value = base_p +(3/5*base_p-base_p)*(total_conv2d - index_conv2d)/total_conv2d
     print("conv2d: ", index_conv2d, " - dropout: ", value)
     return value
+
 
 def pcos(x):
     if x>np.pi:
@@ -48,7 +50,8 @@ def DNA_Creator_s(x,y, dna, version):
         mutations=(
         (4,0,0,0),
         (1,0,0,0),
-        (0,0,1),
+        (0,0,1),(0,0,-1),
+        (0,1,0,0),
         ))
     selector.update(dna)
     actions=selector.get_predicted_actions()
@@ -92,8 +95,8 @@ if __name__ == '__main__':
     num_actions=5
 
     e=300
-    settings.max_init_iter = 40
-    INIT_ITER = 20*e
+    settings.max_init_iter = 16
+    INIT_ITER = 50*e
     #settings.init_dt_array = exp_alai(.5,INIT_ITER,1,5)
     settings.init_dt_array =  Alaising(1,5,INIT_ITER)
 
@@ -127,12 +130,12 @@ if __name__ == '__main__':
 
     MAX_FILTERS_DENSE = 130
 
-    list_conditions={DNA_conditions.max_filter : 520,
-            DNA_conditions.max_filter_dense : 520,
-            DNA_conditions.max_kernel_dense : 9,
-            DNA_conditions.max_layer : 30,
+    list_conditions={DNA_conditions.max_filter : 530,
+            DNA_conditions.max_filter_dense : 530,
+            DNA_conditions.max_kernel_dense : 50,
+            DNA_conditions.max_layer : 50,
             DNA_conditions.min_filter : 0,
-            DNA_conditions.max_parents : 2}
+            DNA_conditions.max_parents : 50}
 
     # TEST_NAME, the name of the experiment (unique)
     settings.test_name = input("Enter TestName: ")
@@ -206,13 +209,12 @@ if __name__ == '__main__':
                                              (3, 28, 29), (3, 23, 29), (3, 27, 29), (3, 29, 30), (3, 30, 31))
 
     """
-    settings.initial_dna =   DNAs.DNA_ep166_h_ag
+    settings.initial_dna =   DNAs.DNA_calibration_2
 
     """
-
-    settings.initial_dna =   ((-1, 1, 3, 32, 32), (0, 3, 16, 3, 3),(0, 16, 16, 3, 3, 2), (0, 16, 32, 3, 3, 2),
-                                (0, 32, 32, 8, 8),
-                                (1, 32, 10),
+    settings.initial_dna =   ((-1, 1, 3, 32, 32), (0, 3, 32, 3, 3),(0, 32, 64, 3, 3, 2), (0, 64, 128, 3, 3, 2),
+                                (0, 128, 256, 8, 8),
+                                (1, 256, 10),
                                 (2,),
                                 (3, -1, 0),
                                 (3, 0, 1),
@@ -221,6 +223,7 @@ if __name__ == '__main__':
                                 (3, 3, 4),
                                 (3, 4, 5))
     """
+
 
     dataCreator = CommandCreateDataGen.CommandCreateDataGen(cuda=settings.cuda)
     dataCreator.execute(compression=2, batchSize=settings.batch_size, source=DATA_SOURCE, threads=THREADS, dataAugmentation=ENABLE_AUGMENTATION)
