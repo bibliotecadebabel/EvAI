@@ -235,8 +235,7 @@ if __name__ == '__main__':
     """
 
     model_name = "328_test-dropout3_model_0"
-    settings.loadedNetwork = NetworkStorage.loadNetwork(fileName=model_name, settings=settings) 
-
+     
 
     dataCreator = CommandCreateDataGen.CommandCreateDataGen(cuda=settings.cuda)
     dataCreator.execute(compression=2, batchSize=settings.batch_size, source=DATA_SOURCE, threads=THREADS, dataAugmentation=ENABLE_AUGMENTATION, transformCompose=transform_compose)
@@ -247,6 +246,10 @@ if __name__ == '__main__':
     settings.dataGen = dataGen
     settings.selector = selector
     settings.initial_space = space
+
+    settings.loadedNetwork = NetworkStorage.loadNetwork(fileName=model_name, settings=settings)
+    settings.loadedNetwork.generateEnergy(dataGen)
+    print("loaded network accuracy: ", settings.loadedNetwork.getAcurracy())
 
     trainer = CommandExperimentCifar_Restarts.CommandExperimentCifar_Restarts(settings=settings)
     trainer.execute()
