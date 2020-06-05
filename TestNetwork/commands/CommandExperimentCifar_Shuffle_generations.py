@@ -9,6 +9,7 @@ import TestNetwork.ExperimentSettings
 import os
 import time
 import utilities.FileManager as FileManager
+import torch
 
 class CommandExperimentCifar_Restarts():
 
@@ -123,6 +124,9 @@ class CommandExperimentCifar_Restarts():
                 print("best current accuracy= ", best_network.getAcurracy())
 
                 for i in range(max_iter):
+                    
+                    torch.cuda.empty_cache()
+
                     print("iteration: ", i+1)
                     network.iterTraining(self.__settings.dataGen, dt_array)
                     network.generateEnergy(self.__settings.dataGen)
@@ -154,6 +158,7 @@ class CommandExperimentCifar_Restarts():
                 print("initial accuracy= ", best_accuracy)
 
                 for i in range(max_iter):
+                    torch.cuda.empty_cache()
                     print("iteration: ", i+1)
                     network.iterTraining(self.__settings.dataGen, dt_array)
                     network.generateEnergy(self.__settings.dataGen)
@@ -229,6 +234,7 @@ class CommandExperimentCifar_Restarts():
             self.__generateNewSpace()
             self.__generateNetworks()
             
+            torch.cuda.empty_cache()
 
 
     def __getBestNetwork(self):
@@ -269,6 +275,7 @@ class CommandExperimentCifar_Restarts():
 
             if len(nodeCenter.kids) > 0:
                 stop = True
+                
 
 
         self.__space = None
