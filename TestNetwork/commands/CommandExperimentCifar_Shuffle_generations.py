@@ -8,6 +8,7 @@ import const.path_models as const_path
 import TestNetwork.ExperimentSettings
 import os
 import time
+import torch
 
 class CommandExperimentCifar_Restarts():
 
@@ -40,6 +41,14 @@ class CommandExperimentCifar_Restarts():
 
 
     def __generateNetworks(self):
+
+        networks = self.__networks
+        del networks
+        
+        nodes = self.__nodes
+        del nodes
+
+        torch.cuda.empty_cache()
 
         self.__networks = []
         self.__nodes = []
@@ -191,6 +200,7 @@ class CommandExperimentCifar_Restarts():
             print("---- EPOCH #", j)
         
             for i  in range(1, len(self.__networks)):
+                torch.cuda.empty_cache()
                 print("Training net #", i, " - direction: ", self.__actions[i-1])
                 self.__networks[i] = self.__trainNetwork(network=self.__networks[i], dt_array=self.__settings.joined_dt_array, max_iter=self.__settings.max_joined_iter)
 

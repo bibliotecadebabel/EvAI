@@ -103,7 +103,7 @@ if __name__ == '__main__':
     # INITIAL DT PARAMETERS
     num_actions=5
 
-    e=300
+    e=5
     settings.max_init_iter = 8
     INIT_ITER = 100*e
     #settings.init_dt_array = exp_alai(.5,INIT_ITER,1,5)
