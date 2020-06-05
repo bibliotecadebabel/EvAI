@@ -247,5 +247,9 @@ if __name__ == '__main__':
     settings.initial_space = space
 
     settings.save_txt = True
+
+    settings.disable_mutation = True
+
+    print("**** WARNING DISABLE MUTATION = ", settings.disable_mutation)
     trainer = CommandExperimentCifar_Restarts.CommandExperimentCifar_Restarts(settings=settings)
     trainer.execute()

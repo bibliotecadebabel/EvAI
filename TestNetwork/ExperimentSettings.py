@@ -41,3 +41,4 @@ class ExperimentSettings():
 
         self.loadedNetwork = None
         self.save_txt = False
+        self.disable_mutation = False

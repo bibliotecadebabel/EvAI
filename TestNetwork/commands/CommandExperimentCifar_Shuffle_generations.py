@@ -208,33 +208,35 @@ class CommandExperimentCifar_Restarts():
         
         self.__saveModel(self.__bestNetwork, test_id=test_id, iteration=0)
 
-        self.__generateNewSpace()
-        self.__generateNetworks()
-
-        for j in range(1, self.__settings.epochs+1):
-
-            print("---- EPOCH #", j)
-        
-            for i  in range(1, len(self.__networks)):
-                print("Training net #", i, " - direction: ", self.__actions[i-1])
-                self.__networks[i] = self.__trainNetwork(network=self.__networks[i], dt_array=self.__settings.joined_dt_array, max_iter=self.__settings.max_joined_iter)
-
-            self.__saveEnergy()
-            self.__testResultDao.insert(idTest=test_id, iteration=j, dna_graph=self.__space)
-
-            self.__bestNetwork = self.__getBestNetwork()
-
-            print("TRAINING BEST NETWORK")
-
-            self.__bestNetwork = self.__trainNetwork(network=self.__bestNetwork, dt_array=self.__settings.best_dt_array,
-                                        max_iter=self.__settings.max_best_iter, keep_clone=True)
-
-            self.__saveModel(network=self.__bestNetwork, test_id=test_id, iteration=j)
+        if self.__settings.disable_mutation == False:
             
             self.__generateNewSpace()
             self.__generateNetworks()
+
+            for j in range(1, self.__settings.epochs+1):
+
+                print("---- EPOCH #", j)
             
-            torch.cuda.empty_cache()
+                for i  in range(1, len(self.__networks)):
+                    print("Training net #", i, " - direction: ", self.__actions[i-1])
+                    self.__networks[i] = self.__trainNetwork(network=self.__networks[i], dt_array=self.__settings.joined_dt_array, max_iter=self.__settings.max_joined_iter)
+
+                self.__saveEnergy()
+                self.__testResultDao.insert(idTest=test_id, iteration=j, dna_graph=self.__space)
+
+                self.__bestNetwork = self.__getBestNetwork()
+
+                print("TRAINING BEST NETWORK")
+
+                self.__bestNetwork = self.__trainNetwork(network=self.__bestNetwork, dt_array=self.__settings.best_dt_array,
+                                            max_iter=self.__settings.max_best_iter, keep_clone=True)
+
+                self.__saveModel(network=self.__bestNetwork, test_id=test_id, iteration=j)
+                
+                self.__generateNewSpace()
+                self.__generateNetworks()
+                
+                torch.cuda.empty_cache()
 
 
     def __getBestNetwork(self):
