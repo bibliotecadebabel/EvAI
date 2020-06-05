@@ -184,6 +184,9 @@ class CommandExperimentCifar_Restarts():
                 network.generateEnergy(self.__settings.dataGen)
                 current_accuracy = network.getAcurracy()
                 print("current accuracy=", current_accuracy)
+                
+                if allow_save_txt == True and self.__settings.save_txt == True:
+                    self.__fileManager.appendFile("iter: "+str(i+1)+" - Acc: "+str(current_accuracy))
 
             return network
 
@@ -209,7 +212,7 @@ class CommandExperimentCifar_Restarts():
         self.__saveModel(self.__bestNetwork, test_id=test_id, iteration=0)
 
         if self.__settings.disable_mutation == False:
-            
+
             self.__generateNewSpace()
             self.__generateNetworks()
 
