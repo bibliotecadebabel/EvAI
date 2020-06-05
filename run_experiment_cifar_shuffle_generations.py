@@ -11,7 +11,7 @@ import const.versions as directions_version
 import numpy as np
 import test_DNAs as DNAs
 ###### EXPERIMENT SETTINGS ######
-"""
+
 def dropout_function(base_p, total_conv2d, index_conv2d):
 
     value = base_p / (total_conv2d - index_conv2d)+base_p/2
@@ -24,6 +24,7 @@ def dropout_function(base_p, total_conv2d, index_conv2d):
     value = base_p +(3/5*base_p-base_p)*(total_conv2d - index_conv2d)/total_conv2d
     #print("conv2d: ", index_conv2d, " - dropout: ", value)
     return value
+"""
 
 
 def pcos(x):
@@ -48,7 +49,7 @@ def DNA_Creator_s(x,y, dna, version):
     selector=random_selector(condition=condition,
         directions=version, num_actions=num_actions,
         mutations=(
-        (0,1,0,0),(0,-1,0,0),
+        (0,1,0,0),
         (1,0,0,0),(4,0,0,0),
         (0,0,1),(0,0,-1),
         (0,0,1,1),(0,0,-1,-1),
