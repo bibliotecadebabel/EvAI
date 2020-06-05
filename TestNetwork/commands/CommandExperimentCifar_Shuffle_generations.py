@@ -126,6 +126,7 @@ class CommandExperimentCifar_Restarts():
                     print("current accuracy=", current_accuracy)
                     if current_accuracy >= best_accuracy:
                         del best_network
+                        torch.cuda.empty_cache()
                         best_accuracy = current_accuracy
                         best_network = network.clone()
 
