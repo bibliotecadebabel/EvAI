@@ -48,9 +48,9 @@ def DNA_Creator_s(x,y, dna, version):
     selector=random_selector(condition=condition,
         directions=version, num_actions=num_actions,
         mutations=(
-        (1,0,0,0),(1,0,0,0),
-        (0,0,1),(0,0,-1),
         (0,1,0,0),(0,-1,0,0),
+        (1,0,0,0),(4,0,0,0),
+        (0,0,1),(0,0,-1),
         (0,0,1,1),(0,0,-1,-1),
         ))
     selector.update(dna)
@@ -95,8 +95,8 @@ if __name__ == '__main__':
     num_actions=5
 
     e=300
-    settings.max_init_iter = 4
-    INIT_ITER = 100*e
+    settings.max_init_iter = 1
+    INIT_ITER = 20*e
     #settings.init_dt_array = exp_alai(.5,INIT_ITER,1,5)
     settings.init_dt_array =  Alaising(1,5,INIT_ITER)
 
@@ -126,15 +126,15 @@ if __name__ == '__main__':
     MAX_LAYERS = 30
 
     # MAX FILTERS MUTATION (CONDITION)
-    MAX_FILTERS = 130
+    MAX_FILTERS = 530
 
-    MAX_FILTERS_DENSE = 130
+    MAX_FILTERS_DENSE = 530
 
-    list_conditions={DNA_conditions.max_filter : 530,
-            DNA_conditions.max_filter_dense : 530,
-            DNA_conditions.max_kernel_dense : 1,
+    list_conditions={DNA_conditions.max_filter : 256,
+            DNA_conditions.max_kernel_dense : 9,
             DNA_conditions.max_layer : 30,
-            DNA_conditions.min_filter : 0,
+            DNA_conditions.min_filter : 3,
+            DNA_conditions.max_pool_layer : 5,
             DNA_conditions.max_parents : 2}
 
     # TEST_NAME, the name of the experiment (unique)
@@ -209,6 +209,7 @@ if __name__ == '__main__':
                                              (3, 28, 29), (3, 23, 29), (3, 27, 29), (3, 29, 30), (3, 30, 31))
 
     """
+    """
     settings.initial_dna =   DNAs.DNA_calibration_2
 
     """
@@ -222,7 +223,7 @@ if __name__ == '__main__':
                                 (3, 2, 3),
                                 (3, 3, 4),
                                 (3, 4, 5))
-    """
+
 
 
     dataCreator = CommandCreateDataGen.CommandCreateDataGen(cuda=settings.cuda)

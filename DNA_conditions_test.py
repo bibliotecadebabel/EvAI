@@ -36,16 +36,23 @@ def max_kernel_dense_test():
     print(DNA_conditions.max_kernel_dense(DNA,5))
 
 def dict2condition_test():
-    dict={DNA_conditions.max_kernel_dense : 5,
-            DNA_conditions.max_parents : 1}
+    dict={DNA_conditions.max_filter : 530,
+            DNA_conditions.max_kernel_dense : 1,
+            DNA_conditions.max_layer : 30,
+            DNA_conditions.min_filter : 0,
+            DNA_conditions.max_parents : 2}
     def condition(DNA):
         return DNA_conditions.dict2condition(DNA,dict)
-    DNA=DNAs.DNA_h
+    DNA=DNAs.DNA_calibration_2
     print(condition(DNA))
 
+def max_filter_test():
+    DNA=DNAs.DNA_calibration_2
+    print(DNA_conditions.max_filter(DNA,530))
 
-DNA_min_filter(11,11)
-#dict2condition_test()
+
+#max_filter_test()
+dict2condition_test()
 #max_kernel_dense_test()
 #max_parents_test()
 #DNA_Creator_s(11,11)
