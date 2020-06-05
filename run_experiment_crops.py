@@ -103,9 +103,11 @@ if __name__ == '__main__':
     # INITIAL DT PARAMETERS
     num_actions=5
 
+    init_factor = int(input("init factor: "))
+    max_init_iter = int(input("max init iter: "))
     e=300
-    settings.max_init_iter = 8
-    INIT_ITER = 100*e
+    settings.max_init_iter = max_init_iter
+    INIT_ITER = init_factor*e
     #settings.init_dt_array = exp_alai(.5,INIT_ITER,1,5)
     settings.init_dt_array =  Alaising(1,5,INIT_ITER)
 
@@ -244,5 +246,6 @@ if __name__ == '__main__':
     settings.selector = selector
     settings.initial_space = space
 
+    settings.save_txt = True
     trainer = CommandExperimentCifar_Restarts.CommandExperimentCifar_Restarts(settings=settings)
     trainer.execute()

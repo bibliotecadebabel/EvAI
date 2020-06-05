@@ -145,7 +145,7 @@ if __name__ == '__main__':
             DNA_conditions.max_kernel_dense : 50,
             DNA_conditions.max_layer : 50,
             DNA_conditions.min_filter : 0,
-            DNA_conditions.max_parents : 50}
+            DNA_conditions.max_parents : 2}
 
     # TEST_NAME, the name of the experiment (unique)
     settings.test_name = input("Enter TestName: ")
