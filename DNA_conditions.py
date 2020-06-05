@@ -69,7 +69,7 @@ def max_kernel_dense(DNA,max):
             return DNA
         else:
             return False
-"""
+
 def max_pool_layer(DNA,max):
     u=True
     if not(DNA):
@@ -80,7 +80,7 @@ def max_pool_layer(DNA,max):
             return DNA
         else:
             return False
-"""
+
 
 def restrict_conections(DNA,max=None):
     return no_con_last_layer(
