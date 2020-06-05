@@ -17,6 +17,7 @@ import const.versions as directions_version
 import os
 import utilities.NetworkStorage as StorageManager
 import TestNetwork.ExperimentSettings as ExperimentSettings
+import TestNetwork.AugmentationSettings as AugmentationSettings
 
 def dropout_function(base_p, total_conv2d, index_conv2d):
     value = 0
@@ -63,7 +64,15 @@ def DNA_pool(x,y):
 
 def Test_Mutacion():
 
-    dataGen = GeneratorFromCIFAR.GeneratorFromCIFAR(2,  128, threads=2, dataAugmentation=True)
+    augSettings = AugmentationSettings.AugmentationSettings()
+
+    list_transform = { 
+        augSettings.randomHorizontalFlip : True,
+        augSettings.randomAffine : True,
+    }
+
+    transform_compose = augSettings.generateTransformCompose(transform_dict=list_transform, fiveCrop=True)
+    dataGen = GeneratorFromCIFAR.GeneratorFromCIFAR(2,  128, threads=2, dataAugmentation=True, transforms_mode=transform_compose)
     dataGen.dataConv2d()
     
     version = directions_version.H_VERSION
@@ -83,14 +92,14 @@ def Test_Mutacion():
                 enable_activation=True, enable_track_stats=True, dropout_value=0.2, dropout_function=None, version=version)
 
         
-        #print("add convolution: ", i)
-        #mutate_network_1 = mutation_manager.executeMutation(network, MUTATE_DNA_1)
+        network.TrainingCosineLR_Restarts(dataGenerator=dataGen, max_dt=0.001, min_dt=0.001, epochs=1, restart_dt=1, show_accuarcy=True)
+        network.generateEnergy(dataGen)
+        print("acc: ", network.getAcurracy())
 
-        print("add max pool: ", i)
-        mutate_network_2 = mutation_manager.executeMutation(network, MUTATE_DNA_2)
+        break
 
     #mutate_network.TrainingCosineLR_Restarts(dataGenerator=dataGen, max_dt=0.001, min_dt=0.001, epochs=1, restart_dt=1, show_accuarcy=True)
-
+    
 def Test_Storage():
     
     settings = ExperimentSettings.ExperimentSettings()

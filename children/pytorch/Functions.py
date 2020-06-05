@@ -180,7 +180,13 @@ def MSEloss_propagate(layer):
 
     parent = layer.node.parents[0].objects[0]
 
-    layer.value = layer.object(parent.value, layer.label)
+    value = parent.value
+
+    if parent.value.shape[0] > layer.label.shape[0]:
+        weights = int(parent.value.shape[0] / layer.getCrops())
+        value = parent.value.view(weights, layer.getCrops(), -1).mean(1)
+        
+    layer.value = layer.object(value, layer.label)
 
 ############### CREADOR DE TENSORES ###############
 

@@ -27,10 +27,17 @@ class Layer():
         self.filter_der_total = 0
         self.adn = adn
         self.enable_activation = enable_activation
+        self.__crops = 0
         
         self.__batchnorm = None
         self.__dropout = None
         self.__pool = None
+
+    def setCrops(self, value):
+        self.__crops = value
+
+    def getCrops(self):
+        return self.__crops
 
     def getBiasDer(self):
 
