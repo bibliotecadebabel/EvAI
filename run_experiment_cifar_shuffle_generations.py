@@ -48,10 +48,10 @@ def DNA_Creator_s(x,y, dna, version):
     selector=random_selector(condition=condition,
         directions=version, num_actions=num_actions,
         mutations=(
-        (4,0,0,0),
-        (1,0,0,0),
+        (1,0,0,0),(-1,0,0,0),
         (0,0,1),(0,0,-1),
-        (0,1,0,0),
+        (0,1,0,0),(0,-1,0,0),
+        (0,0,1,1),(0,0,-1,-1),
         ))
     selector.update(dna)
     actions=selector.get_predicted_actions()
@@ -95,8 +95,8 @@ if __name__ == '__main__':
     num_actions=5
 
     e=300
-    settings.max_init_iter = 16
-    INIT_ITER = 50*e
+    settings.max_init_iter = 1
+    INIT_ITER = 20*e
     #settings.init_dt_array = exp_alai(.5,INIT_ITER,1,5)
     settings.init_dt_array =  Alaising(1,5,INIT_ITER)
 
@@ -132,10 +132,10 @@ if __name__ == '__main__':
 
     list_conditions={DNA_conditions.max_filter : 530,
             DNA_conditions.max_filter_dense : 530,
-            DNA_conditions.max_kernel_dense : 50,
-            DNA_conditions.max_layer : 50,
+            DNA_conditions.max_kernel_dense : 1,
+            DNA_conditions.max_layer : 30,
             DNA_conditions.min_filter : 0,
-            DNA_conditions.max_parents : 50}
+            DNA_conditions.max_parents : 2}
 
     # TEST_NAME, the name of the experiment (unique)
     settings.test_name = input("Enter TestName: ")

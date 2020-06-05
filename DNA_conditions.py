@@ -69,6 +69,18 @@ def max_kernel_dense(DNA,max):
             return DNA
         else:
             return False
+"""
+def max_pool_layer(DNA,max):
+    u=True
+    if not(DNA):
+        return False
+    else:
+        num_pool_layer=len([0 for layer in DNA if len(layer) == 6])
+        if num_pool_layer<max+1:
+            return DNA
+        else:
+            return False
+"""
 
 def restrict_conections(DNA,max=None):
     return no_con_last_layer(

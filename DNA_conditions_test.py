@@ -3,6 +3,10 @@ import test_DNAs as DNAs
 import DNA_conditions
 
 
+def DNA_max_pool_layer_test():
+    DNA=DNAs.DNA_calibration_2
+    print(DNA_conditions.max_pool_layer(DNA,10))
+
 def DNA_min_filter(x,y):
     DNA=((-1, 3, 5, 3, 3),(0, 8, 8, 3,3),(0,11,5, x, y), (1, 5, 2), (2,))
     print(DNA_conditions.min_filter(DNA,8))
