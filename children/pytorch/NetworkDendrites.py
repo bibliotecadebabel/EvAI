@@ -181,8 +181,13 @@ class Network(nn.Module, na.NetworkAbstract):
 
     def Train(self, dataElement, peso, n):
 
+        if len(dataElement.size()) > 4:
+            self.__getLossLayer().setCrops(dataElement.shape[1])
+            dataElement = dataElement.view(-1, dataElement.shape[2], dataElement.shape[3], dataElement.shape[4])
+
         self.nodes[0].objects[0].value = dataElement
         self.updateGradFlag(True)
+
         self(dataElement)
         self.__doBackward()
         self.updateGradFlag(False)
@@ -567,8 +572,12 @@ class Network(nn.Module, na.NetworkAbstract):
                 else:
                     inputs, labels = data[0], data[1]
 
+                if len(inputs.size()) > 4:
+                    self.__getLossLayer().setCrops(inputs.shape[1])
+                    inputs = inputs.view(-1, inputs.shape[2], inputs.shape[3], inputs.shape[4])
+
                 model.assignLabels(labels)
-                model.nodes[0].objects[0].value = inputs # DESNORMALIZAR!
+                model.nodes[0].objects[0].value = inputs 
                 model(model.nodes[0].objects[0].value)
 
                 linearValue = model.__getLayerProbability().value

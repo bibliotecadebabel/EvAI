@@ -17,6 +17,22 @@ def customFiveCrop(image):
 
     return resized_image
 
+def fiveCrop(image):
+    img_zoomout = transforms.Resize(28, interpolation=2)(image)
+    pad_image = transforms.Pad(2, fill=0, padding_mode='reflect')(img_zoomout)
+    five_crop_images = transforms.FiveCrop(28)(pad_image)
+    resized_crop = []
+    
+    for crop_image in five_crop_images:
+        resized_crop.append(transforms.Resize(32, interpolation=2)(crop_image))
+
+    del five_crop_images
+
+    tensors_images = torch.stack([transforms.ToTensor()(crop) for crop in resized_crop])
+    normalize_tensors = torch.stack([transforms.Normalize((0.5, 0.5, 0.5), (0.5, 0.5, 0.5))(t) for t in tensors_images])
+
+    return normalize_tensors
+
 def CropTensor(crops):
     return torch.stack([transforms.ToTensor()(crop) for crop in crops])
 
@@ -28,6 +44,7 @@ class AugmentationSettings:
     def __init__(self):
         
         self.__crop = transforms.Lambda(customFiveCrop)
+        self.__fullcrop = transforms.Lambda(fiveCrop)
 
         degrees = 0
         self.randomAffine = transforms.RandomAffine(0, translate=(0.1, 0.1))
@@ -57,11 +74,10 @@ class AugmentationSettings:
                 transform_compose_list.append(key)
 
         if fiveCrop == True:    
-            transform_compose_list.append(self.__crop)
-
-        
-        transform_compose_list.append(transforms.ToTensor())
-        transform_compose_list.append(transforms.Normalize((0.5, 0.5, 0.5), (0.5, 0.5, 0.5)))
+            transform_compose_list.append(self.__fullcrop)
+        else:
+            transform_compose_list.append(transforms.ToTensor())
+            transform_compose_list.append(transforms.Normalize((0.5, 0.5, 0.5), (0.5, 0.5, 0.5)))
         
         print("Augmentation list: ", transform_compose_list)
 
