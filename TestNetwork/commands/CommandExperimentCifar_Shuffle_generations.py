@@ -15,6 +15,8 @@ class CommandExperimentCifar_Restarts():
     def __init__(self, settings : TestNetwork.ExperimentSettings.ExperimentSettings):
         self.__space = settings.initial_space
         self.__selector = settings.selector
+        self.__networks = []
+        self.__nodes = []
         
         self.__settings = settings
         
