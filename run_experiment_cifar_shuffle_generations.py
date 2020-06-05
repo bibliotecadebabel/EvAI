@@ -22,7 +22,7 @@ def dropout_function(base_p, total_conv2d, index_conv2d):
 """
 def dropout_function(base_p, total_conv2d, index_conv2d):
     value = base_p +(3/5*base_p-base_p)*(total_conv2d - index_conv2d)/total_conv2d
-    print("conv2d: ", index_conv2d, " - dropout: ", value)
+    #print("conv2d: ", index_conv2d, " - dropout: ", value)
     return value
 
 
