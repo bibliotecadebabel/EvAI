@@ -125,12 +125,11 @@ if __name__ == '__main__':
     MAX_LAYERS = 30
 
     # MAX FILTERS MUTATION (CONDITION)
-    MAX_FILTERS = 130
+    MAX_FILTERS = 530
 
-    MAX_FILTERS_DENSE = 130
+    MAX_FILTERS_DENSE = 530
 
     list_conditions={DNA_conditions.max_filter : 530,
-            DNA_conditions.max_filter_dense : 530,
             DNA_conditions.max_kernel_dense : 1,
             DNA_conditions.max_layer : 30,
             DNA_conditions.min_filter : 0,

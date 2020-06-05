@@ -43,8 +43,12 @@ def dict2condition_test():
     DNA=DNAs.DNA_h
     print(condition(DNA))
 
+def max_filter_test():
+    DNA=DNAs.DNA_calibration_2
+    print(DNA_conditions.max_filter(DNA,530))
 
-DNA_min_filter(11,11)
+
+max_filter_test()
 #dict2condition_test()
 #max_kernel_dense_test()
 #max_parents_test()
