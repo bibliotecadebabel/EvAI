@@ -50,7 +50,7 @@ class CommandExperimentCifar_Restarts():
         nodes = self.__nodes
         del nodes
 
-        torch.cuda.empty_cache()
+        #torch.cuda.empty_cache()
 
         self.__networks = []
         self.__nodes = []
@@ -126,7 +126,7 @@ class CommandExperimentCifar_Restarts():
                     print("current accuracy=", current_accuracy)
                     if current_accuracy >= best_accuracy:
                         del best_network
-                        torch.cuda.empty_cache()
+                        #torch.cuda.empty_cache()
                         best_accuracy = current_accuracy
                         best_network = network.clone()
 
@@ -203,7 +203,7 @@ class CommandExperimentCifar_Restarts():
             print("---- EPOCH #", j)
         
             for i  in range(1, len(self.__networks)):
-                torch.cuda.empty_cache()
+                #torch.cuda.empty_cache()
                 print("Training net #", i, " - direction: ", self.__actions[i-1])
                 self.__networks[i] = self.__trainNetwork(network=self.__networks[i], dt_array=self.__settings.joined_dt_array, max_iter=self.__settings.max_joined_iter)
 
