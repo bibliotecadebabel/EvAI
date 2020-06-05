@@ -8,12 +8,15 @@ import const.path_models as const_path
 import TestNetwork.ExperimentSettings
 import os
 import time
+import torch
 
 class CommandExperimentCifar_Restarts():
 
     def __init__(self, settings : TestNetwork.ExperimentSettings.ExperimentSettings):
         self.__space = settings.initial_space
         self.__selector = settings.selector
+        self.__networks = []
+        self.__nodes = []
         
         self.__settings = settings
         
@@ -40,6 +43,12 @@ class CommandExperimentCifar_Restarts():
 
 
     def __generateNetworks(self):
+
+        networks = self.__networks
+        del networks
+        
+        nodes = self.__nodes
+        del nodes
 
         self.__networks = []
         self.__nodes = []

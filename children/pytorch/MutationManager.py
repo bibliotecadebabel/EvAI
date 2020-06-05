@@ -4,6 +4,7 @@ import children.pytorch.MutateNetwork_Dendrites_H as mutation_h
 import children.pytorch.MutateNetwork_Dendrites_clone as mutation_clone
 import children.pytorch.MutateNetwork_Dendrites_pool as mutation_pool
 import children.pytorch.MutateNetwork_Dendrites_duplicate as mutation_duplicate
+import torch
 
 class MutationManager():
 
@@ -35,6 +36,7 @@ class MutationManager():
     def executeMutation(self, network, newAdn):
 
         newNetwork = self.__mutation_function.executeMutation(network, newAdn)
-
+        torch.cuda.empty_cache()
+        
         return newNetwork
 
