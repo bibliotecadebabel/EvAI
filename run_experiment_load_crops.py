@@ -142,8 +142,8 @@ if __name__ == '__main__':
 
     list_conditions={DNA_conditions.max_filter : 530,
             DNA_conditions.max_filter_dense : 530,
-            DNA_conditions.max_kernel_dense : 50,
-            DNA_conditions.max_layer : 50,
+            DNA_conditions.max_kernel_dense : 1,
+            DNA_conditions.max_layer : 30,
             DNA_conditions.min_filter : 0,
             DNA_conditions.max_parents : 2}
 
