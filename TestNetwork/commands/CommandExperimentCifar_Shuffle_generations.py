@@ -8,7 +8,7 @@ import const.path_models as const_path
 import TestNetwork.ExperimentSettings
 import os
 import time
-import torch
+import utilities.FileManager as FileManager
 
 class CommandExperimentCifar_Restarts():
 
@@ -39,6 +39,13 @@ class CommandExperimentCifar_Restarts():
         self.mutation_manager = mutation_manager.MutationManager(directions_version=settings.version)
 
         self.__actions = []
+
+        self.__fileManager = FileManager.FileManager()
+        
+        if self.__settings.save_txt == True:
+            self.__fileManager.setFileName(self.__settings.test_name)
+            self.__fileManager.writeFile("")
+        
                             
 
 
@@ -103,7 +110,7 @@ class CommandExperimentCifar_Restarts():
 
         return nodeCenter
 
-    def __trainNetwork(self, network : nw.Network, dt_array, max_iter, keep_clone=False):
+    def __trainNetwork(self, network : nw.Network, dt_array, max_iter, keep_clone=False, allow_save_txt=False):
 
         if self.__settings.allow_interupts == True:
 
@@ -122,6 +129,10 @@ class CommandExperimentCifar_Restarts():
                     current_accuracy = network.getAcurracy()
 
                     print("current accuracy=", current_accuracy)
+
+                    if allow_save_txt == True and self.__settings.save_txt == True:
+                        self.__fileManager.appendFile("iter: "+str(i+1)+" - Acc: "+str(current_accuracy))
+                    
                     if current_accuracy >= best_accuracy:
                         del best_network
                         best_accuracy = current_accuracy
@@ -183,7 +194,7 @@ class CommandExperimentCifar_Restarts():
 
         
         self.__bestNetwork = self.__trainNetwork(network=self.__bestNetwork, 
-                    dt_array=self.__settings.init_dt_array, max_iter=self.__settings.max_init_iter, keep_clone=True)
+                    dt_array=self.__settings.init_dt_array, max_iter=self.__settings.max_init_iter, keep_clone=True, allow_save_txt=True)
 
         self.__bestNetwork = self.__trainNetwork(network=self.__bestNetwork, 
                     dt_array=self.__settings.best_dt_array, max_iter=self.__settings.max_best_iter, keep_clone=True)

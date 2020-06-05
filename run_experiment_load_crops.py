@@ -251,5 +251,6 @@ if __name__ == '__main__':
     settings.loadedNetwork.generateEnergy(dataGen)
     print("loaded network accuracy: ", settings.loadedNetwork.getAcurracy())
 
+    settings.save_txt = True
     trainer = CommandExperimentCifar_Restarts.CommandExperimentCifar_Restarts(settings=settings)
     trainer.execute()
