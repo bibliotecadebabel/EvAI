@@ -72,7 +72,7 @@ if __name__ == '__main__':
         augSettings.randomHorizontalFlip : True    
     }
 
-    transform_compose = augSettings.generateTransformCompose(dict_transformations, True)
+    transform_compose = augSettings.generateTransformCompose(dict_transformations, False)
 
     # DIRECTIONS VERSION
     settings.version = directions_version.H_VERSION
@@ -104,8 +104,8 @@ if __name__ == '__main__':
     num_actions=5
 
     e=300
-    settings.max_init_iter = 16
-    INIT_ITER = 50*e
+    settings.max_init_iter = 8
+    INIT_ITER = 100*e
     #settings.init_dt_array = exp_alai(.5,INIT_ITER,1,5)
     settings.init_dt_array =  Alaising(1,5,INIT_ITER)
 
