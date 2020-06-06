@@ -3,6 +3,10 @@ import test_DNAs as DNAs
 import DNA_conditions
 
 
+def DNA_conv_last():
+    DNA=DNAs.DNA_ep_85_5_pool
+    print(DNA_conditions.max_filter_dense(DNA,400))
+
 def DNA_max_pool_layer_test():
     DNA=DNAs.DNA_calibration_2
     print(DNA_conditions.max_pool_layer(DNA,10))
@@ -36,10 +40,12 @@ def max_kernel_dense_test():
     print(DNA_conditions.max_kernel_dense(DNA,5))
 
 def dict2condition_test():
-    dict={DNA_conditions.max_filter : 530,
-            DNA_conditions.max_kernel_dense : 1,
+    list_conditions={DNA_conditions.max_filter : 256,
+            DNA_conditions.max_filter_dense : 256,
+            DNA_conditions.max_kernel_dense : 9,
             DNA_conditions.max_layer : 30,
-            DNA_conditions.min_filter : 0,
+            DNA_conditions.min_filter : 3,
+            DNA_conditions.max_pool_layer : 5,
             DNA_conditions.max_parents : 2}
     def condition(DNA):
         return DNA_conditions.dict2condition(DNA,dict)
@@ -50,9 +56,9 @@ def max_filter_test():
     DNA=DNAs.DNA_calibration_2
     print(DNA_conditions.max_filter(DNA,530))
 
-
+DNA_conv_last()
 #max_filter_test()
-dict2condition_test()
+#dict2condition_test()
 #max_kernel_dense_test()
 #max_parents_test()
 #DNA_Creator_s(11,11)

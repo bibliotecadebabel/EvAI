@@ -4,7 +4,24 @@ import utilities.Graphs as gr
 import TangentPlane as tplane
 import DNA_directions_h as dire
 import test_DNAs as DNAs
+import DNA_conditions
 
+
+def add_conv_last():
+    dict={DNA_conditions.max_filter : 256,
+            DNA_conditions.max_filter_dense : 530,
+            DNA_conditions.max_kernel_dense : 9,
+            DNA_conditions.max_layer : 30,
+            DNA_conditions.min_filter : 3,
+            DNA_conditions.max_pool_layer : 5,
+            DNA_conditions.max_parents : 2}
+    def condition(DNA):
+        return DNA_conditions.dict2condition(DNA,dict)
+    DNA=DNAs.DNA_ep_85_5_pool
+    DNA=dire.add_layer(26,DNA)
+    print(condition(DNA))
+
+    print(dire.initialize_kernel())
 
 def initialize_kernel_test():
     print('The new dimension is')
@@ -300,7 +317,7 @@ def retract_dendrites_test(x,y):
     print(DNA)
 
 
-
+add_conv_last()
 #initialize_kernel_test()
 #remove_layer_test_2(11,11)
 #add_pool_layer_test(11,11)
@@ -317,7 +334,7 @@ def retract_dendrites_test(x,y):
 #add_layer_test(11,11)
 #add_layer_test(11,11)
 #retract_h_test()
-add_pool_layer_test(32,32)
+#add_pool_layer_test(32,32)
 #fix_fully_conected_test(11,11)
 #compute_num_layers_test(11,11)
 #remove_layer_test(11,11)
