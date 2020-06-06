@@ -276,6 +276,7 @@ if __name__ == '__main__':
     settings.save_txt = True
 
     settings.disable_mutation = True
+    settings.eps_batchorm = 0.001
 
     print("**** WARNING DISABLE MUTATION = ", settings.disable_mutation)
     trainer = CommandExperimentCifar_Restarts.CommandExperimentCifar_Restarts(settings=settings)

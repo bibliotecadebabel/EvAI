@@ -33,7 +33,7 @@ class CommandExperimentCifar_Restarts():
                                     enable_activation=settings.enable_activation, 
                                     enable_track_stats=settings.enable_track_stats, dropout_value=settings.dropout_value,
                                     dropout_function=settings.dropout_function, enable_last_activation=settings.enable_last_activation,
-                                    version=settings.version)
+                                    version=settings.version, eps_batchnorm=settings.eps_batchorm)
         else:
             self.__bestNetwork = self.__settings.loadedNetwork
         

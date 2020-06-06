@@ -19,7 +19,8 @@ import time
 class Network(nn.Module, na.NetworkAbstract):
 
     def __init__(self, adn, cudaFlag=True, momentum=0.0, weight_decay=0.0, 
-                enable_activation=True, enable_track_stats=True, dropout_value=0, dropout_function=None, enable_last_activation=True, version=None):
+                enable_activation=True, enable_track_stats=True, dropout_value=0, 
+                dropout_function=None, enable_last_activation=True, version=None, eps_batchnorm=None):
         nn.Module.__init__(self)
         na.NetworkAbstract.__init__(self,adn=adn, cuda=cudaFlag, momentum=momentum, weight_decay=weight_decay, 
                                 enable_activaiton=enable_activation, enable_track_stats=enable_track_stats, dropout_value=dropout_value,
@@ -27,10 +28,12 @@ class Network(nn.Module, na.NetworkAbstract):
         
         self.dropout_function = dropout_function
         self.version = version
+        self.eps_batchorm = eps_batchnorm
 
         if dropout_function == None:
             self.dropout_function = self.__defaultDropoutFunction
-
+        
+    
         self.__lenghNodes = 0
         self.__total_layers = 0
         self.__accumulated_loss = 0
@@ -111,7 +114,11 @@ class Network(nn.Module, na.NetworkAbstract):
                     index_layer += 1
 
                 if tupleBody[0] == 0:
-                    conv2d_batchnorm = torch.nn.BatchNorm2d(tupleBody[2], track_running_stats=self.enable_track_stats)
+
+                    if self.eps_batchorm == None:
+                        conv2d_batchnorm = torch.nn.BatchNorm2d(tupleBody[2], track_running_stats=self.enable_track_stats)
+                    else:
+                        conv2d_batchnorm = torch.nn.BatchNorm2d(tupleBody[2], track_running_stats=self.enable_track_stats, eps=self.eps_batchorm)
 
                     if self.cudaFlag == True:
                         conv2d_batchnorm = conv2d_batchnorm.cuda()
@@ -529,7 +536,7 @@ class Network(nn.Module, na.NetworkAbstract):
             weight_decay=self.weight_decay, enable_activation=self.enable_activation, 
             enable_track_stats=self.enable_track_stats, dropout_value=self.dropout_value, 
             dropout_function=self.dropout_function, enable_last_activation=self.enable_last_activation,
-            version=self.version)
+            version=self.version, eps_batchnorm=self.eps_batchorm)
 
         for i in range(len(self.nodes) - 1):
             layerToClone = self.nodes[i].objects[0]

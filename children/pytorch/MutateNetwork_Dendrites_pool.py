@@ -14,7 +14,7 @@ def executeMutation(oldNetwork, newAdn):
                             weight_decay=oldNetwork.weight_decay, enable_activation=oldNetwork.enable_activation,
                             enable_track_stats=oldNetwork.enable_track_stats, dropout_value=oldNetwork.dropout_value,
                             dropout_function=oldNetwork.dropout_function, enable_last_activation=oldNetwork.enable_last_activation,
-                            version=oldNetwork.version)
+                            version=oldNetwork.version, eps_batchnorm=oldNetwork.eps_batchnorm)
                             
     network.history_loss = oldNetwork.history_loss[-200:]
 

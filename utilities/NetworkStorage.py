@@ -48,7 +48,7 @@ def loadNetwork(fileName, settings : TestNetwork.ExperimentSettings.ExperimentSe
 
     network = nw.Network(adn=checkpoint['adn'], cudaFlag=settings.cuda, momentum=momentum, weight_decay=weight_decay, 
                 enable_activation=enable_activation, enable_last_activation=enable_last_activation, dropout_value=dropout_value,
-                dropout_function=settings.dropout_function, enable_track_stats=enable_track_stats, version=version)
+                dropout_function=settings.dropout_function, enable_track_stats=enable_track_stats, version=version, eps_batchnorm=settings.eps_batchorm)
     
     network.loadParameters(checkpoint=checkpoint)
     return network
