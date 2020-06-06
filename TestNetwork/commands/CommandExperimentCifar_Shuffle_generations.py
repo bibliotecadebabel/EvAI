@@ -8,6 +8,7 @@ import const.path_models as const_path
 import TestNetwork.ExperimentSettings
 import os
 import time
+import utilities.FileManager as FileManager
 import torch
 
 class CommandExperimentCifar_Restarts():
@@ -32,13 +33,20 @@ class CommandExperimentCifar_Restarts():
                                     enable_activation=settings.enable_activation, 
                                     enable_track_stats=settings.enable_track_stats, dropout_value=settings.dropout_value,
                                     dropout_function=settings.dropout_function, enable_last_activation=settings.enable_last_activation,
-                                    version=settings.version)
+                                    version=settings.version, eps_batchnorm=settings.eps_batchorm)
         else:
             self.__bestNetwork = self.__settings.loadedNetwork
         
         self.mutation_manager = mutation_manager.MutationManager(directions_version=settings.version)
 
         self.__actions = []
+
+        self.__fileManager = FileManager.FileManager()
+        
+        if self.__settings.save_txt == True:
+            self.__fileManager.setFileName(self.__settings.test_name)
+            self.__fileManager.writeFile("")
+        
                             
 
 
@@ -103,7 +111,7 @@ class CommandExperimentCifar_Restarts():
 
         return nodeCenter
 
-    def __trainNetwork(self, network : nw.Network, dt_array, max_iter, keep_clone=False):
+    def __trainNetwork(self, network : nw.Network, dt_array, max_iter, keep_clone=False, allow_save_txt=False):
 
         if self.__settings.allow_interupts == True:
 
@@ -116,12 +124,19 @@ class CommandExperimentCifar_Restarts():
                 print("best current accuracy= ", best_network.getAcurracy())
 
                 for i in range(max_iter):
+                    
+                    torch.cuda.empty_cache()
+
                     print("iteration: ", i+1)
                     network.iterTraining(self.__settings.dataGen, dt_array)
                     network.generateEnergy(self.__settings.dataGen)
                     current_accuracy = network.getAcurracy()
 
                     print("current accuracy=", current_accuracy)
+
+                    if allow_save_txt == True and self.__settings.save_txt == True:
+                        self.__fileManager.appendFile("iter: "+str(i+1)+" - Acc: "+str(current_accuracy))
+                    
                     if current_accuracy >= best_accuracy:
                         del best_network
                         best_accuracy = current_accuracy
@@ -143,6 +158,7 @@ class CommandExperimentCifar_Restarts():
                 print("initial accuracy= ", best_accuracy)
 
                 for i in range(max_iter):
+                    torch.cuda.empty_cache()
                     print("iteration: ", i+1)
                     network.iterTraining(self.__settings.dataGen, dt_array)
                     network.generateEnergy(self.__settings.dataGen)
@@ -168,6 +184,9 @@ class CommandExperimentCifar_Restarts():
                 network.generateEnergy(self.__settings.dataGen)
                 current_accuracy = network.getAcurracy()
                 print("current accuracy=", current_accuracy)
+                
+                if allow_save_txt == True and self.__settings.save_txt == True:
+                    self.__fileManager.appendFile("iter: "+str(i+1)+" - Acc: "+str(current_accuracy))
 
             return network
 
@@ -183,7 +202,7 @@ class CommandExperimentCifar_Restarts():
 
         
         self.__bestNetwork = self.__trainNetwork(network=self.__bestNetwork, 
-                    dt_array=self.__settings.init_dt_array, max_iter=self.__settings.max_init_iter, keep_clone=True)
+                    dt_array=self.__settings.init_dt_array, max_iter=self.__settings.max_init_iter, keep_clone=True, allow_save_txt=True)
 
         self.__bestNetwork = self.__trainNetwork(network=self.__bestNetwork, 
                     dt_array=self.__settings.best_dt_array, max_iter=self.__settings.max_best_iter, keep_clone=True)
@@ -192,32 +211,35 @@ class CommandExperimentCifar_Restarts():
         
         self.__saveModel(self.__bestNetwork, test_id=test_id, iteration=0)
 
-        self.__generateNewSpace()
-        self.__generateNetworks()
+        if self.__settings.disable_mutation == False:
 
-        for j in range(1, self.__settings.epochs+1):
-
-            print("---- EPOCH #", j)
-        
-            for i  in range(1, len(self.__networks)):
-                print("Training net #", i, " - direction: ", self.__actions[i-1])
-                self.__networks[i] = self.__trainNetwork(network=self.__networks[i], dt_array=self.__settings.joined_dt_array, max_iter=self.__settings.max_joined_iter)
-
-            self.__saveEnergy()
-            self.__testResultDao.insert(idTest=test_id, iteration=j, dna_graph=self.__space)
-
-            self.__bestNetwork = self.__getBestNetwork()
-
-            print("TRAINING BEST NETWORK")
-
-            self.__bestNetwork = self.__trainNetwork(network=self.__bestNetwork, dt_array=self.__settings.best_dt_array,
-                                        max_iter=self.__settings.max_best_iter, keep_clone=True)
-
-            self.__saveModel(network=self.__bestNetwork, test_id=test_id, iteration=j)
-            
             self.__generateNewSpace()
             self.__generateNetworks()
+
+            for j in range(1, self.__settings.epochs+1):
+
+                print("---- EPOCH #", j)
             
+                for i  in range(1, len(self.__networks)):
+                    print("Training net #", i, " - direction: ", self.__actions[i-1])
+                    self.__networks[i] = self.__trainNetwork(network=self.__networks[i], dt_array=self.__settings.joined_dt_array, max_iter=self.__settings.max_joined_iter)
+
+                self.__saveEnergy()
+                self.__testResultDao.insert(idTest=test_id, iteration=j, dna_graph=self.__space)
+
+                self.__bestNetwork = self.__getBestNetwork()
+
+                print("TRAINING BEST NETWORK")
+
+                self.__bestNetwork = self.__trainNetwork(network=self.__bestNetwork, dt_array=self.__settings.best_dt_array,
+                                            max_iter=self.__settings.max_best_iter, keep_clone=True)
+
+                self.__saveModel(network=self.__bestNetwork, test_id=test_id, iteration=j)
+                
+                self.__generateNewSpace()
+                self.__generateNetworks()
+                
+                torch.cuda.empty_cache()
 
 
     def __getBestNetwork(self):
@@ -258,6 +280,7 @@ class CommandExperimentCifar_Restarts():
 
             if len(nodeCenter.kids) > 0:
                 stop = True
+                
 
 
         self.__space = None
