@@ -9,9 +9,9 @@ from utilities.Abstract_classes.classes.uniform_random_selector import centered_
 import TestNetwork.ExperimentSettings as ExperimentSettings
 import TestNetwork.AugmentationSettings as AugmentationSettings
 import const.versions as directions_version
-import utilities.NetworkStorage as NetworkStorage
 import numpy as np
 import test_DNAs as DNAs
+import utilities.NetworkStorage as NetworkStorage
 ###### EXPERIMENT SETTINGS ######
 """
 def dropout_function(base_p, total_conv2d, index_conv2d):
@@ -22,11 +22,38 @@ def dropout_function(base_p, total_conv2d, index_conv2d):
 
 
 """
+"""
 def dropout_function(base_p, total_conv2d, index_conv2d):
     value = base_p +(3/5*base_p-base_p)*(total_conv2d - index_conv2d)/total_conv2d
     print("conv2d: ", index_conv2d, " - dropout: ", value)
     return value
+"""
 
+def dropout_function(base_p, total_conv2d, index_conv2d):
+    value = 0
+    if index_conv2d == 1:
+        value = 0.3
+    if index_conv2d == 3:
+        value = 0.4
+    if index_conv2d == 5:
+        value = 0.4
+    if index_conv2d == 6:
+        value = 0.4
+    if index_conv2d == 8:
+        value = 0.4
+    if index_conv2d == 9:
+        value = 0.4
+    if index_conv2d == 11:
+        value = 0.4
+    if index_conv2d == 12:
+        value = 0.4
+    if index_conv2d == 13:
+        value = 0.5
+    if index_conv2d == 14:
+        value = 0.5
+    print("conv2d: ", index_conv2d, " - dropout: ", value)
+    
+    return value
 
 def pcos(x):
     if x>np.pi:
@@ -104,9 +131,11 @@ if __name__ == '__main__':
     # INITIAL DT PARAMETERS
     num_actions=5
 
+    init_factor = int(input("init factor: "))
+    max_init_iter = int(input("max init iter: "))
     e=300
-    settings.max_init_iter = 8
-    INIT_ITER = 100*e
+    settings.max_init_iter = max_init_iter
+    INIT_ITER = init_factor*e
     #settings.init_dt_array = exp_alai(.5,INIT_ITER,1,5)
     settings.init_dt_array =  Alaising(1,5,INIT_ITER)
 
@@ -234,8 +263,6 @@ if __name__ == '__main__':
                                 (3, 4, 5))
     """
 
-    model_name = "328_test-dropout3_model_0"
-     
 
     dataCreator = CommandCreateDataGen.CommandCreateDataGen(cuda=settings.cuda)
     dataCreator.execute(compression=2, batchSize=settings.batch_size, source=DATA_SOURCE, threads=THREADS, dataAugmentation=ENABLE_AUGMENTATION, transformCompose=transform_compose)
@@ -247,10 +274,14 @@ if __name__ == '__main__':
     settings.selector = selector
     settings.initial_space = space
 
-    settings.loadedNetwork = NetworkStorage.loadNetwork(fileName=model_name, settings=settings)
-    settings.loadedNetwork.generateEnergy(dataGen)
-    print("loaded network accuracy: ", settings.loadedNetwork.getAcurracy())
-
     settings.save_txt = True
+
+    settings.disable_mutation = True
+    settings.eps_batchorm = 0.001
+    
+    model_name = ""
+    settings.loadedNetwork = NetworkStorage.loadNetwork(fileName=model_name, settings=settings)
+
+    print("**** WARNING DISABLE MUTATION = ", settings.disable_mutation)
     trainer = CommandExperimentCifar_Restarts.CommandExperimentCifar_Restarts(settings=settings)
     trainer.execute()
