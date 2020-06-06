@@ -279,7 +279,7 @@ if __name__ == '__main__':
     settings.disable_mutation = True
     settings.eps_batchorm = 0.001
     
-    model_name = ""
+    model_name = "339_test_crops_paper_model_0"
     settings.loadedNetwork = NetworkStorage.loadNetwork(fileName=model_name, settings=settings)
 
     print("**** WARNING DISABLE MUTATION = ", settings.disable_mutation)
