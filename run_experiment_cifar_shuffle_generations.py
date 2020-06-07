@@ -53,7 +53,6 @@ def DNA_Creator_s(x,y, dna, version):
         (0,1,0,0),(0,-1,0,0),
         (-1,0,0,0),(1,0,0,0),
         (0,0,1,1),(0,0,-1,-1),
-        (4,0,0,0),
         (0,0,1),(0,0,-1),
         ))
     selector.update(dna)
@@ -135,7 +134,7 @@ if __name__ == '__main__':
 
     list_conditions={DNA_conditions.max_filter : 257,
             DNA_conditions.max_filter_dense : 257,
-            DNA_conditions.max_kernel_dense : 9,
+            DNA_conditions.max_kernel_dense : 5,
             DNA_conditions.max_layer : 30,
             DNA_conditions.min_filter : 3,
             DNA_conditions.max_pool_layer : 4,
