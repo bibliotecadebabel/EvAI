@@ -177,6 +177,10 @@ class CommandExperimentCifar_Restarts():
         
         else:
             
+            network.generateEnergy(self.__settings.dataGen)
+            best_accuracy = network.getAcurracy()
+            print("initial accuracy= ", best_accuracy)
+            
             for i in range(max_iter):
                 print("iteration: ", i+1)
                 network.iterTraining(self.__settings.dataGen, dt_array)
