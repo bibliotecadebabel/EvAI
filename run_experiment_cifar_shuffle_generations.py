@@ -106,6 +106,8 @@ if __name__ == '__main__':
     # EPOCHS
     settings.epochs = int(input("Enter amount of epochs: "))
 
+    settings.eps_batchorm = 0.001
+
     # INITIAL DT PARAMETERS
     num_actions=8
 
