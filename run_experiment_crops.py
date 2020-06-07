@@ -76,12 +76,11 @@ if __name__ == '__main__':
     settings = ExperimentSettings.ExperimentSettings()
     
     rotation_degrees = float(input("Random Rotation Degree (0 to disable): "))
-    from_shear = float(input("Random shear from degree (0 to disable): "))
-    to_shear = float(input("Random shear to degree (0 to disable): "))
+    shear = float(input("Random shear degree (0 to disable): "))
 
     shear_value = None
-    if from_shear != 0 and to_shear != 0:
-        shear_value = (from_shear, to_shear)
+    if shear != 0:
+        shear_value = shear
 
     augSettings = AugmentationSettings.AugmentationSettings(affine_degress_rotation=rotation_degrees, affine_shear=shear_value)
 
