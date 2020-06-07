@@ -5,7 +5,7 @@ import DNA_conditions
 from DNA_creators import Creator
 from DNA_Graph import DNA_Graph
 from DNA_creators import Creator_from_selection as Creator_s
-from utilities.Abstract_classes.classes.uniform_random_selector import centered_random_selector as random_selector
+from utilities.Abstract_classes.classes.uniform_random_selector_2 import centered_random_selector as random_selector
 import TestNetwork.ExperimentSettings as ExperimentSettings
 import const.versions as directions_version
 import numpy as np
@@ -20,9 +20,24 @@ def dropout_function(base_p, total_conv2d, index_conv2d):
 
 
 """
+"""
 def dropout_function(base_p, total_conv2d, index_conv2d):
     value = base_p +(3/5*base_p-base_p)*(total_conv2d - index_conv2d)/total_conv2d
     #print("conv2d: ", index_conv2d, " - dropout: ", value)
+    return value
+"""
+
+def dropout_function(base_p, total_layers, index_layer, isPool=False):
+
+    value = 0
+    if index_layer != 0 and isPool == False:
+        value = base_p +(3/5*base_p-base_p)*(total_layers - index_layer-1)/total_layers
+
+    if index_layer == total_layers - 2:
+        value = base_p +(3/5*base_p-base_p)*(total_layers - index_layer-1)/total_layers
+
+    print("conv2d: ", index_layer, " - dropout: ", value)
+
     return value
 
 
@@ -92,9 +107,9 @@ if __name__ == '__main__':
     settings.epochs = int(input("Enter amount of epochs: "))
 
     # INITIAL DT PARAMETERS
-    num_actions=6
+    num_actions=8
 
-    e=300
+    e=400
     settings.max_init_iter = 1
     INIT_ITER = 20*e
     #settings.init_dt_array = exp_alai(.5,INIT_ITER,1,5)
@@ -102,15 +117,15 @@ if __name__ == '__main__':
 
 
     # JOINED DT PARAMETERS
-    JOINED_ITER = 3*e
+    JOINED_ITER = 1*e
     #settings.joined_dt_array = Alaising(2,6,e)
-    settings.joined_dt_array = Alaising(1.2,5,JOINED_ITER)
+    settings.joined_dt_array = Alaising(1.2,7,JOINED_ITER)
     settings.max_joined_iter = 1
 
     # BEST DT PARAMETERS
-    BEST_ITER = 7*e
+    BEST_ITER = 10*e
     #settings.best_dt_array = Alaising(2,6,e)
-    settings.best_dt_array = Alaising(1.2,5,BEST_ITER)
+    settings.best_dt_array = Alaising(1.2,7,BEST_ITER)
     settings.max_best_iter = 1
 
     # dropout parameter
@@ -133,7 +148,7 @@ if __name__ == '__main__':
     list_conditions={DNA_conditions.max_filter : 257,
             DNA_conditions.max_filter_dense : 257,
             DNA_conditions.max_kernel_dense : 5,
-            DNA_conditions.max_layer : 30,
+            DNA_conditions.max_layer : 200,
             DNA_conditions.min_filter : 3,
             DNA_conditions.max_pool_layer : 3,
             DNA_conditions.max_parents : 2}
