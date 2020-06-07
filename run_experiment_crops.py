@@ -31,7 +31,7 @@ def dropout_function(base_p, total_conv2d, index_conv2d):
     if index_conv2d == 0:
         value = 0
     
-    if index_conv2d % 3 == 0 and index_conv2d < third_part:
+    if index_conv2d % 3 == 0 and index_conv2d < third_part*2:
         value = 0
     
     print("conv2d: ", index_conv2d, " - dropout: ", value)
