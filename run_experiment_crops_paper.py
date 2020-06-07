@@ -28,30 +28,30 @@ def dropout_function(base_p, total_conv2d, index_conv2d):
     return value
 """
 
-def dropout_function(base_p, total_conv2d, index_conv2d):
+def dropout_function(base_p, total_layers, index_layer, isPool=False):
     value = 0
-    if index_conv2d == 1:
+    if index_layer == 1:
         value = 0.3
-    if index_conv2d == 3:
+    if index_layer == 3:
         value = 0.4
-    if index_conv2d == 5:
+    if index_layer == 5:
         value = 0.4
-    if index_conv2d == 6:
+    if index_layer == 6:
         value = 0.4
-    if index_conv2d == 8:
+    if index_layer == 8:
         value = 0.4
-    if index_conv2d == 9:
+    if index_layer == 9:
         value = 0.4
-    if index_conv2d == 11:
+    if index_layer == 11:
         value = 0.4
-    if index_conv2d == 12:
+    if index_layer == 12:
         value = 0.4
-    if index_conv2d == 13:
+    if index_layer == 13:
         value = 0.5
-    if index_conv2d == 14:
+    if index_layer == 14:
         value = 0.5
-        
-    print("conv2d: ", index_conv2d, " - dropout: ", value)
+
+    print("conv2d: ", index_layer, " - dropout: ", value)
     
     return value
 
@@ -62,6 +62,7 @@ def pcos(x):
 
 def Alaising(M,m,ep):
     M=10**(-M)
+    print("M: ", M)
     m=10**(-m)
     return [ m+1/2*(M-m)*(1+pcos(t/ep*np.pi))
              for t in range(0,ep)]

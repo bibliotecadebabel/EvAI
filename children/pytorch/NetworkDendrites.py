@@ -48,11 +48,9 @@ class Network(nn.Module, na.NetworkAbstract):
         self.__currentEpoch = 0
         self.optimizer = optim.SGD(self.parameters(), lr=0.1, momentum=self.momentum, weight_decay=self.weight_decay)  
           
-    def __defaultDropoutFunction(self, base_p, max_conv2d, index_conv2d):
-        
-        value = base_p / (max_conv2d - index_conv2d)
+    def __defaultDropoutFunction(self, base_p, total_layers, index_layer, isPool=False):
 
-        return value
+        return base_p
 
     def createStructure(self):
 
@@ -100,8 +98,12 @@ class Network(nn.Module, na.NetworkAbstract):
                     layer.enable_activation = False
 
                 if tupleBody[0] == 0 or tupleBody[0] == 1:
+                    
+                    if len(tupleBody) > 5:
+                        dropout_value = self.dropout_function(self.dropout_value, self.__total_layers, index_layer, True)
+                    else:
+                        dropout_value = self.dropout_function(self.dropout_value, self.__total_layers, index_layer, False)
 
-                    dropout_value = self.dropout_function(self.dropout_value, self.__total_layers, index_layer)
                     layer.dropout_value = dropout_value
                     conv2d_dropout = torch.nn.Dropout2d(p=layer.dropout_value)
 

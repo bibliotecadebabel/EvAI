@@ -22,20 +22,16 @@ def dropout_function(base_p, total_conv2d, index_conv2d):
 
 """
 
-def dropout_function(base_p, total_conv2d, index_conv2d):
+def dropout_function(base_p, total_layers, index_layer, isPool=False):
 
+    value = 0
+    if index_layer != 0 and isPool == False:
+        value = base_p +(3/5*base_p-base_p)*(total_layers - index_layer-1)/total_layers  
 
-    value = base_p +(3/5*base_p-base_p)*(total_conv2d - index_conv2d)/total_conv2d    
-    third_part = total_conv2d / 3
-    
-    if index_conv2d == 0:
-        value = 0
-    
-    if index_conv2d % 3 == 0 and index_conv2d < third_part*2:
-        value = 0
-    
-    print("conv2d: ", index_conv2d, " - dropout: ", value)
+    if index_layer == total_layers - 2:
+        value = base_p +(3/5*base_p-base_p)*(total_layers - index_layer-1)/total_layers  
 
+    print("conv2d: ", index_layer, " - dropout: ", value)
 
     return value
 
@@ -78,6 +74,10 @@ def DNA_Creator_s(x,y, dna, version):
 if __name__ == '__main__':
 
     settings = ExperimentSettings.ExperimentSettings()
+
+    #rotation_degrees = float(input("Random Rotation Degree (0 to disable): "))
+    #from_shaear = float(input("Random shear from degree (0 to disable): "))
+    #to_shaear = float(input("Random shear to degree (0 to disable): "))
     augSettings = AugmentationSettings.AugmentationSettings()
 
     dict_transformations = {

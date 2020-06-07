@@ -41,13 +41,12 @@ def CropNormalize(tensors):
 
 class AugmentationSettings:
 
-    def __init__(self):
+    def __init__(self, affine_degress_rotation=0, affine_shear=None):
         
         self.__crop = transforms.Lambda(customFiveCrop)
         self.__fullcrop = transforms.Lambda(fiveCrop)
 
-        degrees = 0
-        self.randomAffine = transforms.RandomAffine(0, translate=(0.1, 0.1))
+        self.randomAffine = transforms.RandomAffine(affine_degress_rotation, translate=(0.1, 0.1), shear=affine_shear)
                 
         self.randomHorizontalFlip = transforms.RandomHorizontalFlip()
 
