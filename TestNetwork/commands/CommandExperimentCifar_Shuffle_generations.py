@@ -2,7 +2,7 @@ import children.pytorch.MutationManager as mutation_manager
 import children.pytorch.NetworkDendrites as nw
 from DAO.database.dao import TestDAO, TestResultDAO, TestModelDAO
 from DNA_Graph import DNA_Graph
-from utilities.Abstract_classes.classes.uniform_random_selector import centered_random_selector as random_selector
+#from utilities.Abstract_classes.classes.uniform_random_selector_2 import centered_random_selector as random_selector
 from DNA_creators import Creator_from_selection as Creator_s
 import const.path_models as const_path
 import TestNetwork.ExperimentSettings
@@ -268,8 +268,8 @@ class CommandExperimentCifar_Restarts():
         stop = False
         while stop == False:
 
-            self.__selector = random_selector(num_actions=self.__selector.num_actions, directions=self.__selector.version,
-                                                condition=self.__selector.condition, mutations=self.__selector.mutations)
+            #self.__selector = random_selector(num_actions=self.__selector.num_actions, directions=self.__selector.version,
+            #                                    condition=self.__selector.condition, mutations=self.__selector.mutations)
             self.__selector.update(newCenter)
             predicted_actions = self.__selector.get_predicted_actions()
 

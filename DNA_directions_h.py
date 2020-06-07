@@ -558,7 +558,7 @@ def select_new_index2spread(num_layer,landscape,size):
     avai_size=len(available)
     if avai_size>1:
         index=available[random.randint(1,avai_size-1)]
-        print(f'The new index is : {index}')
+        #print(f'The new index is : {index}')
         return num_layer+index+1
     elif avai_size==1:
         index=available[0]

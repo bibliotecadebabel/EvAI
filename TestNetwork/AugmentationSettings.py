@@ -4,7 +4,7 @@ import random
 
 def customFiveCrop(image):
     img_zoomout = transforms.Resize(28, interpolation=2)(image)
-    pad_image = transforms.Pad(2, fill=0, padding_mode='reflect')(img_zoomout)
+    pad_image = transforms.Pad(2, fill=0, padding_mode='constant')(img_zoomout)
     five_crop_images = transforms.FiveCrop(28)(pad_image)
 
     random_index = random.randint(0, 4)
@@ -19,7 +19,7 @@ def customFiveCrop(image):
 
 def fiveCrop(image):
     img_zoomout = transforms.Resize(28, interpolation=2)(image)
-    pad_image = transforms.Pad(2, fill=0, padding_mode='reflect')(img_zoomout)
+    pad_image = transforms.Pad(2, fill=0, padding_mode='constant')(img_zoomout)
     five_crop_images = transforms.FiveCrop(28)(pad_image)
     resized_crop = []
     
@@ -53,7 +53,7 @@ class AugmentationSettings:
         self.contrast = transforms.ColorJitter(brightness=0, contrast=0, saturation=0, hue=0)
 
         padding = (6,6)
-        self.padding = transforms.Pad(padding, fill=0, padding_mode='reflect')        
+        self.padding = transforms.Pad(padding, fill=0, padding_mode='constant')        
 
         size = (24, 24)
         self.zoomout = transforms.Resize(size)
