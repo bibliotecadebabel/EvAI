@@ -6,7 +6,8 @@ import random
 
 
 def initialize_kernel():
-    return random.randint(3,5)
+    return 3
+#    return random.randint(3,5)
 
 
 def imprimir(g):
@@ -107,12 +108,11 @@ def fix_fully_conected(g):
                                 output[0],
                                 output[1])
     elif len(layer)==6:
-        print('second case')
         full_node.objects[0] = (layer[0],
                                 layer[1],
                                 layer[2],
-                                layer[3]+output[0]-1,
-                                layer[4]+output[1]-1,
+                                output[0],
+                                output[1],
                                 layer[5])
 
 def Persistent_synapse_condition(DNA):

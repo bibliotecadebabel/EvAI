@@ -11,7 +11,7 @@ import const.versions as directions_version
 import numpy as np
 import test_DNAs as DNAs
 ###### EXPERIMENT SETTINGS ######
-"""
+
 def dropout_function(base_p, total_conv2d, index_conv2d):
 
     value = base_p / (total_conv2d - index_conv2d)+base_p/2
@@ -24,6 +24,7 @@ def dropout_function(base_p, total_conv2d, index_conv2d):
     value = base_p +(3/5*base_p-base_p)*(total_conv2d - index_conv2d)/total_conv2d
     #print("conv2d: ", index_conv2d, " - dropout: ", value)
     return value
+"""
 
 
 
@@ -49,8 +50,10 @@ def DNA_Creator_s(x,y, dna, version):
     selector=random_selector(condition=condition,
         directions=version, num_actions=num_actions,
         mutations=(
-        (0,1,0,0),
-        (1,0,0,0),(4,0,0,0),
+        (0,1,0,0),(0,-1,0,0),
+        (-1,0,0,0),(1,0,0,0),
+        (0,0,1,1),(0,0,-1,-1),
+        (4,0,0,0),
         (0,0,1),(0,0,-1),
         ))
     selector.update(dna)
@@ -92,7 +95,7 @@ if __name__ == '__main__':
     settings.epochs = int(input("Enter amount of epochs: "))
 
     # INITIAL DT PARAMETERS
-    num_actions=5
+    num_actions=6
 
     e=300
     settings.max_init_iter = 1
@@ -102,7 +105,7 @@ if __name__ == '__main__':
 
 
     # JOINED DT PARAMETERS
-    JOINED_ITER = 4*e
+    JOINED_ITER = 3*e
     #settings.joined_dt_array = Alaising(2,6,e)
     settings.joined_dt_array = Alaising(1.2,5,JOINED_ITER)
     settings.max_joined_iter = 1
@@ -132,7 +135,7 @@ if __name__ == '__main__':
 
     list_conditions={DNA_conditions.max_filter : 257,
             DNA_conditions.max_filter_dense : 257,
-            DNA_conditions.max_kernel_dense : 9,
+            DNA_conditions.max_kernel_dense : 5,
             DNA_conditions.max_layer : 30,
             DNA_conditions.min_filter : 3,
             DNA_conditions.max_pool_layer : 4,
@@ -214,6 +217,7 @@ if __name__ == '__main__':
     settings.initial_dna =   DNAs.DNA_calibration_2
 
     """
+    """
     settings.initial_dna =   ((-1, 1, 3, 32, 32), (0, 3, 32, 3, 3),(0, 32, 64, 3, 3, 2), (0, 64, 128, 3, 3, 2),
                                 (0, 128, 256, 8, 8),
                                 (1, 256, 10),
@@ -224,7 +228,18 @@ if __name__ == '__main__':
                                 (3, 2, 3),
                                 (3, 3, 4),
                                 (3, 4, 5))
+    """
 
+    settings.initial_dna =   ((-1, 1, 3, 32, 32), (0, 3, 64, 3, 3),(0, 64, 64, 3, 3, 2), (0, 64, 64, 3, 3, 2),
+                                (0, 64, 64, 4, 4,2),
+                                (1, 64, 10),
+                                (2,),
+                                (3, -1, 0),
+                                (3, 0, 1),
+                                (3, 1, 2),
+                                (3, 2, 3),
+                                (3, 3, 4),
+                                (3, 4, 5))
 
 
     dataCreator = CommandCreateDataGen.CommandCreateDataGen(cuda=settings.cuda)

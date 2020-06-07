@@ -17,8 +17,8 @@ def add_conv_last():
             DNA_conditions.max_parents : 2}
     def condition(DNA):
         return DNA_conditions.dict2condition(DNA,dict)
-    DNA=DNAs.DNA_ep_85_5_pool
-    DNA=dire.add_layer(26,DNA)
+    DNA=DNAs.DNA_contracted
+    DNA=dire.add_layer(4,DNA)
     print(condition(DNA))
 
     print(dire.initialize_kernel())
