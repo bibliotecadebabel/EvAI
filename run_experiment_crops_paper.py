@@ -50,6 +50,7 @@ def dropout_function(base_p, total_conv2d, index_conv2d):
         value = 0.5
     if index_conv2d == 14:
         value = 0.5
+        
     print("conv2d: ", index_conv2d, " - dropout: ", value)
     
     return value
@@ -130,26 +131,27 @@ if __name__ == '__main__':
     # INITIAL DT PARAMETERS
     num_actions=5
 
-    init_factor = int(input("init factor: "))
-    max_init_iter = int(input("max init iter: "))
+    init_factor = 20
+    max_init_iter = 1
     e=300
     settings.max_init_iter = max_init_iter
     INIT_ITER = init_factor*e
     #settings.init_dt_array = exp_alai(.5,INIT_ITER,1,5)
-    settings.init_dt_array =  Alaising(1,5,INIT_ITER)
+    settings.init_dt_array =  Alaising(1,7,INIT_ITER)
 
 
     # JOINED DT PARAMETERS
     JOINED_ITER = 4*e
     #settings.joined_dt_array = Alaising(2,6,e)
-    settings.joined_dt_array = Alaising(1.2,5,JOINED_ITER)
+    settings.joined_dt_array = Alaising(1.2,7,JOINED_ITER)
     settings.max_joined_iter = 1
 
     # BEST DT PARAMETERS
-    BEST_ITER = 7*e
+    BEST_ITER = 10*e
     #settings.best_dt_array = Alaising(2,6,e)
-    settings.best_dt_array = Alaising(1.2,5,BEST_ITER)
-    settings.max_best_iter = 1
+    best_dt_max = float(input("max dt (best): "))
+    settings.best_dt_array = Alaising(best_dt_max,7,BEST_ITER)
+    settings.max_best_iter = 120
 
     # dropout parameter
     settings.dropout_value = float(input("dropout value: "))
@@ -247,7 +249,7 @@ if __name__ == '__main__':
                                              (3, 28, 29), (3, 23, 29), (3, 27, 29), (3, 29, 30), (3, 30, 31))
 
     """
-    settings.initial_dna =   DNAs.DNA_calibration_2
+    settings.initial_dna =   DNAs.DNA_calibration_3
 
     """
     settings.initial_dna =   ((-1, 1, 3, 32, 32), (0, 3, 32, 3, 3),(0, 32, 64, 3, 3, 2), (0, 64, 128, 3, 3, 2),

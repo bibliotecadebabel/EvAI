@@ -205,7 +205,7 @@ class CommandExperimentCifar_Restarts():
                     dt_array=self.__settings.init_dt_array, max_iter=self.__settings.max_init_iter, keep_clone=True, allow_save_txt=True)
 
         self.__bestNetwork = self.__trainNetwork(network=self.__bestNetwork, 
-                    dt_array=self.__settings.best_dt_array, max_iter=self.__settings.max_best_iter, keep_clone=True)
+                    dt_array=self.__settings.best_dt_array, max_iter=self.__settings.max_best_iter, keep_clone=True, allow_save_txt=True)
 
         
         
