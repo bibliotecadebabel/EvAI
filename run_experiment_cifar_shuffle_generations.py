@@ -109,7 +109,7 @@ if __name__ == '__main__':
     settings.eps_batchorm = 0.001
 
     # INITIAL DT PARAMETERS
-    num_actions=8
+    num_actions=5
 
     e=400
     settings.max_init_iter = 1
