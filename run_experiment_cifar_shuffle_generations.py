@@ -29,7 +29,7 @@ def dropout_function(base_p, total_conv2d, index_conv2d):
 
 def dropout_function(base_p, total_layers, index_layer, isPool=False):
 
-    value = .1
+    value = .05
     if index_layer != 0 and isPool == False:
         value = base_p +(3/5*base_p-base_p)*(total_layers - index_layer-1)/total_layers
 
@@ -119,13 +119,13 @@ if __name__ == '__main__':
 
 
     # JOINED DT PARAMETERS
-    JOINED_ITER = 1*e
+    JOINED_ITER = 3*e
     #settings.joined_dt_array = Alaising(2,6,e)
     settings.joined_dt_array = Alaising(1.2,7,JOINED_ITER)
     settings.max_joined_iter = 1
 
     # BEST DT PARAMETERS
-    BEST_ITER = 10*e
+    BEST_ITER = 7*e
     #settings.best_dt_array = Alaising(2,6,e)
     settings.best_dt_array = Alaising(1.2,7,BEST_ITER)
     settings.max_best_iter = 0
@@ -244,16 +244,15 @@ if __name__ == '__main__':
                                 (3, 4, 5))
     """
 
-    settings.initial_dna =   ((-1, 1, 3, 32, 32), (0, 3, 64, 3, 3),(0, 64, 64, 3, 3, 2), (0, 64, 64, 3, 3, 2),
-                                (0, 64, 64, 4, 4,2),
+    settings.initial_dna =   ((-1, 1, 3, 32, 32), (0, 3, 64, 3, 3),(0, 64, 64, 3, 3, 3),
+                                (0, 64, 64, 4, 4,3),
                                 (1, 64, 10),
                                 (2,),
                                 (3, -1, 0),
                                 (3, 0, 1),
                                 (3, 1, 2),
                                 (3, 2, 3),
-                                (3, 3, 4),
-                                (3, 4, 5))
+                                (3, 3, 4))
 
 
     dataCreator = CommandCreateDataGen.CommandCreateDataGen(cuda=settings.cuda)
