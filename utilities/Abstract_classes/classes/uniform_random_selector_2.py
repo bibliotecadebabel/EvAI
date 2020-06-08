@@ -149,12 +149,12 @@ class centered_random_selector(Selector):
         k=0
         l=0
         print(self.mutations)
-        while len(self.predicted_actions)<self.num_actions:
+        while len(self.predicted_actions)<self.num_actions and l<300:
             #layer=int(np.random.normal(0, 3*self.current_num_layer))+self.center
             layer=random.randint(0,self.current_num_layer+1)
             if layer>-1 and layer<self.current_num_layer+1:
                 mutation=random.randint(0,num_mutations-1)
-                
+
                 if self.mutations[mutation] == (0, 0, 1):
                     self.__dendrites_mutation(mutation)
                 else:
@@ -168,19 +168,19 @@ class centered_random_selector(Selector):
                         self.predicted_actions.append([layer,mutation])
                 k=k+1
             l=l+1
-        
+
         print("predicted: ", self.predicted_actions)
 
     def __dendrites_mutation(self, mutation):
 
         stop = False
         index_list = []
-        
+
         for layer_index in range(self.current_num_layer):
             index_list.append(layer_index)
 
         while len(index_list) > 0 and stop == False:
-            
+
             random_index = random.randint(0, len(index_list)-1)
             layer = index_list[random_index]
             del index_list[random_index]
@@ -193,12 +193,12 @@ class centered_random_selector(Selector):
                 new_DNA=self.directions.get(self.mutations[mutation])(
                     layer,DNA)
                 new_DNA=condition(new_DNA)
-                
+
                 if  (not ([layer,mutation] in
                     self.predicted_actions) and new_DNA):
                     self.predicted_actions.append([layer,mutation])
                     stop = True
-                
+
                 i += 1
 
 
