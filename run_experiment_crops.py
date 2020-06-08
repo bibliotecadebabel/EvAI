@@ -89,7 +89,7 @@ if __name__ == '__main__':
         augSettings.randomHorizontalFlip : True    
     }
 
-    transform_compose = augSettings.generateTransformCompose(dict_transformations, False)
+    transform_compose = augSettings.generateTransformCompose(dict_transformations, True)
 
     # DIRECTIONS VERSION
     settings.version = directions_version.H_VERSION
@@ -140,7 +140,7 @@ if __name__ == '__main__':
     #settings.best_dt_array = Alaising(2,6,e)
     best_dt_max = float(input("max dt (best): "))
     settings.best_dt_array = Alaising(best_dt_max,7,BEST_ITER)
-    settings.max_best_iter = 120
+    settings.max_best_iter = 240
 
 
     # dropout parameter
