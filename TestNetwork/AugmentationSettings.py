@@ -18,17 +18,22 @@ def customFiveCrop(image):
     return resized_image
 
 def fiveCrop(image):
-    img_zoomout = transforms.Resize(28, interpolation=2)(image)
-    pad_image = transforms.Pad(2, fill=0, padding_mode='constant')(img_zoomout)
-    five_crop_images = transforms.FiveCrop(28)(pad_image)
-    resized_crop = []
+    #img_zoomout = transforms.Resize(28, interpolation=2)(image)
+    #pad_image = transforms.Pad(2, fill=0, padding_mode='constant')(img_zoomout)
+    five_crop_images = transforms.FiveCrop(28)(image)
+    final_images = []
     
     for crop_image in five_crop_images:
-        resized_crop.append(transforms.Resize(32, interpolation=2)(crop_image))
+        resized_crop = transforms.Resize(32, interpolation=2)(crop_image) 
+        random_affine = transforms.RandomAffine(25, translate=(0.1, 0.1), shear=20)
+        image_affine = transforms.RandomApply(random_affine)(resized_crop)
+        image_h_flip = transforms.RandomHorizontalFlip()(image_affine)
+
+        final_images.append(image_h_flip)
 
     del five_crop_images
 
-    tensors_images = torch.stack([transforms.ToTensor()(crop) for crop in resized_crop])
+    tensors_images = torch.stack([transforms.ToTensor()(crop) for crop in final_images])
     normalize_tensors = torch.stack([transforms.Normalize((0.5, 0.5, 0.5), (0.5, 0.5, 0.5))(t) for t in tensors_images])
 
     return normalize_tensors
@@ -65,18 +70,20 @@ class AugmentationSettings:
         
         transform_compose_list = []
 
-        for key in transform_dict.keys():
-            
-            value = transform_dict.get(key)
+        if fiveCrop == False:
 
-            if value == True:
-                transform_compose_list.append(key)
+            for key in transform_dict.keys():
+                
+                value = transform_dict.get(key)
 
-        if fiveCrop == True:    
-            transform_compose_list.append(self.__fullcrop)
-        else:
+                if value == True:
+                    transform_compose_list.append(key)
+
             transform_compose_list.append(transforms.ToTensor())
             transform_compose_list.append(transforms.Normalize((0.5, 0.5, 0.5), (0.5, 0.5, 0.5)))
+
+        else:    
+            transform_compose_list.append(self.__fullcrop)
         
         print("Augmentation list: ", transform_compose_list)
 
