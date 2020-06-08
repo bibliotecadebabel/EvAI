@@ -24,7 +24,7 @@ def fiveCrop(image):
     final_images = []
     
     for crop_image in five_crop_images:
-        resized_crop = transforms.Resize(32, interpolation=2)(crop_image) 
+        resized_crop = transforms.Pad(2, fill=0, padding_mode='reflect')(crop_image)
         random_affine = transforms.RandomAffine(25, translate=(0.1, 0.1), shear=20)
         image_affine = transforms.RandomApply([random_affine])(resized_crop)
         image_h_flip = transforms.RandomHorizontalFlip()(image_affine)
