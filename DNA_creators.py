@@ -146,9 +146,9 @@ class Creator_from_selection_nm():
                 DNA_o=q.shape
                 node_o=center
                 for l in range(num_actions):
-                    label=[]
                     if DNA_o:
                         DNA_f=DNA_o
+                        label=[]
                         for m in range (self.num_morphisms):
                             selector.update(DNA_f)
                             actions=selector.get_predicted_actions()
@@ -157,18 +157,20 @@ class Creator_from_selection_nm():
                             num_layer=typo[0]
                             DNA_f=condition(direction(num_layer,DNA_f))
                             label.append(typo)
-                    if DNA_f:
-                        self.add_node(g,DNA_f)
-                        node_f=g.key2node.get(DNA_f)
-                        g.add_edges(DNA_o,[DNA_f])
-                        if self.type_add_layer:
-                            label=typo
-                            node=g.key2node.get(DNA_f)
-                            p=self.node2plane(node)
-                            p.direction=label
+                            #print(f'The label is {label}')
+                        if DNA_f:
+                            self.add_node(g,DNA_f)
+                            node_f=g.key2node.get(DNA_f)
+                            g.add_edges(DNA_o,[DNA_f])
+                            if self.type_add_layer:
+                                node=g.key2node.get(DNA_f)
+                                p=self.node2plane(node)
+                                p.direction=label
+                            print(f'The label is{label}')
                 if center.kids:
                     for kid in center.kids:
                         self.create(kid,size-1,g)
+
         return g
 
 class Creator_from_selection():

@@ -30,8 +30,9 @@ class DNA_Graph():
 
     def __init__(self,center,size,dim,condition,
                 typos=(0,(0,1,0,0)),type_add_layer=None,
+                creator=Creator_full,
                 num_morphisms=None,
-                creator=Creator_full):
+                selector=None):
         self.typos = typos
         self.center=center
         self.x_dim=dim[0]
@@ -42,7 +43,12 @@ class DNA_Graph():
         self.condition=condition
         self.creator=creator(self.typos,condition,type_add_layer)
         if num_morphisms:
-            self.creator.num_morphisms=num_morphisms        
+            print('The selector is')
+            print(selector)
+            print('The creator is')
+            print(creator)
+            self.creator.num_morphisms=num_morphisms
+            self.creator.Selector=selector
         g=self.creator.create(self.center,size)
         self.graph=g
         self.objects=list(g.key2node.values())

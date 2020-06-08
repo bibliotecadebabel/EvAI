@@ -2,7 +2,7 @@ from DNA_Graph import DNA_Graph
 from DNA_conditions import max_layer
 from DNA_creators import Creator
 from DNA_creators import Creator_from_selection as Creator_s
-from DNA_creators import Creator_from_selection_nm as Creator__nm
+from DNA_creators import Creator_from_selection_nm as Creator_nm
 from utilities.Abstract_classes.classes.random_selector import random_selector
 from utilities.Abstract_classes.classes.uniform_random_selector import(
     centered_random_selector as Selector_creator)
@@ -30,12 +30,15 @@ def DNA_h_nm(x,y):
     version='h'
     mutations=((4,0,0,0),(1,0,0,0),(0,0,1))
     #mutations=((4,0,0,0),(1,0,0,0),(0,1,0,0),(0,1,0,0),(0,0,1))
-    selector=Selector_creator(condition=condition_b,
+    sel=Selector_creator(condition=condition_b,
         directions=version,mutations=mutations,num_actions=10)
-    selector.update(center)
-    actions=selector.get_predicted_actions()
+    print('The selector is')
+    print(sel)
+    sel.update(center)
+    actions=sel.get_predicted_actions()
+    creator=Creator_nm
     space=DNA_Graph(center,1,(x,y),condition_b,actions,
-        version,creator,num_morphisms=5)
+        version,creator=creator,num_morphisms=5,selector=sel)
     space.imprimir()
 
 def DNA_h(x,y):
