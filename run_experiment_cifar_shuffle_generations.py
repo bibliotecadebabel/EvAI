@@ -112,20 +112,20 @@ if __name__ == '__main__':
     num_actions=5
 
     e=400
-    settings.max_init_iter = 1
-    INIT_ITER = 20*e
+    settings.max_init_iter = 120
+    INIT_ITER = 10*e
     #settings.init_dt_array = exp_alai(.5,INIT_ITER,1,5)
-    settings.init_dt_array =  Alaising(1,5,INIT_ITER)
+    settings.init_dt_array =  Alaising(1.2,7,INIT_ITER)
 
 
     # JOINED DT PARAMETERS
-    JOINED_ITER = 3*e
+    JOINED_ITER = 0
     #settings.joined_dt_array = Alaising(2,6,e)
     settings.joined_dt_array = Alaising(1.2,5,JOINED_ITER)
     settings.max_joined_iter = 1
 
     # BEST DT PARAMETERS
-    BEST_ITER = 7*e
+    BEST_ITER = 0
     #settings.best_dt_array = Alaising(2,6,e)
     settings.best_dt_array = Alaising(1.2,7,BEST_ITER)
     settings.max_best_iter = 1
@@ -227,10 +227,10 @@ if __name__ == '__main__':
                                              (3, 28, 29), (3, 23, 29), (3, 27, 29), (3, 29, 30), (3, 30, 31))
 
     """
-    """
-    settings.initial_dna =   DNAs.DNA_calibration_2
 
-    """
+    settings.initial_dna =   DNAs.DNA_ep25
+
+
     """
     settings.initial_dna =   ((-1, 1, 3, 32, 32), (0, 3, 32, 3, 3),(0, 32, 64, 3, 3, 2), (0, 64, 128, 3, 3, 2),
                                 (0, 128, 256, 8, 8),
@@ -243,6 +243,7 @@ if __name__ == '__main__':
                                 (3, 3, 4),
                                 (3, 4, 5))
     """
+    """
 
     settings.initial_dna =   ((-1, 1, 3, 32, 32), (0, 3, 64, 3, 3),(0, 64, 128, 3, 3, 2),
                                 (0, 128, 256, 4, 4,4),
@@ -253,6 +254,7 @@ if __name__ == '__main__':
                                 (3, 1, 2),
                                 (3, 2, 3),
                                 (3, 3, 4))
+    """
 
 
     dataCreator = CommandCreateDataGen.CommandCreateDataGen(cuda=settings.cuda)
