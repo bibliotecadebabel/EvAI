@@ -86,6 +86,88 @@ class Creator():
                         self.create(kid,size-1,g)
         return g
 
+class Creator_from_selection_nm():
+
+    def __init__(self,typos,condition,type_add_layer=None,num_morphisms=1,
+        Selector=None):
+        if type_add_layer==None:
+            from DNA_directions import directions
+        elif type_add_layer=='inclusion':
+            from DNA_directions_i import directions,directions_labels
+            self.directions_labels=directions_labels
+        elif type_add_layer=='duplicate':
+            from DNA_directions_duplicate import directions,directions_labels
+            self.directions_labels=directions_labels
+        elif type_add_layer=='clone':
+            from DNA_directions_clone import directions,directions_labels
+            self.directions_labels=directions_labels
+        elif type_add_layer=='pool':
+            from DNA_directions_pool import directions,directions_labels
+            self.directions_labels=directions_labels
+        elif type_add_layer=='h':
+            from DNA_directions_h import directions,directions_labels
+            self.directions_labels=directions_labels
+        else:
+            from DNA_directions_f import directions,directions_labels
+            self.directions_labels=directions_labels
+        self.typos=typos
+        self.condition=condition
+        self.directions=directions
+        self.type_add_layer=type_add_layer
+        self.num_morphisms=num_morphisms
+        self.Selector=Selector
+
+
+    def add_node(self,g,DNA):
+        node=nd.Node()
+        q=qu.Quadrant(DNA)
+        p=tplane.tangent_plane()
+        node.objects.append(q)
+        q.objects.append(p)
+        g.add_node(DNA,node)
+
+    def node2plane(self,node):
+        q=node.objects[0]
+        p=q.objects[0]
+        return p
+
+    def create(self,center,size,g=None):
+        selector=self.Selector
+        condition=self.condition
+        num_actions=selector.num_actions
+        if size>0:
+            if isinstance(center,tuple):
+                g=gr.Graph()
+                self.add_node(g,center)
+                center=g.key2node.get(center)
+                self.create(center,size,g)
+            else:
+                q=center.objects[0]
+                DNA_o=q.shape
+                node_o=center
+                for l in range(num_actions):
+                    if DNA_o:
+                        for m in range (self.num_morphisms):
+                            selector.update(DNA_o)
+                            actions=selector.get_predicted_actions()
+                            typo=actions[0]
+                            direction=self.directions.get(typo[1])
+                            DNA_f=condition(direction(k,DNA_o))
+                                if DNA_f:
+                                    self.add_node(g,DNA_f)
+                                    node_f=g.key2node.get(DNA_f)
+                                    g.add_edges(DNA_o,[DNA_f])
+                                    if self.type_add_layer:
+                                        label=typo
+                                        node=g.key2node.get(DNA_f)
+                                        p=self.node2plane(node)
+                                        if not (p.direction):
+                                            p.direction=label
+                if center.kids:
+                    for kid in center.kids:
+                        self.create(kid,size-1,g)
+        return g
+
 class Creator_from_selection():
 
     def __init__(self,typos,condition,type_add_layer=None):

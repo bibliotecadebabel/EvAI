@@ -148,7 +148,7 @@ if __name__ == '__main__':
     MAX_FILTERS_DENSE = 256
 
     list_conditions={DNA_conditions.max_filter : 257,
-            DNA_conditions.max_filter_dense : 65,
+            DNA_conditions.max_filter_dense : 257,
             DNA_conditions.max_kernel_dense : 9,
             DNA_conditions.max_layer : 200,
             DNA_conditions.min_filter : 3,
