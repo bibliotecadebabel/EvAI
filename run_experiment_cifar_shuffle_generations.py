@@ -128,7 +128,7 @@ if __name__ == '__main__':
     BEST_ITER = 7*e
     #settings.best_dt_array = Alaising(2,6,e)
     settings.best_dt_array = Alaising(1.2,7,BEST_ITER)
-    settings.max_best_iter = 0
+    settings.max_best_iter = 1
 
     # dropout parameter
     settings.dropout_value = float(input("dropout value: "))
