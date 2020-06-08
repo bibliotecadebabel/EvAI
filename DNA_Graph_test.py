@@ -2,6 +2,7 @@ from DNA_Graph import DNA_Graph
 from DNA_conditions import max_layer
 from DNA_creators import Creator
 from DNA_creators import Creator_from_selection as Creator_s
+from DNA_creators import Creator_from_selection_nm as Creator__nm
 from utilities.Abstract_classes.classes.random_selector import random_selector
 from utilities.Abstract_classes.classes.uniform_random_selector import(
     centered_random_selector as Selector_creator)
