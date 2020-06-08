@@ -119,7 +119,7 @@ if __name__ == '__main__':
 
 
     # JOINED DT PARAMETERS
-    JOINED_ITER = 2*e
+    JOINED_ITER = 10*e
     #settings.joined_dt_array = Alaising(2,6,e)
     settings.joined_dt_array = Alaising(1.2,7,JOINED_ITER)
     settings.max_joined_iter = 1
@@ -128,7 +128,7 @@ if __name__ == '__main__':
     BEST_ITER = 10*e
     #settings.best_dt_array = Alaising(2,6,e)
     settings.best_dt_array = Alaising(1.2,7,BEST_ITER)
-    settings.max_best_iter = 1
+    settings.max_best_iter = 0
 
     # dropout parameter
     settings.dropout_value = float(input("dropout value: "))
@@ -244,9 +244,9 @@ if __name__ == '__main__':
                                 (3, 4, 5))
     """
 
-    settings.initial_dna =   ((-1, 1, 3, 32, 32), (0, 3, 256, 3, 3),(0, 256, 256, 3, 3, 2), (0, 256, 256, 3, 3, 2),
-                                (0, 256, 256, 4, 4,2),
-                                (1, 256, 10),
+    settings.initial_dna =   ((-1, 1, 3, 32, 32), (0, 3, 64, 3, 3),(0, 64, 64, 3, 3, 2), (0, 64, 64, 3, 3, 2),
+                                (0, 64, 64, 4, 4,2),
+                                (1, 64, 10),
                                 (2,),
                                 (3, -1, 0),
                                 (3, 0, 1),
