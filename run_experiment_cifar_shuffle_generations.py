@@ -29,7 +29,7 @@ def dropout_function(base_p, total_conv2d, index_conv2d):
 
 def dropout_function(base_p, total_layers, index_layer, isPool=False):
 
-    value = 0
+    value = .1
     if index_layer != 0 and isPool == False:
         value = base_p +(3/5*base_p-base_p)*(total_layers - index_layer-1)/total_layers
 
