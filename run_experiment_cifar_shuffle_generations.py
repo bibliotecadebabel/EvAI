@@ -29,7 +29,7 @@ def dropout_function(base_p, total_conv2d, index_conv2d):
 
 def dropout_function(base_p, total_layers, index_layer, isPool=False):
 
-    value = .05
+    value = 0
     if index_layer != 0 and isPool == False:
         value = base_p +(3/5*base_p-base_p)*(total_layers - index_layer-1)/total_layers
 
@@ -66,7 +66,7 @@ def DNA_Creator_s(x,y, dna, version):
         directions=version, num_actions=num_actions,
         mutations=(
         (0,1,0,0),(1,0,0,0),
-        (0,0,1),
+        (0,0,1),(4,0,0,0),
         ))
     selector.update(dna)
     actions=selector.get_predicted_actions()
@@ -148,11 +148,11 @@ if __name__ == '__main__':
     MAX_FILTERS_DENSE = 256
 
     list_conditions={DNA_conditions.max_filter : 257,
-            DNA_conditions.max_filter_dense : 257,
-            DNA_conditions.max_kernel_dense : 5,
+            DNA_conditions.max_filter_dense : 11,
+            DNA_conditions.max_kernel_dense : 9,
             DNA_conditions.max_layer : 200,
             DNA_conditions.min_filter : 3,
-            DNA_conditions.max_pool_layer : 3,
+            DNA_conditions.max_pool_layer : 4,
             DNA_conditions.max_parents : 2}
 
     # TEST_NAME, the name of the experiment (unique)
@@ -244,9 +244,9 @@ if __name__ == '__main__':
                                 (3, 4, 5))
     """
 
-    settings.initial_dna =   ((-1, 1, 3, 32, 32), (0, 3, 64, 3, 3),(0, 64, 64, 3, 3, 3),
-                                (0, 64, 64, 4, 4,3),
-                                (1, 64, 10),
+    settings.initial_dna =   ((-1, 1, 3, 32, 32), (0, 3, 64, 3, 3),(0, 64, 64, 3, 3, 2),
+                                (0, 64, 10, 8, 8,2),
+                                (1, 10, 10),
                                 (2,),
                                 (3, -1, 0),
                                 (3, 0, 1),
