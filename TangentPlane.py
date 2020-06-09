@@ -18,3 +18,4 @@ class tangent_plane():
         self.velocity_potential=0
         self.direction=None
         self.variance=None
+        self.path=None
