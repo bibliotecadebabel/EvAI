@@ -28,15 +28,15 @@ def initialize_kernel_test():
     print(dire.initialize_kernel())
 
 def Persistent_synapse_condition_test(x,y):
-    DNA = ((-1,1,3,11,11),(0, 3, 5, 3, 3),(0, 8, 8,3,3),
-             (0, 8, 8,7,7),
-             (1, 7, 2), (2,),(3,-1,0),(3,0,1),
+    DNA = ((-1,1,3,11,11),(0, 3, 5, 3, 3),(0, 5, 8,3,3),
+             (0, 8, 8,11,11),
+             (1, 7, 2), (2,),(3,-1,0),(3,0,1),(3,0,-1),
              (3,1,2),(3,2,3),(3,3,4))
     print(dire.Persistent_synapse_condition(DNA))
 
 def compute_num_layers_test(x,y):
     DNA=((-1,1,3,11,11),(0, 3, 5, 3, 3),(0, 8, 8, 3,3),(0,11,5, x, y),
-            (1, 5, 2), (2,),(3,-1,0),(3,0,1),
+            (1, 5, 2), (2,),(3,-1,0),(3,0,1),(3,0,1),
             (3,1,2),(3,2,3),(3,3,4),(3,0,2))
     print('The number of layers in')
     print(DNA)
@@ -317,7 +317,8 @@ def retract_dendrites_test(x,y):
     print(DNA)
 
 
-add_conv_last()
+#compute_output_test()
+#add_conv_last()
 #initialize_kernel_test()
 #remove_layer_test_2(11,11)
 #add_pool_layer_test(11,11)
@@ -330,7 +331,7 @@ add_conv_last()
 #spread_dendrites_test_1(11,11)
 #increase_kernel_test(11,11)
 ##decrease_kernel_test(11,11)
-#Persistent_synapse_condition_test(11,11)
+Persistent_synapse_condition_test(11,11)
 #add_layer_test(11,11)
 #add_layer_test(11,11)
 #retract_h_test()

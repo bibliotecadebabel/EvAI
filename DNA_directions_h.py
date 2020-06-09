@@ -53,6 +53,11 @@ def signal_layer2output(signal_x,signal_y,layer):
         y = (y+(y % y_l))/y_l
         return [int(x),int(y)]
 
+def is_convex(node):
+    layer_o=node.objects[0]
+    total_chanels=sum([parent.objects[0][2] for parent in node.parents])
+    return not(layer_o[1]==total_chanels) and layer_o[0]==0
+
 def compute_output(g, node=None):
     if node==None:
         node=graph2full_node(g)
@@ -66,11 +71,14 @@ def compute_output(g, node=None):
     else:
         x = 0
         y = 0
-        for parent in node.parents:
-            compute_output(g, parent)
-            p_out = parent.objects[1]
-            x = max(x, p_out[0])
-            y = max(y, p_out[1])
+        if False:
+            pass
+        else:
+            for parent in node.parents:
+                compute_output(g, parent)
+                p_out = parent.objects[1]
+                x = max(x, p_out[0])
+                y = max(y, p_out[1])
         node.objects.append(signal_layer2output(x,y,layer))
 
 """
