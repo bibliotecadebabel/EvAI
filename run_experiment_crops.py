@@ -75,21 +75,42 @@ if __name__ == '__main__':
 
     settings = ExperimentSettings.ExperimentSettings()
     
-    rotation_degrees = float(input("Random Rotation Degree (0 to disable): "))
-    shear = float(input("Random shear degree (0 to disable): "))
+    random_rotation = int(input("Random rotation (1 -> enable, 0 -> disable): "))
+    random_shear = int(input("Random shear (1 -> enable, 0 -> disable): "))
+    normal_cutout = int(input("Cutout (1 -> enable, 0 -> disable): "))
+    random_cutout = int(input("Random Cutout (1 -> enable, 0 -> disable): "))
 
-    shear_value = None
-    if shear != 0:
-        shear_value = shear
+    enable_rotation = False
+    enable_shear = False
+    enable_cutout = False
+    enable_randomcutout = False
+    
+    if random_rotation == 1:
+        enable_rotation = True
+    
+    if random_shear == 1:
+        enable_shear = True
 
-    augSettings = AugmentationSettings.AugmentationSettings(affine_degress_rotation=rotation_degrees, affine_shear=shear_value)
+    if normal_cutout == 1:
+        enable_cutout = True
+    
+    if random_cutout == 1:
+        enable_randomcutout = True
+
+
+    augSettings = AugmentationSettings.AugmentationSettings()
 
     dict_transformations = {
-        augSettings.randomAffine : True,
-        augSettings.randomHorizontalFlip : True    
+        augSettings.customRandomCrop : True,
+        augSettings.translate : True,
+        augSettings.randomHorizontalFlip : True,
+        augSettings.randomRotation : enable_rotation,
+        augSettings.randomShear: enable_shear,
+        augSettings.cutout : enable_cutout,
+        augSettings.randomCutout : enable_randomcutout
     }
 
-    transform_compose = augSettings.generateTransformCompose(dict_transformations, True)
+    transform_compose = augSettings.generateTransformCompose(dict_transformations, False)
 
     # DIRECTIONS VERSION
     settings.version = directions_version.H_VERSION

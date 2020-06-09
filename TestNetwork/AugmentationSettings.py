@@ -1,6 +1,7 @@
 import torch
 import torchvision.transforms as transforms
 import random
+import utilities.CutOut as cutout_utility
 
 def customFiveCrop(image):
     img_zoomout = transforms.Resize(28, interpolation=2)(image)
@@ -38,6 +39,34 @@ def fiveCrop(image):
 
     return normalize_tensors
 
+def customCutout(image):
+    
+    p = 0.5
+    rand_value = random.random()
+    if p < rand_value:
+        return image
+    else:
+        image_tensor = transforms.ToTensor()(image)
+        tensor_cutout = cutout_utility.doCutOut(img=image_tensor, n_holes=1, size=16)
+        image_cutout = transforms.ToPILImage()(tensor_cutout)
+        
+        return image_cutout
+
+def customRandomCutout(image):
+    
+    p = 0.5
+    rand_value = random.random()
+
+    if p < rand_value:
+        return image
+    else:
+        image_tensor = transforms.ToTensor()(image)
+        size_cutout = random.randint(1, 16)
+        tensor_cutout = cutout_utility.doCutOut(img=image_tensor, n_holes=1, size=size_cutout)
+        image_cutout = transforms.ToPILImage()(tensor_cutout)
+
+        return image_cutout
+
 def customRandomCrop(image):
     
     random_crop = transforms.RandomCrop(28, fill=0, padding_mode='constant')
@@ -47,45 +76,39 @@ def customRandomCrop(image):
         image_pad = transforms.Pad(2, fill=0, padding_mode='constant')(image_crop)
     else:
         image_pad = image
+    
+    return image_pad
 
-    image_affine = transforms.RandomAffine(0, translate=(0.1, 0.1))(image_pad)
-    image_h_flip = transforms.RandomHorizontalFlip()(image_affine)
+def customRotation(image):
 
-    tensor_image = transforms.ToTensor()(image_h_flip)
-    normalize_tensor = transforms.Normalize((0.5, 0.5, 0.5), (0.5, 0.5, 0.5))(tensor_image)
+    random_rotation = transforms.RandomRotation(25)
+    image_rotation = transforms.RandomApply([random_rotation])(image)
 
-    return normalize_tensor
+    return image_rotation
 
+def customShear(image):
 
-def CropTensor(crops):
-    return torch.stack([transforms.ToTensor()(crop) for crop in crops])
+    random_shear = transforms.RandomAffine(0, shear=20)
+    image_shear = transforms.RandomApply([random_shear])(image)
 
-def CropNormalize(tensors):
-    return torch.stack([transforms.Normalize((0.5, 0.5, 0.5), (0.5, 0.5, 0.5))(t) for t in tensors])
+    return image_shear
+
 
 class AugmentationSettings:
 
-    def __init__(self, affine_degress_rotation=0, affine_shear=None):
+    def __init__(self):
         
         self.__crop = transforms.Lambda(customFiveCrop)
         self.__fullcrop = transforms.Lambda(fiveCrop)
-        self.__customRandomCrop = transforms.Lambda(customRandomCrop)
-
-        self.randomAffine = transforms.RandomAffine(affine_degress_rotation, translate=(0.1, 0.1), shear=affine_shear)
-                
+        
+        self.customRandomCrop = transforms.Lambda(customRandomCrop)
+        self.translate = transforms.RandomAffine(0, translate=(0.1, 0.1))                
         self.randomHorizontalFlip = transforms.RandomHorizontalFlip()
-
-        self.contrast = transforms.ColorJitter(brightness=0, contrast=0, saturation=0, hue=0)
-
-        padding = (6,6)
-        self.padding = transforms.Pad(padding, fill=0, padding_mode='constant')        
-
-        size = (24, 24)
-        self.zoomout = transforms.Resize(size)
-
-        size = (32, 32)
-        self.zoomin = transforms.Resize(size)
-    
+        self.randomRotation = transforms.Lambda(customRotation)
+        self.randomShear = transforms.Lambda(customShear)
+        self.cutout = transforms.Lambda(customCutout)
+        self.randomCutout = transforms.Lambda(customRandomCutout)
+        
     def generateTransformCompose(self, transform_dict, customCrop=False):
         
         transform_compose_list = []
@@ -103,7 +126,7 @@ class AugmentationSettings:
             transform_compose_list.append(transforms.Normalize((0.5, 0.5, 0.5), (0.5, 0.5, 0.5)))
 
         else:    
-            transform_compose_list.append(self.__customRandomCrop)
+            transform_compose_list.append(self.__fullcrop)
         
         print("Augmentation list: ", transform_compose_list)
 
