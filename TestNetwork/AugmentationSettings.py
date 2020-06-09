@@ -44,7 +44,7 @@ def customRandomCrop(image):
     image_crop = transforms.RandomApply([random_crop])(image)
     
     if image_crop.size[0] < 32:
-        image_pad = transforms.Pad(4, fill=0, padding_mode='constant')(image_crop)
+        image_pad = transforms.Pad(2, fill=0, padding_mode='constant')(image_crop)
     else:
         image_pad = image
 
