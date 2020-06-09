@@ -24,7 +24,7 @@ def fiveCrop(image):
     final_images = []
     
     for crop_image in five_crop_images:
-        resized_crop = transforms.Pad(2, fill=0, padding_mode='reflect')(crop_image)
+        resized_crop = transforms.Pad(2, fill=0, padding_mode='constant')(crop_image)
         random_affine = transforms.RandomAffine(25, translate=(0.1, 0.1), shear=20)
         image_affine = transforms.RandomApply([random_affine])(resized_crop)
         image_h_flip = transforms.RandomHorizontalFlip()(image_affine)
@@ -38,6 +38,25 @@ def fiveCrop(image):
 
     return normalize_tensors
 
+def customRandomCrop(image):
+    
+    random_crop = transforms.RandomCrop(28, fill=0, padding_mode='constant')
+    image_crop = transforms.RandomApply([random_crop])(image)
+    
+    if image_crop.size[0] < 32:
+        image_pad = transforms.Pad(4, fill=0, padding_mode='constant')(image_crop)
+    else:
+        image_pad = image
+
+    image_affine = transforms.RandomAffine(0, translate=(0.1, 0.1))(image_pad)
+    image_h_flip = transforms.RandomHorizontalFlip()(image_affine)
+
+    tensor_image = transforms.ToTensor()(image_h_flip)
+    normalize_tensor = transforms.Normalize((0.5, 0.5, 0.5), (0.5, 0.5, 0.5))(tensor_image)
+
+    return normalize_tensor
+
+
 def CropTensor(crops):
     return torch.stack([transforms.ToTensor()(crop) for crop in crops])
 
@@ -50,6 +69,7 @@ class AugmentationSettings:
         
         self.__crop = transforms.Lambda(customFiveCrop)
         self.__fullcrop = transforms.Lambda(fiveCrop)
+        self.__customRandomCrop = transforms.Lambda(customRandomCrop)
 
         self.randomAffine = transforms.RandomAffine(affine_degress_rotation, translate=(0.1, 0.1), shear=affine_shear)
                 
@@ -66,11 +86,11 @@ class AugmentationSettings:
         size = (32, 32)
         self.zoomin = transforms.Resize(size)
     
-    def generateTransformCompose(self, transform_dict, fiveCrop=False):
+    def generateTransformCompose(self, transform_dict, customCrop=False):
         
         transform_compose_list = []
 
-        if fiveCrop == False:
+        if customCrop == False:
 
             for key in transform_dict.keys():
                 
@@ -83,7 +103,7 @@ class AugmentationSettings:
             transform_compose_list.append(transforms.Normalize((0.5, 0.5, 0.5), (0.5, 0.5, 0.5)))
 
         else:    
-            transform_compose_list.append(self.__fullcrop)
+            transform_compose_list.append(self.__customRandomCrop)
         
         print("Augmentation list: ", transform_compose_list)
 
