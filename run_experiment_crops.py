@@ -140,7 +140,7 @@ if __name__ == '__main__':
     #settings.best_dt_array = Alaising(2,6,e)
     best_dt_max = float(input("max dt (best): "))
     settings.best_dt_array = Alaising(best_dt_max,7,BEST_ITER)
-    settings.max_best_iter = 240
+    settings.max_best_iter = int(input("max best iter: "))
 
 
     # dropout parameter
