@@ -186,6 +186,11 @@ def layer_chanel(layer,N):
     layer_f[1]=layer_f[1]+N
     return tuple(layer_f)
 
+def layer_chanel_conex(layer,N):
+    layer_f=list(layer)
+    layer_f[1]=max(layer_f[1],N)
+    return tuple(layer_f)
+
 def un_pool(layer):
     layer_f=list(layer)
     if len(layer_f)>5:
@@ -468,6 +473,55 @@ creator=add_pool_layer
 directions.update({type:creator})
 directions_labels.update({creator:type})
 
+type=(2,0,0,0)
+def add_layer_den(num_layer,source_DNA):
+    k_d=initialize_kernel()
+    if num_layer>len(DNA2layers(source_DNA))-4:
+        return None
+    def relabler(k):
+        if k==-2:
+            return num_layer
+        elif k<num_layer :
+            return k
+        else:
+            return k+1
+    g=DNA2graph(source_DNA)
+    total_layers=len(DNA2layers(source_DNA))
+    if  num_layer-1>total_layers-3:
+        return None
+    else:
+        node=nd.Node()
+        if num_layer==0:
+            clone_node=g.key2node.get(num_layer-1)
+            clone_layer = clone_node.objects[0]
+            node.objects.append((0,clone_layer[2],clone_layer[2],k_d,k_d))
+            g.add_node(-2,node)
+            g.add_edges(-1,[-2])
+            g.add_edges(-2,[num_layer])
+        else:
+            o_node=g.key2node.get(num_layer-1)
+            clone_node=g.key2node.get(num_layer-1)
+            if graph2full_node(g)==clone_node:
+                clone_node=o_node
+            o_layer=o_node.objects[0]
+            clone_layer = clone_node.objects[0]
+            node=nd.Node()
+            node.objects.append((0,clone_layer[2],clone_layer[2],k_d,k_d))
+            g.add_node(-2,node)
+            g.add_edges(num_layer-1,[-2])
+            g.add_edges(-2,[num_layer])
+        t_node=g.key2node.get(num_layer)
+        t_layer=t_node.objects[0]
+        t_layer=layer_chanel(t_layer,clone_layer[2])
+        t_node.objects[0]=t_layer
+        g.relable(relabler)
+        fix_fully_conected(g)
+        return Persistent_synapse_condition(graph2DNA(g))
+
+creator=add_layer_den
+directions.update({type:creator})
+directions_labels.update({creator:type})
+
 def index2pool(g,node,index):
     if index:
         t_node=g.key2node.get(index-1)
@@ -524,8 +578,56 @@ creator=spread_dendrites
 directions.update({type:creator})
 directions_labels.update({creator:type})
 
+type=(0,0,2)
+def spread_convex_dendrites(num_layer,source_DNA):
+    total_layers=len(DNA2layers(source_DNA))
+    num_layer=num_layer-1
+    if num_layer>total_layers-5:
+        return None
+    g=DNA2graph(source_DNA)
+    node=g.key2node.get(num_layer)
+    dendrites=node.kids.copy()
+    dendrites.remove(g.key2node.get(num_layer+1))
+    landscape=[g.node2key.get(node_k)-num_layer-1
+        for node_k in dendrites]
+    old_index=select_old_index2spread(num_layer,
+        landscape,total_layers-num_layer-5)
+    if old_index:
+#        print(f'The idex to remove is {old_index}')
+        g.remove_edge(num_layer,old_index)
+        t_node=g.key2node.get(old_index)
+        t_layer=t_node.objects[0]
+        t_node.objects[0]=layer_chanel(t_layer,-node.objects[0][2])
+        dendrites.remove(g.key2node.get(old_index))
+        landscape=[g.node2key.get(node_k)-num_layer-1
+            for node_k in dendrites]
+    new_index=select_new_index2spread(num_layer,
+        landscape,total_layers-num_layer-5)
+#    print(f'The idex to add is {new_index}')
+    new_index=index2pool(g,node,new_index)
+    if new_index and not(new_index==old_index) and (
+        not(new_index==num_layer or new_index==num_layer+1)):
+        g.add_edges(num_layer,[new_index])
+        t_node=g.key2node.get(new_index)
+        t_layer=t_node.objects[0]
+        t_node.objects[0]=layer_chanel_conex(t_layer,node.objects[0][2])
+#        print('The new graph is')
+        fix_fully_conected(g)
+        #imprimir(g)
+        return Persistent_synapse_condition(graph2DNA(g))
+    else:
+        return None
+
+
+
+
+creator=spread_convex_dendrites
+directions.update({type:creator})
+directions_labels.update({creator:type})
+
 def select_old_index2spread(num_layer,landscape,size):
-    if len(landscape)<5:
+#    if len(landscape)<5:
+    if True:
         return None
     else:
         k=0
