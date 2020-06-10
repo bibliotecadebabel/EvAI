@@ -36,7 +36,7 @@ def run_cifar_user_input_bidi(save = False):
     status.dt_min=0.0001
     status.clear_period=200000
     status.max_iter=20001
-    status.restart_period=200
+    status.restart_period=800
     status.max_layer=8
     status.max_filter=51
     from utilities.Abstract_classes.classes.centered_random_selector_bidi import(
