@@ -75,6 +75,13 @@ if __name__ == '__main__':
 
     settings = ExperimentSettings.ExperimentSettings()
     
+    random_crop_baseline = int(input("Random crop baseline? (1 -> yes, 0 -> no): "))
+
+    crop_baseline = False
+    if random_crop_baseline == 1:
+        crop_baseline = True
+
+    '''
     random_rotation = int(input("Random rotation (1 -> enable, 0 -> disable): "))
     random_shear = int(input("Random shear (1 -> enable, 0 -> disable): "))
     normal_cutout = int(input("Cutout (1 -> enable, 0 -> disable): "))
@@ -97,17 +104,18 @@ if __name__ == '__main__':
     if random_cutout == 1:
         enable_randomcutout = True
 
-
+    '''
     augSettings = AugmentationSettings.AugmentationSettings()
 
     dict_transformations = {
-        augSettings.customRandomCrop : True,
+        augSettings.customRandomCrop : not crop_baseline,
+        augSettings.baseline_customRandomCrop : crop_baseline,
+        augSettings.cutout : True,
         augSettings.translate : True,
         augSettings.randomHorizontalFlip : True,
-        augSettings.randomRotation : enable_rotation,
-        augSettings.randomShear: enable_shear,
-        augSettings.cutout : enable_cutout,
-        augSettings.randomCutout : enable_randomcutout
+        augSettings.randomShear: True,
+        #augSettings.randomRotation : enable_rotation,
+        #augSettings.randomCutout : enable_randomcutout
     }
 
     transform_compose = augSettings.generateTransformCompose(dict_transformations, False)

@@ -1,6 +1,7 @@
 import torch
 import torchvision.transforms as transforms
 import random
+import utilities.Augmentation as Augmentation_Vars
 import utilities.CutOut as cutout_utility
 
 def customFiveCrop(image):
@@ -40,34 +41,56 @@ def fiveCrop(image):
     return normalize_tensors
 
 def customCutout(image):
-    
+
     p = 0.5
     rand_value = random.random()
-    if p < rand_value:
-        return image
+
+    if Augmentation_Vars.ENABLE_EXTRA == True:
+        if p < rand_value:
+            return image
+        else:
+            image_tensor = transforms.ToTensor()(image)
+            tensor_cutout = cutout_utility.doCutOut(img=image_tensor, n_holes=1, size=16)
+            image_cutout = transforms.ToPILImage()(tensor_cutout)
+            
+            return image_cutout
     else:
-        image_tensor = transforms.ToTensor()(image)
-        tensor_cutout = cutout_utility.doCutOut(img=image_tensor, n_holes=1, size=16)
-        image_cutout = transforms.ToPILImage()(tensor_cutout)
-        
-        return image_cutout
+        return image
 
 def customRandomCutout(image):
     
     p = 0.5
     rand_value = random.random()
 
-    if p < rand_value:
-        return image
-    else:
-        image_tensor = transforms.ToTensor()(image)
-        size_cutout = random.randint(1, 16)
-        tensor_cutout = cutout_utility.doCutOut(img=image_tensor, n_holes=1, size=size_cutout)
-        image_cutout = transforms.ToPILImage()(tensor_cutout)
+    if Augmentation_Vars.ENABLE_EXTRA == True: 
+        if p < rand_value:
+            return image
+        else:
+            image_tensor = transforms.ToTensor()(image)
+            size_cutout = random.randint(1, 16)
+            tensor_cutout = cutout_utility.doCutOut(img=image_tensor, n_holes=1, size=size_cutout)
+            image_cutout = transforms.ToPILImage()(tensor_cutout)
 
-        return image_cutout
+            return image_cutout
+    else:
+        return image
 
 def customRandomCrop(image):
+    
+    if Augmentation_Vars.ENABLE_EXTRA == True: 
+        random_crop = transforms.RandomCrop(28, fill=0, padding_mode='constant')
+        image_crop = transforms.RandomApply([random_crop])(image)
+        
+        if image_crop.size[0] < 32:
+            image_pad = transforms.Pad(2, fill=0, padding_mode='constant')(image_crop)
+        else:
+            image_pad = image
+    else:
+        image_pad = image
+    
+    return image_pad
+
+def baseLineRandomCrop(image):
     
     random_crop = transforms.RandomCrop(28, fill=0, padding_mode='constant')
     image_crop = transforms.RandomApply([random_crop])(image)
@@ -81,17 +104,35 @@ def customRandomCrop(image):
 
 def customRotation(image):
 
-    random_rotation = transforms.RandomRotation(25)
-    image_rotation = transforms.RandomApply([random_rotation])(image)
+    if Augmentation_Vars.ENABLE_EXTRA == True:
+        random_rotation = transforms.RandomRotation(25)
+        image_rotation = transforms.RandomApply([random_rotation])(image)
+    else:
+        image_rotation = image
 
     return image_rotation
 
 def customShear(image):
 
-    random_shear = transforms.RandomAffine(0, shear=20)
-    image_shear = transforms.RandomApply([random_shear])(image)
+    if Augmentation_Vars.ENABLE_EXTRA == True:
+        random_shear = transforms.RandomAffine(0, shear=20)
+        image_shear = transforms.RandomApply([random_shear])(image)
+    else:
+        image_shear = image
 
     return image_shear
+
+def manageExtraAugmentation(image):
+
+    p = 0.5
+    rand_value = random.random()
+
+    if p < rand_value:
+        Augmentation_Vars.ENABLE_EXTRA = True
+    else:
+        Augmentation_Vars.ENABLE_EXTRA = False
+    
+    return image
 
 
 class AugmentationSettings:
@@ -100,8 +141,11 @@ class AugmentationSettings:
         
         self.__crop = transforms.Lambda(customFiveCrop)
         self.__fullcrop = transforms.Lambda(fiveCrop)
+        self.__manageExtraAugmentation = transforms.Lambda(manageExtraAugmentation)
         
         self.customRandomCrop = transforms.Lambda(customRandomCrop)
+        self.baseline_customRandomCrop = transforms.Lambda(baseLineRandomCrop)
+
         self.translate = transforms.RandomAffine(0, translate=(0.1, 0.1))                
         self.randomHorizontalFlip = transforms.RandomHorizontalFlip()
         self.randomRotation = transforms.Lambda(customRotation)
@@ -112,6 +156,8 @@ class AugmentationSettings:
     def generateTransformCompose(self, transform_dict, customCrop=False):
         
         transform_compose_list = []
+
+        transform_compose_list.append(self.__manageExtraAugmentation)
 
         if customCrop == False:
 
