@@ -68,25 +68,27 @@ def Test_Mutacion():
 
     list_transform = { 
         augSettings.randomHorizontalFlip : True,
-        augSettings.randomAffine : True,
+        augSettings.translate : True,
     }
 
-    transform_compose = augSettings.generateTransformCompose(transform_dict=list_transform, fiveCrop=True)
-    dataGen = GeneratorFromCIFAR.GeneratorFromCIFAR(2,  128, threads=2, dataAugmentation=True, transforms_mode=transform_compose)
+    transform_compose = augSettings.generateTransformCompose(list_transform, False)
+    dataGen = GeneratorFromCIFAR.GeneratorFromCIFAR(2,  128, threads=0, dataAugmentation=True, transforms_mode=transform_compose)
     dataGen.dataConv2d()
     
     version = directions_version.H_VERSION
 
     mutation_manager = MutationManager.MutationManager(directions_version=version)
     
-    for i in range(0, 6):
-
+    for i in range(5, 6):
+        
+        print("index: ", i)
         DNA =  ((-1, 1, 3, 32, 32), (0, 3, 16, 3, 3), (0, 16, 16, 3, 3, 2), (0, 16, 32, 3, 3, 2), (0, 32, 32, 4, 4, 2), 
                     (0, 64, 32, 8, 8), (1, 32, 10), (2,), (3, -1, 0), (3, 0, 1), (3, 1, 2), (3, 2, 3), (3, 2, 4),
                     (3, 3, 4), (3, 4, 5), (3, 5, 6))
 
-        #MUTATE_DNA_1 = direction_dna.add_layer(i, DNA)
-        MUTATE_DNA_2 = direction_dna.add_pool_layer(i, DNA)
+        MUTATE_DNA_1 = direction_dna.add_layer(i, DNA)
+        print("MUTATE_DNA_1: ", MUTATE_DNA_1)
+        #MUTATE_DNA_2 = direction_dna.add_pool_layer(i, DNA)
 
         network = nw_dendrites.Network(adn=DNA, cudaFlag=True, momentum=0.9, weight_decay=0, 
                 enable_activation=True, enable_track_stats=True, dropout_value=0.2, dropout_function=None, version=version)
@@ -96,7 +98,16 @@ def Test_Mutacion():
         network.generateEnergy(dataGen)
         print("acc: ", network.getAcurracy())
 
-        break
+        mutate_network_1 = mutation_manager.executeMutation(network, MUTATE_DNA_1)
+        #mutate_network_2 = mutation_manager.executeMutation(network, MUTATE_DNA_2)
+
+        mutate_network_1.generateEnergy(dataGen)
+        print("acc_1: ", mutate_network_1.getAcurracy())
+
+        #mutate_network_2.generateEnergy(dataGen)
+        #print("acc_2: ", mutate_network_2.getAcurracy())
+
+        
 
     #mutate_network.TrainingCosineLR_Restarts(dataGenerator=dataGen, max_dt=0.001, min_dt=0.001, epochs=1, restart_dt=1, show_accuarcy=True)
     
