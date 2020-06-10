@@ -11,7 +11,7 @@ import Transfer.Transfer as tran
 import children.Data_generator as dgen
 import children.Interfaces as Inter
 import children.Operations as Op
-import children.net2.Network as nw
+import children.net2.Network as nc
 from DNA_Graph import DNA_Graph
 from DNA_Phase_space_f_ac import DNA_Phase_space
 from Dynamic_DNA_f import Dynamic_DNA
@@ -33,7 +33,7 @@ def run_cifar_user_input_bidi(save = False):
     import Product_f_cifar_save_2 as program
     status=program.Status()
     status.dt_Max=0.01
-    status.dt_min=0.0001
+    status.dt_min=0.00001
     status.clear_period=200000
     status.max_iter=20001
     status.restart_period=800
