@@ -102,10 +102,8 @@ def __addLayerMutationProcess(oldNetwork, network, lenghtOldAdn, indexAdded, mut
     addedFound = False
 
     if mutation_type == m_type.ADD_POOL_LAYER:
-        print("adding pool")
         __initNewPoolConvolution(network.nodes[indexAdded+1].objects[0])
     else:
-        print("adding convolution")
         __initNewConvolution(network.nodes[indexAdded+1].objects[0])
 
     for i in range(1, lenghtOldAdn+1):
