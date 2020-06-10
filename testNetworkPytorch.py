@@ -2,14 +2,10 @@ import children.pytorch.NetworkDendrites as nw_dendrites
 from DAO import GeneratorFromImage, GeneratorFromCIFAR
 
 from DNA_Graph import DNA_Graph
-from DNA_creators import Creator_from_selection as Creator_s
-from utilities.Abstract_classes.classes.random_selector import random_selector
-from utilities.Abstract_classes.classes.positive_random_selector import(
+from DNA_creators import Creator_from_selection_nm as Creator_nm
+from utilities.Abstract_classes.classes.uniform_random_selector import(
     centered_random_selector as Selector_creator)
-from DNA_conditions import max_layer,max_filter
-
-from DNA_creators import Creator_from_selection as Creator_s
-from utilities.Abstract_classes.classes.random_selector import random_selector
+from DNA_conditions import max_layer,max_filter,max_filter_dense
 import DNA_directions_h as direction_dna
 import children.pytorch.MutationManager as MutationManager
 import const.versions as directions_version
@@ -18,6 +14,7 @@ import os
 import utilities.NetworkStorage as StorageManager
 import TestNetwork.ExperimentSettings as ExperimentSettings
 import TestNetwork.AugmentationSettings as AugmentationSettings
+
 
 def dropout_function(base_p, total_conv2d, index_conv2d):
     value = 0
@@ -32,17 +29,18 @@ def dropout_function(base_p, total_conv2d, index_conv2d):
 
     return value
 
-def DNA_pool(x,y):
+def generateSpace(x,y):
     max_layers=10
     max_filters=60
+    max_dense=100
     def condition_b(z):
-        return max_filter(max_layer(z,max_layers),max_filters)
-    center=((-1,1,3,x,y),
-            (0,3, 15, 3 , 3),
-            (0,15, 15, 3,  3),
-            (0,15,33,2,2,2),
-            (0,33, 50, 13, 13),
-            (1, 50,10),
+        return max_filter_dense(max_filter(max_layer(z,max_layers),max_filters),max_dense)
+    center=((-1,1,3,32,32),
+            (0,3, 5, 3 , 3),
+            (0,5, 6, 3,  3),
+            (0,6,7,3,3,2),
+            (0,7, 8, 16,16),
+            (1, 8,10),
              (2,),
             (3,-1,0),
             (3,0,1),
@@ -50,19 +48,42 @@ def DNA_pool(x,y):
             (3,2,3),
             (3,3,4),
             (3,4,5))
-    version='pool'
-    mutations=((4,0,0,0),(1,0,0,0),(0,1,0,0),(0,1,0,0))
-    selector=Selector_creator(condition=condition_b,
-        directions=version,mutations=mutations,num_actions=10)
-    selector.update(center)
-    actions=selector.get_predicted_actions()
-    creator=Creator_s
+    version='h'
+    mutations=((4,0,0,0),(1,0,0,0),(0,0,1))
+    #mutations=((4,0,0,0),(1,0,0,0),(0,1,0,0),(0,1,0,0),(0,0,1))
+    sel=Selector_creator(condition=condition_b,
+        directions=version,mutations=mutations,num_actions=5)
+    print('The selector is')
+    print(sel)
+    sel.update(center)
+    actions=sel.get_predicted_actions()
+    creator=Creator_nm
     space=DNA_Graph(center,1,(x,y),condition_b,actions,
-        version,creator)
+        version,creator=creator,num_morphisms=5,selector=sel)
     return space
 
+def getNodeCenter(space):
+
+    nodeCenter = None
+    for node in space.objects:
+
+        nodeAdn = space.node2key(node)
+
+        if str(nodeAdn) == str(space.center):
+            nodeCenter = node
+
+    return nodeCenter
 
 def Test_Mutacion():
+
+    space = generateSpace(32, 32)
+
+    nodeCenter = getNodeCenter(space)
+
+    #for nodeKid in nodeCenter.kids:
+    #    print("path kid: ", nodeKid.objects[0].objects[0].path)
+
+    PARENT_DNA = space.node2key(nodeCenter)
 
     augSettings = AugmentationSettings.AugmentationSettings()
 
@@ -79,34 +100,35 @@ def Test_Mutacion():
 
     mutation_manager = MutationManager.MutationManager(directions_version=version)
     
-    for i in range(5, 6):
-        
-        print("index: ", i)
-        DNA =  ((-1, 1, 3, 32, 32), (0, 3, 16, 3, 3), (0, 16, 16, 3, 3, 2), (0, 16, 32, 3, 3, 2), (0, 32, 32, 4, 4, 2), 
-                    (0, 64, 32, 8, 8), (1, 32, 10), (2,), (3, -1, 0), (3, 0, 1), (3, 1, 2), (3, 2, 3), (3, 2, 4),
-                    (3, 3, 4), (3, 4, 5), (3, 5, 6))
-
-        MUTATE_DNA_1 = direction_dna.add_layer(i, DNA)
-        print("MUTATE_DNA_1: ", MUTATE_DNA_1)
-        #MUTATE_DNA_2 = direction_dna.add_pool_layer(i, DNA)
-
-        network = nw_dendrites.Network(adn=DNA, cudaFlag=True, momentum=0.9, weight_decay=0, 
+    parent_network = nw_dendrites.Network(adn=PARENT_DNA, cudaFlag=True, momentum=0.9, weight_decay=0, 
                 enable_activation=True, enable_track_stats=True, dropout_value=0.2, dropout_function=None, version=version)
 
-        
-        network.TrainingCosineLR_Restarts(dataGenerator=dataGen, max_dt=0.001, min_dt=0.001, epochs=1, restart_dt=1, show_accuarcy=True)
-        network.generateEnergy(dataGen)
-        print("acc: ", network.getAcurracy())
+    parent_network.TrainingCosineLR_Restarts(dataGenerator=dataGen, max_dt=0.001, min_dt=0.001, epochs=1, restart_dt=1, 
+                                        show_accuarcy=True)
+    parent_network.generateEnergy(dataGen)
+    print("Parent ACC: ", parent_network.getAcurracy())    
 
-        mutate_network_1 = mutation_manager.executeMutation(network, MUTATE_DNA_1)
-        #mutate_network_2 = mutation_manager.executeMutation(network, MUTATE_DNA_2)
+    kid_num = 1
+    for nodeKid in nodeCenter.kids:
 
-        mutate_network_1.generateEnergy(dataGen)
-        print("acc_1: ", mutate_network_1.getAcurracy())
+        print("kid: ", kid_num)
+        mutations_path =  nodeKid.objects[0].objects[0].path
 
-        #mutate_network_2.generateEnergy(dataGen)
-        #print("acc_2: ", mutate_network_2.getAcurracy())
+        kid_dna_num = 1
+        old_network = parent_network
 
+        for kid_dna in mutations_path:
+
+            mutate_network = mutation_manager.executeMutation(old_network, kid_dna)
+            mutate_network.generateEnergy(dataGen)
+            print("kid ACC: ", mutate_network.getAcurracy())
+            old_network = mutate_network
+
+            kid_dna_num += 1
+
+        print("")
+
+        kid_num += 1
         
 
     #mutate_network.TrainingCosineLR_Restarts(dataGenerator=dataGen, max_dt=0.001, min_dt=0.001, epochs=1, restart_dt=1, show_accuarcy=True)
