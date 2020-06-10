@@ -75,42 +75,25 @@ if __name__ == '__main__':
 
     settings = ExperimentSettings.ExperimentSettings()
     
-    random_crop_baseline = int(input("Random crop baseline? (1 -> yes, 0 -> no): "))
+    random_erase_1 = int(input("RandomErase (size: 4x4, holes: 2) ? (1 -> yes, 0 -> no): "))
+    random_erase_2 = int(input("RandomErase (size: 2x2, holes: 16) ? (1 -> yes, 0 -> no): "))
 
-    crop_baseline = False
-    if random_crop_baseline == 1:
-        crop_baseline = True
-
-    '''
-    random_rotation = int(input("Random rotation (1 -> enable, 0 -> disable): "))
-    random_shear = int(input("Random shear (1 -> enable, 0 -> disable): "))
-    normal_cutout = int(input("Cutout (1 -> enable, 0 -> disable): "))
-    random_cutout = int(input("Random Cutout (1 -> enable, 0 -> disable): "))
-
-    enable_rotation = False
-    enable_shear = False
-    enable_cutout = False
-    enable_randomcutout = False
+    enable_randomerase_1 = False
+    enable_randomerase_2 = False
     
-    if random_rotation == 1:
-        enable_rotation = True
+    if random_erase_1 == 1:
+        enable_randomerase_1 = True
     
-    if random_shear == 1:
-        enable_shear = True
+    if random_erase_2 == 1:
+        enable_randomerase_2 = True
 
-    if normal_cutout == 1:
-        enable_cutout = True
-    
-    if random_cutout == 1:
-        enable_randomcutout = True
-
-    '''
     augSettings = AugmentationSettings.AugmentationSettings()
 
     dict_transformations = {
-        augSettings.customRandomCrop : not crop_baseline,
-        augSettings.baseline_customRandomCrop : crop_baseline,
+        augSettings.baseline_customRandomCrop : True,
         augSettings.cutout : True,
+        augSettings.randomErase_1 : enable_randomerase_1,
+        augSettings.randomErase_2 : enable_randomerase_2,
         augSettings.translate : True,
         augSettings.randomHorizontalFlip : True,
         augSettings.randomShear: True,

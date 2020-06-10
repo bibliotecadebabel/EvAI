@@ -57,7 +57,7 @@ def customCutout(image):
     else:
         return image
 
-def customRandomCutout(image):
+def customRandomErase_1(image):
     
     p = 0.5
     rand_value = random.random()
@@ -67,13 +67,34 @@ def customRandomCutout(image):
             return image
         else:
             image_tensor = transforms.ToTensor()(image)
-            size_cutout = random.randint(1, 16)
-            tensor_cutout = cutout_utility.doCutOut(img=image_tensor, n_holes=1, size=size_cutout)
+            holes_erase = random.randint(1, 2)
+            size_erase = random.randint(1, 4)
+            tensor_cutout = cutout_utility.doCutOut(img=image_tensor, n_holes=holes_erase, size=size_erase)
             image_cutout = transforms.ToPILImage()(tensor_cutout)
 
             return image_cutout
     else:
         return image
+
+def customRandomErase_2(image):
+    
+    p = 0.5
+    rand_value = random.random()
+
+    if Augmentation_Vars.ENABLE_EXTRA == True: 
+        if p < rand_value:
+            return image
+        else:
+            image_tensor = transforms.ToTensor()(image)
+            holes_erase = random.randint(4, 16)
+            size_erase = random.randint(1, 2)
+            tensor_cutout = cutout_utility.doCutOut(img=image_tensor, n_holes=holes_erase, size=size_erase)
+            image_cutout = transforms.ToPILImage()(tensor_cutout)
+
+            return image_cutout
+    else:
+        return image
+
 
 def customRandomCrop(image):
     
@@ -142,8 +163,6 @@ class AugmentationSettings:
         self.__crop = transforms.Lambda(customFiveCrop)
         self.__fullcrop = transforms.Lambda(fiveCrop)
         self.__manageExtraAugmentation = transforms.Lambda(manageExtraAugmentation)
-        
-        self.customRandomCrop = transforms.Lambda(customRandomCrop)
         self.baseline_customRandomCrop = transforms.Lambda(baseLineRandomCrop)
 
         self.translate = transforms.RandomAffine(0, translate=(0.1, 0.1))                
@@ -151,7 +170,8 @@ class AugmentationSettings:
         self.randomRotation = transforms.Lambda(customRotation)
         self.randomShear = transforms.Lambda(customShear)
         self.cutout = transforms.Lambda(customCutout)
-        self.randomCutout = transforms.Lambda(customRandomCutout)
+        self.randomErase_1 = transforms.Lambda(customRandomErase_1)
+        self.randomErase_2 = transforms.Lambda(customRandomErase_2)
         
     def generateTransformCompose(self, transform_dict, customCrop=False):
         
