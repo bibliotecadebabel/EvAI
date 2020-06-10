@@ -172,6 +172,29 @@ class TorchStream(Stream):
             if log:
                 log.signal = False
 
+    def clear(self):
+        Graph = self.Graph
+        graph_dict = Graph.key2node
+        keys2erase=[]
+        nodes2erase=[]
+        for key, node in graph_dict.items():
+            log = node.get_object()
+            log = self.key2log(key)
+            if log:
+                if log.signal == False:
+                    if log.new_net:
+                        del log.new_net
+                    keys2erase.append(key)
+                    nodes2erase.append(node)
+                else:
+                    log.new_net.history_loss=[]
+        for k in range(len(keys2erase)):
+            Graph.key2node.pop(keys2erase[k])
+            Graph.node2key.pop(nodes2erase[k])
+        del keys2erase
+        del nodes2erase
+
+
 
 
     """def charge_node(self,key,charger=None):

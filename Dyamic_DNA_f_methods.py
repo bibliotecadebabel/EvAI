@@ -333,7 +333,10 @@ def update_from_select_09(self):
         phase_space.objects = space.objects
         phase_space.support=[]
         phase_space.create_particles(num_particles+1)
-        phase_space.stream.signals_off()
+        stream=phase_space.stream
+        stream.signals_off()
+        stream.key2signal_on(center)
+        stream.clear()
         phase_space.attach_balls()
         phase_space.max_changed = False
         phase_space.node_max_particles = None

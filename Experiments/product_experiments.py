@@ -45,7 +45,7 @@ def run_cifar_user_input_bidi(save = False):
     status.log_size=int(input("Log size : "))
     status.min_log_size=100
     status.S=int(input("Batch size : "))
-    status.cuda=True
+    status.cuda=bool(input("Any input for cuda : "))
     status.mutation_coefficient=float(input("mutation_coefficient : "))
     if save:
         status.experiment_name=input("insert experiment name : ")
