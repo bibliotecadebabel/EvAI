@@ -112,14 +112,15 @@ if __name__ == '__main__':
     num_actions=8
 
     e=400
-    settings.max_init_iter = 1
-    INIT_ITER = 20*e
+    self.save_txt = True
+    settings.max_init_iter = 320
+    INIT_ITER = 10*e
     #settings.init_dt_array = exp_alai(.5,INIT_ITER,1,5)
     settings.init_dt_array =  Alaising(1.2,7,INIT_ITER)
 
 
     # JOINED DT PARAMETERS
-    JOINED_ITER = 3*e
+    JOINED_ITER = 0*e
     #settings.joined_dt_array = Alaising(2,6,e)
     settings.joined_dt_array = Alaising(1,5,JOINED_ITER)
     settings.max_joined_iter = 1
@@ -230,6 +231,8 @@ if __name__ == '__main__':
 
     #settings.initial_dna =   DNAs.DNA_ep25
 
+    settings.initial_dna = DNAs.DNA_ep36
+
 
     """
     settings.initial_dna =   ((-1, 1, 3, 32, 32), (0, 3, 32, 3, 3),(0, 32, 64, 3, 3, 2), (0, 64, 128, 3, 3, 2),
@@ -243,7 +246,7 @@ if __name__ == '__main__':
                                 (3, 3, 4),
                                 (3, 4, 5))
     """
-
+    """
 
     settings.initial_dna =   ((-1, 1, 3, 32, 32), (0, 3, 64, 3, 3),(0, 64, 128, 3, 3, 2),
                                 (0, 128, 256, 8, 8,2),
@@ -254,6 +257,7 @@ if __name__ == '__main__':
                                 (3, 1, 2),
                                 (3, 2, 3),
                                 (3, 3, 4))
+    """
 
 
 
