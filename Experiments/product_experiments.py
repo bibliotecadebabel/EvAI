@@ -57,7 +57,7 @@ def run_cifar_user_input_bidi(save = False):
     status.Center=((-1,1,3,x,y),
             (0,3, 10, 3 , 3),
             (0,13, 10, 3,  3),
-            (0,19, 10, x, y),
+            (0,23, 10, x, y),
             (1, 10,10),
              (2,),
             (3,-1,0),
