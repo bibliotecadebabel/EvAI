@@ -112,7 +112,7 @@ if __name__ == '__main__':
     num_actions=8
 
     e=400
-    self.save_txt = True
+    settings.save_txt = True
     settings.max_init_iter = 320
     INIT_ITER = 10*e
     #settings.init_dt_array = exp_alai(.5,INIT_ITER,1,5)
