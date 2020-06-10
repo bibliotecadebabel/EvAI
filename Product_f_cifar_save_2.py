@@ -16,7 +16,7 @@ from DAO import GeneratorFromCIFAR
 from DNA_Graph import DNA_Graph
 from DNA_Phase_space_f_ac import DNA_Phase_space
 from Dynamic_DNA_f import Dynamic_DNA
-from utilities.Abstract_classes.classes.torch_stream_ac import TorchStream
+from utilities.Abstract_classes.classes.torch_stream_nc import TorchStream
 from utilities.Abstract_classes.classes.positive_random_selector import(
     centered_random_selector as Selector)
 import children.pytorch.Network as nw
