@@ -169,8 +169,6 @@ class centered_random_selector(Selector):
                 k=k+1
             l=l+1
 
-        print("predicted: ", self.predicted_actions)
-
     def __dendrites_mutation(self, mutation):
 
         stop = False

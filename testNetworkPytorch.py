@@ -112,6 +112,8 @@ def Test_Mutacion():
     for nodeKid in nodeCenter.kids:
 
         print("kid: ", kid_num)
+        print("DNA KID: ", space.node2key(nodeKid))
+        print("Las path: ", nodeKid.objects[0].objects[0].path[-1])
         mutations_path =  nodeKid.objects[0].objects[0].path
 
         kid_dna_num = 1
