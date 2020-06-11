@@ -182,7 +182,7 @@ def MSEloss_propagate(layer):
 
     value = parent.value
 
-    if layer.getRicap() != None:
+    if layer.getRicap() != None and layer.getEnableRicap() == True:
         layer.value = layer.getRicap().generateLoss(layer)
     else:
         layer.value = layer.object(value, layer.label)

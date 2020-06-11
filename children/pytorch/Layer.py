@@ -33,6 +33,13 @@ class Layer():
         self.__dropout = None
         self.__pool = None
         self.__ricap = None
+        self.__enableRicap = False
+
+    def getEnableRicap(self):
+        return self.__enableRicap
+    
+    def setEnableRicap(self, value):
+        self.__enableRicap = value
 
     def setRicap(self, value):
         self.__ricap = value
