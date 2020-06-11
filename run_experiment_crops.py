@@ -11,6 +11,7 @@ import TestNetwork.AugmentationSettings as AugmentationSettings
 import const.versions as directions_version
 import numpy as np
 import test_DNAs as DNAs
+import utilities.Augmentation as Augmentation_Utils
 ###### EXPERIMENT SETTINGS ######
 """
 def dropout_function(base_p, total_conv2d, index_conv2d):
@@ -264,6 +265,7 @@ if __name__ == '__main__':
 
     """
     settings.initial_dna =   DNAs.DNA_calibration_3
+    settings.ricap = Augmentation_Utils.Ricap(beta=0.3)
 
     """
     settings.initial_dna =   ((-1, 1, 3, 32, 32), (0, 3, 32, 3, 3),(0, 32, 64, 3, 3, 2), (0, 64, 128, 3, 3, 2),

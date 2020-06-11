@@ -32,6 +32,13 @@ class Layer():
         self.__batchnorm = None
         self.__dropout = None
         self.__pool = None
+        self.__ricap = None
+
+    def setRicap(self, value):
+        self.__ricap = value
+        
+    def getRicap(self):
+        return self.__ricap
 
     def setCrops(self, value):
         self.__crops = value

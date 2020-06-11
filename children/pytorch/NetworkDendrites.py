@@ -5,6 +5,7 @@ import children.pytorch.NetworkAbastract as na
 import const.propagate_mode as const
 import const.datagenerator_type as datagen_type
 import const.versions as directions_version
+import utilities.Augmentation as Augmentation
 
 import torch
 import torch.nn as nn
@@ -190,10 +191,6 @@ class Network(nn.Module, na.NetworkAbstract):
 
     def Train(self, dataElement, peso, n):
 
-        if len(dataElement.size()) > 4:
-            self.__getLossLayer().setCrops(dataElement.shape[1])
-            dataElement = dataElement.view(-1, dataElement.shape[2], dataElement.shape[3], dataElement.shape[4])
-
         self.nodes[0].objects[0].value = dataElement
         self.updateGradFlag(True)
 
@@ -201,12 +198,29 @@ class Network(nn.Module, na.NetworkAbstract):
         self.__doBackward()
         self.updateGradFlag(False)
 
-    def __doTraining(self, inputs, labels_data, doView=False):
+    def __doTraining(self, inputs, labels_data):
 
         self.assignLabels(labels_data)
         self.total_value = 0
         self.optimizer.zero_grad()
         self.Train(inputs, 1, 1)
+        self.optimizer.step()
+
+        self.total_value = self.__getLossLayer().value.item()
+        self.__accumulated_loss += self.total_value
+
+        self.history_loss.append(self.total_value)
+    
+    def __doTrainingRICAP(self, inputs, labels_data, ricap : Augmentation.Ricap):
+
+
+        self.assignLabels(labels_data)
+        self.total_value = 0
+        self.optimizer.zero_grad()
+
+        patched_images = ricap.doRicap(inputs=inputs, target=labels_data, cuda=self.cudaFlag)        
+        self.__getLossLayer().setRicap(ricap)
+        self.Train(patched_images, 1, 1)
         self.optimizer.step()
 
         self.total_value = self.__getLossLayer().value.item()
@@ -342,7 +356,7 @@ class Network(nn.Module, na.NetworkAbstract):
 
             print("epoch time: ", (end_time - start_time))
 
-    def iterTraining(self, dataGenerator, dt_array):
+    def iterTraining(self, dataGenerator, dt_array, ricap=None):
 
         iters = len(dt_array)
 
@@ -362,8 +376,12 @@ class Network(nn.Module, na.NetworkAbstract):
                     inputs, labels_data = data[0].cuda(), data[1].cuda()
                 else:
                     inputs, labels_data = data[0], data[1]
-                    
-                self.__doTraining(inputs=inputs, labels_data=labels_data)
+                
+                
+                if ricap == None:
+                    self.__doTraining(inputs=inputs, labels_data=labels_data)
+                else:
+                    self.__doTrainingRICAP(inputs=inputs, labels_data=labels_data, ricap=ricap)
 
                 self.__currentEpoch = i
 
