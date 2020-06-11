@@ -5,7 +5,7 @@ import time
 def pcos(x):
     if x>np.pi:
         x-np.pi
-    return np.cos(x)
+    return np.cos(np.pi)
 
 class Alaising():
     def __init__(self,min=0.0001,max=0.5,time=0,max_time=5):
@@ -30,7 +30,6 @@ class Alaising():
     def update(self,delta=1):
         self.time+=delta
         print(f'The current time is : {self.time}')
-        time.sleep(0.5)
         if self.time>self.max_time:
             self.time=0
 
