@@ -5,7 +5,7 @@ import time
 def pcos(x):
     if x>np.pi:
         x-np.pi
-    return np.cos(np.pi)
+    return np.cos(x)
 
 class Alaising():
     def __init__(self,min=0.0001,max=0.5,time=0,max_time=5):
