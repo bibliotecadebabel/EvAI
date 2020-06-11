@@ -214,7 +214,7 @@ class Network(nn.Module, na.NetworkAbstract):
     
     def __doTrainingRICAP(self, inputs, labels_data, ricap : Augmentation.Ricap):
 
-
+        self.__getLossLayer().setEnableRicap(True)
         self.assignLabels(labels_data)
         self.total_value = 0
         self.optimizer.zero_grad()
@@ -604,6 +604,7 @@ class Network(nn.Module, na.NetworkAbstract):
                     self.__getLossLayer().setCrops(inputs.shape[1])
                     inputs = inputs.view(-1, inputs.shape[2], inputs.shape[3], inputs.shape[4])
 
+                self.__getLossLayer().setEnableRicap(False)
                 model.assignLabels(labels)
                 model.nodes[0].objects[0].value = inputs 
                 model(model.nodes[0].objects[0].value)
