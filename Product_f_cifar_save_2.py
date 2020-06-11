@@ -43,17 +43,21 @@ class Status():
         self.max_layer=7
         self.max_filter=51
         self.update_force_field=update_force_field
-
+        self.condition=None
         self.experiment_name='experiment_cifar'
         self.save_space_period=200
         self.save_net_period=1000
         self.save2database=True
+        self.threads=int(input('Threads : '))
+        self.mutations=None
+        self.num_actions=4
 
         self.log_size=200
         self.min_log_size=100
         self.S=50
         self.cuda=False
         self.typos_version='clone'
+        self.version=None
         self.restart_period=200
         self.Alai=None
         self.typos=((1,0,0,0),(0,0,1,1),(0,1,0,0))
@@ -178,19 +182,19 @@ def create_objects(status):
          max=status.dt_Max,
             max_time=status.restart_period)
     status.Data_gen=GeneratorFromCIFAR.GeneratorFromCIFAR(
-    status.Comp, status.S, cuda=status.cuda)
+    status.Comp, status.S, cuda=status.cuda, threads=status.threads)
     status.Data_gen.dataConv2d()
     dataGen=status.Data_gen
     x = dataGen.size[1]
     y = dataGen.size[2]
-    max_layers=status.max_layer
-    max_filters=status.max_filter
-    def condition(DNA):
-        return max_filter(max_layer(DNA,max_layers),max_filters)
-    version=status.typos_version
+    condition=status.condition
+    mutations=status.mutations
+    version=status.version
     center=status.Center
+    num_actions=status.num_actions
     selector=status.Selector_creator(condition=condition,
-        directions=version)
+        directions=version, num_actions=num_actions,
+        mutations=mutations)
     status.Selector=selector
     creator=status.Creator
     selector.update(center)
@@ -200,13 +204,13 @@ def create_objects(status):
     if status.Alai:
         stream=TorchStream(status.Data_gen,status.log_size,
             min_size=status.min_log_size,
-            Alai=status.Alai)
+            Alai=status.Alai,status=status)
     else:
         stream=TorchStream(status.Data_gen,status.log_size,
-            min_size=status.min_log_size)
+            min_size=status.min_log_size,status=status)
     status.stream=stream
     Phase_space=DNA_Phase_space(space,
-        stream=stream)
+        stream=stream,status=status)
     Dynamics=Dynamic_DNA(space,Phase_space,status.dx,
         Creator=creator,Selector=selector,
         update_velocity=velocity_updater,

@@ -26,7 +26,7 @@ class TorchStream(Stream):
                 return out_net
         return Torch_log_creator
     def __init__(self,dataGen,log_size=200,dt=0.001,min_size=5,
-        Alai=None):
+        Alai=None,status=None):
         self.Torch_log_creator=self.Alai2creator(Alai)
         super().__init__(self.Torch_log_creator)
         self.log_size=log_size
@@ -36,6 +36,10 @@ class TorchStream(Stream):
         self.min_size=min_size
         self.Alai=Alai
         self.flags=True
+        if status:
+            self.version=status.version
+        else:
+            self.version='clone'
 
     def flags_print(self,text):
         if self.flags==True:
@@ -65,10 +69,8 @@ class TorchStream(Stream):
             else:
                 dt=Alai.get_increments(self.log_size)
                 self.flags_print(f'The training range is dt_max : {max(dt)}, dt_min :{min(dt)} ')
-                net.Training(data=self.dataGen,
-                    p=self.log_size,
-                    dt=Alai.get_increments(self.log_size),
-                    full_database=True)
+                net.iterTraining(dataGenerator=self.dataGen,
+                    dt_array=Alai.get_increments(self.log_size))
             log.charge(net.history_loss)
             net.history_loss=[]
         elif log.signal and (len(log.log) < self.min_size+2):
@@ -85,10 +87,8 @@ class TorchStream(Stream):
             else:
                 dt=Alai.get_increments(self.log_size)
                 self.flags_print(f'The training range is dt_max : {max(dt)}, dt_min :{min(dt)} ')
-                net.Training(data=self.dataGen,
-                    p=self.log_size-self.min_size,
-                    dt=dt,
-                    full_database=True)
+                net.iterTraining(dataGenerator=self.dataGen,
+                    dt_array=dt)
 #            net.Training(data=self.dataGen,
 #                p=self.log_size-5,
 #                dt=self.dt,full_database=True)
@@ -130,6 +130,7 @@ class TorchStream(Stream):
             network = nw.Network(key,
                                  cudaFlag=self.cuda,momentum=0.9,
                                  weight_decay=0.0005,
+                                 version=self.version
                                  )
             self.link_node(key,network)
             self.charge_node(key)

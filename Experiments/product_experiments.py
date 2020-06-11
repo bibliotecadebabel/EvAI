@@ -25,25 +25,43 @@ from Dyamic_DNA_f_methods import update_from_select_09  as space_updater
 from Dyamic_DNA_f_methods import (
     update_velocity_mobility as velocity_updater)
 import time
+import DNA_conditions
 from utilities.Abstract_classes.classes.Alaising_cosine import (
     Alaising as Alai)
 
 #from Product_f_cifar import Status as program_cf
 def run_cifar_user_input_bidi(save = False):
     import Product_f_cifar_save_2 as program
+    list_conditions={DNA_conditions.max_filter : 257,
+            DNA_conditions.max_filter_dense : 257,
+            DNA_conditions.max_kernel_dense : 9,
+            DNA_conditions.max_layer : 200,
+            DNA_conditions.min_filter : 3,
+            DNA_conditions.max_pool_layer : 4,
+            DNA_conditions.max_parents : 2}
+    def condition(DNA):
+        return DNA_conditions.dict2condition(DNA,list_conditions)
     status=program.Status()
+    status.condition=condition
     status.dt_Max=0.01
     status.dt_min=0.00001
     status.clear_period=200000
     status.max_iter=20001
-    status.restart_period=800
+    status.restart_period=4000
     status.max_layer=8
     status.max_filter=51
-    from utilities.Abstract_classes.classes.centered_random_selector_bidi import(
+    from utilities.Abstract_classes.classes.uniform_random_selector_2 import (
         centered_random_selector as Selector)
+    status.mutations=(
+    (0,1,0,0),(1,0,0,0),
+    (0,0,1),(4,0,0,0),
+    )
+    status.num_actions=4
+
     status.Selector_creator=Selector
     status.log_size=int(input("Log size : "))
     status.min_log_size=100
+    status.version='h'
     status.S=int(input("Batch size : "))
     status.cuda=bool(input("Any input for cuda : "))
     status.mutation_coefficient=float(input("mutation_coefficient : "))
@@ -54,17 +72,17 @@ def run_cifar_user_input_bidi(save = False):
     status.save2database=save
     x=32
     y=32
-    status.Center=((-1,1,3,x,y),
-            (0,3, 10, 3 , 3),
-            (0,13, 10, 3,  3),
-            (0,23, 10, x, y),
-            (1, 10,10),
-             (2,),
-            (3,-1,0),
-            (3,0,1),(3,-1,1),
-            (3,1,2),(3,0,2),(3,-1,2),
-            (3,2,3),
-            (3,3,4))
+
+    status.Center=((-1, 1, 3, 32, 32), (0, 3, 32, 3, 3),(0, 32, 64, 3, 3, 2), (0, 64, 128, 3, 3, 2),
+                                (0, 128, 256, 8, 8),
+                                (1, 256, 10),
+                                (2,),
+                                (3, -1, 0),
+                                (3, 0, 1),
+                                (3, 1, 2),
+                                (3, 2, 3),
+                                (3, 3, 4),
+                                (3, 4, 5))
     program.run(status)
 
 """

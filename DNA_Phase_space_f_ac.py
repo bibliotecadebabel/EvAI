@@ -1,11 +1,11 @@
 from Particle import particle as particle
 from utilities.Abstract_classes.classes.torch_stream_fb import TorchStream
 from DAO import GeneratorFromImage
-import children.pytorch.MutateNetwork_Dendrites_clone as Mutate
+import children.pytorch.MutateNetwork_Dendrites_clone as Mutator
 import utilities.Graphs as gr
 import utilities.P_trees as tr
 from timing import timing
-
+import children.pytorch.MutationManager as mutation_manager
 
 class DNA_Phase_space():
 
@@ -109,7 +109,7 @@ class DNA_Phase_space():
         stream=self.stream
         if not(stream.get_net(k_f)):
             net=self.node2net(node_o)
-            net_f=Mutate.executeMutation(net,k_f)
+            net_f=self.Mutator.executeMutation(net,k_f)
             stream.add_node(k_f)
             stream.link_node(k_f,net_f)
             stream.charge_node(k_f)
@@ -361,7 +361,7 @@ class DNA_Phase_space():
 
     def __init__(self,DNA_graph,
             Potential=None,Interaction=None,External=None,
-            stream=None):
+            stream=None,status=None):
         self.DNA_graph = DNA_graph
         self.objects = DNA_graph.objects
         self.num_particles = None
@@ -375,6 +375,11 @@ class DNA_Phase_space():
         self.max_changed=False
         self.attach_balls()
         self.time=0
+        if status:
+            mut_man=mutation_manager.MutationManager(status.version)
+            self.Mutator=mut_man.getMuation()
+        else:
+            self.Mutator=Mutator
 
 
 
