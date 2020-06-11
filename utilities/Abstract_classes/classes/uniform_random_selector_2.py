@@ -152,7 +152,7 @@ class centered_random_selector(Selector):
         while len(self.predicted_actions)<self.num_actions and l<300:
             #layer=int(np.random.normal(0, 3*self.current_num_layer))+self.center
             layer=random.randint(0,self.current_num_layer+1)
-            if layer>-1 and layer<self.current_num_layer+1:
+            if layer>-1 and layer<self.current_num_layer+2:
                 mutation=random.randint(0,num_mutations-1)
 
                 if self.mutations[mutation] == (0, 0, 1):
