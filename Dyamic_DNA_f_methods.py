@@ -322,6 +322,13 @@ def update_from_select_09(self):
         typos = old_graph.typos
         node_max = phase_space.node_max_particles
         center = phase_space.node2key(node_max)
+        Alai=status.Alai
+        stream=phase_space.stream
+        delta=stream.key2len_hist(center)
+        Alai.update(delta)
+        stream.signals_off()
+        stream.key2signal_on(center)
+        stream.clear()
         selector.update(old_graph,new_center=center)
         actions=selector.get_predicted_actions()
         x = old_graph.x_dim
@@ -332,14 +339,7 @@ def update_from_select_09(self):
         phase_space.objects = space.objects
         phase_space.support=[]
         status=phase_space.status
-        Alai=status.Alai
         phase_space.create_particles(num_particles+1)
-        stream=phase_space.stream
-        delta=stream.key2len_hist(center)
-        Alai.update(delta)
-        stream.signals_off()
-        stream.key2signal_on(center)
-        stream.clear()
         phase_space.attach_balls()
         phase_space.max_changed = False
         phase_space.node_max_particles = None
