@@ -37,7 +37,7 @@ class Ricap():
             W_[k] = w_[k] * h_[k] / (I_x * I_y)
 
         self.__c = c_
-        self.__w = w_
+        self.__w = W_
 
         patched_images = torch.cat(
             (torch.cat((cropped_images[0], cropped_images[1]), 2),
