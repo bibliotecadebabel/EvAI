@@ -231,7 +231,7 @@ if __name__ == '__main__':
 
     #settings.initial_dna =   DNAs.DNA_ep25
 
-    settings.initial_dna = DNAs.DNA_procut_1
+    settings.initial_dna = DNAs.DNA_procut_4
 
 
     """
