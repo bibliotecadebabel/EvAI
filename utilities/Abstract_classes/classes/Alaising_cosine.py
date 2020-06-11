@@ -1,5 +1,6 @@
 import numpy as np
 import copy
+import time
 
 def pcos(x):
     if x>np.pi:
@@ -28,6 +29,8 @@ class Alaising():
 
     def update(self,delta=1):
         self.time+=delta
+        print(f'The current time is : {self.time}')
+        time.sleep(0.5)
         if self.time>self.max_time:
             self.time=0
 
