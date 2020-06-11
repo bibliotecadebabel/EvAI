@@ -272,7 +272,7 @@ def run(status):
         if status.active:
             update(status)
             print(f'The iteration number is: {k}')
-            if k % 100 == 0:
+            if k % 20 == 0:
                 status.print_accuracy()
             #status.print_energy()
             status.print_predicted_actions()
@@ -285,9 +285,7 @@ def run(status):
             #status.print_signal()
             #status.print_difussion_filed()
     #        print_nets(status)
-    #        time.sleep(0.5)
-            if k % 200 == 0:
-                status.Alai.time=0
+    #        time.sleep(0.5)0
 
             if status.save2database == True:
 
