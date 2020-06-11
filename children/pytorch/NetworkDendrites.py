@@ -200,6 +200,7 @@ class Network(nn.Module, na.NetworkAbstract):
 
     def __doTraining(self, inputs, labels_data):
 
+        self.__getLossLayer().setRicap(None)
         self.assignLabels(labels_data)
         self.total_value = 0
         self.optimizer.zero_grad()
