@@ -43,3 +43,4 @@ class ExperimentSettings():
         self.save_txt = False
         self.disable_mutation = False
         self.eps_batchorm = None
+        self.ricap = None

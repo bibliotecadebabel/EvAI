@@ -182,11 +182,10 @@ def MSEloss_propagate(layer):
 
     value = parent.value
 
-    if parent.value.shape[0] > layer.label.shape[0]:
-        weights = int(parent.value.shape[0] / layer.getCrops())
-        value = parent.value.view(weights, layer.getCrops(), -1).mean(1)
-        
-    layer.value = layer.object(value, layer.label)
+    if layer.getRicap() != None:
+        layer.value = layer.getRicap().generateLoss(layer)
+    else:
+        layer.value = layer.object(value, layer.label)
 
 ############### CREADOR DE TENSORES ###############
 
