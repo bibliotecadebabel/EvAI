@@ -207,6 +207,9 @@ class TorchStream(Stream):
                 if log.signal == False:
                     if log.new_net:
                         del log.new_net
+                        if self.status:
+                            if self.status.cuda:
+                                torch.cuda.empty_cache()
                     keys2erase.append(key)
                     nodes2erase.append(node)
                 else:
