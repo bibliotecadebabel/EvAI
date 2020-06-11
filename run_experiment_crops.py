@@ -104,12 +104,12 @@ if __name__ == '__main__':
 
     dict_transformations = {
         augSettings.baseline_customRandomCrop : True,
-        augSettings.cutout : True,
+        augSettings.cutout : False,
+        augSettings.randomHorizontalFlip : True,
         augSettings.randomErase_1 : enable_randomerase_1,
         augSettings.randomErase_2 : enable_randomerase_2,
-        augSettings.translate : True,
-        augSettings.randomHorizontalFlip : True,
-        augSettings.randomShear: True,
+        augSettings.translate : False,
+        augSettings.randomShear: False,
         #augSettings.randomRotation : enable_rotation,
         #augSettings.randomCutout : enable_randomcutout
     }
