@@ -30,6 +30,7 @@ from utilities.Abstract_classes.classes.Alaising_cosine import (
     Alaising as Alai)
 import TestNetwork.ExperimentSettings as ExperimentSettings
 import const.versions as directions_version
+import test_DNAs as DNAs
 
 #from Product_f_cifar import Status as program_cf
 def run_cifar_user_input_bidi(save = False):
@@ -153,7 +154,7 @@ def run_cifar_user_input_bidi(save = False):
     status.save2database=save
     x=32
     y=32
-
+    """
     status.Center=((-1, 1, 3, 32, 32), (0, 3, 64, 3, 3),(0, 64, 128, 3, 3, 2), (0, 128, 256, 3, 3, 2),
                                 (0, 256, 256, 8, 8),
                                 (1, 256, 10),
@@ -164,6 +165,8 @@ def run_cifar_user_input_bidi(save = False):
                                 (3, 2, 3),
                                 (3, 3, 4),
                                 (3, 4, 5))
+    """
+    status.Center=DNAs.DNA_procut_3
     status.settings=settings
     program.run(status)
 
