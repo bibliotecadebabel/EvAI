@@ -28,6 +28,8 @@ class Alaising():
 
     def update(self,delta=1):
         self.time+=delta
+        if self.time>self.max_time:
+            self.time=0
 
     def restart(self):
         self.time+=0
