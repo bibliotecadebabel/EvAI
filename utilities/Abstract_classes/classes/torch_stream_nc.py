@@ -39,7 +39,7 @@ class TorchStream(Stream):
         if status:
             self.version=status.version
             self.settings=status.settings
-            self.status
+            self.status=status
             if status.cuda:
                 import torch
         else:
