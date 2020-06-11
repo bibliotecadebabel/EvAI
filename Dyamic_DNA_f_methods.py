@@ -331,8 +331,12 @@ def update_from_select_09(self):
         phase_space.DNA_graph = space
         phase_space.objects = space.objects
         phase_space.support=[]
+        status=phase_space.status
+        Alai=status.Alai
         phase_space.create_particles(num_particles+1)
         stream=phase_space.stream
+        delta=stream.key2len_hist(center)
+        Alai.update(delta)
         stream.signals_off()
         stream.key2signal_on(center)
         stream.clear()

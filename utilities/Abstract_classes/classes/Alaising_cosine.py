@@ -26,8 +26,8 @@ class Alaising():
                      for t in range(t_o+size,t_o)]
         return m+1/2*(M-m)*(1+pcos(t_o/t_M*np.pi))
 
-    def update(self):
-        self.time+=1
+    def update(self,delta=1):
+        self.time+=delta
 
     def restart(self):
         self.time+=0

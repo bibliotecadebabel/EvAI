@@ -378,6 +378,7 @@ class DNA_Phase_space():
         if status:
             mut_man=mutation_manager.MutationManager(status.version)
             self.Mutator=mut_man.getMuation()
+            self.status=status
         else:
             self.Mutator=Mutator
 

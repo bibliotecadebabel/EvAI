@@ -52,6 +52,11 @@ class TorchStream(Stream):
         history=log.log.copy()
         return sum(history[:self.min_size])/self.min_size
 
+    def key2len_hist(self,key):
+        log=self.key2log(key)
+        history=log.log.copy()
+        return len(history)
+
     def charge_node(self,key):
         log=self.key2log(key)
         a=self.dataGen.data
