@@ -322,6 +322,7 @@ def update_from_select_09(self):
         typos = old_graph.typos
         node_max = phase_space.node_max_particles
         center = phase_space.node2key(node_max)
+        status=phase_space.status
         Alai=status.Alai
         stream=phase_space.stream
         delta=stream.key2len_hist(center)
@@ -338,7 +339,6 @@ def update_from_select_09(self):
         phase_space.DNA_graph = space
         phase_space.objects = space.objects
         phase_space.support=[]
-        status=phase_space.status
         phase_space.create_particles(num_particles+1)
         phase_space.attach_balls()
         phase_space.max_changed = False
