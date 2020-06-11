@@ -39,8 +39,12 @@ class TorchStream(Stream):
         if status:
             self.version=status.version
             self.settings=status.settings
+            self.status
+            if status.cuda:
+                import torch
         else:
             self.version='clone'
+            self.status=None
 
     def flags_print(self,text):
         if self.flags==True:
@@ -75,6 +79,9 @@ class TorchStream(Stream):
             else:
                 dt=Alai.get_increments(self.log_size)
                 self.flags_print(f'The training range is dt_max : {max(dt)}, dt_min :{min(dt)} ')
+                if self.status:
+                    if self.status.cuda:
+                        torch.cuda.empty_cache()
                 net.iterTraining(dataGenerator=self.dataGen,
                     dt_array=Alai.get_increments(self.log_size))
             log.charge(net.history_loss)
@@ -93,6 +100,9 @@ class TorchStream(Stream):
             else:
                 dt=Alai.get_increments(self.log_size)
                 self.flags_print(f'The training range is dt_max : {max(dt)}, dt_min :{min(dt)} ')
+                if self.status:
+                    if self.status.cuda:
+                        torch.cuda.empty_cache()
                 net.iterTraining(dataGenerator=self.dataGen,
                     dt_array=dt)
 #            net.Training(data=self.dataGen,
