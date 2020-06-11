@@ -37,7 +37,7 @@ update_force_field=None
 
 class Status():
     def __init__(self, display_size=None):
-        self.dt_Max=0.01
+        self.dt_Max=0.05
         self.dt_min=0.0001
         self.max_iter=250
         self.max_layer=7
@@ -51,6 +51,7 @@ class Status():
         self.threads=int(input('Threads : '))
         self.mutations=None
         self.num_actions=4
+        self.settings=None
 
         self.log_size=200
         self.min_log_size=100
@@ -178,11 +179,13 @@ def initialize_parameters(self):
 
 
 def create_objects(status):
+    settings=status.settings
     status.Alai=Alai(min=status.dt_min,
          max=status.dt_Max,
             max_time=status.restart_period)
     status.Data_gen=GeneratorFromCIFAR.GeneratorFromCIFAR(
-    status.Comp, status.S, cuda=status.cuda, threads=status.threads)
+    status.Comp, status.S, cuda=status.cuda, threads=status.threads,
+        dataAugmentation=settings.enable_augmentation)
     status.Data_gen.dataConv2d()
     dataGen=status.Data_gen
     x = dataGen.size[1]
@@ -233,6 +236,7 @@ def run(status):
     status.Transfer=tran.TransferRemote(status,
         'remote2local.txt','local2remote.txt')
     #status.Transfer.readLoad()
+    print(f'status.settings is {status.settings}')
     create_objects(status)
     print('The value of typos after loading is')
     print(status.typos)

@@ -313,8 +313,7 @@ def update_from_select_09(self):
     p_c=Funct.node2num_particles(node_c)
     p_m=Funct.node2num_particles(node_max)
     print(f'The value of p_m is : {p_m} and p_c is : {p_c} ')
-    if (p_m>p_c*2) or (
-        phase_space.time>4000):
+    if (p_m>p_c*2) :
         phase_space.time=0
         num_particles = phase_space.num_particles
         old_graph = phase_space.DNA_graph
@@ -345,14 +344,14 @@ def update_from_select_09(self):
         self.objects=phase_space.objects
         self.support=phase_space.support
         self.Graph=phase_space.DNA_graph
-    elif False:
+    #elif False:
     #elif phase_space.time>self.clear_period:
-        phase_space.time=0
-        node2remove=phase_space2node2remove(phase_space)
-        node_c = phase_space.key2node(phase_space.DNA_graph.center)
-        if node2remove and not (node2remove==node_c):
-            remove_node(phase_space,node2remove)
-            new_DNA=add_node(phase_space,selector)
+    #    phase_space.time=0
+    #    node2remove=phase_space2node2remove(phase_space)
+    #    node_c = phase_space.key2node(phase_space.DNA_graph.center)
+    #    if node2remove and not (node2remove==node_c):
+    #        remove_node(phase_space,node2remove)
+    #        new_DNA=add_node(phase_space,selector)
 
 
 def update_from_select(self):

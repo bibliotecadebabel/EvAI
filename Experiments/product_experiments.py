@@ -28,10 +28,15 @@ import time
 import DNA_conditions
 from utilities.Abstract_classes.classes.Alaising_cosine import (
     Alaising as Alai)
+import TestNetwork.ExperimentSettings as ExperimentSettings
+import const.versions as directions_version
 
 #from Product_f_cifar import Status as program_cf
 def run_cifar_user_input_bidi(save = False):
     import Product_f_cifar_save_2 as program
+
+    status=program.Status()
+
     list_conditions={DNA_conditions.max_filter : 257,
             DNA_conditions.max_filter_dense : 257,
             DNA_conditions.max_kernel_dense : 9,
@@ -41,10 +46,80 @@ def run_cifar_user_input_bidi(save = False):
             DNA_conditions.max_parents : 2}
     def condition(DNA):
         return DNA_conditions.dict2condition(DNA,list_conditions)
+    def dropout_function(base_p, total_layers, index_layer, isPool=False):
+
+        value = 0
+        if index_layer != 0 and isPool == False:
+            value = base_p +(3/5*base_p-base_p)*(total_layers - index_layer-1)/total_layers
+
+        if index_layer == total_layers - 2:
+            value = base_p +(3/5*base_p-base_p)*(total_layers - index_layer-1)/total_layers
+
+        #print("conv2d: ", index_layer, " - dropout: ", value)
+
+        return value
+
+    settings = ExperimentSettings.ExperimentSettings()
+
+
+    settings.version = directions_version.H_VERSION
+    settings.dropout_function = dropout_function
+    settings.eps_batchorm = 0.001
+    settings.momentum = 0.9
+    custom=bool(input('No input for defaults :'))
+    if custom == True :
+        ENABLE_ACTIVATIO = int(input("Enable last layer activation? (1 = yes, 0 = no): "))
+        ENABLE_LAST_ACTIVATION = int(input("Enable last layer activation? (1 = yes, 0 = no): "))
+        ENABLE_AUGMENTATION = int(input("Enable Data augmentation? (1 = yes, 0 = no): "))
+        ENABLE_TRACK = int(input("Enable tracking var/mean batchnorm? (1 = yes, 0 = no): "))
+        settings.dropout_value = float(input("dropout value: "))
+        settings.weight_decay = float(input('weight_decay: '))
+    else:
+        ENABLE_ACTIVATION = 1
+        ENABLE_LAST_ACTIVATION = 0
+        ENABLE_AUGMENTATION = 1
+        ENABLE_TRACK = 1
+        settings.dropout_value = 0.5
+        settings.weight_decay = 0.0005
+
+
+    value = True
+    if ENABLE_ACTIVATION  == 0:
+        value = False
+    settings.enable_activation = value
+
+    # ENABLE_LAST_ACTIVATION, enable/disable last layer relu
+
+
+    value = False
+    if ENABLE_LAST_ACTIVATION == 1:
+        value = True
+    settings.enable_last_activation = value
+
+    # ENABLE_AUGMENTATION, enable/disable data augmentation
+
+
+    value = True
+    if ENABLE_AUGMENTATION == 0:
+        value = False
+    ENABLE_AUGMENTATION = value
+
+    settings.enable_augmentation=value
+
+
+    # ALLOW TRACK BATCHNORM
+
+    value = True
+    if ENABLE_TRACK == 0:
+        value = False
+    settings.enable_track_stats = value
+
+
+
     status=program.Status()
     status.condition=condition
     status.dt_Max=0.01
-    status.dt_min=0.00001
+    status.dt_min=0.000001
     status.clear_period=200000
     status.max_iter=20001
     status.restart_period=4000
@@ -66,6 +141,10 @@ def run_cifar_user_input_bidi(save = False):
     status.version='h'
     status.S=int(input("Batch size : "))
     status.cuda=bool(input("Any input for cuda : "))
+
+    settings.cuda = status.cuda
+
+
     status.mutation_coefficient=float(input("mutation_coefficient : "))
     if save:
         status.experiment_name=input("insert experiment name : ")
@@ -75,8 +154,8 @@ def run_cifar_user_input_bidi(save = False):
     x=32
     y=32
 
-    status.Center=((-1, 1, 3, 32, 32), (0, 3, 32, 3, 3),(0, 32, 64, 3, 3, 2), (0, 64, 128, 3, 3, 2),
-                                (0, 128, 256, 8, 8),
+    status.Center=((-1, 1, 3, 32, 32), (0, 3, 64, 3, 3),(0, 64, 128, 3, 3, 2), (0, 128, 256, 3, 3, 2),
+                                (0, 256, 256, 8, 8),
                                 (1, 256, 10),
                                 (2,),
                                 (3, -1, 0),
@@ -85,6 +164,7 @@ def run_cifar_user_input_bidi(save = False):
                                 (3, 2, 3),
                                 (3, 3, 4),
                                 (3, 4, 5))
+    status.settings=settings
     program.run(status)
 
 """

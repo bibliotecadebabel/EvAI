@@ -25,6 +25,7 @@ class ExperimentSettings():
         self.cuda = True
 
         self.enable_activation = None
+        self.enable_augmentation=None
         self.initial_dna = None
         self.initial_space = None
 

@@ -38,6 +38,7 @@ class TorchStream(Stream):
         self.flags=True
         if status:
             self.version=status.version
+            self.settings=status.settings
         else:
             self.version='clone'
 
@@ -127,11 +128,17 @@ class TorchStream(Stream):
         node=self.key2node(key)
         if not(node):
             self.add_node(key)
-            network = nw.Network(key,
-                                 cudaFlag=self.cuda,momentum=0.9,
-                                 weight_decay=0.0005,
-                                 version=self.version
-                                 )
+            settings=self.settings
+            network = nw.Network(key,cudaFlag=settings.cuda,
+             momentum=settings.momentum,
+             weight_decay=settings.weight_decay,
+             enable_activation=settings.enable_activation,
+             enable_track_stats=settings.enable_track_stats,
+             dropout_value=settings.dropout_value,
+             dropout_function=settings.dropout_function,
+             enable_last_activation=settings.enable_last_activation,
+             version=settings.version, eps_batchnorm=settings.eps_batchorm
+             )
             self.link_node(key,network)
             self.charge_node(key)
             print('added net')
