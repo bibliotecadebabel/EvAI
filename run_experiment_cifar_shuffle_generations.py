@@ -67,6 +67,8 @@ def DNA_Creator_s(x,y, dna, version):
         mutations=(
         (0,1,0,0),(1,0,0,0),
         (0,0,1),(4,0,0,0),
+        (0,0,-1),
+        (0,0,1,1),(0,0,-1,-1),
         ))
     selector.update(dna)
     actions=selector.get_predicted_actions()

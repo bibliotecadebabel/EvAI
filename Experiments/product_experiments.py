@@ -56,7 +56,7 @@ def run_cifar_user_input_bidi(save = False):
     (0,1,0,0),(1,0,0,0),
     (0,0,1),(4,0,0,0),
     )
-    status.num_actions=4
+    status.num_actions=int(input("num_actions : "))
 
     status.Selector_creator=Selector
     status.log_size=int(input("Log size : "))
