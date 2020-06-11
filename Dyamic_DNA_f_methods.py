@@ -313,7 +313,7 @@ def update_from_select_09(self):
     p_c=Funct.node2num_particles(node_c)
     p_m=Funct.node2num_particles(node_max)
     print(f'The value of p_m is : {p_m} and p_c is : {p_c} ')
-    if (p_m>p_c) or phase_space.time>1200:
+    if (p_m>p_c*2):
         phase_space.time=0
         num_particles = phase_space.num_particles
         old_graph = phase_space.DNA_graph
