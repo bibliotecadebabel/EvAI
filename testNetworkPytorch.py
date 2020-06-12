@@ -170,7 +170,9 @@ def TestMemoryManager():
     torch.cuda.empty_cache()
 
     input("press to continue: before load network")
-    network_loaded = memoryManager.loadTempNetwork(adn, settings)
+    network = memoryManager.loadTempNetwork(adn, settings)
+    gc.collect()
+    torch.cuda.empty_cache()
     input("press to continue: before training network")
     '''
     network.TrainingCosineLR_Restarts(dataGenerator=dataGen, max_dt=0.001, min_dt=0.001, epochs=1, restart_dt=1, 
