@@ -24,7 +24,6 @@ class MemoryManager():
 
     def saveTempNetwork(self, network):
 
-        cuda = network.cudaFlag
         current_time = str(time.time())
         file_name = "tempmodel_"+current_time
         path = os.path.join(self.__basepath, file_name)
@@ -42,11 +41,7 @@ class MemoryManager():
 
         self.__dynamic_net_dict[network.adn] = file_name
 
-        network.deleteParameters()
-        del network
-        gc.collect()
-        if cuda == True:
-            torch.cuda.empty_cache()
+        self.deleteNetwork(network)
 
     
     def loadTempNetwork(self, adn, settings):
@@ -77,6 +72,17 @@ class MemoryManager():
 
         if file_name is not None:
             del self.__dynamic_net_dict[adn]
+        
+    def deleteNetwork(self, network):
+
+        network.deleteParameters()
+        del network
+        
+        gc.collect()
+        if network.cudaFlag == True:
+            torch.cuda.empty_cache()
+
+
 
 
 
