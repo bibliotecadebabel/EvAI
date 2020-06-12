@@ -641,7 +641,8 @@ class Network(nn.Module, na.NetworkAbstract):
             'enable_track_stats': self.enable_track_stats,
             'dropout_value': self.dropout_value,
             'enable_last_activation': self.enable_last_activation,
-            'version': self.version
+            'version': self.version,
+            'eps_batchnorm': self.eps_batchnorm
             }, path)
 
 
