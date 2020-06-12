@@ -356,8 +356,7 @@ class Network(nn.Module, na.NetworkAbstract):
             end_time = time.time()
 
             print("epoch time: ", (end_time - start_time))
-        self.optimizer.zero_grad()
-        
+
     def iterTraining(self, dataGenerator, dt_array, ricap=None):
 
         iters = len(dt_array)
@@ -665,3 +664,14 @@ class Network(nn.Module, na.NetworkAbstract):
             print("[{:d}, {:d}, lr={:.10f}, Loss={:.10f}]".format(epoch, i+1, self.optimizer.param_groups[0]['lr'], self.getAverageLoss(avg)))
         else:
             print("[{:d}, {:d}, lr={:.10f}, Loss={:.10f}, Time={:.4f}]".format(epoch, i+1, self.optimizer.param_groups[0]['lr'], self.getAverageLoss(avg), end_time))
+    
+    def deleteParameters(self):
+
+        for param in self.parameters():
+
+            del param
+    
+        del self.optimizer
+
+        if self.cudaFlag == True:
+            torch.cuda.empty_cache()

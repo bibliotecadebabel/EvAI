@@ -41,6 +41,7 @@ class MemoryManager():
 
         self.__dynamic_net_dict[network.adn] = file_name
 
+        network.deleteParameters()
         del network
         if cuda == True:
             torch.cuda.empty_cache()
