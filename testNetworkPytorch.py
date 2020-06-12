@@ -142,7 +142,7 @@ def TestMemoryManager():
     
     settings = ExperimentSettings.ExperimentSettings()
     settings.momentum = 0.9
-    settings.dropout_value = 0.2
+    settings.dropout_value = 0
     settings.weight_decay = 0.0005
     settings.enable_activation = True
     settings.enable_last_activation = False
@@ -176,7 +176,8 @@ def TestMemoryManager():
     if network == None:
         print("network = None")
     else:
-        print(type(network))
+        network.generateEnergy(dataGen)
+        print("acc test: ", network.getAcurracy())
     input("press to continue: before load temp network")
     network_loaded = memoryManager.loadTempNetwork(adn, settings)
 
