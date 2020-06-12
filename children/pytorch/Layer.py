@@ -207,15 +207,28 @@ class Layer():
 
         if self.label is not None:
             del self.label
-            
+
         if self.object is not None:
 
             if hasattr(self.object, 'weight') and self.object.weight is not None:
+
+                if hasattr(self.object.weight, 'grad') and self.object.weight.grad is not None:
+                    del self.object.weight.grad
+
                 del self.object.weight
             
             if hasattr(self.object, 'bias') and self.object.bias is not None:
+
+                if hasattr(self.object.bias, 'grad') and self.object.bias.grad is not None:
+                    del self.object.bias.grad
+
                 del self.object.bias
             
+            if self.__pool is not None:
+                del self.__pool
+            
+            del self.object
+
             if self.__batchnorm is not None:
 
                 if hasattr(self.__batchnorm, 'weight') and self.__batchnorm.weight is not None:
