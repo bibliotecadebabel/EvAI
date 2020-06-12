@@ -163,13 +163,8 @@ def TestMemoryManager():
                                     version=settings.version)
 
     
-    input("press to continue: before deleting network")
-    memoryManager.saveTempNetwork(network)
-
-    input("press to continue: before load network")
-    network_loaded = memoryManager.loadTempNetwork(adn, settings)
     input("press to continue: before training network")
-    '''
+    
     network.TrainingCosineLR_Restarts(dataGenerator=dataGen, max_dt=0.001, min_dt=0.001, epochs=1, restart_dt=1, 
                                         show_accuarcy=True)
 
@@ -178,16 +173,12 @@ def TestMemoryManager():
 
     input("press to continue: before save network")
     memoryManager.saveTempNetwork(network)
-    del network
-    torch.cuda.empty_cache()
     input("press to continue: after save network")
 
     input("press to continue: before load temp network")
     network_loaded = memoryManager.loadTempNetwork(adn, settings)
-
     input("press to continue: after load temp network")
     if network_loaded != None:
-        print("network loaded")
         network_loaded.generateEnergy(dataGen)
         print("loaded acc: ", network_loaded.getAcurracy())
         input("press to conitnue: before training network")
@@ -202,7 +193,7 @@ def TestMemoryManager():
         memoryManager.saveTempNetwork(network_loaded)
         input("press to continue: after save network")
 
-    '''
+    
 
 if __name__ == "__main__":
     #Test_Mutacion()
