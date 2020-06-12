@@ -17,6 +17,7 @@ import TestNetwork.AugmentationSettings as AugmentationSettings
 
 import utilities.MemoryManager as MemoryManager
 import test_DNAs
+import torch
 
 def dropout_function(base_p, total_conv2d, index_conv2d):
     value = 0
