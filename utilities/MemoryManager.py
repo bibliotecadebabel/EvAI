@@ -75,11 +75,12 @@ class MemoryManager():
         
     def deleteNetwork(self, network):
 
+        cuda = network.cudaFlag
         network.deleteParameters()
         del network
-        
+
         gc.collect()
-        if network.cudaFlag == True:
+        if cuda == True:
             torch.cuda.empty_cache()
 
 
