@@ -15,6 +15,8 @@ import utilities.NetworkStorage as StorageManager
 import TestNetwork.ExperimentSettings as ExperimentSettings
 import TestNetwork.AugmentationSettings as AugmentationSettings
 
+import utilities.MemoryManager as MemoryManager
+import test_DNAs
 
 def dropout_function(base_p, total_conv2d, index_conv2d):
     value = 0
@@ -135,26 +137,67 @@ def Test_Mutacion():
 
     #mutate_network.TrainingCosineLR_Restarts(dataGenerator=dataGen, max_dt=0.001, min_dt=0.001, epochs=1, restart_dt=1, show_accuarcy=True)
     
-def Test_Storage():
+def TestMemoryManager():
     
     settings = ExperimentSettings.ExperimentSettings()
     settings.momentum = 0.9
-
-    network = StorageManager.loadNetwork(fileName="test_red_storage_1", settings=settings)
+    settings.dropout_value = 0.2
+    settings.weight_decay = 0.0005
+    settings.enable_activation = True
+    settings.enable_last_activation = False
+    settings.enable_track_stats = True
+    settings.version = directions_version.H_VERSION
     
-    print("network version: ", network.version)
-
-    dataGen = GeneratorFromCIFAR.GeneratorFromCIFAR(2,  128, threads=2, dataAugmentation=True)
+    dataGen = GeneratorFromCIFAR.GeneratorFromCIFAR(2,  128, threads=0, dataAugmentation=True)
     dataGen.dataConv2d()
+    memoryManager = MemoryManager.MemoryManager()
+
+    adn = test_DNAs.DNA_calibration_3
+
+    network = nw_dendrites.Network(adn, cudaFlag=True, momentum=settings.momentum, weight_decay=settings.weight_decay,
+                                    enable_activation=settings.enable_activation, enable_track_stats=settings.enable_track_stats,
+                                    dropout_value=settings.dropout_value, enable_last_activation=settings.enable_last_activation,
+                                    version=settings.version)
+
+     
+    network.TrainingCosineLR_Restarts(dataGenerator=dataGen, max_dt=0.001, min_dt=0.001, epochs=1, restart_dt=1, 
+                                        show_accuarcy=True)
 
     network.generateEnergy(dataGen)
-    print("Load accuracy: ", network.getAcurracy())
+    print("net acc: ", network.getAcurracy())
 
-    network.TrainingCosineLR_Restarts(dataGenerator=dataGen, max_dt=0.001, min_dt=0.001, epochs=5, restart_dt=5, show_accuarcy=True)
+    input("press to continue: before delete network")
+    memoryManager.saveTempNetwork(network)
+    input("press to continue: after delete network")
+    
+    if network == None:
+        print("network = None")
+    else:
+        print(type(network))
 
-    network.generateEnergy(dataGen)
-    print("Final accuracy: ", network.getAcurracy())
+    network_loaded = memoryManager.loadTempNetwork(adn, settings)
+
+    input("press to continue: after load network")
+    if network_loaded != None:
+        print("network loaded")
+        network_loaded.generateEnergy(dataGen)
+        print("loaded acc: ", network_loaded.getAcurracy())
+        input("press to conitnue: before training network")
+        network_loaded.TrainingCosineLR_Restarts(dataGenerator=dataGen, 
+                                        max_dt=0.001, min_dt=0.001, epochs=1, restart_dt=1,        
+                                        show_accuarcy=True)
+        
+        input("press to conitnue: after training network")
+        network_loaded.generateEnergy(dataGen)
+        print("net acc: ", network_loaded.getAcurracy())
+        input("press to continue: before deleting network")
+        memoryManager.saveTempNetwork(network_loaded)
+        input("press to continue: after deleting network")
+        #input("press to continue")
+        #StorageManager.saveNetwork(network_loaded, "model_saved_test")
+
+    
 
 if __name__ == "__main__":
-    Test_Mutacion()
-    #Test_Storage()
+    #Test_Mutacion()
+    TestMemoryManager()

@@ -53,4 +53,9 @@ def loadNetwork(fileName, settings : TestNetwork.ExperimentSettings.ExperimentSe
     network.loadParameters(checkpoint=checkpoint)
     return network
     
+def saveNetwork(network, fileName, path=None):
 
+    if path is None:
+        path = os.path.join("saved_models","cifar", fileName)
+    
+    network.saveModel(path)

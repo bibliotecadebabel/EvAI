@@ -11,8 +11,17 @@ class MemoryManager():
 
         if os.path.exists(self.__basepath) == False:
             os.makedirs(self.__basepath) 
+        
+        self.clearTempModels()
     
-    def saveNetwork(self, network):
+    def clearTempModels(self):
+
+        for f in os.listdir(self.__basepath):
+            
+            path = os.path.join(self.__basepath, f)
+            os.remove(path)
+
+    def saveTempNetwork(self, network):
 
         cuda = network.cudaFlag
         current_time = str(time.time())
@@ -33,12 +42,11 @@ class MemoryManager():
         self.__dynamic_net_dict[network.adn] = file_name
 
         del network
-
         if cuda == True:
             torch.cuda.empty_cache()
 
     
-    def loadNetwork(self, adn, settings):
+    def loadTempNetwork(self, adn, settings):
 
         file_name = self.getFileNameByKey(adn)
         network_loaded = None
