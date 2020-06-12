@@ -165,8 +165,6 @@ def TestMemoryManager():
     
     input("press to continue: before deleting network")
     memoryManager.saveTempNetwork(network)
-    
-    network.deleteParameters()
     del network
     gc.collect()
     torch.cuda.empty_cache()
