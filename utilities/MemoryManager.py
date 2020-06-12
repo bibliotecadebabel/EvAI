@@ -3,6 +3,7 @@ import utilities.NetworkStorage as NetworkStorage
 import os
 import time
 import torch
+import gc
 class MemoryManager():
 
     def __init__(self):
@@ -43,6 +44,7 @@ class MemoryManager():
 
         network.deleteParameters()
         del network
+        gc.collect()
         if cuda == True:
             torch.cuda.empty_cache()
 
@@ -57,7 +59,11 @@ class MemoryManager():
         else:
             path = os.path.join(self.__basepath, file_name)
             network_loaded = NetworkStorage.loadNetwork(fileName=file_name, settings=settings, path=path)
-        
+
+        gc.collect()
+        if network_loaded.cudaFlag == True:
+            torch.cuda.empty_cache()
+
         return network_loaded
     
     def getFileNameByKey(self, adn):
