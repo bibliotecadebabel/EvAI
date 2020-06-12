@@ -153,19 +153,7 @@ def TestMemoryManager():
     dataGen.dataConv2d()
     memoryManager = MemoryManager.MemoryManager()
 
-    adn = ((-1,1,3,32,32),
-            (0,3, 5, 3 , 3),
-            (0,5, 6, 3,  3),
-            (0,6,7,3,3,2),
-            (0,7, 8, 16,16),
-            (1, 8,10),
-             (2,),
-            (3,-1,0),
-            (3,0,1),
-            (3,1,2),
-            (3,2,3),
-            (3,3,4),
-            (3,4,5))
+    adn = test_DNAs.DNA_calibration_3
 
     input("press to continue: before load network")
     network = nw_dendrites.Network(adn, cudaFlag=True, momentum=settings.momentum, weight_decay=settings.weight_decay,
@@ -187,7 +175,7 @@ def TestMemoryManager():
     
     if network == None:
         print("network = None")
-        
+
     input("press to continue: before load temp network")
     network_loaded = memoryManager.loadTempNetwork(adn, settings)
 

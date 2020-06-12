@@ -205,35 +205,31 @@ class Layer():
     
     def deleteParam(self):
 
-        if self.object is not None:
+        if self.label is not None:
+            del self.label
             
+        if self.object is not None:
+
             if hasattr(self.object, 'weight') and self.object.weight is not None:
-                print("deleting weight")
                 del self.object.weight
             
             if hasattr(self.object, 'bias') and self.object.bias is not None:
-                print("deleting bias")
                 del self.object.bias
             
             if self.__batchnorm is not None:
 
                 if hasattr(self.__batchnorm, 'weight') and self.__batchnorm.weight is not None:
-                    print("deleting batchnorm weight")
                     del self.__batchnorm.weight
 
                 if  hasattr(self.__batchnorm, 'bias') and self.__batchnorm.bias is not None:
-                    print("deleting batchnorm bias")
                     del self.__batchnorm.bias
                 
                 if hasattr(self.__batchnorm, 'running_var') and self.__batchnorm.running_var is not None:
-                    print("deleting batchnorm running_var")
                     del self.__batchnorm.running_var
 
                 if hasattr(self.__batchnorm, 'running_mean') and self.__batchnorm.running_mean is not None:
-                    print("deleting batchnorm running_mean")
                     del self.__batchnorm.running_mean
                 
                 if hasattr(self.__batchnorm, 'num_batches_tracked') and self.__batchnorm.num_batches_tracked is not None:
-                    print("deleting batchnorm num_batches_tracked")
                     del self.__batchnorm.num_batches_tracked
             
