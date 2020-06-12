@@ -178,6 +178,7 @@ def TestMemoryManager():
     input("press to continue: before load temp network")
     network_loaded = memoryManager.loadTempNetwork(adn, settings)
     input("press to continue: after load temp network")
+
     if network_loaded != None:
         network_loaded.generateEnergy(dataGen)
         print("loaded acc: ", network_loaded.getAcurracy())
@@ -189,6 +190,25 @@ def TestMemoryManager():
         input("press to conitnue: after training network")
         network_loaded.generateEnergy(dataGen)
         print("net acc: ", network_loaded.getAcurracy())
+        input("press to continue: before save network")
+        memoryManager.saveTempNetwork(network_loaded)
+        input("press to continue: after save network")
+
+        input("press to continue: before load temp network")
+        network_loaded = memoryManager.loadTempNetwork(adn, settings)
+        input("press to continue: after load temp network")
+    
+        network_loaded.generateEnergy(dataGen)
+        print("loaded acc: ", network_loaded.getAcurracy())
+        input("press to conitnue: before training network")
+        network_loaded.TrainingCosineLR_Restarts(dataGenerator=dataGen, 
+                                        max_dt=0.001, min_dt=0.001, epochs=1, restart_dt=1,        
+                                        show_accuarcy=True)
+        
+        input("press to conitnue: after training network")
+        network_loaded.generateEnergy(dataGen)
+        print("net acc: ", network_loaded.getAcurracy())
+        
         input("press to continue: before save network")
         memoryManager.saveTempNetwork(network_loaded)
         input("press to continue: after save network")
