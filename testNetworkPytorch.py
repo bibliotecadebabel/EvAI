@@ -18,6 +18,7 @@ import TestNetwork.AugmentationSettings as AugmentationSettings
 import utilities.MemoryManager as MemoryManager
 import test_DNAs
 import torch
+import gc
 
 def dropout_function(base_p, total_conv2d, index_conv2d):
     value = 0
@@ -165,6 +166,7 @@ def TestMemoryManager():
     input("press to continue: before deleting network")
     network.deleteParameters()
     del network
+    gc.collect()
     torch.cuda.empty_cache()
 
     input("press to continue: before training network")
