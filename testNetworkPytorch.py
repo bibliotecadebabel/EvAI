@@ -171,10 +171,9 @@ def TestMemoryManager():
 
     input("press to continue: before save network")
     memoryManager.saveTempNetwork(network)
+    del network
+    torch.cuda.empty_cache()
     input("press to continue: after save network")
-    
-    if network == None:
-        print("network = None")
 
     input("press to continue: before load temp network")
     network_loaded = memoryManager.loadTempNetwork(adn, settings)
