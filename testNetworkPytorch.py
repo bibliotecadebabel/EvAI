@@ -164,7 +164,9 @@ def TestMemoryManager():
     
     input("press to continue: before deleting network")
     network.deleteParameters()
-    
+    del network
+    torch.cuda.empty_cache()
+
     input("press to continue: before training network")
     '''
     network.TrainingCosineLR_Restarts(dataGenerator=dataGen, max_dt=0.001, min_dt=0.001, epochs=1, restart_dt=1, 
