@@ -173,11 +173,6 @@ def TestMemoryManager():
     memoryManager.saveTempNetwork(network)
     input("press to continue: after save network")
     
-    input("press to continue: before delete network")
-    del network
-    torch.cuda.empty_cache()
-    input("press to continue: after delete network")
-
     if network == None:
         print("network = None")
     else:
@@ -201,10 +196,6 @@ def TestMemoryManager():
         input("press to continue: before save network")
         memoryManager.saveTempNetwork(network_loaded)
         input("press to continue: after save network")
-        input("press to continue: before delete network")
-        del network_loaded
-        torch.cuda.empty_cache()
-        input("press to continue: after delete network")
 
     
 

@@ -356,7 +356,8 @@ class Network(nn.Module, na.NetworkAbstract):
             end_time = time.time()
 
             print("epoch time: ", (end_time - start_time))
-
+        self.optimizer.zero_grad()
+        
     def iterTraining(self, dataGenerator, dt_array, ricap=None):
 
         iters = len(dt_array)
