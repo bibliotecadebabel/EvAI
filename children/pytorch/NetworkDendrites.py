@@ -667,7 +667,6 @@ class Network(nn.Module, na.NetworkAbstract):
     
     def deleteParameters(self):
         
-        
         for node in self.nodes:
             node.objects[0].deleteParam()
             del node

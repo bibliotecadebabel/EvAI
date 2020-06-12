@@ -162,7 +162,11 @@ def TestMemoryManager():
                                     version=settings.version)
 
     
+    input("press to continue: before deleting network")
+    network.deleteParameters()
+    
     input("press to continue: before training network")
+    '''
     network.TrainingCosineLR_Restarts(dataGenerator=dataGen, max_dt=0.001, min_dt=0.001, epochs=1, restart_dt=1, 
                                         show_accuarcy=True)
 
@@ -195,7 +199,7 @@ def TestMemoryManager():
         memoryManager.saveTempNetwork(network_loaded)
         input("press to continue: after save network")
 
-    
+    '''
 
 if __name__ == "__main__":
     #Test_Mutacion()
