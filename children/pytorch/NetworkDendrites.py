@@ -666,11 +666,11 @@ class Network(nn.Module, na.NetworkAbstract):
             print("[{:d}, {:d}, lr={:.10f}, Loss={:.10f}, Time={:.4f}]".format(epoch, i+1, self.optimizer.param_groups[0]['lr'], self.getAverageLoss(avg), end_time))
     
     def deleteParameters(self):
+        
+        
+        for node in self.nodes:
+            node.objects[0].deleteParam()
 
-        for param in self.parameters():
-
-            del param
-    
         del self.optimizer
 
         if self.cudaFlag == True:
