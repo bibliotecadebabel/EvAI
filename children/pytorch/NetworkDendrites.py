@@ -670,8 +670,11 @@ class Network(nn.Module, na.NetworkAbstract):
         
         for node in self.nodes:
             node.objects[0].deleteParam()
+            del node
 
         del self.optimizer
+        del self.nodes
+        del self.history_loss
 
         if self.cudaFlag == True:
             torch.cuda.empty_cache()
