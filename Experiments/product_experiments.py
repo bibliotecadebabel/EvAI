@@ -40,7 +40,7 @@ def run_cifar_user_input_bidi(save = False):
 
     list_conditions={DNA_conditions.max_filter : 257,
             DNA_conditions.max_filter_dense : 257,
-            DNA_conditions.max_kernel_dense : 9,
+            DNA_conditions.max_kernel_dense : 3,
             DNA_conditions.max_layer : 200,
             DNA_conditions.min_filter : 3,
             DNA_conditions.max_pool_layer : 4,
