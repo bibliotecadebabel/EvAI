@@ -166,7 +166,7 @@ def run_cifar_user_input_bidi(save = False):
                                 (3, 3, 4),
                                 (3, 4, 5))
     """
-    status.Center=DNAs.DNA_product_4
+    status.Center=DNAs.DNA_contracted_2
     status.settings=settings
     program.run(status)
 
