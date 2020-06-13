@@ -23,7 +23,7 @@ def dropout_function(base_p, total_conv2d, index_conv2d):
 
 """
 
-'''
+
 def dropout_function(base_p, total_layers, index_layer, isPool=False):
 
     value = 0
@@ -36,17 +36,19 @@ def dropout_function(base_p, total_layers, index_layer, isPool=False):
     print("conv2d: ", index_layer, " - dropout: ", value)
 
     return value
-'''
 
-def dropout_function(base_p, total_layers, index_layer, isPool=False):
 
-    value = base_p
-    
-    if index_layer == 0:
-        value = 0
+def dropout_function_constant(base_p, total_layers, index_layer, isPool=False):
+
+    value = 0
+    if index_layer != 0 and isPool == False:
+        value = base_p
+
+    if index_layer == total_layers - 2:
+        value = base_p
 
     print("conv2d: ", index_layer, " - dropout: ", value)
-    
+
     return value
 
 def pcos(x):
@@ -87,18 +89,6 @@ def DNA_Creator_s(x,y, dna, version):
 if __name__ == '__main__':
 
     settings = ExperimentSettings.ExperimentSettings()
-    
-    random_erase_1 = int(input("RandomErase (size: 4x4, holes: 2) ? (1 -> yes, 0 -> no): "))
-    random_erase_2 = int(input("RandomErase (size: 2x2, holes: 16) ? (1 -> yes, 0 -> no): "))
-
-    enable_randomerase_1 = False
-    enable_randomerase_2 = False
-    
-    if random_erase_1 == 1:
-        enable_randomerase_1 = True
-    
-    if random_erase_2 == 1:
-        enable_randomerase_2 = True
 
     augSettings = AugmentationSettings.AugmentationSettings()
 
@@ -106,8 +96,7 @@ if __name__ == '__main__':
         augSettings.baseline_customRandomCrop : True,
         augSettings.cutout : False,
         augSettings.randomHorizontalFlip : True,
-        augSettings.randomErase_1 : enable_randomerase_1,
-        augSettings.randomErase_2 : enable_randomerase_2,
+        augSettings.randomErase_1 : True,
         augSettings.translate : False,
         augSettings.randomShear: False,
         #augSettings.randomRotation : enable_rotation,
@@ -235,7 +224,14 @@ if __name__ == '__main__':
 
     # DROPOUT FUNCTION
 
-    settings.dropout_function = dropout_function
+    value = int(input("use dropout constant? (1 -> yes, 0 -> no): "))
+
+    function = dropout_function
+    
+    if value == 1:
+        function = dropout_function_constant
+
+    settings.dropout_function = function
     # INITIAL DNA
 
     """
