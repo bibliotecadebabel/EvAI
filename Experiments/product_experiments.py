@@ -49,7 +49,9 @@ def run_cifar_user_input_bidi(save = False):
         return DNA_conditions.dict2condition(DNA,list_conditions)
     def dropout_function(base_p, total_layers, index_layer, isPool=False):
 
-        value = 0
+        value = 0.1
+        if index_layer == 0:
+            value=0
         if index_layer != 0 and isPool == False:
             value = base_p +(3/5*base_p-base_p)*(total_layers - index_layer-1)/total_layers
 
