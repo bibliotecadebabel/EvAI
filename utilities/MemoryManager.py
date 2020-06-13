@@ -4,6 +4,7 @@ import os
 import time
 import torch
 import gc
+
 class MemoryManager():
 
     def __init__(self):
@@ -32,12 +33,7 @@ class MemoryManager():
         old_filename = self.getFileNameByKey(network.adn)
 
         if old_filename is not None:
-            
-            self.removeKey(network.adn)
-            delete_path = os.path.join(self.__basepath, old_filename)
-
-            if os.path.exists(delete_path):
-                os.remove(delete_path)
+            self.removeNetwork(network.adn, deleteFile=True)
 
         self.__dynamic_net_dict[network.adn] = file_name
 
@@ -66,13 +62,19 @@ class MemoryManager():
         file_name = self.__dynamic_net_dict.get(adn)
         return file_name
 
-    def removeKey(self, adn):
+    def removeNetwork(self, adn, deleteFile=False):
 
         file_name = self.__dynamic_net_dict.get(adn)
 
         if file_name is not None:
             del self.__dynamic_net_dict[adn]
-        
+
+            if deleteFile == True:
+                delete_path = os.path.join(self.__basepath, file_name)
+
+                if os.path.exists(delete_path):
+                    os.remove(delete_path)
+   
     def deleteNetwork(self, network):
 
         cuda = network.cudaFlag
@@ -82,6 +84,7 @@ class MemoryManager():
         gc.collect()
         if cuda == True:
             torch.cuda.empty_cache()
+
 
 
 

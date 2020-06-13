@@ -6,28 +6,37 @@ import torch.nn as nn
 import torch.tensor as tensor
 import torch.optim as optim
 from DNA_graph_functions import DNA2size
+import utilities.MemoryManager as MemoryManager
 import time
 
 
 
 class TorchStream(Stream):
-    def Alai2creator(self,Alai):
+    def Alai2creator(self,Alai, memory_manager, settings):
         class Torch_log_creator(Charge_log):
             def __init__(self,a=0):
                 super().__init__()
-                self.new_net=None
+                self.adn=None
                 self.log_size=None
                 self.dataGen=None
                 self.Alai=Alai
                 self.dt=0
+                self.memoryManager = memory_manager
+                self.settings = settings
             def get_net(self):
-                out_net=self.new_net.clone()
+                out_net=self.memoryManager.loadTempNetwork(self.adn, self.settings)
                 out_net.history_loss=[]
                 return out_net
+            def set_net(self, net):
+                self.adn = net.adn
+                self.memoryManager.saveTempNetwork(net)
+            def clear(self):
+                self.memoryManager.removeNetwork(self.adn, True)
         return Torch_log_creator
     def __init__(self,dataGen,log_size=200,dt=0.001,min_size=5,
         Alai=None,status=None):
-        self.`Torch_log_creator`=self.Alai2creator(Alai)
+        self.memoryManager = MemoryManager.MemoryManager()
+        self.Torch_log_creator=self.Alai2creator(Alai, self.memoryManager, status.settings)
         super().__init__(self.Torch_log_creator)
         self.log_size=log_size
         self.dataGen=dataGen
@@ -65,11 +74,12 @@ class TorchStream(Stream):
         log=self.key2log(key)
         a=self.dataGen.data
         p=self.log_size
+        net = None
         if log.signal and not(log.log):
 #            print('The net')
 #            print(key)
 #            print('is charging')
-            net=log.new_net
+            net=log.get_net()
             Alai=self.Alai
             if not(self.Alai):
                 self.flags_print(f'Training no Alaising : dt={self.dt}')
@@ -116,6 +126,9 @@ class TorchStream(Stream):
 #            print('is not charging')
 #            print('The size of its log is')
 #            print(len(log.log))
+        if net is not None:
+            print("setting net")
+            log.set_net(net)
 
     def key2signal_on(self,key):
         log=self.key2log(key)
@@ -136,7 +149,7 @@ class TorchStream(Stream):
         log.log_size=self.log_size
         log.dt=self.dt
         if net is not None:
-            log.new_net=net
+            log.set_net(net)
 
 
     def add_net(self,key):
@@ -205,15 +218,11 @@ class TorchStream(Stream):
             log = self.key2log(key)
             if log:
                 if log.signal == False:
-                    if log.new_net:
-                        del log.new_net
-                        if self.status:
-                            if self.status.cuda:
-                                torch.cuda.empty_cache()
+                    log.clear()
                     keys2erase.append(key)
                     nodes2erase.append(node)
                 else:
-                    log.new_net.history_loss=[]
+                    log.log=[]
         for k in range(len(keys2erase)):
             Graph.key2node.pop(keys2erase[k])
             Graph.node2key.pop(nodes2erase[k])
