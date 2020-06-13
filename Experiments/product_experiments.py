@@ -38,12 +38,12 @@ def run_cifar_user_input_bidi(save = False):
 
     status=program.Status()
 
-    list_conditions={DNA_conditions.max_filter : 257,
-            DNA_conditions.max_filter_dense : 257,
-            DNA_conditions.max_kernel_dense : 3,
+    list_conditions={DNA_conditions.max_filter : 513,
+            DNA_conditions.max_filter_dense : 513,
+            DNA_conditions.max_kernel_dense : 5,
             DNA_conditions.max_layer : 200,
             DNA_conditions.min_filter : 3,
-            DNA_conditions.max_pool_layer : 4,
+            DNA_conditions.max_pool_layer : 5,
             DNA_conditions.max_parents : 2}
     def condition(DNA):
         return DNA_conditions.dict2condition(DNA,list_conditions)
@@ -133,7 +133,6 @@ def run_cifar_user_input_bidi(save = False):
     status.mutations=(
     (0,1,0,0),(1,0,0,0),
     (0,0,1),(4,0,0,0),
-    (0,0,-1),
     )
     status.num_actions=int(input("num_actions : "))
 
@@ -167,7 +166,7 @@ def run_cifar_user_input_bidi(save = False):
                                 (3, 3, 4),
                                 (3, 4, 5))
     """
-    status.Center=DNAs.DNA_contracted_2
+    status.Center=DNAs.DNA_contracted_3
     status.settings=settings
     program.run(status)
 
