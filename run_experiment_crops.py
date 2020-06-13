@@ -94,13 +94,11 @@ if __name__ == '__main__':
 
     dict_transformations = {
         augSettings.baseline_customRandomCrop : True,
-        augSettings.cutout : False,
+        augSettings.cutout : True,
+        augSettings.translate : True,
         augSettings.randomHorizontalFlip : True,
-        augSettings.randomErase_1 : True,
-        augSettings.translate : False,
-        augSettings.randomShear: False,
-        #augSettings.randomRotation : enable_rotation,
-        #augSettings.randomCutout : enable_randomcutout
+        augSettings.randomShear: True
+        #augSettings.randomErase_1 : False,
     }
 
     transform_compose = augSettings.generateTransformCompose(dict_transformations, False)
@@ -261,7 +259,7 @@ if __name__ == '__main__':
 
     """
     settings.initial_dna =   DNAs.DNA_calibration_3
-    settings.ricap = Augmentation_Utils.Ricap(beta=0.3)
+    #settings.ricap = Augmentation_Utils.Ricap(beta=0.3)
 
     """
     settings.initial_dna =   ((-1, 1, 3, 32, 32), (0, 3, 32, 3, 3),(0, 32, 64, 3, 3, 2), (0, 64, 128, 3, 3, 2),
