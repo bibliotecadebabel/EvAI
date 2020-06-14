@@ -107,6 +107,9 @@ class Creator_from_selection_nm():
         elif type_add_layer=='h':
             from DNA_directions_h import directions,directions_labels
             self.directions_labels=directions_labels
+        elif type_add_layer=='convex':
+            from DNA_directions_h import directions,directions_labels
+            self.directions_labels=directions_labels
         else:
             from DNA_directions_f import directions,directions_labels
             self.directions_labels=directions_labels
@@ -195,6 +198,9 @@ class Creator_from_selection():
             from DNA_directions_pool import directions,directions_labels
             self.directions_labels=directions_labels
         elif type_add_layer=='h':
+            from DNA_directions_h import directions,directions_labels
+            self.directions_labels=directions_labels
+        elif type_add_layer=='convex':
             from DNA_directions_h import directions,directions_labels
             self.directions_labels=directions_labels
         else:

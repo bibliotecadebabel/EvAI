@@ -41,6 +41,9 @@ class centered_random_selector(Selector):
         elif directions=='h':
             from DNA_directions_h import directions as directions
             self.directions=directions
+        elif directions=='convex':
+            from DNA_directions_h import directions as directions
+            self.directions=directions
         else:
             from DNA_directions_f import directions as directions
             self.directions=directions
