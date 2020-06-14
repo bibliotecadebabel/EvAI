@@ -12,6 +12,7 @@ import const.versions as directions_version
 import numpy as np
 import test_DNAs as DNAs
 import utilities.Augmentation as Augmentation_Utils
+import math
 ###### EXPERIMENT SETTINGS ######
 """
 def dropout_function(base_p, total_conv2d, index_conv2d):
@@ -94,11 +95,11 @@ if __name__ == '__main__':
 
     dict_transformations = {
         augSettings.baseline_customRandomCrop : True,
-        augSettings.cutout : True,
-        augSettings.translate : True,
         augSettings.randomHorizontalFlip : True,
-        augSettings.randomShear: True
-        #augSettings.randomErase_1 : False,
+        augSettings.randomErase_1 : True
+        #augSettings.cutout : False,
+        #augSettings.translate : True,
+        #augSettings.randomShear: True
     }
 
     transform_compose = augSettings.generateTransformCompose(dict_transformations, False)
@@ -110,6 +111,9 @@ if __name__ == '__main__':
 
     # BATCH SIZE
     settings.batch_size = int(input("Enter batchsize: "))
+    e =  50000 / settings.batch_size
+    e = math.ceil(e)
+    print("e = ", e)
 
     # DATA SOURCE ('default' -> Pikachu, 'cifar' -> CIFAR)
     DATA_SOURCE = 'cifar'
@@ -134,7 +138,6 @@ if __name__ == '__main__':
 
     init_factor = 20
     max_init_iter = 1
-    e=300
     settings.max_init_iter = max_init_iter
     INIT_ITER = init_factor*e
     #settings.init_dt_array = exp_alai(.5,INIT_ITER,1,5)
@@ -259,7 +262,7 @@ if __name__ == '__main__':
 
     """
     settings.initial_dna =   DNAs.DNA_calibration_3
-    #settings.ricap = Augmentation_Utils.Ricap(beta=0.3)
+    settings.ricap = Augmentation_Utils.Ricap(beta=0.3)
 
     """
     settings.initial_dna =   ((-1, 1, 3, 32, 32), (0, 3, 32, 3, 3),(0, 32, 64, 3, 3, 2), (0, 64, 128, 3, 3, 2),

@@ -155,14 +155,14 @@ def Test_Convex():
     dataGen.dataConv2d()
 
     ADN = ((-1, 1, 3, 32, 32), (0, 3, 4, 3, 3), (0, 4, 5, 3, 3, 2), (0, 5, 6, 3, 3, 2), 
-            (0, 6, 7, 8, 8), (1, 7, 10), (2,), (3, -1, 0), (3, 0, 1), (3, 1, 2), (3, -1, 1), 
-            (3, 2, 3), (3, 3, 4), (3, 4, 5))
+            (0, 6, 7, 3, 3, 2), (0, 7, 8, 16, 16), (1, 8, 10), (2,), (3, -1, 0), (3, 0, 1), (3, 1, 2), 
+            (3, 2, 3),(3, 3, 4), (3, 4, 5),(3, 5, 6), (3, 0, 3))
     
-    #MUTATE_DNA = ((-1, 1, 3, 32, 32), (0, 3, 4, 3, 3), (0, 4, 5, 3, 3, 2), (0, 5, 6, 3, 3, 2), 
-    #            (0, 6, 7, 16, 16), (1, 7, 10), (2,), (3, -1, 0), (3, 0, 1), (3, 1, 2), (3, 0, 2), 
-    #            (3, 2, 3), (3, 3, 4), (3, 4, 5))
+    MUTATE_DNA =((-1, 1, 3, 32, 32), (0, 3, 4, 3, 3), (0, 4, 5, 3, 3, 2), (0, 5, 6, 3, 3, 2), (0, 6, 7, 3, 3, 2), 
+                (0, 7, 8, 16, 16), (1, 8, 10), (2,), (3, -1, 0), (3, 0, 1), (3, 1, 2), (3, 0, 2), (3, 2, 3), 
+                (3, 0, 3), (3, 3, 4), (3, 4, 5), (3, 5, 6))
 
-    MUTATE_DNA = direction_dna.spread_convex_dendrites(1, ADN)
+    #MUTATE_DNA = direction_dna.spread_convex_dendrites(1, ADN)
 
     print("ORIGINAL DNA: ", ADN)
     print("MUTATE DNA: ", MUTATE_DNA)
@@ -175,12 +175,10 @@ def Test_Convex():
     parent_network.generateEnergy(dataGen)
     print("Parent ACC: ", parent_network.getAcurracy())   
 
-    input("input")
     mutate_network = mutation_manager.executeMutation(parent_network, MUTATE_DNA)
     mutate_network.generateEnergy(dataGen)
     print("Mutate ACC: ", mutate_network.getAcurracy())  
     
-    input("input")
     mutate_network.TrainingCosineLR_Restarts(dataGenerator=dataGen, max_dt=0.001, min_dt=0.001, epochs=1, restart_dt=1, 
                                         show_accuarcy=True) 
     #print("original network h: ")
