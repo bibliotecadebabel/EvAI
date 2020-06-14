@@ -350,7 +350,16 @@ def spread_dendrites_test_6(x,y):
 
 def retract_dendrites_test(x,y):
     print('The old DNA is')
-    DNA=((-1, 1, 3, 32, 32), (0, 3, 128, 4, 4), (0, 131, 128, 5, 5, 2), (0, 128, 128, 7, 7, 2), (0, 128, 128, 3, 3), (0, 256, 64, 8, 8), (1, 64, 10), (2,), (3, -1, 0), (3, 0, 1), (3, -1, 1), (3, 1, 2), (3, 2, 3), (3, 3, 4), (3, 2, 4), (3, 4, 5), (3, 5, 6))
+    DNA=((-1, 1, 3, 32, 32), (0, 3, 128, 4, 4),
+     (0, 128, 128, 5, 5, 2),
+     (0, 128, 128, 7, 7, 2),
+     (0, 128, 128, 3, 3),
+      (0, 256, 64, 8, 8), (1, 64, 10),
+       (2,), (3, -1, 0),
+       (3, 0, 1), (3, -1, 1),
+       (3, 1, 2), (3, 2, 3),
+       (3, 3, 4), (3, 2, 4),
+       (3, 4, 5), (3, 5, 6))
     print(DNA)
     print('The new DNA is')
     DNA=dire.retract_dendrites(0,DNA)
@@ -363,12 +372,12 @@ def retract_dendrites_test(x,y):
 #remove_layer_test_2(11,11)
 #add_pool_layer_test(11,11)
 #compute_output_test()
-retract_dendrites_test(11,11)
+#retract_dendrites_test(11,11)
 #spread_dendrites_test_6(32,32)
 #spread_dendrites_test_5(11,11)
 #spread_dendrites_test_4(11,11)
 #spread_dendrites_test_3(11,11)
-#spread_convex_dendrites(11,11)
+spread_convex_dendrites(11,11)
 #spread_dendrites_test_1(11,11)
 #increase_kernel_test(11,11)
 ##decrease_kernel_test(11,11)
