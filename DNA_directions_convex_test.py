@@ -176,11 +176,11 @@ def add_layer_test(x,y):
 
 
 def add_pool_layer_test(x,y):
-    DNA=((-1,1,3,11,11),(0, 3, 5, 3, 3),(0, 5, 8,2,2,2),(0,8,120,4,4),
+    DNA=((-1,1,3,11,11),(0, 3, 5, 3, 3),(0, 8, 8,2,2,2),(0,8,120,6,6),
             (1, 13, 2),
             (2,),
             (3,-1,0),
-            (3,0,1),
+            (3,0,1),(3,-1,1),
             (3,1,2),
             (3,2,3),
             (3,3,4))
@@ -363,7 +363,7 @@ def retract_dendrites_test(x,y):
 #remove_layer_test_2(11,11)
 #add_pool_layer_test(11,11)
 #compute_output_test()
-#retract_dendrites_test(11,11)
+retract_dendrites_test(11,11)
 #spread_dendrites_test_6(32,32)
 #spread_dendrites_test_5(11,11)
 #spread_dendrites_test_4(11,11)
@@ -373,7 +373,7 @@ def retract_dendrites_test(x,y):
 #increase_kernel_test(11,11)
 ##decrease_kernel_test(11,11)
 #Persistent_synapse_condition_test(11,11)
-add_layer_test(11,11)
+#add_layer_test(11,11)
 #add_layer_test(11,11)
 #add_layer_den_test(11,11)
 #add_filter(11,11)

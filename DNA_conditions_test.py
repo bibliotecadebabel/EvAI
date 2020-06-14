@@ -56,7 +56,19 @@ def max_filter_test():
     DNA=DNAs.DNA_calibration_2
     print(DNA_conditions.max_filter(DNA,530))
 
-DNA_conv_last()
+def DNA_con_image(x,y):
+    DNA=((-1,1,3,11,11),(0, 3, 5, 3, 3),(0, 8, 8,2,2,2),(0,8,120,6,6),
+            (1, 13, 2),
+            (2,),
+            (3,-1,0),
+            (3,0,1),(3,-1,1),
+            (3,1,2),
+            (3,2,3),
+            (3,3,4))
+    print(DNA_conditions.con_image(DNA,8))
+
+DNA_con_image(11,11)
+#DNA_conv_last()
 #max_filter_test()
 #dict2condition_test()
 #max_kernel_dense_test()

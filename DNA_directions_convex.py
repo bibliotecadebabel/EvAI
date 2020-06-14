@@ -2,6 +2,7 @@ import utilities.Quadrants as qu
 import utilities.Node as nd
 import utilities.Graphs as gr
 import TangentPlane as tplane
+import DNA_conditions
 import random
 
 
@@ -451,16 +452,16 @@ def add_pool_layer(num_layer,source_DNA):
             g.add_edges(-1,[-2])
             g.add_edges(-2,[num_layer])
         else:
-            o_node=g.key2node.get(num_layer-1)
-            clone_node=g.key2node.get(num_layer-1)
+            clone_node=get_random_kid(g.key2node.get(num_layer))
+            key_o=g.node2key.get(clone_node)
             if graph2full_node(g)==clone_node:
                 clone_node=o_node
-            o_layer=o_node.objects[0]
+            o_layer=clone_node.objects[0]
             clone_layer = clone_node.objects[0]
             node=nd.Node()
             node.objects.append((0,clone_layer[2],clone_layer[2],k_d,k_d,2))
             g.add_node(-2,node)
-            g.add_edges(num_layer-1,[-2])
+            g.add_edges(key_o,[-2])
             g.add_edges(-2,[num_layer])
         t_node=g.key2node.get(num_layer)
         t_layer=t_node.objects[0]
@@ -759,13 +760,13 @@ def retract_dendrites(num_layer,source_DNA):
 #        print('The new graph is')
         fix_fully_conected(g)
         #imprimir(g)
-        return Persistent_synapse_condition(graph2DNA(g))
+        return DNA_conditions.con_image(Persistent_synapse_condition(graph2DNA(g)))
     else:
         if not(old_index):
             return None
         else:
             fix_fully_conected(g)
-            return Persistent_synapse_condition(graph2DNA(g))
+            return DNA_conditions.con_image(Persistent_synapse_condition(graph2DNA(g)))
 
 
 creator=retract_dendrites
