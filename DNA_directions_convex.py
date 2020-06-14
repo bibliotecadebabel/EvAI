@@ -324,6 +324,10 @@ def swap_kids(node,kid_a,kid_b):
     kids[index_a], kids[index_b] = kids[index_b], kids[index_a]
 
 
+def get_random_kid(node):
+    k=len(node.parents)
+    index=random.randint(0,k-1)
+    return node.parents[index]
 
 type=(1,0,0,0)
 def add_layer(num_layer,source_DNA):
@@ -357,22 +361,19 @@ def add_layer(num_layer,source_DNA):
             swap_kids(parent,node_a,node_b)
             g.remove_edge(-1,0)
         else:
-            o_node=g.key2node.get(num_layer-1)
-            clone_node=g.key2node.get(num_layer)
-            if graph2full_node(g)==clone_node:
-                clone_node=o_node
+            o_node=get_random_kid(g.key2node.get(num_layer))
             o_layer=o_node.objects[0]
-            clone_layer = clone_node.objects[0]
+            key_o=g.node2key.get(o_node)
             node=nd.Node()
             node.objects.append((0,o_layer[2],o_layer[2],k_d,k_d))
             g.add_node(-2,node)
-            g.add_edges(num_layer-1,[-2])
+            g.add_edges(key_o,[-2])
             g.add_edges(-2,[num_layer])
             parent=g.key2node.get(num_layer)
-            node_a=g.key2node.get(num_layer-1)
+            node_a=o_node
             node_b=g.key2node.get(-2)
             swap_kids(parent,node_a,node_b)
-            g.remove_edge(num_layer-1,num_layer)
+            g.remove_edge(key_o,num_layer)
         t_node=g.key2node.get(num_layer)
         t_layer=t_node.objects[0]
         #t_layer=layer_chanel(t_layer,clone_layer[2])

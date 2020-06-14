@@ -2,7 +2,7 @@ import utilities.Quadrants as qu
 import utilities.Node as nd
 import utilities.Graphs as gr
 import TangentPlane as tplane
-import DNA_directions_h as dire
+import DNA_directions_convex as dire
 import test_DNAs as DNAs
 import DNA_conditions
 
@@ -153,22 +153,21 @@ def remove_layer_test(x,y):
         print(DNA)
 
 def add_layer_test(x,y):
-    """
-    DNA=((-1,1,3,11,11),(0, 3, 5, 3, 3),(0, 5, 8,2,2,2),(0,8,120,6,6),
+    DNA=((-1,1,3,11,11),(0, 3, 5, 3, 3),(0, 8, 8,2,2,2),(0,8,120,6,6),
             (1, 13, 2),
             (2,),
             (3,-1,0),
-            (3,0,1),
+            (3,0,1),(3,-1,1),
             (3,1,2),
             (3,2,3),
-            (3,3,4))"""
-    DNA=DNAs.DNA_ep14
+            (3,3,4))
+    #DNA=DNAs.DNA_ep14
     g=dire.DNA2graph(DNA)
     print('The old DNA is')
     print(DNA)
     #while DNA:
     print('The new DNA is')
-    DNA=dire.add_layer(10,DNA)
+    DNA=dire.add_layer(1,DNA)
     print(DNA)
     #g=dire.DNA2graph(DNA)
     #dire.compute_output(g)
@@ -374,10 +373,10 @@ def retract_dendrites_test(x,y):
 #increase_kernel_test(11,11)
 ##decrease_kernel_test(11,11)
 #Persistent_synapse_condition_test(11,11)
-#add_layer_test(11,11)
+add_layer_test(11,11)
 #add_layer_test(11,11)
 #add_layer_den_test(11,11)
-add_filter(11,11)
+#add_filter(11,11)
 #retract_h_test()
 #add_pool_layer_test(32,32)
 #fix_fully_conected_test(11,11)
