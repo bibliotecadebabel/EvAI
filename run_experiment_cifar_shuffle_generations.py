@@ -10,6 +10,8 @@ import TestNetwork.ExperimentSettings as ExperimentSettings
 import const.versions as directions_version
 import numpy as np
 import test_DNAs as DNAs
+import utilities.Augmentation as Augmentation
+import TestNetwork.AugmentationSettings as AugmentationSettings
 ###### EXPERIMENT SETTINGS ######
 """
 def dropout_function(base_p, total_conv2d, index_conv2d):
@@ -26,7 +28,7 @@ def dropout_function(base_p, total_conv2d, index_conv2d):
     #print("conv2d: ", index_conv2d, " - dropout: ", value)
     return value
 """
-
+'''
 def dropout_function(base_p, total_layers, index_layer, isPool=False):
 
     value = 0
@@ -39,7 +41,19 @@ def dropout_function(base_p, total_layers, index_layer, isPool=False):
     #print("conv2d: ", index_layer, " - dropout: ", value)
 
     return value
+'''
+def dropout_function(base_p, total_layers, index_layer, isPool=False):
 
+    value = 0
+    if index_layer != 0 and isPool == False:
+        value = base_p
+
+    if index_layer == total_layers - 2:
+        value = base_p
+
+    print("conv2d: ", index_layer, " - dropout: ", value)
+
+    return value
 
 
 
@@ -80,6 +94,15 @@ if __name__ == '__main__':
 
     settings = ExperimentSettings.ExperimentSettings()
 
+    augSettings = AugmentationSettings.AugmentationSettings()
+
+    dict_transformations = {
+        augSettings.baseline_customRandomCrop : True,
+        augSettings.randomHorizontalFlip : True,
+        augSettings.randomErase_1 : True,
+    }
+
+    transform_compose = augSettings.generateTransformCompose(dict_transformations, False)
     # DIRECTIONS VERSION
     settings.version = directions_version.H_VERSION
     # NUM OF THREADS
@@ -270,6 +293,7 @@ if __name__ == '__main__':
     settings.dataGen = dataGen
     settings.selector = selector
     settings.initial_space = space
+    settings.ricap = Augmentation.Ricap(beta=0.3)
 
     trainer = CommandExperimentCifar_Restarts.CommandExperimentCifar_Restarts(settings=settings)
     trainer.execute()

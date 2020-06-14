@@ -42,7 +42,7 @@ class Network(nn.Module, na.NetworkAbstract):
 
         self.__conv2d_propagate_mode = const.CONV2D_MULTIPLE_INPUTS
 
-        if self.version == directions_version.H_VERSION:
+        if self.version == directions_version.H_VERSION or self.version == directions_version.CONEX_VERSION:
             self.__conv2d_propagate_mode = const.CONV2D_PADDING
 
         self.createStructure()
