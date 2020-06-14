@@ -44,7 +44,9 @@ def dropout_function(base_p, total_layers, index_layer, isPool=False):
 '''
 def dropout_function(base_p, total_layers, index_layer, isPool=False):
 
-    value = 0
+    value = 0.1
+    if index_layer ==0:
+        value=0
     if index_layer != 0 and isPool == False:
         value = base_p
 
@@ -139,7 +141,7 @@ if __name__ == '__main__':
     settings.max_init_iter = 320
     INIT_ITER = 10*e
     #settings.init_dt_array = exp_alai(.5,INIT_ITER,1,5)
-    settings.init_dt_array =  Alaising(1.2,7,INIT_ITER)
+    settings.init_dt_array =  Alaising(1,7,INIT_ITER)
 
 
     # JOINED DT PARAMETERS
