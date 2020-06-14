@@ -6,7 +6,7 @@ from DNA_creators import Creator_from_selection_nm as Creator_nm
 from utilities.Abstract_classes.classes.uniform_random_selector import(
     centered_random_selector as Selector_creator)
 from DNA_conditions import max_layer,max_filter,max_filter_dense
-import DNA_directions_h as direction_dna
+import DNA_directions_convex as direction_dna
 import children.pytorch.MutationManager as MutationManager
 import const.versions as directions_version
 
@@ -147,22 +147,49 @@ def Test_Convex():
         augSettings.translate : True,
     }
 
+    version = directions_version.CONVEX_VERSION
+
+    mutation_manager = MutationManager.MutationManager(directions_version=version)
     transform_compose = augSettings.generateTransformCompose(list_transform, False)
     dataGen = GeneratorFromCIFAR.GeneratorFromCIFAR(2,  128, threads=0, dataAugmentation=True, transforms_mode=transform_compose)
     dataGen.dataConv2d()
-    
-    version = directions_version.H_VERSION
 
-    ADN = ((-1,1,3,32,32),(0,3, 5, 3 , 3),(0,5, 6, 3,  3, 2),(0,5, 7, 3, 3, 2),(0,13, 8, 16,16),
-            (1, 8,10),(2,),(3,-1,0),(3,0,1),(3,0,2),(3,2,3),(3, 1, 3),(3,3,4),(3,4,5))
+    ADN = ((-1, 1, 3, 32, 32), (0, 3, 4, 3, 3), (0, 4, 5, 3, 3, 2), (0, 5, 6, 3, 3, 2), 
+            (0, 6, 7, 8, 8), (1, 7, 10), (2,), (3, -1, 0), (3, 0, 1), (3, 1, 2), (3, -1, 1), 
+            (3, 2, 3), (3, 3, 4), (3, 4, 5))
+    
+    #MUTATE_DNA = ((-1, 1, 3, 32, 32), (0, 3, 4, 3, 3), (0, 4, 5, 3, 3, 2), (0, 5, 6, 3, 3, 2), 
+    #            (0, 6, 7, 16, 16), (1, 7, 10), (2,), (3, -1, 0), (3, 0, 1), (3, 1, 2), (3, 0, 2), 
+    #            (3, 2, 3), (3, 3, 4), (3, 4, 5))
+
+    MUTATE_DNA = direction_dna.spread_convex_dendrites(1, ADN)
+
+    print("ORIGINAL DNA: ", ADN)
+    print("MUTATE DNA: ", MUTATE_DNA)
 
     parent_network = nw_dendrites.Network(adn=ADN, cudaFlag=True, momentum=0.9, weight_decay=0, 
                 enable_activation=True, enable_track_stats=True, dropout_value=0, dropout_function=None, version=version)
 
-    parent_network.TrainingCosineLR_Restarts(dataGenerator=dataGen, max_dt=0.001, min_dt=0.001, epochs=5, restart_dt=5, 
+    parent_network.TrainingCosineLR_Restarts(dataGenerator=dataGen, max_dt=0.001, min_dt=0.001, epochs=1, restart_dt=1, 
                                         show_accuarcy=True)
     parent_network.generateEnergy(dataGen)
     print("Parent ACC: ", parent_network.getAcurracy())   
+
+    input("input")
+    mutate_network = mutation_manager.executeMutation(parent_network, MUTATE_DNA)
+    mutate_network.generateEnergy(dataGen)
+    print("Mutate ACC: ", mutate_network.getAcurracy())  
+    
+    input("input")
+    mutate_network.TrainingCosineLR_Restarts(dataGenerator=dataGen, max_dt=0.001, min_dt=0.001, epochs=1, restart_dt=1, 
+                                        show_accuarcy=True) 
+    #print("original network h: ")
+    #print(parent_network.printH())
+    #print("mutate network h: ")
+    #print(mutate_network.printH())
+
+    mutate_network.generateEnergy(dataGen)
+    print("Mutate ACC 2: ", mutate_network.getAcurracy())   
 
 def TestMemoryManager():
     

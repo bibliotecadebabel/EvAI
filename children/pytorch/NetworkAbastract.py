@@ -60,6 +60,10 @@ class NetworkAbstract(ABC):
 
             if layer.getFilterDer() is not None:
                 layer.getFilterDer().requires_grad = flag
+            
+            if layer.tensor_h is not None:
+                layer.tensor_h.requires_grad = flag
+                
     
     def assignLabels(self, label):
 

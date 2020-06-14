@@ -6,15 +6,17 @@ import time
 class Net(torch.nn.Module):
     def __init__(self):
         super(Net, self).__init__()
-        self.conv1 = nn.Conv2d(3, 32, 3).cuda()
-        self.conv2 = nn.Conv2d(32, 32, 3).cuda()
-        self.pool1 = nn.MaxPool2d(2, stride=None).cuda()
-        self.conv3 = nn.Conv2d(32, 64, 3).cuda()
-        self.conv4 = nn.Conv2d(64, 64, 3).cuda()
-        self.pool2 = nn.MaxPool2d(2, stride=None).cuda()
-        self.conv5 = nn.Conv2d(64, 128, 24).cuda()
+        #self.conv1 = nn.Conv2d(3, 32, 3).cuda()
+        #self.conv2 = nn.Conv2d(32, 32, 3).cuda()
+        #self.pool1 = nn.MaxPool2d(2, stride=None).cuda()
+        #self.conv3 = nn.Conv2d(32, 64, 3).cuda()
+        #self.conv4 = nn.Conv2d(64, 64, 3).cuda()
+        #self.pool2 = nn.MaxPool2d(2, stride=None).cuda()
+        #self.conv5 = nn.Conv2d(64, 128, 24).cuda()
         #self.fc1 = nn.Linear(64 * 24 * 24, 128).cuda()
-        self.fc2 = nn.Linear(128, 10).cuda()    
+        #self.fc2 = nn.Linear(128, 10).cuda()    
+        self.h = nn.Parameter(torch.tensor(0.5).cuda())
+
     def forward(self, x):
 
         dropout = torch.nn.Dropout2d(p=0.05)
@@ -52,9 +54,13 @@ class Net(torch.nn.Module):
 
 def test():
 
-    dataGen = GeneratorFromCIFAR.GeneratorFromCIFAR(2,  64, threads=2)
-    dataGen.dataConv2d()
+    #dataGen = GeneratorFromCIFAR.GeneratorFromCIFAR(2,  64, threads=2)
+    #dataGen.dataConv2d()
     net = Net()
+    print("params:")
+    for param in net.parameters():
+        print(param)
+    '''
     criterion = torch.nn.CrossEntropyLoss()
     optimizer = torch.optim.SGD(net.parameters(), lr=0.001, momentum=0.9)
 
@@ -99,6 +105,6 @@ def test():
 
     print('Accuracy of the network on the 10000 test images: %d %%' % (
         100 * correct / total))
-
+    '''
 if __name__ == "__main__":
     test()

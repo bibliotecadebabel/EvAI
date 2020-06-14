@@ -1,6 +1,7 @@
 import const.versions as versions_mutation
 import children.pytorch.MutateNetwork_Dendrites as mutation_dendrites
 import children.pytorch.MutateNetwork_Dendrites_H as mutation_h
+import children.pytorch.MutateNetwork_Dendrites_Convex as mutation_convex
 import children.pytorch.MutateNetwork_Dendrites_clone as mutation_clone
 import children.pytorch.MutateNetwork_Dendrites_pool as mutation_pool
 import children.pytorch.MutateNetwork_Dendrites_duplicate as mutation_duplicate
@@ -26,6 +27,9 @@ class MutationManager():
         elif directions_version == versions_mutation.CLONE_VERSION:
             self.__mutation_function = mutation_clone
         
+        elif directions_version == versions_mutation.CONVEX_VERSION:
+            self.__mutation_function = mutation_convex
+
         else:
             self.__mutation_function = mutation_dendrites
 
