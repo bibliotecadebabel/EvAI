@@ -138,7 +138,32 @@ def Test_Mutacion():
         
 
     #mutate_network.TrainingCosineLR_Restarts(dataGenerator=dataGen, max_dt=0.001, min_dt=0.001, epochs=1, restart_dt=1, show_accuarcy=True)
+
+def Test_Convex():
+    augSettings = AugmentationSettings.AugmentationSettings()
+
+    list_transform = { 
+        augSettings.randomHorizontalFlip : True,
+        augSettings.translate : True,
+    }
+
+    transform_compose = augSettings.generateTransformCompose(list_transform, False)
+    dataGen = GeneratorFromCIFAR.GeneratorFromCIFAR(2,  128, threads=0, dataAugmentation=True, transforms_mode=transform_compose)
+    dataGen.dataConv2d()
     
+    version = directions_version.H_VERSION
+
+    ADN = ((-1,1,3,32,32),(0,3, 5, 3 , 3),(0,5, 6, 3,  3, 2),(0,5, 7, 3, 3, 2),(0,13, 8, 16,16),
+            (1, 8,10),(2,),(3,-1,0),(3,0,1),(3,0,2),(3,2,3),(3, 1, 3),(3,3,4),(3,4,5))
+
+    parent_network = nw_dendrites.Network(adn=ADN, cudaFlag=True, momentum=0.9, weight_decay=0, 
+                enable_activation=True, enable_track_stats=True, dropout_value=0, dropout_function=None, version=version)
+
+    parent_network.TrainingCosineLR_Restarts(dataGenerator=dataGen, max_dt=0.001, min_dt=0.001, epochs=5, restart_dt=5, 
+                                        show_accuarcy=True)
+    parent_network.generateEnergy(dataGen)
+    print("Parent ACC: ", parent_network.getAcurracy())   
+
 def TestMemoryManager():
     
     settings = ExperimentSettings.ExperimentSettings()
@@ -241,4 +266,5 @@ def TestMemoryManager():
 
 if __name__ == "__main__":
     #Test_Mutacion()
-    TestMemoryManager()
+    #TestMemoryManager()
+    Test_Convex()

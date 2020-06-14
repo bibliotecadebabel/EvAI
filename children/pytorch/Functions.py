@@ -109,9 +109,9 @@ def conv2d_propagate_images(layer): ## MUTATION: ADDING IMAGE TO INPUT IN EVERY 
     '''
 def conv2d_propagate_multipleInputs(layer): ## MUTATION: Multiple inputs per convolutional layer
     
-    parent = layer.node.parents[0].objects[0]
+    #parent = layer.node.parents[0].objects[0]
 
-    current_input = __getInput(layer, parent.value)
+    current_input = __getInput(layer)
 
     if layer.getPool() is not None:
         current_input = layer.doPool(current_input)
@@ -131,9 +131,9 @@ def conv2d_propagate_multipleInputs(layer): ## MUTATION: Multiple inputs per con
 
 def conv2d_propagate_padding(layer):
     
-    parent = layer.node.parents[0].objects[0]
+    #parent = layer.node.parents[0].objects[0]
 
-    current_input = __getInput(layer, parent.value)
+    current_input = __getInput(layer)
 
     if layer.getPool() is not None:
         current_input = layer.doPool(current_input)
@@ -271,11 +271,11 @@ def __doPad(targetTensor, refferenceTensor):
     
     return pad_tensor
 
-def __getInput(layer, parentOutput):
+def __getInput(layer):
     
     len_other_inputs = len(layer.other_inputs)
 
-    value = parentOutput
+    #value = parentOutput
 
     if len_other_inputs > 0:
 
