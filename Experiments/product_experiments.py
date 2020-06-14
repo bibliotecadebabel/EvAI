@@ -65,7 +65,7 @@ def run_cifar_user_input_bidi(save = False):
     settings = ExperimentSettings.ExperimentSettings()
 
 
-    settings.version = directions_version.H_VERSION
+    settings.version = directions_version.CONVEX_VERSION
     settings.dropout_function = dropout_function
     settings.eps_batchorm = 0.001
     settings.momentum = 0.9
@@ -134,14 +134,14 @@ def run_cifar_user_input_bidi(save = False):
     (0,1,0,0),(1,0,0,0),
     (0,0,1),(0,0,-1),
     (0,0,1,1),(0,0,-1,-1),
-    (4,0,0,0),
+    (4,0,0,0),(0,0,2),
     )
     status.num_actions=int(input("num_actions : "))
 
     status.Selector_creator=Selector
     status.log_size=int(input("Log size : "))
     status.min_log_size=100
-    status.version='h'
+    status.version='convex'
     status.S=int(input("Batch size : "))
     status.cuda=bool(input("Any input for cuda : "))
 

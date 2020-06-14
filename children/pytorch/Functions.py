@@ -238,7 +238,7 @@ def __padInput(targetTensor, kernel_size):
     #print("pad shape: ", pad_tensor.shape)
     return pad_tensor
 
-def __getBiggestInput(layerList):
+def __getBiggestKernelInput(layerList):
 
     kernel = 0
     biggest_input = None
@@ -257,7 +257,26 @@ def __getBiggestInput(layerList):
     
     return biggest_input
 
-def __doPad(targetTensor, refferenceTensor):
+def __getBiggestDepthInput(layerList):
+
+    depth = 0
+    biggest_input = None
+
+    for layer in layerList:
+        
+        shape = layer.value.shape
+        
+        if depth < shape[1]:
+
+            depth = shape[1]
+            biggest_input = layer.value
+    
+    #if kernel < currentInput.shape[2]:
+    #    biggest_input = currentInput
+    
+    return biggest_input
+
+def __doPadKernel(targetTensor, refferenceTensor):
 
     pad_tensor = targetTensor
     
@@ -271,30 +290,80 @@ def __doPad(targetTensor, refferenceTensor):
     
     return pad_tensor
 
+def __doPadDepth(targetTensor, refferenceTensor):
+
+    pad_tensor = targetTensor
+    
+    target_shape = targetTensor.shape
+    refference_shape = refferenceTensor.shape
+
+    diff_depth = abs(refference_shape[1] - target_shape[1])
+
+    if diff_depth > 0:
+        pad_tensor = torch.nn.functional.pad(targetTensor,(0, 0, 0, 0, 0, diff_depth),"constant", 0)
+    
+    return pad_tensor
+
 def __getInput(layer):
     
-    len_other_inputs = len(layer.other_inputs)
+    input_channels = layer.adn[1]
 
-    #value = parentOutput
+    parents_outputs_channels = 0
 
-    if len_other_inputs > 0:
+    value = None
+    
+    for parent_layer in layer.other_inputs:  
+        parents_outputs_channels += parent_layer.value.shape[1]
+    
+    biggest_input_kernel = __getBiggestKernelInput(layer.other_inputs)
 
-        biggest_input = __getBiggestInput(layer.other_inputs)
+    if input_channels == parents_outputs_channels:
 
         concat_tensor_list = []
 
         for i in range(len(layer.other_inputs)):
             
             current_input = layer.other_inputs[i].value.clone()
-            padded_input = __doPad(current_input, biggest_input)
+            padded_input = __doPadKernel(current_input, biggest_input_kernel)
             del current_input
             concat_tensor_list.append(padded_input)
 
         value = torch.cat(tuple(concat_tensor_list), dim=1)
+
         for tensorPadded in concat_tensor_list:
             del tensorPadded
         
         del concat_tensor_list
+    else:
+
+        biggest_input_depth = __getBiggestDepthInput(layer.other_inputs) 
+
+        sum_tensor_list = []
+        #print("h: ", layer.tensor_h)
+
+        for i in range(len(layer.other_inputs)):
+            
+            current_input = layer.other_inputs[i].value.clone()
+            padded_input_kernel = __doPadKernel(current_input, biggest_input_kernel)
+            padded_input_depth = __doPadDepth(padded_input_kernel, biggest_input_depth)
+            del current_input, padded_input_kernel
+            
+            if i == 0:
+                padded_input_depth = padded_input_depth * layer.tensor_h
+            
+            elif i == (len(layer.other_inputs) - 1):
+                padded_input_depth = padded_input_depth * (1 - layer.tensor_h)
+
+            sum_tensor_list.append(padded_input_depth)
+
+        value = sum_tensor_list[0]
+        for tensor in sum_tensor_list[1:]:
+            value += tensor
+
+        for tensorPadded in sum_tensor_list:
+            del tensorPadded
+        
+        del sum_tensor_list        
 
     return value
 

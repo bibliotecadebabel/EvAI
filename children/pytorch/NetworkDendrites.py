@@ -42,7 +42,7 @@ class Network(nn.Module, na.NetworkAbstract):
 
         self.__conv2d_propagate_mode = const.CONV2D_MULTIPLE_INPUTS
 
-        if self.version == directions_version.H_VERSION or self.version == directions_version.CONEX_VERSION:
+        if self.version == directions_version.H_VERSION or self.version == directions_version.CONVEX_VERSION:
             self.__conv2d_propagate_mode = const.CONV2D_PADDING
 
         self.createStructure()
@@ -100,6 +100,11 @@ class Network(nn.Module, na.NetworkAbstract):
 
                 if tupleBody[0] == 0 or tupleBody[0] == 1:
                     
+                    if self.cudaFlag == True:
+                        tensor_h = torch.nn.Parameter(torch.tensor(1.0, requires_grad=True).cuda())
+                    else:
+                        tensor_h = torch.nn.Parameter(torch.tensor(1.0, requires_grad=True))
+
                     if len(tupleBody) > 5:
                         dropout_value = self.dropout_function(self.dropout_value, self.__total_layers, index_layer, True)
                     else:
@@ -109,11 +114,15 @@ class Network(nn.Module, na.NetworkAbstract):
                     conv2d_dropout = torch.nn.Dropout2d(p=layer.dropout_value)
 
                     if self.cudaFlag == True:
-                        conv2d_dropout = conv2d_dropout.cuda()
+                        conv2d_dropout = conv2d_dropout.cuda()                    
 
                     layer.setDropoutObject(conv2d_dropout)
                     attributeName_dropout = "layer_dropout"+str(indexNode)
                     self.setAttribute(attributeName_dropout, layer.getDropoutObject())
+                    
+                    layer.tensor_h = tensor_h
+                    attributeName_h = "layer_h"+str(indexNode)
+                    self.setAttribute(attributeName_h, layer.tensor_h)
                     index_layer += 1
 
                 if tupleBody[0] == 0:
@@ -677,3 +686,11 @@ class Network(nn.Module, na.NetworkAbstract):
 
         if self.cudaFlag == True:
             torch.cuda.empty_cache()
+        
+    def printH(self):
+
+        for node in self.nodes:
+            layer = node.objects[0]
+
+            print("adn layer: ", layer.adn)
+            print("h: ", layer.tensor_h)
