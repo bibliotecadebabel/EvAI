@@ -59,7 +59,7 @@ def dropout_function_2(base_p, total_layers, index_layer, isPool=False):
         value = 0 
     
     print("conv2d: ", index_layer, " - dropout: ", value)
-    
+
     return value
 
 def pcos(x):
@@ -235,14 +235,14 @@ if __name__ == '__main__':
 
     # DROPOUT FUNCTION
 
-    value = int(input("use dropout constant? (1 -> yes, 0 -> no): "))
+    #value = int(input("use dropout constant? (1 -> yes, 0 -> no): "))
 
-    function = dropout_function
+    #function = dropout_function
     
-    if value == 1:
-        function = dropout_function_constant
+    #if value == 1:
+    #    function = dropout_function_constant
 
-    settings.dropout_function = function
+    settings.dropout_function = dropout_function_2
     # INITIAL DNA
 
     """
