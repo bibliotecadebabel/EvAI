@@ -54,11 +54,11 @@ def dropout_function_constant(base_p, total_layers, index_layer, isPool=False):
 
 def dropout_function_2(base_p, total_layers, index_layer, isPool=False):
 
-    value = base_p
-    if index_layer == 0:
-        value = 0 
-    
-    print("conv2d: ", index_layer, " - dropout: ", value)
+    value = 0
+
+    if index_layer > 0:
+        value = base_p / (total_layers - index_layer)+base_p/2
+        print("conv2d: ", index_layer, " - dropout: ", value)
 
     return value
 
@@ -151,20 +151,20 @@ if __name__ == '__main__':
     settings.max_init_iter = max_init_iter
     INIT_ITER = init_factor*e
     #settings.init_dt_array = exp_alai(.5,INIT_ITER,1,5)
-    settings.init_dt_array =  Alaising(1,7,INIT_ITER)
+    settings.init_dt_array =  Alaising(1,99,INIT_ITER)
 
 
     # JOINED DT PARAMETERS
     JOINED_ITER = 4*e
     #settings.joined_dt_array = Alaising(2,6,e)
-    settings.joined_dt_array = Alaising(1.2,7,JOINED_ITER)
+    settings.joined_dt_array = Alaising(1.2,99,JOINED_ITER)
     settings.max_joined_iter = 1
 
     # BEST DT PARAMETERS
     BEST_ITER = 10*e
     #settings.best_dt_array = Alaising(2,6,e)
     best_dt_max = float(input("max dt (best): "))
-    settings.best_dt_array = Alaising(best_dt_max,7,BEST_ITER)
+    settings.best_dt_array = Alaising(best_dt_max,99,BEST_ITER)
     settings.max_best_iter = int(input("max best iter: "))
 
 
