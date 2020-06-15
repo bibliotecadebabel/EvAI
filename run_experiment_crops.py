@@ -52,6 +52,16 @@ def dropout_function_constant(base_p, total_layers, index_layer, isPool=False):
 
     return value
 
+def dropout_function_2(base_p, total_layers, index_layer, isPool=False):
+
+    value = base_p
+    if index_layer == 0:
+        value = 0 
+    
+    print("conv2d: ", index_layer, " - dropout: ", value)
+    
+    return value
+
 def pcos(x):
     if x>np.pi:
         x-np.pi
@@ -261,7 +271,7 @@ if __name__ == '__main__':
                                              (3, 28, 29), (3, 23, 29), (3, 27, 29), (3, 29, 30), (3, 30, 31))
 
     """
-    settings.initial_dna =   DNAs.DNA_calibration_3
+    settings.initial_dna =   DNAs.DNA_ep25
     settings.ricap = Augmentation_Utils.Ricap(beta=0.3)
 
     """
