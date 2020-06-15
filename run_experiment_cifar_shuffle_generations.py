@@ -137,7 +137,7 @@ if __name__ == '__main__':
     # INITIAL DT PARAMETERS
     num_actions=8
 
-    e=400
+    e=800
     settings.save_txt = True
     settings.max_init_iter = 320
     INIT_ITER = 10*e
