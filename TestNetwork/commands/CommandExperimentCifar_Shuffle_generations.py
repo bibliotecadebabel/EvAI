@@ -113,6 +113,8 @@ class CommandExperimentCifar_Restarts():
 
     def __trainNetwork(self, network : nw.Network, dt_array, max_iter, keep_clone=False, allow_save_txt=False):
 
+        dt_array_len = len(dt_array)
+        avg_factor = dt_array_len // 4
         if self.__settings.allow_interupts == True:
 
             if keep_clone == True:
@@ -135,7 +137,8 @@ class CommandExperimentCifar_Restarts():
                     print("current accuracy=", current_accuracy)
 
                     if allow_save_txt == True and self.__settings.save_txt == True:
-                        self.__fileManager.appendFile("iter: "+str(i+1)+" - Acc: "+str(current_accuracy))
+                        loss = network.getAverageLoss(avg_factor)
+                        self.__fileManager.appendFile("iter: "+str(i+1)+" - Acc: "+str(current_accuracy)+" - Loss: "+str(loss))
 
                     if current_accuracy >= best_accuracy:
                         del best_network
@@ -190,7 +193,8 @@ class CommandExperimentCifar_Restarts():
                 print("current accuracy=", current_accuracy)
 
                 if allow_save_txt == True and self.__settings.save_txt == True:
-                    self.__fileManager.appendFile("iter: "+str(i+1)+" - Acc: "+str(current_accuracy))
+                    loss = network.getAverageLoss(avg_factor)
+                    self.__fileManager.appendFile("iter: "+str(i+1)+" - Acc: "+str(current_accuracy)+" - Loss: "+str(loss))
 
             return network
 

@@ -242,7 +242,7 @@ if __name__ == '__main__':
     #if value == 1:
     #    function = dropout_function_constant
 
-    settings.dropout_function = dropout_function_2
+    settings.dropout_function = dropout_function_constant
     # INITIAL DNA
 
     """
