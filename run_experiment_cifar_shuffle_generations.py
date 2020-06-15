@@ -13,15 +13,17 @@ import test_DNAs as DNAs
 import utilities.Augmentation as Augmentation
 import TestNetwork.AugmentationSettings as AugmentationSettings
 ###### EXPERIMENT SETTINGS ######
-"""
-def dropout_function(base_p, total_conv2d, index_conv2d):
 
-    value = base_p / (total_conv2d - index_conv2d)+base_p/2
+def dropout_function(base_p, total_conv2d, index_conv2d, isPool=False):
+    if index_conv2d==0:
+        return 0
+    else:
+        value = base_p / (total_conv2d - index_conv2d)+base_p/2
     #print("conv2d: ", index_conv2d, " - dropout: ", value)
     return value
 
 
-"""
+
 """
 def dropout_function(base_p, total_conv2d, index_conv2d):
     value = base_p +(3/5*base_p-base_p)*(total_conv2d - index_conv2d)/total_conv2d
@@ -42,11 +44,10 @@ def dropout_function(base_p, total_layers, index_layer, isPool=False):
 
     return value
 '''
+"""
 def dropout_function(base_p, total_layers, index_layer, isPool=False):
 
-    value = 0.1
-    if index_layer ==0:
-        value=0
+    value = 0
     if index_layer != 0 and isPool == False:
         value = base_p
 
@@ -56,7 +57,7 @@ def dropout_function(base_p, total_layers, index_layer, isPool=False):
     print("conv2d: ", index_layer, " - dropout: ", value)
 
     return value
-
+"""
 
 
 def pcos(x):
@@ -136,12 +137,12 @@ if __name__ == '__main__':
     # INITIAL DT PARAMETERS
     num_actions=8
 
-    e=400
+    e=800
     settings.save_txt = True
     settings.max_init_iter = 320
     INIT_ITER = 10*e
     #settings.init_dt_array = exp_alai(.5,INIT_ITER,1,5)
-    settings.init_dt_array =  Alaising(1,7,INIT_ITER)
+    settings.init_dt_array =  Alaising(1.2,99,INIT_ITER)
 
 
     # JOINED DT PARAMETERS
