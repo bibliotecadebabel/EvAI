@@ -14,7 +14,7 @@ import utilities.Augmentation as Augmentation
 import TestNetwork.AugmentationSettings as AugmentationSettings
 ###### EXPERIMENT SETTINGS ######
 
-def dropout_function(base_p, total_conv2d, index_conv2d):
+def dropout_function(base_p, total_conv2d, index_conv2d, isPool=False):
     if index_conv2d==0:
         return 0
     else:
