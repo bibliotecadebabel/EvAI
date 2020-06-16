@@ -14,6 +14,7 @@ import utilities.Augmentation as Augmentation
 import TestNetwork.AugmentationSettings as AugmentationSettings
 ###### EXPERIMENT SETTINGS ######
 
+"""
 def dropout_function(base_p, total_conv2d, index_conv2d, isPool=False):
     if index_conv2d==0:
         return 0
@@ -21,7 +22,16 @@ def dropout_function(base_p, total_conv2d, index_conv2d, isPool=False):
         value = base_p / (total_conv2d - index_conv2d)+base_p/2
     #print("conv2d: ", index_conv2d, " - dropout: ", value)
     return value
+"""
 
+def dropout_function(base_p, total_conv2d, index_conv2d, isPool=False):
+    if index_conv2d==0:
+        return 0
+    else:
+        value = 0.1
+        value = base_p / (total_conv2d - index_conv2d)+base_p/2
+    #print("conv2d: ", index_conv2d, " - dropout: ", value)
+    return value
 
 
 """
@@ -257,7 +267,7 @@ if __name__ == '__main__':
 
     #settings.initial_dna =   DNAs.DNA_ep25
 
-    settings.initial_dna = DNAs.dna_saturday_69
+    settings.initial_dna = DNAs.non_lin_20
 
 
     """
