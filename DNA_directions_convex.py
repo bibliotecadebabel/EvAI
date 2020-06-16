@@ -133,6 +133,8 @@ def Persistent_synapse_condition(DNA):
         condition = True
         while k < len(list(g.key2node.values()))-4:
             node = g.key2node.get(k)
+            if len(node.objects)==1:
+                return
             output = node.objects[1]
             condition = (condition and (output[0] > 1)
                 and (output[1] > 1))
@@ -733,7 +735,7 @@ def retract_dendrites(num_layer,source_DNA):
     g=DNA2graph(source_DNA)
     node=g.key2node.get(num_layer)
     dendrites=node.kids.copy()
-    dendrites.remove(g.key2node.get(num_layer+1))
+    #dendrites.remove(g.key2node.get(num_layer+1))
     landscape=[g.node2key.get(node_k)-num_layer-1
         for node_k in dendrites]
     old_index=select_old_index2retract(num_layer,
@@ -774,7 +776,7 @@ def retract_dendrites(num_layer,source_DNA):
             return None
         else:
             fix_fully_conected(g)
-            return DNA_conditions.con_image(Persistent_synapse_condition(graph2DNA(g)))
+            return Persistent_synapse_condition(DNA_conditions.con_image(graph2DNA(g)))
 
 
 creator=retract_dendrites

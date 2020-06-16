@@ -95,6 +95,7 @@ def compute_output_test():
             (3,1,2),
             (3,2,3),
             (3,3,4))
+    DNA=DNAs.non_lin_20
     g=dire.DNA2graph(DNA)
     full_node=dire.graph2full_node(g)
     dire.compute_output(g,full_node)
@@ -363,13 +364,13 @@ def retract_dendrites_test(x,y):
 #initialize_kernel_test()
 #remove_layer_test_2(11,11)
 #add_pool_layer_test(11,11)
-#compute_output_test()
+compute_output_test()
 #retract_dendrites_test(11,11)
 #spread_dendrites_test_6(32,32)
 #spread_dendrites_test_5(11,11)
 #spread_dendrites_test_4(11,11)
 #spread_dendrites_test_3(11,11)
-spread_convex_dendrites(11,11)
+#spread_convex_dendrites(11,11)
 #spread_dendrites_test_1(11,11)
 #increase_kernel_test(11,11)
 ##decrease_kernel_test(11,11)

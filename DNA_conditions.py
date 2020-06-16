@@ -121,13 +121,14 @@ def dict2condition(DNA,dict):
     return DNA
 
 def con_image(DNA,max=None):
-    g=Fun.DNA2graph(DNA)
-    condition= all([node_con_image(g,node) for node
-        in list(g.key2node.values())])
-    if condition:
-        return DNA
-    else:
-        return None
+    if DNA:
+        g=Fun.DNA2graph(DNA)
+        condition= all([node_con_image(g,node) for node
+            in list(g.key2node.values())])
+        if condition:
+            return DNA
+        else:
+            return None
 
 def node_con_image(g,node):
     if g.node2key.get(node) == -1:
