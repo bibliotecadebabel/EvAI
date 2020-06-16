@@ -133,7 +133,7 @@ def Persistent_synapse_condition(DNA):
         condition = True
         while k < len(list(g.key2node.values()))-4:
             node = g.key2node.get(k)
-            if len(node.objects)==0:
+            if len(node.objects)==1:
                 return
             output = node.objects[1]
             condition = (condition and (output[0] > 1)
