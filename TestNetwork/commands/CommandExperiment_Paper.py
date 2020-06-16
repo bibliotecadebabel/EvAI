@@ -9,6 +9,7 @@ import os
 import time
 import utilities.FileManager as FileManager
 import torch
+import utilities.MemoryManager as MemoryManager
 
 class CommandExperimentCifar_Restarts():
 
@@ -17,6 +18,7 @@ class CommandExperimentCifar_Restarts():
         self.__selector = settings.selector
         self.__networks = []
         self.__nodes = []
+        self.__memoryManager = MemoryManager.MemoryManager()
         
         self.__settings = settings
         
@@ -73,12 +75,13 @@ class CommandExperimentCifar_Restarts():
         for nodeKid in nodeCenter.kids:
             
             mutations_path =  nodeKid.objects[0].objects[0].path
-            old_network = centerNetwork
+            old_network = centerNetwork.clone()
             self.__nodes.append(nodeKid)
             
             kidNetwork = None
             for kid_dna in mutations_path:
                 kidNetwork = self.mutation_manager.executeMutation(old_network, kid_dna)
+                self.__memoryManager.deleteNetwork(old_network)
                 old_network = kidNetwork
         
             self.__networks.append(kidNetwork)
