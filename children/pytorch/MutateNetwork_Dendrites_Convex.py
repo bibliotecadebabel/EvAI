@@ -7,9 +7,12 @@ import torch as torch
 import mutations.Convolution2d.Mutations as Conv2dMutations
 import mutations.BatchNormalization.BatchNormalization as batchMutate
 import const.mutation_type as m_type
+import utilities.FileManager as FileManager
 
 def executeMutation(oldNetwork, newAdn):
 
+    fileManager = FileManager.FileManager()
+    fileManager.setFileName("dnas_mutation_error.txt")
     network = nw.Network(newAdn, cudaFlag=oldNetwork.cudaFlag, momentum=oldNetwork.momentum,
                             weight_decay=oldNetwork.weight_decay, enable_activation=oldNetwork.enable_activation,
                             enable_track_stats=oldNetwork.enable_track_stats, dropout_value=oldNetwork.dropout_value,
@@ -24,22 +27,34 @@ def executeMutation(oldNetwork, newAdn):
     oldNetwork.updateGradFlag(False)
     network.updateGradFlag(False)
 
+    try:
+        if length_newadn == length_oldadn:
+            #print("default mutation process")
+            __defaultMutationProcess(oldNetwork=oldNetwork, network=network, lenghtAdn=length_newadn)
 
-    if length_newadn == length_oldadn:
-        #print("default mutation process")
-        __defaultMutationProcess(oldNetwork=oldNetwork, network=network, lenghtAdn=length_newadn)
+        elif length_newadn > length_oldadn: # add layer
+            #print("add layer mutation")
+            index_layer, mutation_type = __getTargetIndex(oldAdn=oldNetwork.adn, newAdn=newAdn)
 
-    elif length_newadn > length_oldadn: # add layer
-        #print("add layer mutation")
-        index_layer, mutation_type = __getTargetIndex(oldAdn=oldNetwork.adn, newAdn=newAdn)
+            __addLayerMutationProcess(oldNetwork=oldNetwork, network=network, lenghtOldAdn=length_oldadn,
+                                            indexAdded=index_layer, mutation_type=mutation_type)
 
-        __addLayerMutationProcess(oldNetwork=oldNetwork, network=network, lenghtOldAdn=length_oldadn,
-                                        indexAdded=index_layer, mutation_type=mutation_type)
+        elif length_oldadn > length_newadn: # remove layer
+            #print("remove layer mutation")
+            index_layer = __getTargetRemoved(oldAdn=oldNetwork.adn, newAdn=newAdn)
+            __removeLayerMutationProcess(oldNetwork=oldNetwork, network=network, lengthNewAdn=length_newadn, indexRemoved=index_layer)
 
-    elif length_oldadn > length_newadn: # remove layer
-        #print("remove layer mutation")
-        index_layer = __getTargetRemoved(oldAdn=oldNetwork.adn, newAdn=newAdn)
-        __removeLayerMutationProcess(oldNetwork=oldNetwork, network=network, lengthNewAdn=length_newadn, indexRemoved=index_layer)
+    except:
+        print("#### ERROR DNAs  ####")
+        print("OLD")
+        print(oldNetwork.adn)
+        print("NEW")
+        print(network.adn)
+
+        fileManager.appendFile("## MUTATION ##")
+        fileManager.appendFile("old DNA: "+str(oldNetwork.adn))
+        fileManager.appendFile("new DNA: "+str(network.adn))
+        raise
 
     oldNetwork.updateGradFlag(True)
     network.updateGradFlag(True)

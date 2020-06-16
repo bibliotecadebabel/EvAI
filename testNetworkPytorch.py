@@ -79,15 +79,11 @@ def getNodeCenter(space):
     return nodeCenter
 
 def Test_Mutacion():
-
-    space = generateSpace(32, 32)
-
-    nodeCenter = getNodeCenter(space)
-
-    #for nodeKid in nodeCenter.kids:
-    #    print("path kid: ", nodeKid.objects[0].objects[0].path)
-
-    PARENT_DNA = space.node2key(nodeCenter)
+    memoryManager = MemoryManager.MemoryManager()
+    PARENT_DNA =  ((-1, 1, 3, 32, 32), (0, 3, 64, 3, 3), (0, 64, 64, 3, 3), (0, 64, 128, 3, 3, 2), 
+        (0, 128, 128, 3, 3, 2), (0, 256, 256, 3, 3, 2), (0, 256, 256, 3, 3, 2), (0, 256, 256, 3, 3),
+         (0, 512, 128, 16, 16), (1, 128, 10), (2,), (3, -1, 0), (3, 0, 1), (3, 1, 2), (3, 2, 3), (
+             3, 2, 4), (3, 3, 4), (3, 4, 5), (3, 4, 6), (3, 2, 6), (3, 6, 7), (3, 5, 7), (3, 7, 8), (3, 8, 9))
 
     augSettings = AugmentationSettings.AugmentationSettings()
 
@@ -97,44 +93,34 @@ def Test_Mutacion():
     }
 
     transform_compose = augSettings.generateTransformCompose(list_transform, False)
-    dataGen = GeneratorFromCIFAR.GeneratorFromCIFAR(2,  128, threads=0, dataAugmentation=True, transforms_mode=transform_compose)
+    dataGen = GeneratorFromCIFAR.GeneratorFromCIFAR(2,  4, threads=0, dataAugmentation=True, transforms_mode=transform_compose)
     dataGen.dataConv2d()
     
-    version = directions_version.H_VERSION
+    version = directions_version.CONVEX_VERSION
 
     mutation_manager = MutationManager.MutationManager(directions_version=version)
     
     parent_network = nw_dendrites.Network(adn=PARENT_DNA, cudaFlag=True, momentum=0.9, weight_decay=0, 
                 enable_activation=True, enable_track_stats=True, dropout_value=0.2, dropout_function=None, version=version)
 
-    parent_network.TrainingCosineLR_Restarts(dataGenerator=dataGen, max_dt=0.001, min_dt=0.001, epochs=1, restart_dt=1, 
-                                        show_accuarcy=True)
-    parent_network.generateEnergy(dataGen)
-    print("Parent ACC: ", parent_network.getAcurracy())    
-
     kid_num = 1
-    for nodeKid in nodeCenter.kids:
 
-        print("kid: ", kid_num)
-        print("DNA KID: ", space.node2key(nodeKid))
-        print("Las path: ", nodeKid.objects[0].objects[0].path[-1])
-        mutations_path =  nodeKid.objects[0].objects[0].path
+    while True:
 
-        kid_dna_num = 1
-        old_network = parent_network
+        for i in range(6):
+            print("layer (spread convex): ", i)
+            mutate_dna = direction_dna.spread_convex_dendrites(i, parent_network.adn)
+            print("mutation dna: ", mutate_dna)
+            mutate_network = mutation_manager.executeMutation(parent_network, mutate_dna)
+            memoryManager.deleteNetwork(mutate_network)
 
-        for kid_dna in mutations_path:
+            print("layer: ", i)
+            mutate_dna = direction_dna.spread_dendrites(i, parent_network.adn)
+            print("mutation dna: ", mutate_dna)
+            mutate_network = mutation_manager.executeMutation(parent_network, mutate_dna)
+            memoryManager.deleteNetwork(mutate_network)
+            
 
-            mutate_network = mutation_manager.executeMutation(old_network, kid_dna)
-            mutate_network.generateEnergy(dataGen)
-            print("kid ACC: ", mutate_network.getAcurracy())
-            old_network = mutate_network
-
-            kid_dna_num += 1
-
-        print("")
-
-        kid_num += 1
         
 
     #mutate_network.TrainingCosineLR_Restarts(dataGenerator=dataGen, max_dt=0.001, min_dt=0.001, epochs=1, restart_dt=1, show_accuarcy=True)
@@ -290,6 +276,6 @@ def TestMemoryManager():
     
 
 if __name__ == "__main__":
-    #Test_Mutacion()
+    Test_Mutacion()
     #TestMemoryManager()
-    Test_Convex()
+    #Test_Convex()
