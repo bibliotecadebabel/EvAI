@@ -133,6 +133,8 @@ def Persistent_synapse_condition(DNA):
         condition = True
         while k < len(list(g.key2node.values()))-4:
             node = g.key2node.get(k)
+            if len(node.objects==0):
+                return
             output = node.objects[1]
             condition = (condition and (output[0] > 1)
                 and (output[1] > 1))
@@ -774,7 +776,7 @@ def retract_dendrites(num_layer,source_DNA):
             return None
         else:
             fix_fully_conected(g)
-            return DNA_conditions.con_image(Persistent_synapse_condition(graph2DNA(g)))
+            return Persistent_synapse_condition(DNA_conditions.con_image(graph2DNA(g)))
 
 
 creator=retract_dendrites
