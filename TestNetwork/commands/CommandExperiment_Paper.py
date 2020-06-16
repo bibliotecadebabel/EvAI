@@ -143,86 +143,25 @@ class CommandExperimentCifar_Restarts():
 
     def __trainNetwork(self, network : nw.Network, dt_array, max_iter, keep_clone=False, allow_save_txt=False):
 
-        if self.__settings.allow_interupts == True:
+        dt_array_len = len(dt_array)
+        avg_factor = dt_array_len // 4
 
-            if keep_clone == True:
-                best_network = network.clone()
-                
-                best_network.generateEnergy(self.__settings.dataGen)
-                best_accuracy = best_network.getAcurracy()
-
-                print("best current accuracy= ", best_network.getAcurracy())
-
-                for i in range(max_iter):
-                    
-                    torch.cuda.empty_cache()
-
-                    print("iteration: ", i+1)
-                    network.iterTraining(self.__settings.dataGen, dt_array)
-                    network.generateEnergy(self.__settings.dataGen)
-                    current_accuracy = network.getAcurracy()
-
-                    print("current accuracy=", current_accuracy)
-
-                    if allow_save_txt == True and self.__settings.save_txt == True:
-                        self.__fileManager.appendFile("iter: "+str(i+1)+" - Acc: "+str(current_accuracy))
-                    
-                    if current_accuracy >= best_accuracy:
-                        del best_network
-                        best_accuracy = current_accuracy
-                        best_network = network.clone()
-
-                    else:
-                        print("interrupted, lower accuracy.")
-                        break
-                
-                best_network.generateEnergy(self.__settings.dataGen)
-                print("final best accuarcy=", best_network.getAcurracy())
-                return best_network
-
-            else:
-
-                network.generateEnergy(self.__settings.dataGen)
-                best_accuracy = network.getAcurracy()
-
-                print("initial accuracy= ", best_accuracy)
-
-                for i in range(max_iter):
-                    torch.cuda.empty_cache()
-                    print("iteration: ", i+1)
-                    network.iterTraining(self.__settings.dataGen, dt_array)
-                    network.generateEnergy(self.__settings.dataGen)
-                    current_accuracy = network.getAcurracy()
-
-                    print("current accuracy=", current_accuracy)
-                    if current_accuracy >= best_accuracy:
-                        best_accuracy = current_accuracy
-                    else:
-                        print("interrupted, lower accuracy.")
-                        break
-                
-                network.generateEnergy(self.__settings.dataGen)
-                print("final accuarcy=", network.getAcurracy())
-                return network
-        
-        else:
+        network.generateEnergy(self.__settings.dataGen)
+        best_accuracy = network.getAcurracy()
+        print("initial accuracy= ", best_accuracy)
             
+        for i in range(max_iter):
+            print("iteration: ", i+1)
+            network.iterTraining(self.__settings.dataGen, dt_array, self.__settings.ricap)
             network.generateEnergy(self.__settings.dataGen)
-            best_accuracy = network.getAcurracy()
-            print("initial accuracy= ", best_accuracy)
+            current_accuracy = network.getAcurracy()
+            print("current accuracy=", current_accuracy)
             
-            for i in range(max_iter):
-                print("iteration: ", i+1)
-                network.iterTraining(self.__settings.dataGen, dt_array)
-                #network.Training(data=self.__settings.dataGen, dt=dt_array, p=len(dt_array), full_database=True)
-                network.generateEnergy(self.__settings.dataGen)
-                current_accuracy = network.getAcurracy()
-                print("current accuracy=", current_accuracy)
-                
-                if allow_save_txt == True and self.__settings.save_txt == True:
-                    self.__fileManager.appendFile("iter: "+str(i+1)+" - Acc: "+str(current_accuracy))
+            if allow_save_txt == True and self.__settings.save_txt == True:
+                loss = network.getAverageLoss(avg_factor)
+                self.__fileManager.appendFile("iter: "+str(i+1)+" - Acc: "+str(current_accuracy)+" - Loss: "+str(loss))
 
-            return network
+        return network
 
     def execute(self):
 
@@ -237,11 +176,6 @@ class CommandExperimentCifar_Restarts():
         
         self.__bestNetwork = self.__trainNetwork(network=self.__bestNetwork, 
                     dt_array=self.__settings.init_dt_array, max_iter=self.__settings.max_init_iter, keep_clone=True, allow_save_txt=True)
-
-        self.__bestNetwork = self.__trainNetwork(network=self.__bestNetwork, 
-                    dt_array=self.__settings.best_dt_array, max_iter=self.__settings.max_best_iter, keep_clone=True, allow_save_txt=True)
-
-        
         
         self.__saveModel(self.__bestNetwork, test_id=test_id, iteration=0)
 
@@ -270,6 +204,11 @@ class CommandExperimentCifar_Restarts():
                 
                 torch.cuda.empty_cache()
 
+        
+        self.__bestNetwork = self.__trainNetwork(network=self.__bestNetwork, 
+                    dt_array=self.__settings.best_dt_array, max_iter=self.__settings.max_best_iter, keep_clone=True, allow_save_txt=True)
+
+        self.__saveModel(network=self.__bestNetwork, test_id=test_id, iteration=self.__settings.epochs+1)
 
     def __getBestNetwork(self):
 

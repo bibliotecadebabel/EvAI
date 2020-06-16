@@ -42,7 +42,7 @@ class centered_random_selector(Selector):
             from DNA_directions_h import directions as directions
             self.directions=directions
         elif directions=='convex':
-            from DNA_directions_h import directions as directions
+            from DNA_directions_convex import directions as directions
             self.directions=directions
         else:
             from DNA_directions_f import directions as directions
@@ -151,15 +151,17 @@ class centered_random_selector(Selector):
         num_mutations=len(self.mutations)
         k=0
         l=0
-        print(self.mutations)
+        #print(self.mutations)
         while len(self.predicted_actions)<self.num_actions and l<300:
             #layer=int(np.random.normal(0, 3*self.current_num_layer))+self.center
             layer=random.randint(0,self.current_num_layer+1)
             if layer>-1 and layer<self.current_num_layer+2:
                 mutation=random.randint(0,num_mutations-1)
 
-                if self.mutations[mutation] == (0, 0, 1):
+                if self.mutations[mutation] == (0, 0, 1) or self.mutations[mutation] == (0, 0, 2):
                     self.__dendrites_mutation(mutation)
+                elif self.mutations[mutation] == (1, 0, 0, 0):
+                    self.__addLayer_convex(mutation)
                 else:
                     DNA=self.center_key
                     condition=self.condition
@@ -177,7 +179,7 @@ class centered_random_selector(Selector):
         stop = False
         index_list = []
 
-        for layer_index in range(self.current_num_layer):
+        for layer_index in range(self.current_num_layer-2):
             index_list.append(layer_index)
 
         while len(index_list) > 0 and stop == False:
@@ -201,6 +203,38 @@ class centered_random_selector(Selector):
                     stop = True
 
                 i += 1
+
+    def __addLayer_convex(self, mutation):
+        
+        graph_dna = Funct.DNA2graph(self.center_key)
+
+        parent_layers = []
+
+        acum_parents = 0
+        acum_history = []
+
+        for layer_index in range(self.current_num_layer):
+            
+            node = graph_dna.key2node.get(layer_index)
+            parents = len(node.parents)
+            parent_layers.append(parents)
+            acum_parents += parents
+            acum_history.append(acum_parents)
+
+        factor = random.randint(0, sum(parent_layers))
+        selected_index = -1
+
+        for i in range(len(acum_history)):
+
+            if factor <= acum_history[i]:
+                selected_index = i
+                break
+        
+
+        self.predicted_actions.append([selected_index,mutation])
+
+        
+
 
 
 

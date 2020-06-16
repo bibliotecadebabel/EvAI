@@ -131,10 +131,10 @@ def run_cifar_user_input_bidi(save = False):
     from utilities.Abstract_classes.classes.uniform_random_selector_2 import (
         centered_random_selector as Selector)
     status.mutations=(
-    (0,1,0,0),(1,0,0,0),
-    (0,0,1),(0,0,-1),
-    (0,0,1,1),(0,0,-1,-1),
-    (4,0,0,0),(0,0,2),
+    (1,0,0,0),
+    (0,0,1),
+    (0,0,1,1),
+    (0,0,2)
     )
     status.num_actions=int(input("num_actions : "))
 
@@ -168,7 +168,8 @@ def run_cifar_user_input_bidi(save = False):
                                 (3, 3, 4),
                                 (3, 4, 5))
     """
-    status.Center=DNAs.DNA_contracted_3
+    #status.Center=DNAs.DNA_contracted_3
+    status.Center = DNAs.DNA_contracted
     status.settings=settings
     program.run(status)
 

@@ -578,7 +578,7 @@ creator=spread_dendrites
 directions.update({type:creator})
 directions_labels.update({creator:type})
 
-type=(0,0,2)
+type=(0,0,0,0,0,0,9)
 def spread_convex_dendrites(num_layer,source_DNA):
     total_layers=len(DNA2layers(source_DNA))
     num_layer=num_layer-1

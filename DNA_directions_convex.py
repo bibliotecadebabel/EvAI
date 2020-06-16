@@ -542,7 +542,7 @@ def spread_dendrites(num_layer,source_DNA):
     g=DNA2graph(source_DNA)
     node=g.key2node.get(num_layer)
     dendrites=node.kids.copy()
-    dendrites.remove(g.key2node.get(num_layer+1))
+    #dendrites.remove(g.key2node.get(num_layer+1))
     landscape=[g.node2key.get(node_k)-num_layer-1
         for node_k in dendrites]
     old_index=select_old_index2spread(num_layer,
@@ -589,7 +589,7 @@ def spread_convex_dendrites(num_layer,source_DNA):
     g=DNA2graph(source_DNA)
     node=g.key2node.get(num_layer)
     dendrites=node.kids.copy()
-    dendrites.remove(g.key2node.get(num_layer+1))
+    #dendrites.remove(g.key2node.get(num_layer+1))
     landscape=[g.node2key.get(node_k)-num_layer-1
         for node_k in dendrites]
     old_index=select_old_index2spread(num_layer,

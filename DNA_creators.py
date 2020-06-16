@@ -108,7 +108,7 @@ class Creator_from_selection_nm():
             from DNA_directions_h import directions,directions_labels
             self.directions_labels=directions_labels
         elif type_add_layer=='convex':
-            from DNA_directions_h import directions,directions_labels
+            from DNA_directions_convex import directions,directions_labels
             self.directions_labels=directions_labels
         else:
             from DNA_directions_f import directions,directions_labels
@@ -155,11 +155,18 @@ class Creator_from_selection_nm():
                         path=[]
                         for m in range (self.num_morphisms):
                             selector.update(DNA_f)
-                            actions=selector.get_predicted_actions()
-                            typo=actions[0]
-                            direction=self.directions.get(typo[1])
-                            num_layer=typo[0]
-                            DNA_f=condition(direction(num_layer,DNA_f))
+                            stop = False
+                            while stop == False:
+                                selector.update_predicted_actions()
+                                actions=selector.get_predicted_actions()
+                                typo=actions[0]
+                                direction=self.directions.get(typo[1])
+                                num_layer=typo[0]
+                                temp=condition(direction(num_layer,DNA_f))
+                                if isinstance(temp, tuple) == True:
+                                    DNA_f = temp
+                                    stop = True
+
                             label.append(typo)
                             path.append(DNA_f)
                             #print(f'The label is {label}')
@@ -201,7 +208,7 @@ class Creator_from_selection():
             from DNA_directions_h import directions,directions_labels
             self.directions_labels=directions_labels
         elif type_add_layer=='convex':
-            from DNA_directions_h import directions,directions_labels
+            from DNA_directions_convex import directions,directions_labels
             self.directions_labels=directions_labels
         else:
             from DNA_directions_f import directions,directions_labels

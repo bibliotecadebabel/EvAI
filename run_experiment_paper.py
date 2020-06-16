@@ -12,6 +12,8 @@ from utilities.Abstract_classes.classes.uniform_random_selector_2 import(
     centered_random_selector as Selector_creator)
 from DNA_conditions import max_layer,max_filter,max_filter_dense
 from DNA_creators import Creator_from_selection_nm as Creator_nm
+import utilities.Augmentation as Augmentation_Utils
+import math
 
 ###### EXPERIMENT SETTINGS ######
 """
@@ -28,12 +30,12 @@ def dropout_function(base_p, total_layers, index_layer, isPool=False):
 
     value = 0
     if index_layer != 0 and isPool == False:
-        value = base_p +(3/5*base_p-base_p)*(total_layers - index_layer-1)/total_layers  
+        value = base_p
 
     if index_layer == total_layers - 2:
-        value = base_p +(3/5*base_p-base_p)*(total_layers - index_layer-1)/total_layers  
+        value = base_p
 
-    #print("conv2d: ", index_layer, " - dropout: ", value)
+    print("conv2d: ", index_layer, " - dropout: ", value)
 
     return value
 
@@ -53,63 +55,41 @@ def exp_alai(r,I,t_M,t_m):
     return [ 10 ** (-t_M-((t_m-t_M)*(k  %  int(I*r) )/I*r)) for k in range(I)]
 
 def DNA_Creator_s(x,y, dna, version):
-    max_layers=10
-    max_filters=60
-    max_dense=100
-    def condition_b(z):
-        return max_filter_dense(max_filter(max_layer(z,max_layers),max_filters),max_dense)
+
+    def condition(DNA):
+        return DNA_conditions.dict2condition(DNA,list_conditions)
 
     center=dna
-    mutations=((4,0,0,0),(1,0,0,0),(0,0,1))
-    sel=Selector_creator(condition=condition_b,
+    mutations=((4,0,0,0),(1,0,0,0),(0,0,1),(0,0,2),(0,1,0,0))
+    sel=Selector_creator(condition=condition,
         directions=version,mutations=mutations,num_actions=num_actions)
     print('The selector is')
     print(sel)
     sel.update(center)
     actions=sel.get_predicted_actions()
     creator=Creator_nm
-    space=DNA_Graph(center,1,(x,y),condition_b,actions,
-        version,creator=creator,num_morphisms=5,selector=sel)
+    space=DNA_Graph(center,1,(x,y),condition,actions,version,creator=creator,num_morphisms=5,selector=sel)
     
     return [space, sel]
 
 if __name__ == '__main__':
 
     settings = ExperimentSettings.ExperimentSettings()
-    
-    random_erase_1 = int(input("RandomErase (size: 4x4, holes: 2) ? (1 -> yes, 0 -> no): "))
-    random_erase_2 = int(input("RandomErase (size: 2x2, holes: 16) ? (1 -> yes, 0 -> no): "))
-
-    enable_randomerase_1 = False
-    enable_randomerase_2 = False
-    
-    if random_erase_1 == 1:
-        enable_randomerase_1 = True
-    
-    if random_erase_2 == 1:
-        enable_randomerase_2 = True
 
     augSettings = AugmentationSettings.AugmentationSettings()
 
     dict_transformations = {
         augSettings.baseline_customRandomCrop : True,
-        augSettings.cutout : True,
-        augSettings.randomErase_1 : enable_randomerase_1,
-        augSettings.randomErase_2 : enable_randomerase_2,
-        augSettings.translate : True,
         augSettings.randomHorizontalFlip : True,
-        augSettings.randomShear: True,
+        augSettings.randomErase_1 : True
     }
 
     transform_compose = augSettings.generateTransformCompose(dict_transformations, False)
 
     # DIRECTIONS VERSION
-    settings.version = directions_version.H_VERSION
+    settings.version = directions_version.CONVEX_VERSION
     # NUM OF THREADS
     THREADS = int(input("Enter threads: "))
-
-    # BATCH SIZE
-    settings.batch_size = int(input("Enter batchsize: "))
 
     # DATA SOURCE ('default' -> Pikachu, 'cifar' -> CIFAR)
     DATA_SOURCE = 'cifar'
@@ -129,8 +109,12 @@ if __name__ == '__main__':
     # EPOCHS
     settings.epochs = int(input("Enter amount of epochs: "))
 
-    num_actions=5
-    e=10
+    num_actions=8
+
+    settings.batch_size = int(input("Enter batchsize: "))
+    e =  50000 / settings.batch_size
+    e = math.ceil(e)
+    print("e = ", e)
 
     # INITIAL DT PARAMETERS
     max_init_iter = 1
@@ -141,16 +125,16 @@ if __name__ == '__main__':
 
 
     # JOINED DT PARAMETERS
-    JOINED_ITER = 4*e
+    JOINED_ITER = 17*e
     #settings.joined_dt_array = Alaising(2,6,e)
     settings.joined_dt_array = Alaising(1.2,7,JOINED_ITER)
-    settings.max_joined_iter = 1
+    settings.max_joined_iter = 8
 
     # BEST DT PARAMETERS
     BEST_ITER = 10*e
     #settings.best_dt_array = Alaising(2,6,e)
     settings.best_dt_array = Alaising(1.2,7,BEST_ITER)
-    settings.max_best_iter = 1
+    settings.max_best_iter = 360
 
     # dropout parameter
     settings.dropout_value = float(input("dropout value: "))
@@ -161,10 +145,22 @@ if __name__ == '__main__':
     # momentum parameter
     settings.momentum = 0.9
 
+    # INITIAL DNA
+    settings.initial_dna =  ((-1, 1, 3, 32, 32), (0, 3, 64, 3, 3),(0, 64, 128, 3, 3, 2), (0, 128, 256, 3, 3, 2),
+                            (0, 256, 512, 8, 8),
+                            (1, 512, 10),
+                            (2,),
+                            (3, -1, 0),
+                            (3, 0, 1),
+                            (3, 1, 2),
+                            (3, 2, 3),
+                            (3, 3, 4),
+                            (3, 4, 5))
+                            
     list_conditions={DNA_conditions.max_filter : 530,
             DNA_conditions.max_filter_dense : 530,
-            DNA_conditions.max_kernel_dense : 1,
-            DNA_conditions.max_layer : 30,
+            DNA_conditions.max_kernel_dense : 50,
+            DNA_conditions.max_layer : 60,
             DNA_conditions.min_filter : 0,
             DNA_conditions.max_parents : 2}
 
@@ -211,11 +207,7 @@ if __name__ == '__main__':
 
     # DROPOUT FUNCTION
     settings.dropout_function = dropout_function
-
-    # INITIAL DNA
-    settings.initial_dna =   ((-1,1,3,32,32),(0,3, 5, 3 , 3),(0,5, 6, 3,  3), (0,6,7,3,3,2),
-            (0,7, 8, 16,16),(1, 8,10),(2,),(3,-1,0), (3,0,1),(3,1,2),(3,2,3),(3,3,4),(3,4,5))
-
+    settings.ricap = Augmentation_Utils.Ricap(beta=0.3)
 
     dataCreator = CommandCreateDataGen.CommandCreateDataGen(cuda=settings.cuda)
     dataCreator.execute(compression=2, batchSize=settings.batch_size, source=DATA_SOURCE, threads=THREADS, dataAugmentation=ENABLE_AUGMENTATION, transformCompose=transform_compose)
@@ -227,7 +219,7 @@ if __name__ == '__main__':
     settings.selector = selector
     settings.initial_space = space
 
-    settings.save_txt = False
+    settings.save_txt = True
 
     settings.disable_mutation = False
 
