@@ -150,6 +150,7 @@ def run_cifar_user_input_bidi(save = False):
         centered_random_selector as Selector)
     status.mutations=(
     (1,0,0,0),(1,0,0,0),
+    (0,1,0,0),(0,1,0,0),
     (4,0,0,0),
     (0,0,1),(0,0,-1),
     (0,0,1,1),(0,0,-1,-1),
