@@ -128,7 +128,7 @@ if __name__ == '__main__':
     JOINED_ITER = 17*e
     #settings.joined_dt_array = Alaising(2,6,e)
     settings.joined_dt_array = Alaising(1.2,7,JOINED_ITER)
-    settings.max_joined_iter = 8
+    settings.max_joined_iter = 1
 
     # BEST DT PARAMETERS
     BEST_ITER = 10*e
