@@ -152,7 +152,7 @@ def run_cifar_user_input_bidi(save = False):
     (1,0,0,0),(1,0,0,0),
     (4,0,0,0),
     (0,0,1),(0,0,-1),
-    (0,0,1,1),(0,0,-1,-1)
+    (0,0,1,1),(0,0,-1,-1),
     (0,0,2)
     )
     status.num_actions=int(input("num_actions : "))
