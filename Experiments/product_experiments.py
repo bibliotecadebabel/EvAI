@@ -65,16 +65,16 @@ def run_cifar_user_input_bidi(save = False):
     """
     def dropout_function(base_p, total_layers, index_layer, isPool=False):
 
-        value = 0
+        value = 0.05
         if index_layer == 0:
             value=0
         if index_layer != 0 and isPool == False:
             #value = base_p +(3/5*base_p-base_p)*(total_layers - index_layer-1)/total_layers
-            value=0.05
+            value=0.1
 
         if index_layer == total_layers - 2:
             #value = base_p +(3/5*base_p-base_p)*(total_layers - index_layer-1)/total_layers
-            value=0.05
+            value=0.1
         #print("conv2d: ", index_layer, " - dropout: ", value)
 
         return value
@@ -176,7 +176,7 @@ def run_cifar_user_input_bidi(save = False):
     status.save2database=save
     x=32
     y=32
-
+    """
     status.Center=((-1, 1, 3, 32, 32), (0, 3, 64, 3, 3),(0, 64, 128, 3, 3, 2), (0, 128, 256, 3, 3, 2),
                                 (0, 256, 256, 8, 8),
                                 (1, 256, 10),
@@ -187,8 +187,9 @@ def run_cifar_user_input_bidi(save = False):
                                 (3, 2, 3),
                                 (3, 3, 4),
                                 (3, 4, 5))
+    """
 
-    #status.Center=DNAs.DNA_contracted_3
+    status.Center=DNAs.non_lin_20
     #status.Center = DNAs.DNA_contracted
     status.settings=settings
     program.run(status)
