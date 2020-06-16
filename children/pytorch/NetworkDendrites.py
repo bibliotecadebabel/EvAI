@@ -578,6 +578,9 @@ class Network(nn.Module, na.NetworkAbstract):
             if layerToClone.getFilter() is not None:
                 layer.setFilter(layerToClone.getFilter().clone())
             
+            if layerToClone.tensor_h is not None:
+                layer.tensor_h.data = layerToClone.tensor_h.data.clone()
+                
             layer.setBarchNorm(layerToClone.getBatchNormObject())
 
         network.total_value = self.total_value

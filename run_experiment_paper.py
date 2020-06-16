@@ -145,8 +145,8 @@ if __name__ == '__main__':
 
     # INITIAL DNA
     settings.initial_dna =  ((-1, 1, 3, 32, 32), (0, 3, 64, 3, 3),(0, 64, 128, 3, 3, 2), (0, 128, 256, 3, 3, 2),
-                            (0, 256, 512, 8, 8),
-                            (1, 512, 10),
+                            (0, 256, 128, 8, 8),
+                            (1, 128, 10),
                             (2,),
                             (3, -1, 0),
                             (3, 0, 1),
@@ -156,8 +156,8 @@ if __name__ == '__main__':
                             (3, 4, 5))
                             
     list_conditions={DNA_conditions.max_filter : 530,
-            DNA_conditions.max_filter_dense : 530,
-            DNA_conditions.max_kernel_dense : 50,
+            DNA_conditions.max_filter_dense : 130,
+            DNA_conditions.max_kernel_dense : 20,
             DNA_conditions.max_layer : 60,
             DNA_conditions.min_filter : 0,
             DNA_conditions.max_parents : 2}
