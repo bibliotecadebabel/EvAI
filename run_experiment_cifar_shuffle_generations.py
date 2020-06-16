@@ -117,7 +117,7 @@ if __name__ == '__main__':
 
     transform_compose = augSettings.generateTransformCompose(dict_transformations, False)
     # DIRECTIONS VERSION
-    settings.version = directions_version.H_VERSION
+    settings.version = 'convex'
     # NUM OF THREADS
     THREADS = int(input("Enter threads: "))
 
