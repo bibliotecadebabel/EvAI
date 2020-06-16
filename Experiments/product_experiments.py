@@ -40,13 +40,14 @@ def run_cifar_user_input_bidi(save = False):
 
     list_conditions={DNA_conditions.max_filter : 513,
             DNA_conditions.max_filter_dense : 513,
-            DNA_conditions.max_kernel_dense : 32,
+            DNA_conditions.max_kernel_dense : 17,
             DNA_conditions.max_layer : 200,
             DNA_conditions.min_filter : 3,
             DNA_conditions.max_pool_layer : 4,
             DNA_conditions.max_parents : 2}
     def condition(DNA):
         return DNA_conditions.dict2condition(DNA,list_conditions)
+    """
     def dropout_function(base_p, total_layers, index_layer, isPool=False):
 
         value = 0.1
@@ -61,6 +62,23 @@ def run_cifar_user_input_bidi(save = False):
         #print("conv2d: ", index_layer, " - dropout: ", value)
 
         return value
+    """
+    def dropout_function(base_p, total_layers, index_layer, isPool=False):
+
+        value = 0
+        if index_layer == 0:
+            value=0
+        if index_layer != 0 and isPool == False:
+            #value = base_p +(3/5*base_p-base_p)*(total_layers - index_layer-1)/total_layers
+            value=0.05
+
+        if index_layer == total_layers - 2:
+            #value = base_p +(3/5*base_p-base_p)*(total_layers - index_layer-1)/total_layers
+            value=0.05
+        #print("conv2d: ", index_layer, " - dropout: ", value)
+
+        return value
+
 
     settings = ExperimentSettings.ExperimentSettings()
 
@@ -131,7 +149,8 @@ def run_cifar_user_input_bidi(save = False):
     from utilities.Abstract_classes.classes.uniform_random_selector_2 import (
         centered_random_selector as Selector)
     status.mutations=(
-    (1,0,0,0),
+    (1,0,0,0),(1,0,0,0),
+    (4,0,0,0),
     (0,0,1),(0,0,-1)
     (0,0,1,1),(0,0,-1,-1)
     (0,0,2)
