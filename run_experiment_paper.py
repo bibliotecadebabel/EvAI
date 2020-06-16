@@ -35,8 +35,6 @@ def dropout_function(base_p, total_layers, index_layer, isPool=False):
     if index_layer == total_layers - 2:
         value = base_p
 
-    print("conv2d: ", index_layer, " - dropout: ", value)
-
     return value
 
 
