@@ -189,8 +189,8 @@ def run_cifar_user_input_bidi(save = False):
                                 (3, 4, 5))
     """
 
-    status.Center=DNAs.non_lin_20
-    #status.Center = DNAs.DNA_base
+    #status.Center=DNAs.non_lin_20
+    status.Center = DNAs.DNA_base
     status.settings=settings
     program.run(status)
 
