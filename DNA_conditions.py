@@ -138,3 +138,10 @@ def node_con_image(g,node):
     else:
         output = any([node_con_image(g,parent) for parent in node.parents])
         return output
+
+def is_convex(DNA,index):
+    g=Fun.DNA2graph(DNA)
+    node=g.key2node.get(index)
+    output = node.objects[0][1]==max([node.objects[0][2] for node
+        in node.parents])
+    return output

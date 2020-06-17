@@ -35,8 +35,10 @@ def Persistent_synapse_condition_test(x,y):
     print(dire.Persistent_synapse_condition(DNA))
 
 def add_filter(x,y):
-    DNA = DNAs.DNA_ep36
-    DNA=dire.increase_filters(5,DNA)
+    DNA = DNAs.ERROR_ADD_FILTERS
+    print('The old DNA is')
+    print(DNA)
+    print('The new DNA is')
     print(dire.increase_filters(5,DNA))
 
 def compute_num_layers_test(x,y):
@@ -364,7 +366,7 @@ def retract_dendrites_test(x,y):
 #initialize_kernel_test()
 #remove_layer_test_2(11,11)
 #add_pool_layer_test(11,11)
-compute_output_test()
+#compute_output_test()
 #retract_dendrites_test(11,11)
 #spread_dendrites_test_6(32,32)
 #spread_dendrites_test_5(11,11)
@@ -378,7 +380,7 @@ compute_output_test()
 #add_layer_test(11,11)
 #add_layer_test(11,11)
 #add_layer_den_test(11,11)
-#add_filter(11,11)
+add_filter(11,11)
 #retract_h_test()
 #add_pool_layer_test(32,32)
 #fix_fully_conected_test(11,11)
