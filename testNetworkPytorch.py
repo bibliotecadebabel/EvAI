@@ -80,10 +80,6 @@ def getNodeCenter(space):
 
 def Test_Mutacion():
     memoryManager = MemoryManager.MemoryManager()
-    PARENT_DNA =  ((-1, 1, 3, 32, 32), (0, 3, 64, 3, 3), (0, 64, 64, 3, 3), (0, 64, 128, 3, 3, 2), 
-        (0, 128, 128, 3, 3, 2), (0, 256, 256, 3, 3, 2), (0, 256, 256, 3, 3, 2), (0, 256, 256, 3, 3),
-         (0, 512, 128, 16, 16), (1, 128, 10), (2,), (3, -1, 0), (3, 0, 1), (3, 1, 2), (3, 2, 3), (
-             3, 2, 4), (3, 3, 4), (3, 4, 5), (3, 4, 6), (3, 2, 6), (3, 6, 7), (3, 5, 7), (3, 7, 8), (3, 8, 9))
 
     augSettings = AugmentationSettings.AugmentationSettings()
 
@@ -140,40 +136,38 @@ def Test_Convex():
     dataGen = GeneratorFromCIFAR.GeneratorFromCIFAR(2,  128, threads=0, dataAugmentation=True, transforms_mode=transform_compose)
     dataGen.dataConv2d()
 
-    ADN = ((-1, 1, 3, 32, 32), (0, 3, 4, 3, 3), (0, 4, 5, 3, 3, 2), (0, 5, 6, 3, 3, 2), 
-            (0, 6, 7, 3, 3, 2), (0, 7, 8, 16, 16), (1, 8, 10), (2,), (3, -1, 0), (3, 0, 1), (3, 1, 2), 
-            (3, 2, 3),(3, 3, 4), (3, 4, 5),(3, 5, 6), (3, 0, 3))
+    ADN =  ((-1, 1, 3, 32, 32), 
+                (0, 3, 128, 4, 4), (0, 128, 128, 4, 4, 2), (0, 131, 128, 3, 3), 
+                (0, 131, 256, 4, 4, 2), (0, 256, 256, 3, 3), (0, 256, 256, 3, 3, 2), 
+                (0, 512, 256, 3, 3, 2), (0, 256, 512, 2, 2), (0, 512, 256, 3, 3), 
+                (0, 256, 256, 3, 3), (0, 256, 512, 3, 3), (0, 512, 512, 3, 3), 
+                (0, 512, 256, 3, 3), (0, 256, 256, 3, 3), (0, 512, 256, 2, 2), 
+                (0, 512, 256, 3, 3), (0, 512, 512, 3, 3),(0, 768, 128, 16, 16), 
+                (1, 128, 10), (2,), (3, -1, 0), (3, 0, 1), (3, 1, 2), (3, -1, 2), 
+                (3, 2, 3), (3, -1, 3), (3, 3, 4), (3, 4, 5), (3, 3, 6), (3, 5, 6), (3, 6, 7), (3, 7, 8), 
+                (3, 8, 9), (3, 3, 9), (3, 9, 10), (3, 10, 11), (3, 11, 12), (3, 9, 12), (3, 12, 13), (3, 13, 14), 
+                (3, 3, 14), (3, 3, 15), (3, 14, 15), (3, 10, 16), (3, 15, 17), (3, 16, 17), (3, 17, 18), (3, 18, 19))
     
-    MUTATE_DNA =((-1, 1, 3, 32, 32), (0, 3, 4, 3, 3), (0, 4, 5, 3, 3, 2), (0, 5, 6, 3, 3, 2), (0, 6, 7, 3, 3, 2), 
-                (0, 7, 8, 16, 16), (1, 8, 10), (2,), (3, -1, 0), (3, 0, 1), (3, 1, 2), (3, 0, 2), (3, 2, 3), 
-                (3, 0, 3), (3, 3, 4), (3, 4, 5), (3, 5, 6))
+    MUTATE_DNA = ((-1, 1, 3, 32, 32), 
+                    (0, 3, 128, 4, 4), (0, 128, 128, 4, 4, 2), (0, 131, 128, 3, 3), 
+                    (0, 131, 512, 4, 4, 2), (0, 512, 256, 3, 3), (0, 256, 256, 3, 3, 2), 
+                    (0, 768, 256, 3, 3, 2), (0, 256, 512, 2, 2), (0, 512, 256, 3, 3), 
+                    (0, 512, 256, 3, 3), (0, 256, 512, 3, 3), (0, 512, 512, 3, 3), 
+                    (0, 512, 256, 3, 3), (0, 256, 256, 3, 3), (0, 768, 256, 2, 2), 
+                    (0, 768, 256, 3, 3), (0, 512, 512, 3, 3), (0, 768, 128, 16, 16), 
+                    (1, 128, 10), (2,), 
+                    (3, -1, 0), (3, 0, 1), (3, 1, 2), (3, -1, 2), (3, 2, 3), (3, -1, 3), (3, 3, 4), (3, 4, 5), 
+                    (3, 3, 6), (3, 5, 6), (3, 6, 7), (3, 7, 8), (3, 8, 9), (3, 3, 9), (3, 9, 10), (3, 10, 11), 
+                    (3, 11, 12), (3, 9, 12), (3, 12, 13), (3, 13, 14), (3, 3, 14), (3, 3, 15), (3, 14, 15), 
+                    (3, 10, 16), (3, 15, 17), (3, 16, 17), (3, 17, 18), (3, 18, 19))
 
-    #MUTATE_DNA = direction_dna.spread_convex_dendrites(1, ADN)
-
-    print("ORIGINAL DNA: ", ADN)
-    print("MUTATE DNA: ", MUTATE_DNA)
 
     parent_network = nw_dendrites.Network(adn=ADN, cudaFlag=True, momentum=0.9, weight_decay=0, 
-                enable_activation=True, enable_track_stats=True, dropout_value=0, dropout_function=None, version=version)
+                enable_activation=True, enable_track_stats=True, dropout_value=0, dropout_function=None, version=version)   
 
-    parent_network.TrainingCosineLR_Restarts(dataGenerator=dataGen, max_dt=0.001, min_dt=0.001, epochs=1, restart_dt=1, 
-                                        show_accuarcy=True)
-    parent_network.generateEnergy(dataGen)
-    print("Parent ACC: ", parent_network.getAcurracy())   
-
+    print("starting mutation")
     mutate_network = mutation_manager.executeMutation(parent_network, MUTATE_DNA)
-    mutate_network.generateEnergy(dataGen)
-    print("Mutate ACC: ", mutate_network.getAcurracy())  
-    
-    mutate_network.TrainingCosineLR_Restarts(dataGenerator=dataGen, max_dt=0.001, min_dt=0.001, epochs=1, restart_dt=1, 
-                                        show_accuarcy=True) 
-    #print("original network h: ")
-    #print(parent_network.printH())
-    #print("mutate network h: ")
-    #print(mutate_network.printH())
 
-    mutate_network.generateEnergy(dataGen)
-    print("Mutate ACC 2: ", mutate_network.getAcurracy())   
 
 def TestMemoryManager():
     
@@ -276,6 +270,6 @@ def TestMemoryManager():
     
 
 if __name__ == "__main__":
-    Test_Mutacion()
+    #Test_Mutacion()
     #TestMemoryManager()
-    #Test_Convex()
+    Test_Convex()

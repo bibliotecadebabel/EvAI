@@ -473,6 +473,8 @@ class AdjustEntryFilters_Dendrite():
 
         range_add = [startIndex+1, startIndex+value]
 
+        #print("range to add: ", range_add)
+        #print("value: ", value)
         shape = oldFilter.shape
 
         if self.network.cudaFlag == True:
@@ -480,6 +482,8 @@ class AdjustEntryFilters_Dendrite():
         else:
             adjustedFilter = torch.zeros(shape[0], shape[1]+value, shape[2], shape[3])
 
+        #print("adjustfilter: ", adjustedFilter.size())
+        #print("oldfilter: ", oldFilter.size())
         #print("add range=", range_add)
         #print("new filter size=", adjustedFilter.shape) 
 
@@ -490,7 +494,8 @@ class AdjustEntryFilters_Dendrite():
                 if entries_channel >= range_add[0] and entries_channel <= range_add[1]:
                     pass
                 else:
-                    adjustedFilter[exit_channel][entries_channel] = oldFilter[exit_channel][index_accepted].clone()
+                    new_value = oldFilter[exit_channel][index_accepted].clone()
+                    adjustedFilter[exit_channel][entries_channel] = new_value
                     index_accepted += 1
         
         value = self.__normalize(oldFilter=adjustedFilter, oldBias=oldBias, originalShape=shape)

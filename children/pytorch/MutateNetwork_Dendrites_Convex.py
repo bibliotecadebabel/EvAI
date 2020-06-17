@@ -94,7 +94,8 @@ def __defaultMutationProcess(oldNetwork, network, lenghtAdn):
         if oldLayer.getFilter() is not None:
 
             adjustFilterMutation = __getAdjustFilterMutation(indexLayer=i, source_dendrites=source_dendrites,
-                                                                network=oldNetwork, adjustLayer=oldLayer, newFilter=newLayer.getFilter())
+                                                                network=oldNetwork, adjustLayer=oldLayer, newFilter=newLayer.getFilter(),
+                                                                mutationType=mutation_type, newNetwork=network)
 
             oldFilter = oldLayer.getFilter()
             oldBias = oldLayer.getBias()
@@ -171,7 +172,8 @@ def __removeLayerMutationProcess(oldNetwork, network, lengthNewAdn, indexRemoved
         if oldLayer.getFilter() is not None:
 
             adjustFilterMutation = __getAdjustFilterMutation(indexLayer=indexOldLayer, source_dendrites=source_dendrites,
-                                                                network=oldNetwork, adjustLayer=oldLayer, newFilter=newLayer.getFilter())
+                                                                network=oldNetwork, adjustLayer=oldLayer, 
+                                                                newFilter=newLayer.getFilter())
 
             oldFilter = oldLayer.getFilter()
             oldBias = oldLayer.getBias()
@@ -400,14 +402,44 @@ def __getSourceDendritesIndexLayers(indexLayer, source_dendrites, adn):
 
     return index_layers
 
-def __getAdjustFilterMutation(indexLayer, source_dendrites, network, adjustLayer, newFilter):
+def __getAdjustFilterMutation(indexLayer, source_dendrites, network, adjustLayer, newFilter, mutationType=None, newNetwork=None):
 
     index_adn_list = __getSourceDendritesIndexLayers(indexLayer=indexLayer-1, source_dendrites=source_dendrites, adn=network.adn)
     mutation = None
 
     if len(index_adn_list) > 0:
-
+        
+        if mutationType is not None and mutationType == m_type.DEFAULT_ADD_FILTERS:
+            index_adn_list = __verifyConvexDendrites(newNetwork=newNetwork, newFilter=newFilter, index_list=index_adn_list, targetIndex=indexLayer-1)
+        
         mutation = Conv2dMutations.AdjustEntryFilters_Dendrite(adjustLayer=adjustLayer, indexList=index_adn_list,
              targetIndex=source_dendrites[0][1], network=network, newFilter=newFilter)
 
     return mutation
+
+def __verifyConvexDendrites(newNetwork, newFilter, index_list, targetIndex):
+
+    max_filters = 0
+    entries_channel = newFilter.shape[1]
+    total_filters = 0
+    
+    index_target = -1
+
+    index_list_adjusted = index_list
+    for parent_layer_index in index_list:
+
+        parent_layer = newNetwork.adn[parent_layer_index+1]
+
+        total_filters += parent_layer[2]
+
+        if parent_layer[2] >= max_filters:
+            index_target = parent_layer_index
+            max_filters = parent_layer[2]
+
+    if entries_channel != total_filters:
+        index_list_adjusted = [index_target]
+    
+    return index_list_adjusted
+
+        
+
