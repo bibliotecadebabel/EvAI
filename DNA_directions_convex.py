@@ -220,19 +220,19 @@ def increase_filters(num_layer,source_DNA):
         layer=node_t.objects[0]
         if layer[0]==0:
             increase_amount = node_t.objects[0][2]
-            print(f'the increase mountis : {increase_amount}')
+            #print(f'the increase mountis : {increase_amount}')
             node_t.objects[0]=layer_filter(node_t.objects[0],
                 increase_amount)
             for kid in node_t.kids:
                 if DNA_conditions.is_convex(DNA,g.node2key.get(kid)):
-                    print('is convex')
+                    #print('is convex')
                     t_filters=node_t.objects[0][2]
                     if t_filters>kid.objects[0][1]:
                         increase_amount=t_filters-kid.objects[0][1]
                         kid.objects[0]=layer_chanel(kid.objects[0],
                             increase_amount)
                 else:
-                    print('is not convex')
+                    #print('is not convex')
                     kid.objects[0]=layer_chanel(kid.objects[0],
                         increase_amount)
             return graph2DNA(g)

@@ -38,8 +38,8 @@ def run_cifar_user_input_bidi(save = False):
 
     status=program.Status()
 
-    list_conditions={DNA_conditions.max_filter : 513,
-            DNA_conditions.max_filter_dense : 130,
+    list_conditions={DNA_conditions.max_filter : 530,
+            DNA_conditions.max_filter_dense : 530,
             DNA_conditions.max_kernel_dense : 17,
             DNA_conditions.max_layer : 200,
             DNA_conditions.min_filter : 3,
