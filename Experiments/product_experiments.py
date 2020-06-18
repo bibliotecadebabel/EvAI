@@ -47,7 +47,9 @@ def run_cifar_user_input_bidi(save = False):
             DNA_conditions.min_filter : 3,
             DNA_conditions.max_pool_layer : 4,
             DNA_conditions.max_parents : 2,
-            DNA_conditions.no_con_image : 1}
+            DNA_conditions.no_con_image : 1,
+            DNA_conditions.no_last_layer : 1,
+            }
     def condition(DNA):
         return DNA_conditions.dict2condition(DNA,list_conditions)
     """
