@@ -16,7 +16,7 @@ import TestNetwork.ExperimentSettings as ExperimentSettings
 import TestNetwork.AugmentationSettings as AugmentationSettings
 
 import utilities.MemoryManager as MemoryManager
-import test_DNAs
+#import test_DNAs
 import torch
 import gc
 
@@ -253,9 +253,57 @@ def TestMemoryManager():
     memoryManager.saveTempNetwork(network_mutate)
     input("press to continue: after save network")
 
+def Test_param_calculator():
+
+    adn = ((-1, 1, 3, 32, 32), (0, 3, 64, 3, 3), (0, 64, 512, 4, 4, 2),
+                                (0, 512, 128, 3, 3), (0, 64, 64, 3, 3),
+                                (0, 64, 64, 3, 3), (0, 64, 64, 3, 3),
+                                (0, 128, 64, 3, 3), (0, 64, 64, 3, 3),
+                                (0, 64, 64, 5, 5), (0, 512, 64, 2, 2),
+                                (0, 192, 256, 4, 4, 2), (0, 768, 512, 3, 3),
+                                (0, 515, 512, 3, 3), (0, 576, 512, 3, 3, 2),
+                                 (0, 512, 512, 3, 3), (0, 512, 512, 3, 3),
+                                  (0, 512, 512, 3, 3), (0, 512, 512, 3, 3),
+                                   (0, 1024, 512, 5, 5, 2), (0, 1024, 128, 16, 16),
+                                   (1, 128, 10), (2,),
+                                   (3, -1, 0),
+                                   (3, 0, 1), (3, 1, 2),
+                                   (3, 0, 3),
+                                    (3, 3, 4), (3, 4, 5),
+                                    (3, 5, 6), (3, 2, 6),
+                                     (3, 6, 7),
+                                     (3, 7, 8), (3, -1, 8),
+                                      (3, 8, 9), (3, 1, 9),
+                                      (3, 2, 10), (3, 9, 10),
+                                      (3, 10, 11), (3, 1, 11),
+                                       (3, 11, 12), (3, -1, 12),
+                                        (3, 12, 13), (3, 0, 13),
+                                         (3, 12, 14),
+                                          (3, 14, 15),
+                                          (3, 15, 16),
+                                          (3, 16, 17), (3, 12, 17),
+                                           (3, 17, 18), (3, 13, 18),
+                                           (3, 11, 19), (3, 18, 19),
+                                           (3, 19, 20), (3, 20, 21))
     
+    total_params = 0
+    for layer in adn:
+
+        layer_type = layer[0]
+
+        if layer_type == 0 or layer_type == 1:
+
+            print("Layer type: ", layer_type)
+            param_per_layer = 1
+            for param in layer[1:]:
+                param_per_layer *= param
+            print("Layer params: ", param_per_layer)
+            total_params += param_per_layer
+
+    print("total params: ", total_params)  
 
 if __name__ == "__main__":
     #Test_Mutacion()
     #TestMemoryManager()
-    Test_Convex()
+    #Test_Convex()
+    Test_param_calculator()
