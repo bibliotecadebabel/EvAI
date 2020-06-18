@@ -14,6 +14,7 @@ class Alaising():
         self.max_time=max_time
         self.time=time
         self.type='default'
+        self.reset_count = 0
     def get_increments(self,size):
         m=self.min
         M=self.max
@@ -29,9 +30,16 @@ class Alaising():
 
     def update(self,delta=1):
         self.time+=delta
-        print(f'The current time is : {self.time}')
+        print(f'The current time is : {self.time} with reset count : {self.reset_count}')
         if self.time>self.max_time:
             self.time=0
+            self.reset_count += 1
+
+    def computeTime(self):
+
+        value = self.time + (self.max_time * self.reset_count)
+
+        return value
 
     def restart(self):
         self.time+=0

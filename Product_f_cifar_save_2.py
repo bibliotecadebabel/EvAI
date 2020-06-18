@@ -268,7 +268,7 @@ def run(status):
     e =  50000 / status.S
     e = math.ceil(e)
     print("minibatches per epoch = ", e)
-    dt_array=status.Alai.get_increments(e*20)
+    dt_array=status.Alai.get_increments(20*e)
 
     network.iterTraining(dataGenerator=status.Data_gen,
                     dt_array=dt_array, ricap=settings.ricap, evalLoss=settings.evalLoss)
@@ -288,6 +288,8 @@ def run(status):
         transfer=status.Transfer.status_transfer
         k=k+1
         pass
+    L_1 = 0
+    L_2 = 0
     while k<status.max_iter:
         #\begin{with gui}
         #status.Transfer.readLoad()
@@ -315,11 +317,15 @@ def run(status):
 
             if status.save2database == True:
 
-                if k % status.save_space_period == status.save_space_period - 1:
+                if status.Alai.computeTime() >= L_1*status.save_space_period:
+                    print("saving space: ", L_1)
+                    L_1 += 1
                     dna_graph = status.Dynamics.phase_space.DNA_graph
                     testResultDao.insert(idTest=test_id, iteration=k+1, dna_graph=dna_graph)
 
-                if k % status.save_net_period == status.save_net_period - 1:
+                if status.Alai.computeTime() >= L_2*status.save_net_period:
+                    print("saving model: ", L_2)
+                    L_2 += 1
                     saveModel(status, k+1, testModelDao, test_id)
             #status.print_particles()
             #status.print_particles()
