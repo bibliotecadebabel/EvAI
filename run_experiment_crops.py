@@ -144,7 +144,7 @@ if __name__ == '__main__':
     settings.epochs = int(input("Enter amount of epochs: "))
 
     # INITIAL DT PARAMETERS
-    num_actions=5
+    num_actions=1
 
     init_factor = 20
     max_init_iter = 1
@@ -163,8 +163,8 @@ if __name__ == '__main__':
     # BEST DT PARAMETERS
     BEST_ITER = 10*e
     #settings.best_dt_array = Alaising(2,6,e)
-    best_dt_max = float(input("max dt (best): "))
-    settings.best_dt_array = Alaising(best_dt_max,7,BEST_ITER)
+    #best_dt_max = float(input("max dt (best): "))
+    settings.best_dt_array = Alaising(1.2,7,BEST_ITER)
     settings.max_best_iter = int(input("max best iter: "))
 
 
@@ -187,8 +187,8 @@ if __name__ == '__main__':
 
     list_conditions={DNA_conditions.max_filter : 530,
             DNA_conditions.max_filter_dense : 530,
-            DNA_conditions.max_kernel_dense : 1,
-            DNA_conditions.max_layer : 30,
+            DNA_conditions.max_kernel_dense : 60,
+            DNA_conditions.max_layer : 60,
             DNA_conditions.min_filter : 0,
             DNA_conditions.max_parents : 2}
 
@@ -271,7 +271,20 @@ if __name__ == '__main__':
                                              (3, 28, 29), (3, 23, 29), (3, 27, 29), (3, 29, 30), (3, 30, 31))
 
     """
-    settings.initial_dna =   DNAs.DNA_ep25
+    settings.initial_dna = ((-1, 1, 3, 32, 32), (0, 3, 64, 4, 4), (0, 64, 512, 5, 5, 2), (0, 512, 128, 3, 3), 
+                            (0, 64, 64, 3, 3), (0, 64, 64, 2, 2), (0, 64, 256, 3, 3), (0, 256, 64, 3, 3), 
+                            (0, 128, 64, 3, 3), (0, 64, 64, 3, 3), (0, 64, 64, 5, 5), (0, 512, 512, 3, 3), 
+                            (0, 512, 64, 2, 2), (0, 192, 256, 4, 4, 2), (0, 768, 512, 3, 3), (0, 515, 512, 3, 3), 
+                            (0, 576, 512, 2, 2, 2), (0, 512, 512, 2, 2), (0, 512, 512, 3, 3), (0, 576, 512, 3, 3), 
+                            (0, 512, 512, 3, 3), (0, 512, 512, 3, 3), (0, 576, 512, 3, 3), (0, 512, 512, 3, 3), 
+                            (0, 512, 512, 3, 3), (0, 1024, 512, 5, 5, 2), (0, 1024, 256, 16, 16), (1, 256, 10), (2,), 
+                            (3, -1, 0), (3, 0, 1), (3, 1, 2), (3, 0, 3), (3, 3, 4), (3, 4, 5), (3, 5, 6), (3, 6, 7), 
+                            (3, 2, 7), (3, 7, 8), (3, 8, 9), (3, -1, 9), (3, 1, 10), (3, 9, 11), (3, 10, 11), (3, 2, 12), 
+                            (3, 11, 12), (3, 12, 13), (3, 1, 13), (3, 13, 14), (3, -1, 14), (3, 14, 15), (3, 0, 15), 
+                            (3, 14, 16), (3, 16, 17), (3, 17, 18), (3, 6, 18), (3, 18, 19), (3, 12, 19), (3, 19, 20), 
+                            (3, 20, 21), (3, 8, 21), (3, 21, 22), (3, 22, 23), (3, 14, 23), (3, 23, 24), (3, 15, 24), 
+                            (3, 13, 25), (3, 24, 25), (3, 25, 26), (3, 26, 27))
+
     settings.ricap = Augmentation_Utils.Ricap(beta=0.3)
 
     """
