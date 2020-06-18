@@ -12,6 +12,7 @@ import numpy as np
 import test_DNAs as DNAs
 import utilities.Augmentation as Augmentation
 import TestNetwork.AugmentationSettings as AugmentationSettings
+import math
 ###### EXPERIMENT SETTINGS ######
 
 """
@@ -23,7 +24,7 @@ def dropout_function(base_p, total_conv2d, index_conv2d, isPool=False):
     #print("conv2d: ", index_conv2d, " - dropout: ", value)
     return value
 """
-
+'''
 def dropout_function(base_p, total_conv2d, index_conv2d, isPool=False):
     if index_conv2d==0:
         return 0
@@ -32,7 +33,19 @@ def dropout_function(base_p, total_conv2d, index_conv2d, isPool=False):
         value = base_p / (total_conv2d - index_conv2d)+base_p/2
     #print("conv2d: ", index_conv2d, " - dropout: ", value)
     return value
+'''
+def dropout_function(base_p, total_layers, index_layer, isPool=False):
 
+    value = 0
+    if index_layer != 0 and isPool == False:
+        value = base_p
+
+    if index_layer == total_layers - 2:
+        value = base_p
+
+    print("conv2d: ", index_layer, " - dropout: ", value)
+
+    return value
 
 """
 def dropout_function(base_p, total_conv2d, index_conv2d):
@@ -124,6 +137,10 @@ if __name__ == '__main__':
     # BATCH SIZE
     settings.batch_size = int(input("Enter batchsize: "))
 
+    e =  50000 / settings.batch_size
+    e = math.ceil(e)
+    print("e = ", e)
+
     # DATA SOURCE ('default' -> Pikachu, 'cifar' -> CIFAR)
     DATA_SOURCE = 'cifar'
 
@@ -146,13 +163,11 @@ if __name__ == '__main__':
 
     # INITIAL DT PARAMETERS
     num_actions=8
-
-    e=800
     settings.save_txt = True
-    settings.max_init_iter = 320
+    settings.max_init_iter = 360
     INIT_ITER = 10*e
     #settings.init_dt_array = exp_alai(.5,INIT_ITER,1,5)
-    settings.init_dt_array =  Alaising(1.2,99,INIT_ITER)
+    settings.init_dt_array =  Alaising(1.2,7,INIT_ITER)
 
 
     # JOINED DT PARAMETERS
@@ -168,11 +183,12 @@ if __name__ == '__main__':
     settings.max_best_iter = 1
 
     # dropout parameter
-    settings.dropout_value = float(input("dropout value: "))
+    #settings.dropout_value = float(input("dropout value: "))
+    settings.dropout_value = 0.05
 
     # weight_decay parameter
-    settings.weight_decay = float(input('weight_decay: '))
-
+    #settings.weight_decay = float(input('weight_decay: '))
+    settings.weight_decay = 0.0005
     # momentum parameter
     settings.momentum = 0.9
 
