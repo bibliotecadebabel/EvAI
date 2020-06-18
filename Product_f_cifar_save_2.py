@@ -11,7 +11,6 @@ import Transfer.Transfer as tran
 import children.Data_generator as dgen
 import children.Interfaces as Inter
 import children.Operations as Op
-import children.net2.Network as nw
 from DAO import GeneratorFromCIFAR
 from DNA_Graph import DNA_Graph
 from DNA_Phase_space_f_disk import DNA_Phase_space
@@ -19,7 +18,7 @@ from Dynamic_DNA_f import Dynamic_DNA
 from utilities.Abstract_classes.classes.torch_stream_disk import TorchStream
 from utilities.Abstract_classes.classes.positive_random_selector import(
     centered_random_selector as Selector)
-import children.pytorch.Network as nw
+import children.pytorch.NetworkDendrites as nw
 from DNA_conditions import max_layer,max_filter
 from DNA_creators import Creator_from_selection as Creator
 from Dyamic_DNA_f_methods import update_from_select_09  as space_updater
@@ -185,7 +184,7 @@ def create_objects(status):
             max_time=status.restart_period)
     status.Data_gen=GeneratorFromCIFAR.GeneratorFromCIFAR(
     status.Comp, status.S, cuda=status.cuda, threads=status.threads,
-        dataAugmentation=settings.enable_augmentation)
+        dataAugmentation=settings.enable_augmentation, transforms_mode=settings.transformations_compose)
     status.Data_gen.dataConv2d()
     dataGen=status.Data_gen
     x = dataGen.size[1]
@@ -251,6 +250,33 @@ def run(status):
     testResultDao = TestResultDAO.TestResultDAO()
     testModelDao = TestModelDAO.TestModelDAO()
     print("cuda=", status.cuda)
+
+    settings = status.settings
+    network = nw.Network(status.Center,cudaFlag=settings.cuda,
+             momentum=settings.momentum,
+             weight_decay=settings.weight_decay,
+             enable_activation=settings.enable_activation,
+             enable_track_stats=settings.enable_track_stats,
+             dropout_value=settings.dropout_value,
+             dropout_function=settings.dropout_function,
+             enable_last_activation=settings.enable_last_activation,
+             version=settings.version, eps_batchnorm=settings.eps_batchorm
+             )
+    
+    print("starting pre-training")
+
+    e =  50000 / status.S
+    e = math.ceil(e)
+    print("minibatches per epoch = ", e)
+    dt_array=status.Alai.get_increments(e*20)
+
+    network.iterTraining(dataGenerator=status.Data_gen,
+                    dt_array=dt_array, ricap=settings.ricap, evalLoss=settings.evalLoss)
+
+    status.stream.add_node(network.adn)
+    status.stream.link_node(network.adn,network)
+    
+
     if status.save2database == True:
         test_id = testDao.insert(testName=status.experiment_name, periodSave=status.save_space_period, dt=status.dt_Max,
                                           total=status.max_iter, periodCenter=1)

@@ -134,7 +134,7 @@ class DNA_Phase_space():
             p.particles.append(par)
             p.num_particles+=1
             k=k+1
-        self.add_net(key)
+        #self.add_net(key)
         self.support.append(node)
 
     def update_density(self):

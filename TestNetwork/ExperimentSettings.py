@@ -45,3 +45,5 @@ class ExperimentSettings():
         self.disable_mutation = False
         self.eps_batchorm = None
         self.ricap = None
+        self.evalLoss = False
+        self.transformations_compose = None

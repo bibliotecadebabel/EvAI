@@ -47,7 +47,8 @@ class Network(nn.Module, na.NetworkAbstract):
 
         self.createStructure()
         self.__currentEpoch = 0
-        self.optimizer = optim.SGD(self.parameters(), lr=0.1, momentum=self.momentum, weight_decay=self.weight_decay)  
+        self.optimizer = optim.SGD(self.parameters(), lr=0.1, momentum=self.momentum, weight_decay=self.weight_decay)
+        self.eval_iter = None  
           
     def __defaultDropoutFunction(self, base_p, total_layers, index_layer, isPool=False):
 
@@ -219,7 +220,6 @@ class Network(nn.Module, na.NetworkAbstract):
         self.total_value = self.__getLossLayer().value.item()
         self.__accumulated_loss += self.total_value
 
-        self.history_loss.append(self.total_value)
     
     def __doTrainingRICAP(self, inputs, labels_data, ricap : Augmentation.Ricap):
 
@@ -235,8 +235,6 @@ class Network(nn.Module, na.NetworkAbstract):
 
         self.total_value = self.__getLossLayer().value.item()
         self.__accumulated_loss += self.total_value
-
-        self.history_loss.append(self.total_value)
 
     def TrainingALaising(self, dataGenerator, epochs, alaising_object, period_show_accuracy):
         epoch = 0
@@ -366,15 +364,20 @@ class Network(nn.Module, na.NetworkAbstract):
 
             print("epoch time: ", (end_time - start_time))
 
-    def iterTraining(self, dataGenerator, dt_array, ricap=None):
+    def iterTraining(self, dataGenerator, dt_array, ricap=None, evalLoss=False):
 
         iters = len(dt_array)
 
         print_every = iters // 4
         start = time.time()
         data_iter = iter(dataGenerator._trainoader)
+
+        if evalLoss == True:
+            self.eval_iter = iter(dataGenerator._evalloader)
         
-        for i in range(iters):
+        i = 0
+
+        while i < iters:
             
             try:
                 
@@ -394,7 +397,12 @@ class Network(nn.Module, na.NetworkAbstract):
                     self.__doTrainingRICAP(inputs=inputs, labels_data=labels_data, ricap=ricap)
 
                 self.__currentEpoch = i
-
+                
+                if evalLoss == False:
+                    self.history_loss.append(self.total_value)
+                else:
+                    self.__generateEvalLoss(dataGenerator)
+                    
                 if print_every > 0:
 
                     if i % print_every == print_every - 1:
@@ -402,9 +410,45 @@ class Network(nn.Module, na.NetworkAbstract):
                         end_time = time.time() - start
                         self.__printValues(epoch=1, i=i, avg=print_every, end_time=end_time)
                         start = time.time()
+                i+= 1
 
             except StopIteration:
                 data_iter = iter(dataGenerator._trainoader)
+
+    def __generateEvalLoss(self, dataGenerator):
+
+        with torch.no_grad():
+            stop = False
+
+            eval_data = None
+
+            while stop == False:
+
+                try:
+                    eval_data = next(self.eval_iter)
+                    stop = True
+                except StopIteration:
+                    self.eval_iter =  iter(dataGenerator._evalloader)
+                
+            model = self.eval()
+
+            if self.cudaFlag == True:
+                inputs, labels = eval_data[0].cuda(), eval_data[1].cuda()
+            else:
+                inputs, labels = eval_data[0], eval_data[1]
+            
+            if len(inputs.size()) > 4:
+                self.__getLossLayer().setCrops(inputs.shape[1])
+                inputs = inputs.view(-1, inputs.shape[2], inputs.shape[3], inputs.shape[4])
+
+            self.__getLossLayer().setEnableRicap(False)
+
+            model.assignLabels(labels)
+            model.nodes[0].objects[0].value = inputs 
+            model(model.nodes[0].objects[0].value)
+            eval_loss = model.__getLossLayer().value.item()
+            self.history_loss.append(eval_loss)
+            self.train()
 
     def getLRCosine(self, total_steps, base_dt, etamin):
 
@@ -456,7 +500,7 @@ class Network(nn.Module, na.NetworkAbstract):
                     inputs, labels_data = dataGenerator.data[0], dataGenerator.data[1]
 
                 self.__doTraining(inputs=inputs, labels_data=labels_data)
-
+                self.history_loss.append(self.total_value)
                 self.__currentEpoch = i
 
                 dataGenerator.update()
@@ -485,7 +529,7 @@ class Network(nn.Module, na.NetworkAbstract):
                 inputs, labels_data = data[0], data[1]
 
             self.__doTraining(inputs=inputs, labels_data=labels_data)
-
+            self.history_loss.append(self.total_value)
             self.__currentEpoch = i
             i += 1
 
@@ -507,7 +551,7 @@ class Network(nn.Module, na.NetworkAbstract):
                         inputs, labels_data = data[0], data[1]
 
                     self.__doTraining(inputs=inputs, labels_data=labels_data)
-
+                    self.history_loss.append(self.total_value)
                 self.__currentEpoch = epoch
                 epoch += 1
 
@@ -527,7 +571,7 @@ class Network(nn.Module, na.NetworkAbstract):
                         inputs, labels_data = data[0], data[1]
 
                     self.__doTraining(inputs=inputs, labels_data=labels_data)
-
+                    self.history_loss.append(self.total_value)
                     i += 1
                 self.__currentEpoch = epoch
                 epoch += 1

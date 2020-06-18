@@ -136,14 +136,16 @@ def Test_Convex():
     dataGen = GeneratorFromCIFAR.GeneratorFromCIFAR(2,  128, threads=0, dataAugmentation=True, transforms_mode=transform_compose)
     dataGen.dataConv2d()
 
-    ADN = ((-1, 1, 3, 32, 32),  (0, 3, 64, 3, 3), (0, 64, 64, 3, 3), (0, 64, 64, 3, 3), 
-                                (0, 64, 64, 3, 3), (0, 64, 256, 3, 3, 2), (0, 64, 64, 3, 3),
-                                (0, 256, 128, 3, 3, 2), (0, 384, 256, 3, 3, 2), (0, 256, 128, 8, 8), 
-                                (1, 128, 10), (2,), (3, -1, 0), (3, 0, 1), (3, 1, 2), (3, 2, 3), (3, 3, 4), 
-                                (3, 0, 5), (3, 4, 6), (3, 5, 6), (3, 4, 7), (3, 6, 7), (3, 7, 8), (3, 8, 9), (3, 9, 10))
-
-    MUTATE_DNA = direction_dna.increase_filters(5, ADN)
-
+    ADN = ((-1, 1, 3, 32, 32), (0, 3, 64, 3, 3),(0, 64, 128, 3, 3, 2), (0, 128, 256, 3, 3, 2),
+                            (0, 256, 128, 8, 8),
+                            (1, 128, 10),
+                            (2,),
+                            (3, -1, 0),
+                            (3, 0, 1),
+                            (3, 1, 2),
+                            (3, 2, 3),
+                            (3, 3, 4),
+                            (3, 4, 5))
 
 
     parent_network = nw_dendrites.Network(adn=ADN, cudaFlag=True, momentum=0.9, weight_decay=0, 

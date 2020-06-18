@@ -93,7 +93,7 @@ class TorchStream(Stream):
                     if self.status.cuda:
                         torch.cuda.empty_cache()
                 net.iterTraining(dataGenerator=self.dataGen,
-                    dt_array=Alai.get_increments(self.log_size))
+                    dt_array=Alai.get_increments(self.log_size), ricap=self.settings.ricap, evalLoss=self.settings.evalLoss)
             log.charge(net.history_loss)
             net.history_loss=[]
         elif log.signal and (len(log.log) < self.min_size+2):
@@ -114,7 +114,7 @@ class TorchStream(Stream):
                     if self.status.cuda:
                         torch.cuda.empty_cache()
                 net.iterTraining(dataGenerator=self.dataGen,
-                    dt_array=dt)
+                    dt_array=dt, ricap=self.settings.ricap, evalLoss=self.settings.evalLoss)
 #            net.Training(data=self.dataGen,
 #                p=self.log_size-5,
 #                dt=self.dt,full_database=True)

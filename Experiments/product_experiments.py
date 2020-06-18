@@ -29,6 +29,8 @@ import DNA_conditions
 from utilities.Abstract_classes.classes.Alaising_cosine import (
     Alaising as Alai)
 import TestNetwork.ExperimentSettings as ExperimentSettings
+import TestNetwork.AugmentationSettings as AugmentationSettings
+import utilities.Augmentation as Augmentation_Utils
 import const.versions as directions_version
 import test_DNAs as DNAs
 
@@ -165,7 +167,20 @@ def run_cifar_user_input_bidi(save = False):
     status.S=int(input("Batch size : "))
     status.cuda=bool(input("Any input for cuda : "))
 
+    settings.evalLoss = bool(input("Any input to activate Eval Loss : "))
+    augSettings = AugmentationSettings.AugmentationSettings()
+    dict_transformations = {
+        augSettings.baseline_customRandomCrop : True,
+        augSettings.randomHorizontalFlip : True,
+        augSettings.randomErase_1 : True
+    }
+
+    transform_compose = augSettings.generateTransformCompose(dict_transformations, False)
+    settings.transformations_compose = transform_compose
+    settings.ricap = Augmentation_Utils.Ricap(beta=0.3)
+
     settings.cuda = status.cuda
+    
 
 
     status.mutation_coefficient=float(input("mutation_coefficient : "))
