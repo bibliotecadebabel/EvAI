@@ -27,6 +27,7 @@ class GeneratorFromCIFAR(Generator):
         else:
             print("using transform parameter")
             self.train_transform = transforms_mode
+            print(self.train_transform)
 
         self.test_transform = transforms.Compose([
             transforms.ToTensor(), 
@@ -43,9 +44,11 @@ class GeneratorFromCIFAR(Generator):
         self.batchSize = batchSize
         self.trainset = torchvision.datasets.CIFAR10(root='./cifar', train=True, download=True, transform=self.train_transform)
         self.testSet = torchvision.datasets.CIFAR10(root='./cifar', train=False, download=False, transform=self.test_transform)
+        self.evalSet = torchvision.datasets.CIFAR10(root='./cifar', train=False, download=False, transform=self.test_transform)
         print("threads = ", threads)
         self._trainoader = torch.utils.data.DataLoader(self.trainset, batch_size=self.batchSize, shuffle=True, num_workers=threads)
         self._testloader = torch.utils.data.DataLoader(self.testSet, batch_size=32, shuffle=False, num_workers=threads)
+        self._evalloader = torch.utils.data.DataLoader(self.evalSet, batch_size=32, shuffle=True, num_workers=threads)
         self.type = datagen_type.DATABASE_IMAGES
         self.total_steps = len(self._trainoader)
 
