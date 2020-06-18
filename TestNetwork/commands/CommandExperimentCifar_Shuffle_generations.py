@@ -183,8 +183,9 @@ class CommandExperimentCifar_Restarts():
             network.generateEnergy(self.__settings.dataGen)
             best_accuracy = network.getAcurracy()
             print("initial accuracy= ", best_accuracy)
-
+            
             for i in range(max_iter):
+                torch.cuda.empty_cache()
                 print("iteration: ", i+1)
                 network.iterTraining(self.__settings.dataGen, dt_array, self.__settings.ricap)
                 #network.Training(data=self.__settings.dataGen, dt=dt_array, p=len(dt_array), full_database=True)
