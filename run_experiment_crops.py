@@ -10,7 +10,7 @@ import TestNetwork.ExperimentSettings as ExperimentSettings
 import TestNetwork.AugmentationSettings as AugmentationSettings
 import const.versions as directions_version
 import numpy as np
-import test_DNAs as DNAs
+#import test_DNAs as DNAs
 import utilities.Augmentation as Augmentation_Utils
 import math
 ###### EXPERIMENT SETTINGS ######
