@@ -99,6 +99,7 @@ class Status():
         x=32
         y=32
         self.Center=None
+        self.iterations_per_epoch = 0
 
 
 
@@ -265,10 +266,8 @@ def run(status):
     
     print("starting pre-training")
 
-    e =  50000 / status.S
-    e = math.ceil(e)
-    print("minibatches per epoch = ", e)
-    dt_array=status.Alai.get_increments(20*e)
+    print("iterations per epoch = ", status.iterations_per_epoch)
+    dt_array=status.Alai.get_increments(20*status.iterations_per_epoch)
 
     network.iterTraining(dataGenerator=status.Data_gen,
                     dt_array=dt_array, ricap=settings.ricap, evalLoss=settings.evalLoss)
