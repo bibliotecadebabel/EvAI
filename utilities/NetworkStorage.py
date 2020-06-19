@@ -45,10 +45,15 @@ def loadNetwork(fileName, settings : TestNetwork.ExperimentSettings.ExperimentSe
         version = checkpoint['version']
     else:
         version = settings.version
+    
+    if settings.eps_batchorm == None:
+        eps_batchnorm = checkpoint['eps_batchnorm']
+    else:
+        eps_batchnorm = settings.eps_batchorm
 
     network = nw.Network(adn=checkpoint['adn'], cudaFlag=settings.cuda, momentum=momentum, weight_decay=weight_decay, 
                 enable_activation=enable_activation, enable_last_activation=enable_last_activation, dropout_value=dropout_value,
-                dropout_function=settings.dropout_function, enable_track_stats=enable_track_stats, version=version, eps_batchnorm=settings.eps_batchorm)
+                dropout_function=settings.dropout_function, enable_track_stats=enable_track_stats, version=version, eps_batchnorm=eps_batchnorm)
     
     network.loadParameters(checkpoint=checkpoint)
     return network

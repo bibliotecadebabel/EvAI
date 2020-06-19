@@ -1,17 +1,21 @@
 from TestNetwork.commands import CommandCreateDataGen
 from TestNetwork.commands import  CommandExperimentCifar_Shuffle_generations as CommandExperimentCifar_Restarts
-from DNA_conditions import max_layer,max_filter,max_filter_dense
 import DNA_conditions
-from DNA_creators import Creator
 from DNA_Graph import DNA_Graph
-from DNA_creators import Creator_from_selection as Creator_s
-from utilities.Abstract_classes.classes.uniform_random_selector import centered_random_selector as random_selector
 import TestNetwork.ExperimentSettings as ExperimentSettings
 import TestNetwork.AugmentationSettings as AugmentationSettings
 import const.versions as directions_version
 import numpy as np
 import test_DNAs as DNAs
+
+from utilities.Abstract_classes.classes.uniform_random_selector_2 import(
+    centered_random_selector as Selector_creator)
+from DNA_conditions import max_layer,max_filter,max_filter_dense
+from DNA_creators import Creator_from_selection_nm as Creator_nm
+import utilities.Augmentation as Augmentation_Utils
 import utilities.NetworkStorage as NetworkStorage
+import math
+import os
 
 ###### EXPERIMENT SETTINGS ######
 """
@@ -20,12 +24,21 @@ def dropout_function(base_p, total_conv2d, index_conv2d):
     value = base_p / (total_conv2d - index_conv2d)+base_p/2
     #print("conv2d: ", index_conv2d, " - dropout: ", value)
     return value
+
+
 """
 
-def dropout_function(base_p, total_conv2d, index_conv2d):
-    value = 3/5*base_p +(base_p-3/5*base_p)*1/ (total_conv2d - index_conv2d)
-    print("conv2d: ", index_conv2d, " - dropout: ", value)
+def dropout_function(base_p, total_layers, index_layer, isPool=False):
+
+    value = 0
+    if index_layer != 0 and isPool == False:
+        value = base_p
+
+    if index_layer == total_layers - 2:
+        value = base_p
+
     return value
+
 
 def pcos(x):
     if x>np.pi:
@@ -42,38 +55,42 @@ def exp_alai(r,I,t_M,t_m):
     return [ 10 ** (-t_M-((t_m-t_M)*(k  %  int(I*r) )/I*r)) for k in range(I)]
 
 def DNA_Creator_s(x,y, dna, version):
+
     def condition(DNA):
         return DNA_conditions.dict2condition(DNA,list_conditions)
 
-    selector = None
-    selector=random_selector(condition=condition,
-        directions=version, num_actions=num_actions,
-        mutations=(
-        (4,0,0,0),
-        (1,0,0,0),
-        (0,0,1),
-        ))
-    selector.update(dna)
-    actions=selector.get_predicted_actions()
-    #actions = ((0, (0,1,0,0)), (1, (0,1,0,0)), (0, (1,0,0,0)))
-    space=DNA_Graph(dna,1,(x,y),condition,actions
-        ,version,Creator_s)
-
-    return [space, selector]
+    center=dna
+    mutations=((4,0,0,0),(1,0,0,0),(0,0,1),(0,0,2),(0,1,0,0))
+    sel=Selector_creator(condition=condition,
+        directions=version,mutations=mutations,num_actions=num_actions)
+    print('The selector is')
+    print(sel)
+    sel.update(center)
+    actions=sel.get_predicted_actions()
+    creator=Creator_nm
+    space=DNA_Graph(center,1,(x,y),condition,actions,version,creator=creator,num_morphisms=5,selector=sel)
+    
+    return [space, sel]
 
 if __name__ == '__main__':
 
     settings = ExperimentSettings.ExperimentSettings()
-    augmentation_settings = AugmentationSettings.AugmentationSettings()
 
-    # MODEL NAME
-    model_name = "test_red_storage_1"
+    augSettings = AugmentationSettings.AugmentationSettings()
+
+    dict_transformations = {
+        augSettings.baseline_customRandomCrop : True,
+        augSettings.randomHorizontalFlip : True,
+        augSettings.randomErase_1 : True
+    }
+
+    transform_compose = augSettings.generateTransformCompose(dict_transformations, False)
     
+
+    # DIRECTIONS VERSION
+    settings.version = directions_version.CONVEX_VERSION
     # NUM OF THREADS
     THREADS = int(input("Enter threads: "))
-
-    # BATCH SIZE
-    settings.batch_size = int(input("Enter batchsize: "))
 
     # DATA SOURCE ('default' -> Pikachu, 'cifar' -> CIFAR)
     DATA_SOURCE = 'cifar'
@@ -93,27 +110,32 @@ if __name__ == '__main__':
     # EPOCHS
     settings.epochs = int(input("Enter amount of epochs: "))
 
-    # INITIAL DT PARAMETERS
-    num_actions=5
+    num_actions=8
 
-    e=10
-    settings.max_init_iter = 40
+    settings.batch_size = int(input("Enter batchsize: "))
+    e =  50000 / settings.batch_size
+    e = math.ceil(e)
+    print("e = ", e)
+
+    # INITIAL DT PARAMETERS
+    max_init_iter = 1
+    settings.max_init_iter = max_init_iter
     INIT_ITER = 20*e
     #settings.init_dt_array = exp_alai(.5,INIT_ITER,1,5)
-    settings.init_dt_array =  Alaising(1,5,INIT_ITER)
+    settings.init_dt_array =  Alaising(1,7,INIT_ITER)
 
 
     # JOINED DT PARAMETERS
-    JOINED_ITER = 4*e
+    JOINED_ITER = 17*e
     #settings.joined_dt_array = Alaising(2,6,e)
-    settings.joined_dt_array = Alaising(1.2,5,JOINED_ITER)
+    settings.joined_dt_array = Alaising(1.2,7,JOINED_ITER)
     settings.max_joined_iter = 1
 
     # BEST DT PARAMETERS
-    BEST_ITER = 7*e
+    BEST_ITER = 10*e
     #settings.best_dt_array = Alaising(2,6,e)
-    settings.best_dt_array = Alaising(1.2,5,BEST_ITER)
-    settings.max_best_iter = 1
+    settings.best_dt_array = Alaising(1.2,7,BEST_ITER)
+    settings.max_best_iter = 360
 
     # dropout parameter
     settings.dropout_value = float(input("dropout value: "))
@@ -124,35 +146,24 @@ if __name__ == '__main__':
     # momentum parameter
     settings.momentum = 0.9
 
-    # MAX LAYER MUTATION (CONDITION)
-    MAX_LAYERS = 30
-
-    # MAX FILTERS MUTATION (CONDITION)
-    MAX_FILTERS = 130
-
-    MAX_FILTERS_DENSE = 130
-
-    list_conditions={DNA_conditions.max_filter : 520,
-            DNA_conditions.max_filter_dense : 520,
-            DNA_conditions.max_kernel_dense : 9,
-            DNA_conditions.max_layer : 30,
+    # INITIAL DNA
+    settings.initial_dna =  ((-1, 1, 3, 32, 32), (0, 3, 64, 3, 3),(0, 64, 128, 3, 3, 2), (0, 128, 256, 3, 3, 2),
+                            (0, 256, 128, 8, 8),
+                            (1, 128, 10),
+                            (2,),
+                            (3, -1, 0),
+                            (3, 0, 1),
+                            (3, 1, 2),
+                            (3, 2, 3),
+                            (3, 3, 4),
+                            (3, 4, 5))
+                            
+    list_conditions={DNA_conditions.max_filter : 530,
+            DNA_conditions.max_filter_dense : 130,
+            DNA_conditions.max_kernel_dense : 17,
+            DNA_conditions.max_layer : 60,
             DNA_conditions.min_filter : 0,
             DNA_conditions.max_parents : 2}
-    
-    '''
-    transform_list = { 
-        ## NEW 
-        augmentation_settings.contrast : False,
-        augmentation_settings.zoomout : False,
-        
-        ## DEFAULT
-        augmentation_settings.randomAffine : False,
-        augmentation_settings.randomHorizontalFlip : False       
-    }
-    '''
-
-    # ENABLE OR DISABLE FIVE CROP.
-    ENABLE_FIVE_CROP = True
 
     # TEST_NAME, the name of the experiment (unique)
     settings.test_name = input("Enter TestName: ")
@@ -195,24 +206,28 @@ if __name__ == '__main__':
         value = True
     settings.enable_track_stats = value
 
-
-    #TRANSFORM_COMPOSE = augmentation_settings.generateTransformCompose(transform_list, ENABLE_FIVE_CROP)
-    TRANSFORM_COMPOSE = None
-    settings.loadedNetwork = NetworkStorage.loadNetwork(fileName=model_name, settings=settings)
-    
-    settings.version = settings.loadedNetwork.version
+    # DROPOUT FUNCTION
     settings.dropout_function = dropout_function
+    settings.ricap = Augmentation_Utils.Ricap(beta=0.3)
 
     dataCreator = CommandCreateDataGen.CommandCreateDataGen(cuda=settings.cuda)
-    dataCreator.execute(compression=2, batchSize=settings.batch_size, source=DATA_SOURCE, threads=THREADS, 
-                            dataAugmentation=ENABLE_AUGMENTATION, transformCompose=TRANSFORM_COMPOSE)
+    dataCreator.execute(compression=2, batchSize=settings.batch_size, source=DATA_SOURCE, threads=THREADS, dataAugmentation=ENABLE_AUGMENTATION, transformCompose=transform_compose)
     dataGen = dataCreator.returnParam()
 
-    space, selector = DNA_Creator_s(dataGen.size[1], dataGen.size[2], dna=settings.loadedNetwork.adn, version=settings.version)
+    space, selector = DNA_Creator_s(dataGen.size[1], dataGen.size[2], dna=settings.initial_dna, version=settings.version)
 
     settings.dataGen = dataGen
     settings.selector = selector
     settings.initial_space = space
 
+    settings.save_txt = True
+
+    settings.disable_mutation = True
+
+    path = os.path.join("saved_models","product_database", "17_test_run_product_model_6630")
+    settings.loadedNetwork = networkStorage = NetworkStorage.loadNetwork(fileName=None, settings=settings, path=path)
+    print("Loaded Network DNA: ", settings.loadedNetwork.adn)
+
+    print("**** WARNING DISABLE MUTATION = ", settings.disable_mutation)
     trainer = CommandExperimentCifar_Restarts.CommandExperimentCifar_Restarts(settings=settings)
     trainer.execute()
