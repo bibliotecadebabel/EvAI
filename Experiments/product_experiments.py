@@ -138,8 +138,6 @@ def run_cifar_user_input_bidi(save = False):
     e =  50000 / status.S
     status.iterations_per_epoch = math.ceil(e)
 
-
-    status=program.Status()
     status.condition=condition
     status.dt_Max=0.05
     status.dt_min=0.0000001
