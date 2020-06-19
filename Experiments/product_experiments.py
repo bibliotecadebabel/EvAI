@@ -41,8 +41,8 @@ def run_cifar_user_input_bidi(save = False):
     status=program.Status()
 
     list_conditions={DNA_conditions.max_filter : 530,
-            DNA_conditions.max_filter_dense : 260,
-            DNA_conditions.max_kernel_dense : 9,
+            DNA_conditions.max_filter_dense : 130,
+            DNA_conditions.max_kernel_dense : 17,
             DNA_conditions.max_layer : 200,
             DNA_conditions.min_filter : 3,
             DNA_conditions.max_pool_layer : 4,
@@ -203,7 +203,7 @@ def run_cifar_user_input_bidi(save = False):
 
     #status.Center=DNAs.non_lin_20
 
-    status.Center = DNAs.DNA_base
+    status.Center = DNAs.DNA_base_2
     status.settings=settings
     program.run(status)
 
