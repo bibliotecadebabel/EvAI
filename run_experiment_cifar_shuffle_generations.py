@@ -283,7 +283,7 @@ if __name__ == '__main__':
 
     #settings.initial_dna =   DNAs.DNA_ep25
 
-    settings.initial_dna = DNAs.non_lin_20
+    settings.initial_dna = DNAs.DNA_val_20
 
 
     """
