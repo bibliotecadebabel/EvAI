@@ -366,54 +366,60 @@ class Network(nn.Module, na.NetworkAbstract):
 
     def iterTraining(self, dataGenerator, dt_array, ricap=None, evalLoss=False):
 
-        iters = len(dt_array)
+        try:
+            iters = len(dt_array)
 
-        print_every = iters // 4
-        start = time.time()
-        data_iter = iter(dataGenerator._trainoader)
+            print_every = iters // 4
+            start = time.time()
+            data_iter = iter(dataGenerator._trainoader)
 
-        if evalLoss == True:
-            self.eval_iter = iter(dataGenerator._evalloader)
-        
-        i = 0
-
-        while i < iters:
+            if evalLoss == True:
+                self.eval_iter = iter(dataGenerator._evalloader)
             
-            try:
-                
-                data = next(data_iter)
+            i = 0
 
-                self.optimizer = optim.SGD(self.parameters(), lr=dt_array[i], momentum=self.momentum, weight_decay=self.weight_decay)
-
-                if self.cudaFlag == True:
-                    inputs, labels_data = data[0].cuda(), data[1].cuda()
-                else:
-                    inputs, labels_data = data[0], data[1]
+            while i < iters:
                 
-                
-                if ricap == None:
-                    self.__doTraining(inputs=inputs, labels_data=labels_data)
-                else:
-                    self.__doTrainingRICAP(inputs=inputs, labels_data=labels_data, ricap=ricap)
-
-                self.__currentEpoch = i
-                
-                if evalLoss == False:
-                    self.history_loss.append(self.total_value)
-                else:
-                    self.__generateEvalLoss(dataGenerator)
+                try:
                     
-                if print_every > 0:
+                    data = next(data_iter)
 
-                    if i % print_every == print_every - 1:
+                    self.optimizer = optim.SGD(self.parameters(), lr=dt_array[i], momentum=self.momentum, weight_decay=self.weight_decay)
+
+                    if self.cudaFlag == True:
+                        inputs, labels_data = data[0].cuda(), data[1].cuda()
+                    else:
+                        inputs, labels_data = data[0], data[1]
+                    
+                    
+                    if ricap == None:
+                        self.__doTraining(inputs=inputs, labels_data=labels_data)
+                    else:
+                        self.__doTrainingRICAP(inputs=inputs, labels_data=labels_data, ricap=ricap)
+
+                    self.__currentEpoch = i
+                    
+                    if evalLoss == False:
+                        self.history_loss.append(self.total_value)
+                    else:
+                        self.__generateEvalLoss(dataGenerator)
                         
-                        end_time = time.time() - start
-                        self.__printValues(epoch=1, i=i, avg=print_every, end_time=end_time)
-                        start = time.time()
-                i+= 1
+                    if print_every > 0:
 
-            except StopIteration:
-                data_iter = iter(dataGenerator._trainoader)
+                        if i % print_every == print_every - 1:
+                            
+                            end_time = time.time() - start
+                            self.__printValues(epoch=1, i=i, avg=print_every, end_time=end_time)
+                            start = time.time()
+                    i+= 1
+
+                except StopIteration:
+                    data_iter = iter(dataGenerator._trainoader)
+
+        except:
+            print("ERROR TRAINING")
+            print("DNA: ", self.adn)
+            raise
 
     def __generateEvalLoss(self, dataGenerator):
 
