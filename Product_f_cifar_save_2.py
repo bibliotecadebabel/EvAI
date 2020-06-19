@@ -272,6 +272,8 @@ def run(status):
     network.iterTraining(dataGenerator=status.Data_gen,
                     dt_array=dt_array, ricap=settings.ricap, evalLoss=settings.evalLoss)
 
+    network.generateEnergy(status.Data_gen)
+    print("pre training acc: ", network.getAcurracy())
     status.stream.add_node(network.adn)
     status.stream.link_node(network.adn,network)
     
