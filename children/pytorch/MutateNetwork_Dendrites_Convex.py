@@ -319,7 +319,7 @@ def __getTargetIndex(oldAdn, newAdn):
         indexConv2d = 0
         for i in range(len(oldAdn)):
 
-            if oldAdn[i][0] == 0 or oldAdn[i][0] == 1: #check if is conv2d or linear
+            if oldAdn[i][0] == 0: #check if is conv2d or linear
                 generated_dna = direction_dna.add_layer(indexConv2d, oldAdn)
                 if str(generated_dna) == str(newAdn):
                     targetLayer = indexConv2d
@@ -327,7 +327,7 @@ def __getTargetIndex(oldAdn, newAdn):
                     stop = True
                     break
 
-            if oldAdn[i][0] == 0 or oldAdn[i][0] == 1: #check if is conv2d or linear
+            if oldAdn[i][0] == 0: #check if is conv2d or linear
                 generated_dna = direction_dna.add_pool_layer(indexConv2d, oldAdn)
                 if str(generated_dna) == str(newAdn):
                     targetLayer = indexConv2d
