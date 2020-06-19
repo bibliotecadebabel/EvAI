@@ -10,24 +10,24 @@ import const.mutation_type as m_type
 import utilities.FileManager as FileManager
 
 def executeMutation(oldNetwork, newAdn):
-
     fileManager = FileManager.FileManager()
     fileManager.setFileName("dnas_mutation_error.txt")
-    network = nw.Network(newAdn, cudaFlag=oldNetwork.cudaFlag, momentum=oldNetwork.momentum,
-                            weight_decay=oldNetwork.weight_decay, enable_activation=oldNetwork.enable_activation,
-                            enable_track_stats=oldNetwork.enable_track_stats, dropout_value=oldNetwork.dropout_value,
-                            dropout_function=oldNetwork.dropout_function, enable_last_activation=oldNetwork.enable_last_activation,
-                            version=oldNetwork.version, eps_batchnorm=oldNetwork.eps_batchnorm)
-
-    network.history_loss = oldNetwork.history_loss[-200:]
-
-    length_newadn = __generateLenghtADN(newAdn)
-    length_oldadn = __generateLenghtADN(oldNetwork.adn)
-
-    oldNetwork.updateGradFlag(False)
-    network.updateGradFlag(False)
-
     try:
+        network = nw.Network(newAdn, cudaFlag=oldNetwork.cudaFlag, momentum=oldNetwork.momentum,
+                                weight_decay=oldNetwork.weight_decay, enable_activation=oldNetwork.enable_activation,
+                                enable_track_stats=oldNetwork.enable_track_stats, dropout_value=oldNetwork.dropout_value,
+                                dropout_function=oldNetwork.dropout_function, enable_last_activation=oldNetwork.enable_last_activation,
+                                version=oldNetwork.version, eps_batchnorm=oldNetwork.eps_batchnorm)
+
+        network.history_loss = oldNetwork.history_loss[-200:]
+
+        length_newadn = __generateLenghtADN(newAdn)
+        length_oldadn = __generateLenghtADN(oldNetwork.adn)
+
+        oldNetwork.updateGradFlag(False)
+        network.updateGradFlag(False)
+
+    
         if length_newadn == length_oldadn:
             #print("default mutation process")
             __defaultMutationProcess(oldNetwork=oldNetwork, network=network, lenghtAdn=length_newadn)

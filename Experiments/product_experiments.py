@@ -41,13 +41,12 @@ def run_cifar_user_input_bidi(save = False):
     status=program.Status()
 
     list_conditions={DNA_conditions.max_filter : 530,
-            DNA_conditions.max_filter_dense : 65,
-            DNA_conditions.max_kernel_dense : 17,
+            DNA_conditions.max_filter_dense : 260,
+            DNA_conditions.max_kernel_dense : 9,
             DNA_conditions.max_layer : 200,
             DNA_conditions.min_filter : 3,
             DNA_conditions.max_pool_layer : 4,
             DNA_conditions.max_parents : 2,
-            DNA_conditions.no_con_image : 1,
             DNA_conditions.no_con_last_layer : 1,
             }
     def condition(DNA):
@@ -70,17 +69,12 @@ def run_cifar_user_input_bidi(save = False):
     """
     def dropout_function(base_p, total_layers, index_layer, isPool=False):
 
-        value = 0.05
-        if index_layer == 0:
-            value=0
+        value = 0
         if index_layer != 0 and isPool == False:
-            #value = base_p +(3/5*base_p-base_p)*(total_layers - index_layer-1)/total_layers
-            value=0.1
+            value = 0.05
 
         if index_layer == total_layers - 2:
-            #value = base_p +(3/5*base_p-base_p)*(total_layers - index_layer-1)/total_layers
-            value=0.1
-        #print("conv2d: ", index_layer, " - dropout: ", value)
+            value = 0.05
 
         return value
 
@@ -102,10 +96,10 @@ def run_cifar_user_input_bidi(save = False):
         settings.weight_decay = float(input('weight_decay: '))
     else:
         ENABLE_ACTIVATION = 1
-        ENABLE_LAST_ACTIVATION = 0
+        ENABLE_LAST_ACTIVATION = 1
         ENABLE_AUGMENTATION = 1
         ENABLE_TRACK = 1
-        settings.dropout_value = 0.5
+        settings.dropout_value = 0.05
         settings.weight_decay = 0.0005
 
 
@@ -140,15 +134,16 @@ def run_cifar_user_input_bidi(save = False):
         value = False
     settings.enable_track_stats = value
 
+    status.S=int(input("Batch size : "))
+    e =  50000 / status.S
+    status.iterations_per_epoch = math.ceil(e)
 
-
-    status=program.Status()
     status.condition=condition
-    status.dt_Max=0.01
-    status.dt_min=0.000001
+    status.dt_Max=0.05
+    status.dt_min=0.0000001
     status.clear_period=200000
     status.max_iter=400000
-    status.restart_period=4000
+    status.restart_period=18*status.iterations_per_epoch
     status.max_layer=8
     status.max_filter=51
     from utilities.Abstract_classes.classes.uniform_random_selector_2 import (
@@ -167,7 +162,6 @@ def run_cifar_user_input_bidi(save = False):
     status.log_size=int(input("Log size : "))
     status.min_log_size=100
     status.version='convex'
-    status.S=int(input("Batch size : "))
     status.cuda=bool(input("Any input for cuda : "))
 
     settings.evalLoss = bool(input("Any input to activate Eval Loss : "))
