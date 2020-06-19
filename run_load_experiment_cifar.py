@@ -224,7 +224,7 @@ if __name__ == '__main__':
 
     settings.disable_mutation = True
 
-    path = os.path.join("saved_models","product_database", "17_test_run_product_model_6630")
+    path = os.path.join("saved_models","product_database", "17_test_run_product_model_8600")
     settings.loadedNetwork = networkStorage = NetworkStorage.loadNetwork(fileName=None, settings=settings, path=path)
     print("Loaded Network DNA: ", settings.loadedNetwork.adn)
 
