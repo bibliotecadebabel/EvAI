@@ -274,6 +274,7 @@ def run(status):
 
     network.generateEnergy(status.Data_gen)
     print("pre training acc: ", network.getAcurracy())
+    time.sleep(2)
     status.stream.add_node(network.adn)
     status.stream.link_node(network.adn,network)
     
