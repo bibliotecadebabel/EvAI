@@ -168,7 +168,7 @@ if __name__ == '__main__':
     settings.save_txt = True
     settings.max_init_iter = 1
     INIT_ITER = 100*e
-    alai_w=Alai_w(itial_max=0.1,final_max=0.05,
+    alai_w=Alai_w(intial_max=0.1,final_max=0.05,
         initial_min=10**(-99),final_min=10**(-99),Max_iter=INIT_ITER)
     settings.init_dt_array = Alai.get_increments(225*e)
     #settings.init_dt_array = exp_alai(1,INIT_ITER,1,7)
