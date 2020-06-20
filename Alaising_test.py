@@ -12,7 +12,7 @@ def get_Damped_test_ep():
 
 
 def get_Damped_test():
-    Alai=Alai=Damped_Alaising(initial_max=0.1,final_max=0.05,
+    Alai=Damped_Alaising(initial_max=0.1,final_max=0.05,
         initial_min=10**(-99),final_min=10**(-99),Max_iter=100)
     print(Alai.initial_period)
     increments=Alai.get_increments(225)
