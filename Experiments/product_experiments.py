@@ -39,11 +39,12 @@ def run_cifar_user_input_bidi(save = False):
     import Product_f_cifar_save_2 as program
 
     status=program.Status()
-
+    
+    status.max_layer_conv2d = int(input("Max layers (conv2d) condition: "))
     list_conditions={DNA_conditions.max_filter : 530,
             DNA_conditions.max_filter_dense : 130,
             DNA_conditions.max_kernel_dense : 17,
-            DNA_conditions.max_layer : 200,
+            DNA_conditions.max_layer : status.max_layer_conv2d,
             DNA_conditions.min_filter : 3,
             DNA_conditions.max_pool_layer : 4,
             DNA_conditions.max_parents : 2,

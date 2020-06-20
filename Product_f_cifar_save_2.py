@@ -100,6 +100,7 @@ class Status():
         y=32
         self.Center=None
         self.iterations_per_epoch = 0
+        self.max_layer_conv2d = 0
 
 
 
@@ -229,8 +230,15 @@ def create_objects(status):
     status.Dynamics=Dynamics
     status.objects=Dynamics.objects
 
+def countLayers(center):
+    count = 0
+    
+    for layer in center:
 
-
+        if layer[0] == 0:
+            count += 1
+    
+    return count
 
 def run(status):
     status.Transfer=tran.TransferRemote(status,
@@ -251,6 +259,8 @@ def run(status):
     testResultDao = TestResultDAO.TestResultDAO()
     testModelDao = TestModelDAO.TestModelDAO()
     print("cuda=", status.cuda)
+
+    print("max layers: ", status.max_layer_conv2d - 1)
 
     settings = status.settings
     network = nw.Network(status.Center,cudaFlag=settings.cuda,
@@ -317,6 +327,12 @@ def run(status):
     #        print_nets(status)
     #        time.sleep(0.5)0
 
+            center_dna = status.Dynamics.phase_space.center()
+            layers_count = 0
+            if center_dna is not None:
+                layers_count = countLayers(center_dna)
+
+            print("current layers: ", layers_count)
             if status.save2database == True:
 
                 if status.Alai.computeTime() >= L_1*status.save_space_period:
@@ -325,10 +341,14 @@ def run(status):
                     dna_graph = status.Dynamics.phase_space.DNA_graph
                     testResultDao.insert(idTest=test_id, iteration=k+1, dna_graph=dna_graph)
 
-                if status.Alai.computeTime() >= L_2*status.save_net_period:
+                if status.Alai.computeTime() >= L_2*status.save_net_period or layers_count >= status.max_layer_conv2d - 1:
                     print("saving model: ", L_2)
                     L_2 += 1
                     saveModel(status, k+1, testModelDao, test_id)
+            
+            if layers_count >= status.max_layer_conv2d:
+                print("stopped with center: ", center_dna)
+                break
             #status.print_particles()
             #status.print_particles()
             #status.print_max_particles()
