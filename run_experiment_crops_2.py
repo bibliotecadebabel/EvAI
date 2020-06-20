@@ -54,11 +54,11 @@ def dropout_function_constant(base_p, total_layers, index_layer, isPool=False):
 
 def dropout_function_2(base_p, total_layers, index_layer, isPool=False):
 
-    value = 0
-
-    if index_layer > 0:
-        value = base_p / (total_layers - index_layer)+base_p/2
-        print("conv2d: ", index_layer, " - dropout: ", value)
+    value = base_p
+    if index_layer == 0:
+        value = 0 
+    
+    print("conv2d: ", index_layer, " - dropout: ", value)
 
     return value
 
@@ -115,12 +115,12 @@ if __name__ == '__main__':
     transform_compose = augSettings.generateTransformCompose(dict_transformations, False)
 
     # DIRECTIONS VERSION
-    settings.version = directions_version.H_VERSION
+    settings.version = directions_version.CONVEX_VERSION
     # NUM OF THREADS
-    THREADS = int(input("Enter threads: "))
+    THREADS = 2
 
     # BATCH SIZE
-    settings.batch_size = int(input("Enter batchsize: "))
+    settings.batch_size = 64
     e =  50000 / settings.batch_size
     e = math.ceil(e)
     print("e = ", e)
@@ -141,38 +141,36 @@ if __name__ == '__main__':
     settings.period_save_model = 1
 
     # EPOCHS
-    settings.epochs = int(input("Enter amount of epochs: "))
+    settings.epochs = 200
 
     # INITIAL DT PARAMETERS
-    num_actions=5
+    num_actions=1
 
-    init_factor = 20
-    max_init_iter = 1
-    settings.max_init_iter = max_init_iter
-    INIT_ITER = init_factor*e
+    settings.max_init_iter = 360
+    INIT_ITER = 50*e
     #settings.init_dt_array = exp_alai(.5,INIT_ITER,1,5)
-    settings.init_dt_array =  Alaising(1,99,INIT_ITER)
+    settings.init_dt_array =  Alaising(1.2,99,INIT_ITER)
 
 
     # JOINED DT PARAMETERS
     JOINED_ITER = 4*e
     #settings.joined_dt_array = Alaising(2,6,e)
-    settings.joined_dt_array = Alaising(1.2,99,JOINED_ITER)
+    settings.joined_dt_array = Alaising(1.2,7,JOINED_ITER)
     settings.max_joined_iter = 1
 
     # BEST DT PARAMETERS
     BEST_ITER = 10*e
     #settings.best_dt_array = Alaising(2,6,e)
-    best_dt_max = float(input("max dt (best): "))
-    settings.best_dt_array = Alaising(best_dt_max,99,BEST_ITER)
-    settings.max_best_iter = int(input("max best iter: "))
+    #best_dt_max = float(input("max dt (best): "))
+    settings.best_dt_array = Alaising(1.2,7,BEST_ITER)
+    settings.max_best_iter = 1
 
 
     # dropout parameter
-    settings.dropout_value = float(input("dropout value: "))
+    settings.dropout_value = 0.05
 
     # weight_decay parameter
-    settings.weight_decay = float(input('weight_decay: '))
+    settings.weight_decay = 0.0005
 
     # momentum parameter
     settings.momentum = 0.9
@@ -187,8 +185,8 @@ if __name__ == '__main__':
 
     list_conditions={DNA_conditions.max_filter : 530,
             DNA_conditions.max_filter_dense : 530,
-            DNA_conditions.max_kernel_dense : 1,
-            DNA_conditions.max_layer : 30,
+            DNA_conditions.max_kernel_dense : 60,
+            DNA_conditions.max_layer : 60,
             DNA_conditions.min_filter : 0,
             DNA_conditions.max_parents : 2}
 
@@ -242,7 +240,7 @@ if __name__ == '__main__':
     #if value == 1:
     #    function = dropout_function_constant
 
-    settings.dropout_function = dropout_function_2
+    settings.dropout_function = dropout_function_constant
     # INITIAL DNA
 
     """
@@ -271,7 +269,8 @@ if __name__ == '__main__':
                                              (3, 28, 29), (3, 23, 29), (3, 27, 29), (3, 29, 30), (3, 30, 31))
 
     """
-    settings.initial_dna =   DNAs.DNA_ep25
+    settings.initial_dna = DNAs.DNA_calibration_3
+
     settings.ricap = Augmentation_Utils.Ricap(beta=0.3)
 
     """

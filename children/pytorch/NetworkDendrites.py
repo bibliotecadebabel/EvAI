@@ -367,6 +367,9 @@ class Network(nn.Module, na.NetworkAbstract):
     def trainingWarmRestarts(self, dataGenerator, dt_max, dt_min, epochs, restar_period, ricap=None, evalLoss=False, fileManager=None):
 
         try:
+
+            print("epochs= ", epochs)
+            print("restart period =", restar_period)
             iters = len(dataGenerator._trainoader)
             print_every = iters // 4
             start = time.time()
@@ -411,14 +414,14 @@ class Network(nn.Module, na.NetworkAbstract):
 
                 if epoch % restar_period == restar_period - 1:
                     
-                    self.optimizer = optim.SGD(self.parameters(), lr=dt_max, momentum=self.momentum, weight_decay=self.weight_decay)
-                    scheduler = optim.lr_scheduler.CosineAnnealingLR(self.optimizer, restarts, eta_min=dt_min)
                     self.generateEnergy(dataGenerator)
                     print("Current Accuracy: ", self.getAcurracy())
-
+                    print("dt: ", self.optimizer.param_groups[0]['lr'])
                     if fileManager is not None:
-                        fileManager.appendFile("iter: "+str(i+1)+" - Acc: "+str(self.getAcurracy())+" - Loss: "+str(self.getAverageLoss(print_every)))
+                        fileManager.appendFile("epoch: "+str(epoch+1)+" - Acc: "+str(self.getAcurracy())+" - Loss: "+str(self.getAverageLoss(print_every)))
 
+                    self.optimizer = optim.SGD(self.parameters(), lr=dt_max, momentum=self.momentum, weight_decay=self.weight_decay)
+                    scheduler = optim.lr_scheduler.CosineAnnealingLR(self.optimizer, restarts, eta_min=dt_min)
         except:
             print("ERROR TRAINING")
             print("DNA: ", self.adn)

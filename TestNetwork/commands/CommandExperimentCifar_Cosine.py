@@ -111,35 +111,31 @@ class CommandExperimentCifar_Restarts():
 
         return nodeCenter
 
-    def __trainNetwork(self, network : nw.Network, dt_array, max_iter, keep_clone=False, allow_save_txt=False):
-
-        dt_array_len = len(dt_array)
-        avg_factor = dt_array_len // 4
+    def __trainNetwork(self, network : nw.Network, dt_max, dt_min, epochs, restart_epochs, allow_save_txt=False):
         
         network.generateEnergy(self.__settings.dataGen)
         best_accuracy = network.getAcurracy()
         print("initial accuracy= ", best_accuracy)
 
-        for i in range(max_iter):
-            print("iteration: ", i+1)
-            network.iterTraining(self.__settings.dataGen, dt_array, self.__settings.ricap)
-            network.generateEnergy(self.__settings.dataGen)
-            current_accuracy = network.getAcurracy()
-            print("current accuracy=", current_accuracy)
+        if allow_save_txt == True:
+            network.trainingWarmRestarts(dataGenerator=self.__settings.dataGen, dt_max=dt_max, dt_min=dt_min, epochs=epochs, 
+                                        restar_period=restart_epochs, ricap=self.__settings.ricap, evalLoss=False, 
+                                        fileManager=self.__fileManager)
+        else:
+            network.trainingWarmRestarts(dataGenerator=self.__settings.dataGen, dt_max=dt_max, dt_min=dt_min, epochs=epochs, 
+                                        restar_period=restart_epochs, ricap=self.__settings.ricap, evalLoss=False, 
+                                        fileManager=None)
 
-            network.trainingWarmRestarts(dataGenerator=self.__settings.dataGen, dt_max=0.05, dt_min=0.0000001, epochs=10, 
-                                        restar_period=2, ricap=None, evalLoss=False)
-
-            if allow_save_txt == True and self.__settings.save_txt == True:
-                loss = network.getAverageLoss(avg_factor)
-                self.__fileManager.appendFile("iter: "+str(i+1)+" - Acc: "+str(current_accuracy)+" - Loss: "+str(loss))
+        network.generateEnergy(self.__settings.dataGen)
+        current_accuracy = network.getAcurracy()
+        print("final accuracy=", current_accuracy)
 
         return network
 
     def execute(self):
 
         test_id = self.__testDao.insert(testName=self.__settings.test_name, periodSave=self.__settings.period_save_space,
-                                    dt=self.__settings.init_dt_array[0], total=self.__settings.epochs,
+                                    dt=self.__settings.init_dt_max, total=self.__settings.epochs,
                                     periodCenter=self.__settings.period_new_space)
 
 
@@ -147,12 +143,13 @@ class CommandExperimentCifar_Restarts():
         print("Allow interrupts= ", self.__settings.allow_interupts)
 
 
-        self.__bestNetwork = self.__trainNetwork(network=self.__bestNetwork,
-                    dt_array=self.__settings.init_dt_array, max_iter=self.__settings.max_init_iter, keep_clone=True, allow_save_txt=True)
+        self.__bestNetwork = self.__trainNetwork(network=self.__bestNetwork, dt_max=self.__settings.init_dt_max, 
+                            dt_min=self.__settings.init_dt_min, epochs=self.__settings.init_epochs, 
+                            restart_epochs=self.__settings.init_restart_period, allow_save_txt=True)
 
-        self.__bestNetwork = self.__trainNetwork(network=self.__bestNetwork,
-                    dt_array=self.__settings.best_dt_array, max_iter=self.__settings.max_best_iter, keep_clone=True, allow_save_txt=True)
-
+        self.__bestNetwork = self.__trainNetwork(network=self.__bestNetwork, dt_max=self.__settings.best_dt_max, 
+                            dt_min=self.__settings.best_dt_min, epochs=self.__settings.best_epochs, 
+                            restart_epochs=self.__settings.best_restart_period, allow_save_txt=True)
 
 
         self.__saveModel(self.__bestNetwork, test_id=test_id, iteration=0)
@@ -168,7 +165,9 @@ class CommandExperimentCifar_Restarts():
 
                 for i  in range(1, len(self.__networks)):
                     print("Training net #", i, " - direction: ", self.__actions[i-1])
-                    self.__networks[i] = self.__trainNetwork(network=self.__networks[i], dt_array=self.__settings.joined_dt_array, max_iter=self.__settings.max_joined_iter)
+                    self.__networks[i] = self.__trainNetwork(network=self.__bestNetwork, dt_max=self.__settings.joined_dt_max, 
+                            dt_min=self.__settings.joined_dt_min, epochs=self.__settings.joined_epochs, 
+                            restart_epochs=self.__settings.joined_restart_period, allow_save_txt=False)
 
                 self.__saveEnergy()
                 self.__testResultDao.insert(idTest=test_id, iteration=j, dna_graph=self.__space)
@@ -177,8 +176,9 @@ class CommandExperimentCifar_Restarts():
 
                 print("TRAINING BEST NETWORK")
 
-                self.__bestNetwork = self.__trainNetwork(network=self.__bestNetwork, dt_array=self.__settings.best_dt_array,
-                                            max_iter=self.__settings.max_best_iter, keep_clone=True)
+                self.__bestNetwork = self.__trainNetwork(network=self.__bestNetwork, dt_max=self.__settings.best_dt_max, 
+                            dt_min=self.__settings.best_dt_min, epochs=self.__settings.best_epochs, 
+                            restart_epochs=self.__settings.best_restart_period, allow_save_txt=True)
 
                 self.__saveModel(network=self.__bestNetwork, test_id=test_id, iteration=j)
 

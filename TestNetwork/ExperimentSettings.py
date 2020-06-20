@@ -5,12 +5,24 @@ class ExperimentSettings():
 
         self.init_dt_array = None
         self.max_init_iter = 0
+        self.init_epochs = 0
+        self.init_restart_period = 0
+        self.init_dt_max = 0
+        self.init_dt_min = 0
 
         self.joined_dt_array = None
         self.max_joined_iter = 0
+        self.joined_epochs = 0
+        self.joined_restart_period = 0
+        self.joined_dt_max = 0
+        self.joined_dt_min = 0
 
         self.best_dt_array = None
         self.max_best_iter = 0
+        self.best_epochs = 0
+        self.best_restart_period = 0
+        self.best_dt_max = 0
+        self.best_dt_min = 0
 
         self.period_save_space = 1
         self.period_save_model = 1

@@ -1,5 +1,5 @@
 from TestNetwork.commands import CommandCreateDataGen
-from TestNetwork.commands import  CommandExperimentCifar_Shuffle_generations as CommandExperimentCifar_Restarts
+from TestNetwork.commands import  CommandExperimentCifar_Cosine as CommandExperimentCifar_Restarts
 from DNA_conditions import max_layer,max_filter,max_filter_dense
 import DNA_conditions
 from DNA_creators import Creator
@@ -10,7 +10,7 @@ import TestNetwork.ExperimentSettings as ExperimentSettings
 import TestNetwork.AugmentationSettings as AugmentationSettings
 import const.versions as directions_version
 import numpy as np
-#import test_DNAs as DNAs
+import test_DNAs as DNAs
 import utilities.Augmentation as Augmentation_Utils
 import math
 ###### EXPERIMENT SETTINGS ######
@@ -117,10 +117,10 @@ if __name__ == '__main__':
     # DIRECTIONS VERSION
     settings.version = directions_version.CONVEX_VERSION
     # NUM OF THREADS
-    THREADS = int(input("Enter threads: "))
+    THREADS = 2
 
     # BATCH SIZE
-    settings.batch_size = int(input("Enter batchsize: "))
+    settings.batch_size = 64
     e =  50000 / settings.batch_size
     e = math.ceil(e)
     print("e = ", e)
@@ -146,33 +146,28 @@ if __name__ == '__main__':
     # INITIAL DT PARAMETERS
     num_actions=1
 
-    init_factor = 20
-    max_init_iter = 1
-    settings.max_init_iter = max_init_iter
-    INIT_ITER = init_factor*e
-    #settings.init_dt_array = exp_alai(.5,INIT_ITER,1,5)
-    settings.init_dt_array =  Alaising(1,7,INIT_ITER)
+    settings.init_epochs = 3600
+    settings.init_restart_period = 10 
+    settings.init_dt_max = 10**(-1.2)
+    settings.init_dt_min = 10**(-7)
 
 
-    # JOINED DT PARAMETERS
-    JOINED_ITER = 4*e
-    #settings.joined_dt_array = Alaising(2,6,e)
-    settings.joined_dt_array = Alaising(1.2,7,JOINED_ITER)
-    settings.max_joined_iter = 1
+    settings.joined_epochs = 1
+    settings.joined_restart_period = 1
+    settings.joined_dt_max = 10**(-1.2)
+    settings.joined_dt_min = 10**(-7)
 
-    # BEST DT PARAMETERS
-    BEST_ITER = 10*e
-    #settings.best_dt_array = Alaising(2,6,e)
-    #best_dt_max = float(input("max dt (best): "))
-    settings.best_dt_array = Alaising(1.2,7,BEST_ITER)
-    settings.max_best_iter = int(input("max best iter: "))
+    settings.best_epochs = 1
+    settings.best_restart_period = 1
+    settings.best_dt_max = 10**(-1.2)
+    settings.best_dt_min = 10**(-7)
 
 
     # dropout parameter
-    settings.dropout_value = float(input("dropout value: "))
+    settings.dropout_value = 0.05
 
     # weight_decay parameter
-    settings.weight_decay = float(input('weight_decay: '))
+    settings.weight_decay = 0.0005
 
     # momentum parameter
     settings.momentum = 0.9
@@ -271,16 +266,7 @@ if __name__ == '__main__':
                                              (3, 28, 29), (3, 23, 29), (3, 27, 29), (3, 29, 30), (3, 30, 31))
 
     """
-    settings.initial_dna = ((-1, 1, 3, 32, 32), (0, 3, 32, 3, 3), (0, 32, 32, 2, 2), (0, 32, 32, 3, 3), (0, 32, 32, 3, 3), 
-                    (0, 32, 32, 3, 3), (0, 32, 256, 4, 4, 2), (0, 288, 32, 3, 3), (0, 32, 64, 3, 3, 2), (0, 64, 64, 6, 6), 
-                    (0, 256, 32, 3, 3), (0, 64, 128, 3, 3), (0, 128, 64, 3, 3, 2), (0, 64, 128, 3, 3), (0, 192, 512, 3, 3, 2), 
-                    (0, 512, 512, 3, 3), (0, 512, 512, 3, 3), (0, 512, 256, 4, 4), (0, 320, 128, 3, 3), (0, 512, 256, 3, 3), 
-                    (0, 320, 512, 3, 3), (0, 64, 64, 3, 3), (0, 64, 128, 3, 3), (0, 512, 512, 4, 4), (0, 512, 512, 3, 3), 
-                    (0, 576, 512, 3, 3), (0, 512, 128, 16, 16), (1, 128, 10), (2,), (3, -1, 0), (3, 0, 1), (3, 1, 2), 
-                    (3, 2, 3), (3, 3, 4), (3, 4, 5), (3, 0, 6), (3, 5, 6), (3, 6, 7), (3, 7, 8), (3, 5, 9), (3, 8, 10), 
-                    (3, 10, 11), (3, 9, 11), (3, 11, 12), (3, 7, 13), (3, 12, 13), (3, 13, 14), (3, 14, 15), (3, 15, 16), 
-                    (3, 11, 16), (3, 16, 17), (3, 11, 17), (3, 17, 18), (3, 13, 18), (3, 18, 19), (3, 7, 19), (3, 7, 20), 
-                    (3, 20, 21), (3, 19, 22), (3, 21, 22), (3, 22, 23), (3, 23, 24), (3, 7, 24), (3, 24, 25), (3, 26, 27))
+    settings.initial_dna = DNAs.DNA_calibration_3
 
     settings.ricap = Augmentation_Utils.Ricap(beta=0.3)
 
