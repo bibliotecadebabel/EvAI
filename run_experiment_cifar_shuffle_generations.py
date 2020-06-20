@@ -165,9 +165,9 @@ if __name__ == '__main__':
     num_actions=8
     settings.save_txt = True
     settings.max_init_iter = 360
-    INIT_ITER = 10*e
-    #settings.init_dt_array = exp_alai(.5,INIT_ITER,1,5)
-    settings.init_dt_array =  Alaising(1.2,7,INIT_ITER)
+    INIT_ITER = 100*e
+    settings.init_dt_array = exp_alai(1,INIT_ITER,1,7)
+    #settings.init_dt_array =  Alaising(1.2,7,INIT_ITER)
 
 
     # JOINED DT PARAMETERS
@@ -283,7 +283,7 @@ if __name__ == '__main__':
 
     #settings.initial_dna =   DNAs.DNA_ep25
 
-    settings.initial_dna = DNAs.DNA_val_20
+    settings.initial_dna = DNAs.DNA_calibration_3
 
 
     """
