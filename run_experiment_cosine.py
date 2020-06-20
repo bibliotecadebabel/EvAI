@@ -5,13 +5,14 @@ import DNA_conditions
 from DNA_creators import Creator
 from DNA_Graph import DNA_Graph
 from DNA_creators import Creator_from_selection as Creator_s
-from utilities.Abstract_classes.classes.uniform_random_selector import centered_random_selector as random_selector
+from utilities.Abstract_classes.classes.uniform_random_selector_2 import centered_random_selector as random_selector
 import TestNetwork.ExperimentSettings as ExperimentSettings
 import TestNetwork.AugmentationSettings as AugmentationSettings
 import const.versions as directions_version
 import numpy as np
-import test_DNAs as DNAs
-import utilities.NetworkStorage as NetworkStorage
+#import test_DNAs as DNAs
+import utilities.Augmentation as Augmentation_Utils
+import math
 ###### EXPERIMENT SETTINGS ######
 """
 def dropout_function(base_p, total_conv2d, index_conv2d):
@@ -22,37 +23,43 @@ def dropout_function(base_p, total_conv2d, index_conv2d):
 
 
 """
-"""
-def dropout_function(base_p, total_conv2d, index_conv2d):
-    value = base_p +(3/5*base_p-base_p)*(total_conv2d - index_conv2d)/total_conv2d
-    print("conv2d: ", index_conv2d, " - dropout: ", value)
-    return value
-"""
 
-def dropout_function(base_p, total_conv2d, index_conv2d):
+
+def dropout_function(base_p, total_layers, index_layer, isPool=False):
+
     value = 0
-    if index_conv2d == 1:
-        value = 0.3
-    if index_conv2d == 3:
-        value = 0.4
-    if index_conv2d == 5:
-        value = 0.4
-    if index_conv2d == 6:
-        value = 0.4
-    if index_conv2d == 8:
-        value = 0.4
-    if index_conv2d == 9:
-        value = 0.4
-    if index_conv2d == 11:
-        value = 0.4
-    if index_conv2d == 12:
-        value = 0.4
-    if index_conv2d == 13:
-        value = 0.5
-    if index_conv2d == 14:
-        value = 0.5
-    print("conv2d: ", index_conv2d, " - dropout: ", value)
+    if index_layer != 0 and isPool == False:
+        value = base_p +(3/5*base_p-base_p)*(total_layers - index_layer-1)/total_layers  
+
+    if index_layer == total_layers - 2:
+        value = base_p +(3/5*base_p-base_p)*(total_layers - index_layer-1)/total_layers  
+
+    print("conv2d: ", index_layer, " - dropout: ", value)
+
+    return value
+
+
+def dropout_function_constant(base_p, total_layers, index_layer, isPool=False):
+
+    value = 0
+    if index_layer != 0 and isPool == False:
+        value = base_p
+
+    if index_layer == total_layers - 2:
+        value = base_p
+
+    print("conv2d: ", index_layer, " - dropout: ", value)
+
+    return value
+
+def dropout_function_2(base_p, total_layers, index_layer, isPool=False):
+
+    value = base_p
+    if index_layer == 0:
+        value = 0 
     
+    print("conv2d: ", index_layer, " - dropout: ", value)
+
     return value
 
 def pcos(x):
@@ -93,22 +100,30 @@ def DNA_Creator_s(x,y, dna, version):
 if __name__ == '__main__':
 
     settings = ExperimentSettings.ExperimentSettings()
+
     augSettings = AugmentationSettings.AugmentationSettings()
 
     dict_transformations = {
-        augSettings.randomAffine : True,
-        augSettings.randomHorizontalFlip : True    
+        augSettings.baseline_customRandomCrop : True,
+        augSettings.randomHorizontalFlip : True,
+        augSettings.randomErase_1 : True
+        #augSettings.cutout : False,
+        #augSettings.translate : True,
+        #augSettings.randomShear: True
     }
 
     transform_compose = augSettings.generateTransformCompose(dict_transformations, False)
 
     # DIRECTIONS VERSION
-    settings.version = directions_version.H_VERSION
+    settings.version = directions_version.CONVEX_VERSION
     # NUM OF THREADS
     THREADS = int(input("Enter threads: "))
 
     # BATCH SIZE
     settings.batch_size = int(input("Enter batchsize: "))
+    e =  50000 / settings.batch_size
+    e = math.ceil(e)
+    print("e = ", e)
 
     # DATA SOURCE ('default' -> Pikachu, 'cifar' -> CIFAR)
     DATA_SOURCE = 'cifar'
@@ -129,28 +144,29 @@ if __name__ == '__main__':
     settings.epochs = int(input("Enter amount of epochs: "))
 
     # INITIAL DT PARAMETERS
-    num_actions=5
+    num_actions=1
 
-    init_factor = int(input("init factor: "))
-    max_init_iter = int(input("max init iter: "))
-    e=300
+    init_factor = 20
+    max_init_iter = 1
     settings.max_init_iter = max_init_iter
     INIT_ITER = init_factor*e
     #settings.init_dt_array = exp_alai(.5,INIT_ITER,1,5)
-    settings.init_dt_array =  Alaising(1,5,INIT_ITER)
+    settings.init_dt_array =  Alaising(1,7,INIT_ITER)
 
 
     # JOINED DT PARAMETERS
     JOINED_ITER = 4*e
     #settings.joined_dt_array = Alaising(2,6,e)
-    settings.joined_dt_array = Alaising(1.2,5,JOINED_ITER)
+    settings.joined_dt_array = Alaising(1.2,7,JOINED_ITER)
     settings.max_joined_iter = 1
 
     # BEST DT PARAMETERS
-    BEST_ITER = 7*e
+    BEST_ITER = 10*e
     #settings.best_dt_array = Alaising(2,6,e)
-    settings.best_dt_array = Alaising(1.2,5,BEST_ITER)
-    settings.max_best_iter = 1
+    #best_dt_max = float(input("max dt (best): "))
+    settings.best_dt_array = Alaising(1.2,7,BEST_ITER)
+    settings.max_best_iter = int(input("max best iter: "))
+
 
     # dropout parameter
     settings.dropout_value = float(input("dropout value: "))
@@ -171,8 +187,8 @@ if __name__ == '__main__':
 
     list_conditions={DNA_conditions.max_filter : 530,
             DNA_conditions.max_filter_dense : 530,
-            DNA_conditions.max_kernel_dense : 1,
-            DNA_conditions.max_layer : 30,
+            DNA_conditions.max_kernel_dense : 60,
+            DNA_conditions.max_layer : 60,
             DNA_conditions.min_filter : 0,
             DNA_conditions.max_parents : 2}
 
@@ -219,7 +235,14 @@ if __name__ == '__main__':
 
     # DROPOUT FUNCTION
 
-    settings.dropout_function = dropout_function
+    #value = int(input("use dropout constant? (1 -> yes, 0 -> no): "))
+
+    #function = dropout_function
+    
+    #if value == 1:
+    #    function = dropout_function_constant
+
+    settings.dropout_function = dropout_function_constant
     # INITIAL DNA
 
     """
@@ -248,7 +271,18 @@ if __name__ == '__main__':
                                              (3, 28, 29), (3, 23, 29), (3, 27, 29), (3, 29, 30), (3, 30, 31))
 
     """
-    settings.initial_dna =   DNAs.DNA_calibration_2
+    settings.initial_dna = ((-1, 1, 3, 32, 32), (0, 3, 32, 3, 3), (0, 32, 32, 2, 2), (0, 32, 32, 3, 3), (0, 32, 32, 3, 3), 
+                    (0, 32, 32, 3, 3), (0, 32, 256, 4, 4, 2), (0, 288, 32, 3, 3), (0, 32, 64, 3, 3, 2), (0, 64, 64, 6, 6), 
+                    (0, 256, 32, 3, 3), (0, 64, 128, 3, 3), (0, 128, 64, 3, 3, 2), (0, 64, 128, 3, 3), (0, 192, 512, 3, 3, 2), 
+                    (0, 512, 512, 3, 3), (0, 512, 512, 3, 3), (0, 512, 256, 4, 4), (0, 320, 128, 3, 3), (0, 512, 256, 3, 3), 
+                    (0, 320, 512, 3, 3), (0, 64, 64, 3, 3), (0, 64, 128, 3, 3), (0, 512, 512, 4, 4), (0, 512, 512, 3, 3), 
+                    (0, 576, 512, 3, 3), (0, 512, 128, 16, 16), (1, 128, 10), (2,), (3, -1, 0), (3, 0, 1), (3, 1, 2), 
+                    (3, 2, 3), (3, 3, 4), (3, 4, 5), (3, 0, 6), (3, 5, 6), (3, 6, 7), (3, 7, 8), (3, 5, 9), (3, 8, 10), 
+                    (3, 10, 11), (3, 9, 11), (3, 11, 12), (3, 7, 13), (3, 12, 13), (3, 13, 14), (3, 14, 15), (3, 15, 16), 
+                    (3, 11, 16), (3, 16, 17), (3, 11, 17), (3, 17, 18), (3, 13, 18), (3, 18, 19), (3, 7, 19), (3, 7, 20), 
+                    (3, 20, 21), (3, 19, 22), (3, 21, 22), (3, 22, 23), (3, 23, 24), (3, 7, 24), (3, 24, 25), (3, 26, 27))
+
+    settings.ricap = Augmentation_Utils.Ricap(beta=0.3)
 
     """
     settings.initial_dna =   ((-1, 1, 3, 32, 32), (0, 3, 32, 3, 3),(0, 32, 64, 3, 3, 2), (0, 64, 128, 3, 3, 2),
@@ -277,10 +311,6 @@ if __name__ == '__main__':
     settings.save_txt = True
 
     settings.disable_mutation = True
-    settings.eps_batchorm = 0.001
-    
-    model_name = "339_test_crops_paper_model_0"
-    settings.loadedNetwork = NetworkStorage.loadNetwork(fileName=model_name, settings=settings)
 
     print("**** WARNING DISABLE MUTATION = ", settings.disable_mutation)
     trainer = CommandExperimentCifar_Restarts.CommandExperimentCifar_Restarts(settings=settings)

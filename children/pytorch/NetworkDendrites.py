@@ -364,6 +364,66 @@ class Network(nn.Module, na.NetworkAbstract):
 
             print("epoch time: ", (end_time - start_time))
 
+    def trainingWarmRestarts(self, dataGenerator, dt_max, dt_min, epochs, restar_period, ricap=None, evalLoss=False, fileManager=None):
+
+        try:
+            iters = len(dataGenerator._trainoader)
+            print_every = iters // 4
+            start = time.time()
+            restarts = int(restar_period*iters) 
+            
+            self.optimizer = optim.SGD(self.parameters(), lr=dt_max, momentum=self.momentum, weight_decay=self.weight_decay)
+            
+            scheduler = optim.lr_scheduler.CosineAnnealingLR(self.optimizer, restarts, eta_min=dt_min)
+            for epoch in range(epochs):
+
+                
+                if evalLoss == True:
+                    self.eval_iter = iter(dataGenerator._evalloader)
+                
+                for i, data in enumerate(dataGenerator._trainoader):
+                    
+                    if self.cudaFlag == True:
+                        inputs, labels_data = data[0].cuda(), data[1].cuda()
+                    else:
+                        inputs, labels_data = data[0], data[1]
+                    
+                    
+                    if ricap == None:
+                        self.__doTraining(inputs=inputs, labels_data=labels_data)
+                    else:
+                        self.__doTrainingRICAP(inputs=inputs, labels_data=labels_data, ricap=ricap)
+
+                    scheduler.step()
+
+                    if evalLoss == False:
+                        self.history_loss.append(self.total_value)
+                    else:
+                        self.__generateEvalLoss(dataGenerator)
+                            
+                    if print_every > 0:
+
+                        if i % print_every == print_every - 1 or i == 0 or i == iters - 1 or i == iters or i == iters + 1:
+                            
+                            end_time = time.time() - start
+                            self.__printValues(epoch=epoch+1, i=i, avg=print_every, end_time=end_time)
+                            start = time.time()
+
+                if epoch % restar_period == restar_period - 1:
+                    
+                    self.optimizer = optim.SGD(self.parameters(), lr=dt_max, momentum=self.momentum, weight_decay=self.weight_decay)
+                    scheduler = optim.lr_scheduler.CosineAnnealingLR(self.optimizer, restarts, eta_min=dt_min)
+                    self.generateEnergy(dataGenerator)
+                    print("Current Accuracy: ", self.getAcurracy())
+
+                    if fileManager is not None:
+                        fileManager.appendFile("iter: "+str(i+1)+" - Acc: "+str(self.getAcurracy())+" - Loss: "+str(self.getAverageLoss(print_every)))
+
+        except:
+            print("ERROR TRAINING")
+            print("DNA: ", self.adn)
+            raise
+
     def iterTraining(self, dataGenerator, dt_array, ricap=None, evalLoss=False):
 
         try:

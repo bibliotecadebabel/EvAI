@@ -88,33 +88,30 @@ def Test_Mutacion():
         augSettings.translate : True,
     }
 
+    PARENT_DNA = ((-1, 1, 3, 32, 32), (0, 3, 64, 3, 3),(0, 64, 64, 3, 3, 2), (0, 64, 64, 3, 3, 2),
+                            (0, 64, 64, 3, 3),(0, 64, 64, 8, 8),
+                            (1, 64, 10),
+                            (2,),
+                            (3, -1, 0),
+                            (3, 0, 1),
+                            (3, 1, 2),
+                            (3, 2, 3),
+                            (3, 3, 4),
+                            (3, 5, 6))
+
     transform_compose = augSettings.generateTransformCompose(list_transform, False)
-    dataGen = GeneratorFromCIFAR.GeneratorFromCIFAR(2,  4, threads=0, dataAugmentation=True, transforms_mode=transform_compose)
+    dataGen = GeneratorFromCIFAR.GeneratorFromCIFAR(2,  64, threads=0, dataAugmentation=True, transforms_mode=transform_compose)
     dataGen.dataConv2d()
     
     version = directions_version.CONVEX_VERSION
 
-    mutation_manager = MutationManager.MutationManager(directions_version=version)
+    #mutation_manager = MutationManager.MutationManager(directions_version=version)
     
     parent_network = nw_dendrites.Network(adn=PARENT_DNA, cudaFlag=True, momentum=0.9, weight_decay=0, 
                 enable_activation=True, enable_track_stats=True, dropout_value=0.2, dropout_function=None, version=version)
 
-    kid_num = 1
-
-    while True:
-
-        for i in range(6):
-            print("layer (spread convex): ", i)
-            mutate_dna = direction_dna.spread_convex_dendrites(i, parent_network.adn)
-            print("mutation dna: ", mutate_dna)
-            mutate_network = mutation_manager.executeMutation(parent_network, mutate_dna)
-            memoryManager.deleteNetwork(mutate_network)
-
-            print("layer: ", i)
-            mutate_dna = direction_dna.spread_dendrites(i, parent_network.adn)
-            print("mutation dna: ", mutate_dna)
-            mutate_network = mutation_manager.executeMutation(parent_network, mutate_dna)
-            memoryManager.deleteNetwork(mutate_network)
+    parent_network.trainingWarmRestarts(dataGenerator=dataGen, dt_max=0.05, dt_min=0.0000001, epochs=10, 
+                                        restar_period=2, ricap=None, evalLoss=False)
             
 
         
@@ -279,7 +276,7 @@ def Test_param_calculator():
     print("total params: ", total_params)  
 
 if __name__ == "__main__":
-    #Test_Mutacion()
+    Test_Mutacion()
     #TestMemoryManager()
-    Test_Convex()
+    #Test_Convex()
     #Test_param_calculator()

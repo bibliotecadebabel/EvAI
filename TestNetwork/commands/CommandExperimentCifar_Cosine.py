@@ -123,10 +123,12 @@ class CommandExperimentCifar_Restarts():
         for i in range(max_iter):
             print("iteration: ", i+1)
             network.iterTraining(self.__settings.dataGen, dt_array, self.__settings.ricap)
-            #network.Training(data=self.__settings.dataGen, dt=dt_array, p=len(dt_array), full_database=True)
             network.generateEnergy(self.__settings.dataGen)
             current_accuracy = network.getAcurracy()
             print("current accuracy=", current_accuracy)
+
+            network.trainingWarmRestarts(dataGenerator=self.__settings.dataGen, dt_max=0.05, dt_min=0.0000001, epochs=10, 
+                                        restar_period=2, ricap=None, evalLoss=False)
 
             if allow_save_txt == True and self.__settings.save_txt == True:
                 loss = network.getAverageLoss(avg_factor)

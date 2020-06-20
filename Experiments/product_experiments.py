@@ -203,7 +203,7 @@ def run_cifar_user_input_bidi(save = False):
 
     #status.Center=DNAs.non_lin_20
 
-    status.Center = DNAs.DNA_base_2
+    status.Center = DNAs.DNA_base
     status.settings=settings
     program.run(status)
 
