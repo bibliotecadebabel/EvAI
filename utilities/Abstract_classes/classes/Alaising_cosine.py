@@ -66,6 +66,10 @@ class Damped_Alaising():
         self.current_min=initial_min
         self.local_time=0
         self.type='dampening'
+    def pcos(self,x):
+        if x>np.pi:
+            x=x-np.pi
+        return np.cos(x)
 
     def get_increments(self,size,update=True):
         m=self.current_min
@@ -89,7 +93,7 @@ class Damped_Alaising():
                 Alai.rewind()
             ouput=output.reverse()
             return output
-        return m+1/2*(M-m)*(1+pcos(t_o/t_M*np.pi))
+        return m+1/2*(M-m)*(1+self.pcos(t_o/t_M*np.pi))
 
     def update_amplitude(self):
         n=self.Max_iter

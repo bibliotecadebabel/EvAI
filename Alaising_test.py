@@ -12,11 +12,14 @@ def get_Damped_test_ep():
 
 
 def get_Damped_test():
-    Alai=Damped_Alaising(Max_iter=100)
+    Alai=Alai=Damped_Alaising(initial_max=0.1,final_max=0.05,
+        initial_min=10**(-99),final_min=10**(-99),Max_iter=100)
     print(Alai.initial_period)
-    print(Alai.get_increments(100,update=False))
+    increments=Alai.get_increments(225)
+    for k in range(224):
+        print(f'epoc {k}: dt_i= {increments[k]},f dt_f={increments[k+1]}')
     #print(Alai.get_increments(-n))
-    return
+
 
 def Damped_test():
     Alai=Damped_Alaising()
@@ -46,7 +49,7 @@ def compilation_test():
     print('done')
 
 #Damped_initialiciation_test()
-#get_Damped_test_ep()
-get_increment_log(5)
+get_Damped_test()
+#get_increment_log(5)
 #update_test()
 #compilation_test()
