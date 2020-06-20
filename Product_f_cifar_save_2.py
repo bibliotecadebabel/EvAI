@@ -346,7 +346,7 @@ def run(status):
                     L_2 += 1
                     saveModel(status, k+1, testModelDao, test_id)
             
-            if layers_count >= status.max_layer_conv2d:
+            if layers_count >= status.max_layer_conv2d - 1:
                 print("stopped with center: ", center_dna)
                 break
             #status.print_particles()
