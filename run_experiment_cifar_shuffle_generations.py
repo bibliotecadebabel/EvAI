@@ -167,9 +167,10 @@ if __name__ == '__main__':
     num_actions=8
     settings.save_txt = True
     settings.max_init_iter = 1
-    INIT_ITER = 224*e
-    alai_w=Alai_win(itial_max=0.1,final_max=0.05,
+    INIT_ITER = 100*e
+    alai_w=Alai_w(itial_max=0.1,final_max=0.05,
         initial_min=10**(-99),final_min=10**(-99),Max_iter=INIT_ITER)
+    settings.init_dt_array = Alai.get_increments(225*e)
     #settings.init_dt_array = exp_alai(1,INIT_ITER,1,7)
     #settings.init_dt_array =  Alaising(1.2,7,INIT_ITER)
 
