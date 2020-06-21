@@ -269,7 +269,7 @@ if __name__ == '__main__':
                                              (3, 28, 29), (3, 23, 29), (3, 27, 29), (3, 29, 30), (3, 30, 31))
 
     """
-    settings.initial_dna = DNAs.DNA_random_25morphism
+    settings.initial_dna = DNAs.DNA_val_20
 
     settings.ricap = Augmentation_Utils.Ricap(beta=0.3)
 

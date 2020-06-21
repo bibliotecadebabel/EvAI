@@ -275,8 +275,19 @@ def Test_param_calculator():
         
     print("total params: ", total_params)  
 
+def TimeCalculator():
+
+    start_time = 1592708152.3694825
+    pretraining_end_time = 1592708379.8217592
+    mutation_end_time = 1592716542.878465
+
+    print("pre training time: ", (pretraining_end_time - start_time))
+    print("mutation time: ", (mutation_end_time - pretraining_end_time))
+    print("total time: ", (mutation_end_time - start_time))
+
 if __name__ == "__main__":
-    Test_Mutacion()
+    #Test_Mutacion()
     #TestMemoryManager()
     #Test_Convex()
     #Test_param_calculator()
+    TimeCalculator()
