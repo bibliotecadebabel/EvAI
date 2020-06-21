@@ -10,6 +10,7 @@ import time
 import utilities.FileManager as FileManager
 import torch
 import utilities.MemoryManager as MemoryManager
+import const.training_type as TrainingType
 
 class CommandExperimentCifar_Restarts():
 
@@ -168,9 +169,8 @@ class CommandExperimentCifar_Restarts():
 
     def execute(self):
 
-        test_id = self.__testDao.insert(testName=self.__settings.test_name, periodSave=self.__settings.period_save_space, 
-                                    dt=self.__settings.init_dt_array[0], total=self.__settings.epochs, 
-                                    periodCenter=self.__settings.period_new_space)
+        test_id = self.__testDao.insert(testName=self.__settings.test_name, dt=self.__settings.init_dt_array[0], 
+                                            dt_min=self.__settings.init_dt_array[-1], batch_size=self.__settings.batch_size)
 
 
         print("TRAINING INITIAL NETWORK")
@@ -180,7 +180,7 @@ class CommandExperimentCifar_Restarts():
         self.__bestNetwork = self.__trainNetwork(network=self.__bestNetwork, 
                     dt_array=self.__settings.init_dt_array, max_iter=self.__settings.max_init_iter, keep_clone=True, allow_save_txt=True)
         
-        self.__saveModel(self.__bestNetwork, test_id=test_id, iteration=0)
+        self.__saveModel(self.__bestNetwork, test_id=test_id, iteration=0, trainingType=TrainingType.PRE_TRAINING)
 
         if self.__settings.disable_mutation == False:
 
@@ -200,7 +200,7 @@ class CommandExperimentCifar_Restarts():
 
                 self.__bestNetwork = self.__getBestNetwork()
 
-                self.__saveModel(network=self.__bestNetwork, test_id=test_id, iteration=j)
+                self.__saveModel(network=self.__bestNetwork, test_id=test_id, iteration=j, trainingType=TrainingType.MUTATION)
                 
                 self.__generateNewSpace()
                 self.__generateNetworks()
@@ -211,7 +211,8 @@ class CommandExperimentCifar_Restarts():
         self.__bestNetwork = self.__trainNetwork(network=self.__bestNetwork, 
                     dt_array=self.__settings.best_dt_array, max_iter=self.__settings.max_best_iter, keep_clone=True, allow_save_txt=True)
 
-        self.__saveModel(network=self.__bestNetwork, test_id=test_id, iteration=self.__settings.epochs+1)
+        self.__saveModel(network=self.__bestNetwork, test_id=test_id, iteration=self.__settings.epochs+1, 
+                            trainingType=TrainingType.POST_TRAINING)
 
     def __getBestNetwork(self):
 
@@ -258,7 +259,7 @@ class CommandExperimentCifar_Restarts():
         self.__space = None
         self.__space = newSpace
 
-    def __saveModel(self, network, test_id, iteration):
+    def __saveModel(self, network, test_id, iteration, trainingType):
 
         network.generateEnergy(self.__settings.dataGen)
         fileName = str(test_id)+"_"+self.__settings.test_name+"_model_"+str(iteration)
@@ -269,5 +270,6 @@ class CommandExperimentCifar_Restarts():
 
         network.saveModel(final_path)
 
-        self.__testModelDao.insert(idTest=test_id,dna=dna,iteration=iteration,fileName=fileName, model_weight=accuracy)
+        self.__testModelDao.insert(idTest=test_id,dna=dna,iteration=iteration,fileName=fileName, model_weight=accuracy,
+                                    training_type=trainingType)
         print("model saved with accuarcy= ", accuracy)

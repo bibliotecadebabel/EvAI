@@ -58,7 +58,14 @@ def DNA_Creator_s(x,y, dna, version):
         return DNA_conditions.dict2condition(DNA,list_conditions)
 
     center=dna
-    mutations=((4,0,0,0),(1,0,0,0),(0,0,1),(0,0,2),(0,1,0,0))
+    mutations=(
+    (1,0,0,0),(1,0,0,0),
+    (0,1,0,0),(0,1,0,0),
+    (4,0,0,0),
+    (0,0,1),(0,0,-1),
+    (0,0,1,1),(0,0,-1,-1),
+    (0,0,2)
+    )
     sel=Selector_creator(condition=condition,
         directions=version,mutations=mutations,num_actions=num_actions)
     print('The selector is')
@@ -66,7 +73,7 @@ def DNA_Creator_s(x,y, dna, version):
     sel.update(center)
     actions=sel.get_predicted_actions()
     creator=Creator_nm
-    space=DNA_Graph(center,1,(x,y),condition,actions,version,creator=creator,num_morphisms=5,selector=sel)
+    space=DNA_Graph(center,1,(x,y),condition,actions,version,creator=creator,num_morphisms=1,selector=sel)
     
     return [space, sel]
 
@@ -107,7 +114,7 @@ if __name__ == '__main__':
     # EPOCHS
     settings.epochs = int(input("Enter amount of epochs: "))
 
-    num_actions=8
+    num_actions=1
 
     settings.batch_size = int(input("Enter batchsize: "))
     e =  50000 / settings.batch_size
@@ -115,7 +122,7 @@ if __name__ == '__main__':
     print("e = ", e)
 
     # INITIAL DT PARAMETERS
-    max_init_iter = 1
+    max_init_iter = 0
     settings.max_init_iter = max_init_iter
     INIT_ITER = 20*e
     #settings.init_dt_array = exp_alai(.5,INIT_ITER,1,5)
@@ -126,13 +133,13 @@ if __name__ == '__main__':
     JOINED_ITER = 17*e
     #settings.joined_dt_array = Alaising(2,6,e)
     settings.joined_dt_array = Alaising(1.2,7,JOINED_ITER)
-    settings.max_joined_iter = 1
+    settings.max_joined_iter = 0
 
     # BEST DT PARAMETERS
     BEST_ITER = 10*e
     #settings.best_dt_array = Alaising(2,6,e)
     settings.best_dt_array = Alaising(1.2,7,BEST_ITER)
-    settings.max_best_iter = 360
+    settings.max_best_iter = 0
 
     # dropout parameter
     settings.dropout_value = float(input("dropout value: "))
@@ -156,11 +163,12 @@ if __name__ == '__main__':
                             (3, 4, 5))
                             
     list_conditions={DNA_conditions.max_filter : 530,
-            DNA_conditions.max_filter_dense : 130,
-            DNA_conditions.max_kernel_dense : 17,
-            DNA_conditions.max_layer : 60,
-            DNA_conditions.min_filter : 0,
-            DNA_conditions.max_parents : 2}
+            DNA_conditions.max_filter_dense : 260,
+            DNA_conditions.max_kernel_dense : 9,
+            DNA_conditions.max_layer : 200,
+            DNA_conditions.min_filter : 3,
+            DNA_conditions.max_parents : 2,
+            DNA_conditions.no_con_last_layer : 1}
 
     # TEST_NAME, the name of the experiment (unique)
     settings.test_name = input("Enter TestName: ")
