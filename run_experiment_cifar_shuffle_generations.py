@@ -166,13 +166,13 @@ if __name__ == '__main__':
     # INITIAL DT PARAMETERS
     num_actions=8
     settings.save_txt = True
-    settings.max_init_iter = 1
-    INIT_ITER = 100*e
-    alai_w=Alai_w(intial_max=0.1,final_max=0.05,
-        initial_min=10**(-99),final_min=10**(-99),Max_iter=INIT_ITER)
-    settings.init_dt_array = Alai.get_increments(225*e)
+    settings.max_init_iter = 360
+    INIT_ITER = 200*e
+    #alai_w=Alai_w(initial_max=0.1,final_max=0.05,
+    #    initial_min=10**(-99),final_min=10**(-99),Max_iter=INIT_ITER)
+    #settings.init_dt_array = alai_w.get_increments(225*e)
     #settings.init_dt_array = exp_alai(1,INIT_ITER,1,7)
-    #settings.init_dt_array =  Alaising(1.2,7,INIT_ITER)
+    settings.init_dt_array =  Alaising(1.2,99,INIT_ITER)
 
 
     # JOINED DT PARAMETERS
@@ -182,10 +182,10 @@ if __name__ == '__main__':
     settings.max_joined_iter = 1
 
     # BEST DT PARAMETERS
-    BEST_ITER = 100*e
+    BEST_ITER = 0*e
     #settings.best_dt_array = Alaising(2,6,e)
     settings.best_dt_array = Alaising(1.2,99,BEST_ITER)
-    settings.max_best_iter = 360
+    settings.max_best_iter = 0
 
     # dropout parameter
     #settings.dropout_value = float(input("dropout value: "))
@@ -288,7 +288,7 @@ if __name__ == '__main__':
 
     #settings.initial_dna =   DNAs.DNA_ep25
 
-    settings.initial_dna = DNAs.DNA_calibration_3
+    settings.initial_dna = DNAs.DNA_val_20
 
 
     """
