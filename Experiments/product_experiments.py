@@ -40,10 +40,10 @@ def run_cifar_user_input_bidi(save = False):
 
     status=program.Status()
     
-    status.max_layer_conv2d = int(input("Max layers (conv2d) condition: "))
+    status.max_layer_conv2d = 200
     status.max_filter = 530
-    status.max_filter_dense = 130
-    status.max_kernel_dense = 17
+    status.max_filter_dense = 270
+    status.max_kernel_dense = 9
     status.max_pool_layer = 4
     status.max_parents = 2
 
@@ -210,7 +210,7 @@ def run_cifar_user_input_bidi(save = False):
 
     #status.Center=DNAs.non_lin_20
 
-    status.Center = DNAs.DNA_base_3
+    status.Center = DNAs.DNA_base_2
     status.settings=settings
     program.run(status)
 

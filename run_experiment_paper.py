@@ -112,7 +112,7 @@ if __name__ == '__main__':
     settings.period_save_model = 1
 
     # EPOCHS
-    settings.epochs = int(input("Enter amount of epochs: "))
+    settings.epochs = 25
 
     num_actions=1
 
