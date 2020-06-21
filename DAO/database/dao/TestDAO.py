@@ -47,7 +47,7 @@ class TestDAO():
 
     def findAll(self):
         
-        query = """SELECT * FROM test"""
+        query = """SELECT * FROM test order by id DESC"""
 
         rows = self.__handler.executeQuery(query)
 

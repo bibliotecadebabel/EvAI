@@ -18,6 +18,7 @@ import TestNetwork.AugmentationSettings as AugmentationSettings
 import utilities.MemoryManager as MemoryManager
 #import test_DNAs
 import torch
+import time
 import gc
 
 def dropout_function(base_p, total_conv2d, index_conv2d):
@@ -281,6 +282,8 @@ def TimeCalculator():
     pretraining_end_time = 1592708379.8217592
     mutation_end_time = 1592716542.878465
 
+    date_time = time.strftime('%Y-%m-%d %H:%M:%S', time.localtime(start_time))
+    print("Test Date: ", date_time)
     print("pre training time: ", (pretraining_end_time - start_time))
     print("mutation time: ", (mutation_end_time - pretraining_end_time))
     print("total time: ", (mutation_end_time - start_time))

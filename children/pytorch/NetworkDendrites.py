@@ -49,6 +49,7 @@ class Network(nn.Module, na.NetworkAbstract):
         self.__currentEpoch = 0
         self.optimizer = optim.SGD(self.parameters(), lr=0.1, momentum=self.momentum, weight_decay=self.weight_decay)
         self.eval_iter = None  
+        self.acc_array = []
           
     def __defaultDropoutFunction(self, base_p, total_layers, index_layer, isPool=False):
 
@@ -430,6 +431,8 @@ class Network(nn.Module, na.NetworkAbstract):
     def iterTraining(self, dataGenerator, dt_array, ricap=None, evalLoss=False):
 
         try:
+            save_acc = False
+            current_epoch = 0
             iters = len(dt_array)
 
             print_every = iters // 4
@@ -444,7 +447,7 @@ class Network(nn.Module, na.NetworkAbstract):
             while i < iters:
                 
                 try:
-                    
+                                        
                     data = next(data_iter)
 
                     self.optimizer = optim.SGD(self.parameters(), lr=dt_array[i], momentum=self.momentum, weight_decay=self.weight_decay)
@@ -477,6 +480,8 @@ class Network(nn.Module, na.NetworkAbstract):
                     i+= 1
 
                 except StopIteration:
+                    current_epoch += 1
+                    save_acc = True
                     data_iter = iter(dataGenerator._trainoader)
 
         except:
@@ -790,6 +795,10 @@ class Network(nn.Module, na.NetworkAbstract):
         else:
             print("[{:d}, {:d}, lr={:.10f}, Loss={:.10f}, Time={:.4f}]".format(epoch, i+1, self.optimizer.param_groups[0]['lr'], self.getAverageLoss(avg), end_time))
     
+    def __printAcc(self, epoch, acc):
+        print("[Epoch={:d}, lr={:.10f}, Acc={:.4f}]".format(epoch, self.optimizer.param_groups[0]['lr'], acc))
+    
+
     def deleteParameters(self):
         
         for node in self.nodes:
