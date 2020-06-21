@@ -10,6 +10,7 @@ import os
 import time
 import utilities.FileManager as FileManager
 import torch
+import const.training_type as TrainingType
 
 class CommandExperimentCifar_Restarts():
 
@@ -135,10 +136,9 @@ class CommandExperimentCifar_Restarts():
         return network
 
     def execute(self):
-
-        test_id = self.__testDao.insert(testName=self.__settings.test_name, periodSave=self.__settings.period_save_space,
-                                    dt=self.__settings.init_dt_array[0], total=self.__settings.epochs,
-                                    periodCenter=self.__settings.period_new_space)
+        
+        test_id = self.__testDao.insert(testName=self.__settings.test_name, dt=self.__settings.init_dt_array[0], 
+                dt_min=self.__settings.init_dt_array[-1], batch_size=self.__settings.batch_size)
 
 
         print("TRAINING INITIAL NETWORK")
@@ -241,5 +241,7 @@ class CommandExperimentCifar_Restarts():
 
         network.saveModel(final_path)
 
-        self.__testModelDao.insert(idTest=test_id,dna=dna,iteration=iteration,fileName=fileName, model_weight=accuracy)
+        self.__testModelDao.insert(idTest=test_id,dna=dna,iteration=iteration,fileName=fileName, model_weight=accuracy, 
+                                training_type=TrainingType.POST_TRAINING)
+
         print("model saved with accuarcy= ", accuracy)

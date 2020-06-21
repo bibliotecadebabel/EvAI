@@ -13,7 +13,6 @@ def executeMutation(oldNetwork, newAdn):
     fileManager = FileManager.FileManager()
     fileManager.setFileName("dnas_mutation_error.txt")
     try:
-        raise Exception
         network = nw.Network(newAdn, cudaFlag=oldNetwork.cudaFlag, momentum=oldNetwork.momentum,
                                 weight_decay=oldNetwork.weight_decay, enable_activation=oldNetwork.enable_activation,
                                 enable_track_stats=oldNetwork.enable_track_stats, dropout_value=oldNetwork.dropout_value,
