@@ -41,13 +41,19 @@ def run_cifar_user_input_bidi(save = False):
     status=program.Status()
     
     status.max_layer_conv2d = int(input("Max layers (conv2d) condition: "))
-    list_conditions={DNA_conditions.max_filter : 530,
-            DNA_conditions.max_filter_dense : 130,
-            DNA_conditions.max_kernel_dense : 17,
+    status.max_filter = 530
+    status.max_filter_dense = 130
+    status.max_kernel_dense = 17
+    status.max_pool_layer = 4
+    status.max_parents = 2
+
+    list_conditions={DNA_conditions.max_filter : status.max_filter,
+            DNA_conditions.max_filter_dense : status.max_filter_dense,
+            DNA_conditions.max_kernel_dense : status.max_kernel_dense,
             DNA_conditions.max_layer : status.max_layer_conv2d,
             DNA_conditions.min_filter : 3,
-            DNA_conditions.max_pool_layer : 4,
-            DNA_conditions.max_parents : 2,
+            DNA_conditions.max_pool_layer : status.max_pool_layer,
+            DNA_conditions.max_parents : status.max_parents,
             DNA_conditions.no_con_last_layer : 1,
             }
     def condition(DNA):
@@ -146,7 +152,7 @@ def run_cifar_user_input_bidi(save = False):
     status.max_iter=400000
     status.restart_period=18*status.iterations_per_epoch
     status.max_layer=8
-    status.max_filter=51
+    #status.max_filter=51
     from utilities.Abstract_classes.classes.uniform_random_selector_2 import (
         centered_random_selector as Selector)
     status.mutations=(

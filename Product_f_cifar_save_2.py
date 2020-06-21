@@ -30,6 +30,7 @@ from utilities.Abstract_classes.classes.Alaising_cosine import (
 
 import os
 from DAO.database.dao import TestDAO, TestResultDAO, TestModelDAO
+import const.training_type as TrainingType
 
 
 update_force_field=None
@@ -40,7 +41,6 @@ class Status():
         self.dt_min=0.0001
         self.max_iter=250
         self.max_layer=7
-        self.max_filter=51
         self.update_force_field=update_force_field
         self.condition=None
         self.experiment_name='experiment_cifar'
@@ -100,7 +100,14 @@ class Status():
         y=32
         self.Center=None
         self.iterations_per_epoch = 0
+
+        ## CONDITIONS
         self.max_layer_conv2d = 0
+        self.max_filter_dense = 0
+        self.max_filter=51
+        self.max_kernel_dense = 0
+        self.max_pool_layer = 0
+        self.max_parents = 2
 
 
 
@@ -260,7 +267,7 @@ def run(status):
     testModelDao = TestModelDAO.TestModelDAO()
     print("cuda=", status.cuda)
 
-    print("max layers: ", status.max_layer_conv2d - 1)
+    print("max layers: ", status.max_layer_conv2d)
 
     settings = status.settings
     network = nw.Network(status.Center,cudaFlag=settings.cuda,
@@ -279,19 +286,24 @@ def run(status):
     print("iterations per epoch = ", status.iterations_per_epoch)
     dt_array=status.Alai.get_increments(20*status.iterations_per_epoch)
 
+    if status.save2database == True:
+        test_id = testDao.insert(testName=status.experiment_name, dt=status.dt_Max, dt_min=status.dt_min, batch_size=status.S,
+                max_layers=status.max_layer_conv2d, max_filters=status.max_filter, max_filter_dense=status.max_filter_dense,
+                max_kernel_dense=status.max_kernel_dense, max_pool_layer=status.max_pool_layer, max_parents=status.max_parents)
+
     network.iterTraining(dataGenerator=status.Data_gen,
                     dt_array=dt_array, ricap=settings.ricap, evalLoss=settings.evalLoss)
 
-    network.generateEnergy(status.Data_gen)
-    print("pre training acc: ", network.getAcurracy())
-    time.sleep(2)
     status.stream.add_node(network.adn)
-    status.stream.link_node(network.adn,network)
-    
+    status.stream.link_node(network.adn, network)
 
     if status.save2database == True:
-        test_id = testDao.insert(testName=status.experiment_name, periodSave=status.save_space_period, dt=status.dt_Max,
-                                          total=status.max_iter, periodCenter=1)
+        dna_graph = status.Dynamics.phase_space.DNA_graph
+        testResultDao.insert(idTest=test_id, iteration=0, dna_graph=dna_graph, current_alai_time=status.Alai.computeTime(), 
+                                reset_count=status.Alai.reset_count)
+
+        saveModel(status, 0, testModelDao, test_id, TrainingType.PRE_TRAINING)  
+                            
     #update(status)
     while False:
         update(status)
@@ -300,8 +312,8 @@ def run(status):
         transfer=status.Transfer.status_transfer
         k=k+1
         pass
-    L_1 = 0
-    L_2 = 0
+    L_1 = 1
+    L_2 = 1
     while k<status.max_iter:
         #\begin{with gui}
         #status.Transfer.readLoad()
@@ -312,8 +324,8 @@ def run(status):
         if status.active:
             update(status)
             print(f'The iteration number is: {k}')
-            if k % 20 == 0:
-                status.print_accuracy()
+            #if k % 20 == 0:
+            #    status.print_accuracy()
             #status.print_energy()
             status.print_predicted_actions()
             if status.Alai:
@@ -339,14 +351,15 @@ def run(status):
                     print("saving space: ", L_1)
                     L_1 += 1
                     dna_graph = status.Dynamics.phase_space.DNA_graph
-                    testResultDao.insert(idTest=test_id, iteration=k+1, dna_graph=dna_graph)
+                    testResultDao.insert(idTest=test_id, iteration=k+1, dna_graph=dna_graph, current_alai_time=status.Alai.computeTime(), 
+                                            reset_count=status.Alai.reset_count)
 
-                if status.Alai.computeTime() >= L_2*status.save_net_period or layers_count >= status.max_layer_conv2d - 1:
+                if status.Alai.computeTime() >= L_2*status.save_net_period or layers_count >= status.max_layer_conv2d:
                     print("saving model: ", L_2)
                     L_2 += 1
-                    saveModel(status, k+1, testModelDao, test_id)
+                    saveModel(status, k+1, testModelDao, test_id, TrainingType.MUTATION)
             
-            if layers_count >= status.max_layer_conv2d - 1:
+            if layers_count >= status.max_layer_conv2d:
                 print("stopped with center: ", center_dna)
                 break
             #status.print_particles()
@@ -362,7 +375,7 @@ def run(status):
             pass
         k=k+1
 
-def saveModel(status, k, testModelDao, test_id):
+def saveModel(status, k, testModelDao, test_id, trainingType):
     fileName = str(test_id)+"_"+status.experiment_name+"_model_"+str(k)
     final_path = os.path.join("saved_models","product_database",fileName)
     stream=status.Dynamics.phase_space.stream
@@ -371,7 +384,9 @@ def saveModel(status, k, testModelDao, test_id):
         net=stream.get_net(center)
         net.saveModel(final_path)
         net.generateEnergy(status.Data_gen)
-        testModelDao.insert(idTest=test_id, dna=str(net.adn),iteration=k, fileName=fileName, model_weight=net.getAcurracy())
+        testModelDao.insert(idTest=test_id, dna=str(net.adn),iteration=k, fileName=fileName, model_weight=net.getAcurracy(),
+                                current_alai_time=status.Alai.computeTime(), reset_count=status.Alai.reset_count, 
+                                training_type=trainingType)
 
 """
 c=[]
