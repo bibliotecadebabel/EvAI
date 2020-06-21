@@ -316,6 +316,7 @@ def run(status):
     L_1 = 1
     L_2 = 1
 
+    save_6_layers = True
     save_17_layers = True
     save_18_layers = True
     save_19_layers = True
@@ -377,7 +378,11 @@ def run(status):
                     L_2 += 1
                     saveModel(status, k+1, testModelDao, test_id, TrainingType.MUTATION)
 
-                if layers_count >= 17 and save_17_layers == True:
+                if layers_count >= 6 and save_6_layers == True:
+                    save_checkpoint(status, testResultDao, layers_count, test_id, testModelDao, k)
+                    save_6_layers = False
+
+                elif layers_count >= 17 and save_17_layers == True:
                     save_checkpoint(status, testResultDao, layers_count, test_id, testModelDao, k)
                     save_17_layers = False
 
