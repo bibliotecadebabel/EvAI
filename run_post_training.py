@@ -12,6 +12,7 @@ import children.pytorch.NetworkDendrites as nw
 import utilities.FileManager as FileManager
 import DAO.database.dao.TestModelDAO as TestModelDAO
 import os
+import utilities.NetworkStorage as NetworkStorage
 
 ###### EXPERIMENT SETTINGS ######
 
@@ -41,7 +42,7 @@ def Alaising(M,m,ep):
 
 def saveModel(test, network, iteration):
 
-    fileName = str(test.id)+"_"+test.name+"_post-training-model_"+str(iteration)
+    fileName = str(test.id)+"_post-training-model_alai20332_"+str(iteration)
     final_path = os.path.join("saved_models","product_database", fileName)
 
     network.saveModel(final_path)
@@ -120,15 +121,7 @@ if __name__ == '__main__':
     settings.weight_decay = 0.0005
     settings.momentum = 0.9
     settings.dropout_function = dropout_function_constant
-    settings.initial_dna = ((-1, 1, 3, 32, 32), (0, 3, 256, 3, 3), (0, 256, 128, 3, 3), (0, 128, 128, 3, 3, 2), 
-                            (0, 128, 128, 3, 3), (0, 128, 128, 3, 3), (0, 128, 128, 3, 3), (0, 128, 128, 3, 3, 2), 
-                            (0, 256, 512, 3, 3), (0, 512, 128, 3, 3), (0, 256, 256, 2, 2), (0, 256, 512, 2, 2), 
-                            (0, 128, 256, 3, 3), (0, 256, 128, 4, 4), (0, 256, 128, 3, 3), (0, 128, 256, 3, 3), 
-                            (0, 512, 256, 3, 3, 2), (0, 256, 256, 3, 3, 2), (0, 512, 256, 4, 4), (0, 256, 128, 16, 16), 
-                            (1, 128, 10), (2,), (3, -1, 0), (3, 0, 1), (3, 1, 2), (3, -1, 2), (3, 2, 3), (3, 3, 4), 
-                            (3, 4, 5), (3, 5, 6), (3, 2, 7), (3, 6, 7), (3, 7, 8), (3, 0, 9), (3, 9, 10), (3, 2, 11), 
-                            (3, 8, 12), (3, 11, 12), (3, 12, 13), (3, 2, 13), (3, 13, 14), (3, 14, 15), (3, 10, 15), 
-                            (3, 15, 16), (3, 15, 17), (3, 16, 17), (3, 17, 18), (3, 18, 19), (3, 19, 20))
+    settings.eps_batchorm = 0.001
     
     # ENABLE_ACTIVATION, enable/disable relu
     ENABLE_ACTIVATION = int(input("Enable activation? (1 = yes, 0 = no): "))
@@ -169,24 +162,22 @@ if __name__ == '__main__':
 
     settings.dataGen = dataGen
     settings.save_txt = True
+    
 
     fileManager = FileManager.FileManager()
         
     if settings.save_txt == True:
-        fileManager.setFileName(selected_test.name)
+        fileManager.setFileName("post_training_"+selected_test.name)
         fileManager.writeFile("")
 
-    network = nw.Network(adn=settings.initial_dna, cudaFlag=settings.cuda,
-                                    momentum=settings.momentum, weight_decay=settings.weight_decay, 
-                                    enable_activation=settings.enable_activation, 
-                                    enable_track_stats=settings.enable_track_stats, dropout_value=settings.dropout_value,
-                                    dropout_function=settings.dropout_function, enable_last_activation=settings.enable_last_activation,
-                                    version=settings.version, eps_batchnorm=settings.eps_batchorm)
+    path = os.path.join("saved_models","product_database", "8_test_recover_final_experiment_1_model_2622")
+    network = NetworkStorage.loadNetwork(fileName=None, settings=settings, path=path)
 
     avg_factor = len(settings.init_dt_array) // 4
 
     network.generateEnergy(settings.dataGen)
     saveModel(test=selected_test, network=network, iteration=0)
+    
 
     for i in range(settings.max_init_iter):
         print("iteration: ", i+1)
