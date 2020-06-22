@@ -258,7 +258,7 @@ def run(status):
     status.Transfer=tran.TransferRemote(status,
         'remote2local.txt','local2remote.txt')
     #status.Transfer.readLoad()
-    print(f'status.settings is {status.settings}')l   
+    print(f'status.settings is {status.settings}')
 
     create_objects(status, loaded_network)
     print('The value of typos after loading is')
