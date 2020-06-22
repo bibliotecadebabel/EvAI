@@ -89,33 +89,22 @@ def Test_Mutacion():
         augSettings.translate : True,
     }
 
-    PARENT_DNA = ((-1, 1, 3, 32, 32), (0, 3, 64, 3, 3),(0, 64, 64, 3, 3, 2), (0, 64, 64, 3, 3, 2),
-                            (0, 64, 64, 3, 3),(0, 64, 64, 8, 8),
-                            (1, 64, 10),
-                            (2,),
-                            (3, -1, 0),
-                            (3, 0, 1),
-                            (3, 1, 2),
-                            (3, 2, 3),
-                            (3, 3, 4),
-                            (3, 5, 6))
+    PARENT_DNA = ((-1, 1, 3, 32, 32), (0, 3, 64, 4, 4), (0, 64, 64, 3, 3), (0, 64, 128, 3, 3, 2), (0, 128, 512, 3, 3, 2), (0, 512, 512, 4, 4), (0, 512, 128, 3, 3), (0, 256, 128, 3, 3), (0, 128, 128, 3, 3), (0, 256, 512, 3, 3, 2), (0, 1024, 512, 3, 3), (0, 512, 512, 3, 3), (0, 512, 512, 3, 3), (0, 512, 512, 3, 3), (0, 128, 128, 3, 3), (0, 640, 512, 2, 2), (0, 512, 256, 3, 3), (0, 768, 512, 4, 4, 2), (0, 512, 512, 3, 3), (0, 1024, 512, 4, 4), (0, 640, 512, 3, 3), (0, 512, 512, 3, 3), (0, 512, 512, 4, 4), (0, 512, 256, 8, 8), (1, 256, 10), (2,), (3, -1, 0), (3, 0, 1), (3, 1, 2), (3, 2, 3), (3, 3, 4), (3, 4, 5), (3, 5, 6), (3, 2, 6), (3, 6, 7), (3, 2, 8), (3, 7, 8), (3, 8, 9), (3, 4, 9), (3, 9, 10), (3, 3, 11), (3, 10, 12), (3, 11, 12), (3, 2, 13), (3, 12, 14), (3, 13, 14), (3, 2, 15), (3, 3, 15), (3, 14, 16), (3, 15, 16), (3, 12, 17), (3, 17, 18), (3, 16, 18), (3, 18, 19), (3, 5, 19), (3, 16, 20), (3, 19, 21), (3, 20, 21), (3, 21, 22), (3, 22, 23), (3, 23, 24))
+    MUTATE_DNA = ((-1, 1, 3, 32, 32), (0, 3, 64, 4, 4), (0, 64, 64, 3, 3), (0, 64, 128, 3, 3, 2), (0, 128, 512, 3, 3, 2), (0, 512, 512, 4, 4), (0, 512, 128, 3, 3), (0, 256, 128, 3, 3), (0, 128, 128, 3, 3), (0, 256, 512, 3, 3, 2), (0, 1024, 512, 3, 3), (0, 512, 512, 3, 3), (0, 512, 512, 3, 3), (0, 512, 512, 3, 3), (0, 128, 128, 3, 3), (0, 640, 512, 2, 2), (0, 128, 256, 3, 3), (0, 768, 512, 4, 4, 2), (0, 512, 512, 3, 3), (0, 1024, 512, 4, 4), (0, 640, 512, 3, 3), (0, 512, 512, 3, 3), (0, 512, 512, 4, 4), (0, 512, 256, 8, 8), (1, 256, 10), (2,), (3, -1, 0), (3, 0, 1), (3, 1, 2), (3, 2, 3), (3, 3, 4), (3, 4, 5), (3, 5, 6), (3, 2, 6), (3, 6, 7), (3, 2, 8), (3, 7, 8), (3, 8, 9), (3, 4, 9), (3, 9, 10), (3, 3, 11), (3, 10, 12), (3, 11, 12), (3, 2, 13), (3, 12, 14), (3, 13, 14), (3, 2, 15), (3, 14, 16), (3, 15, 16), (3, 12, 17), (3, 17, 18), (3, 16, 18), (3, 18, 19), (3, 5, 19), (3, 16, 20), (3, 19, 21), (3, 20, 21), (3, 21, 22), (3, 22, 23), (3, 23, 24))
 
-    transform_compose = augSettings.generateTransformCompose(list_transform, False)
-    dataGen = GeneratorFromCIFAR.GeneratorFromCIFAR(2,  64, threads=0, dataAugmentation=True, transforms_mode=transform_compose)
-    dataGen.dataConv2d()
+    #transform_compose = augSettings.generateTransformCompose(list_transform, False)
+    #dataGen = GeneratorFromCIFAR.GeneratorFromCIFAR(2,  64, threads=0, dataAugmentation=True, transforms_mode=transform_compose)
+    #dataGen.dataConv2d()
     
     version = directions_version.CONVEX_VERSION
 
-    #mutation_manager = MutationManager.MutationManager(directions_version=version)
+    mutation_manager = MutationManager.MutationManager(directions_version=version)
     
     parent_network = nw_dendrites.Network(adn=PARENT_DNA, cudaFlag=True, momentum=0.9, weight_decay=0, 
                 enable_activation=True, enable_track_stats=True, dropout_value=0.2, dropout_function=None, version=version)
 
-    parent_network.trainingWarmRestarts(dataGenerator=dataGen, dt_max=0.05, dt_min=0.0000001, epochs=10, 
-                                        restar_period=2, ricap=None, evalLoss=False)
-            
+    mutate_network = mutation_manager.executeMutation(parent_network, MUTATE_DNA)
 
-        
 
     #mutate_network.TrainingCosineLR_Restarts(dataGenerator=dataGen, max_dt=0.001, min_dt=0.001, epochs=1, restart_dt=1, show_accuarcy=True)
 
@@ -289,8 +278,8 @@ def TimeCalculator():
     print("total time: ", (mutation_end_time - start_time))
 
 if __name__ == "__main__":
-    #Test_Mutacion()
+    Test_Mutacion()
     #TestMemoryManager()
     #Test_Convex()
     #Test_param_calculator()
-    TimeCalculator()
+    #TimeCalculator()

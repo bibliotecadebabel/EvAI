@@ -186,11 +186,16 @@ def initialize_parameters(self):
     self.dx = 2
 
 
-def create_objects(status):
+def create_objects(status, loaded_network):
     settings=status.settings
     status.Alai=Alai(min=status.dt_min,
          max=status.dt_Max,
             max_time=status.restart_period)
+    
+    if loaded_network == True:
+        status.Alai.time = 14077 - 14076
+        status.Alai.reset_count = 1
+
     status.Data_gen=GeneratorFromCIFAR.GeneratorFromCIFAR(
     status.Comp, status.S, cuda=status.cuda, threads=status.threads,
         dataAugmentation=settings.enable_augmentation, transforms_mode=settings.transformations_compose)
@@ -248,11 +253,14 @@ def countLayers(center):
     return count
 
 def run(status):
+    loaded_network = bool(input("any input to run loaded network"))
+    print("Loaded network: ", loaded_network)
     status.Transfer=tran.TransferRemote(status,
         'remote2local.txt','local2remote.txt')
     #status.Transfer.readLoad()
-    print(f'status.settings is {status.settings}')
-    create_objects(status)
+    print(f'status.settings is {status.settings}')l   
+
+    create_objects(status, loaded_network)
     print('The value of typos after loading is')
     print(status.typos)
     print("objects created")
@@ -268,9 +276,7 @@ def run(status):
     print("cuda=", status.cuda)
 
     print("max layers: ", status.max_layer_conv2d)
-    loaded_network = bool(input("any input to run loaded network"))
-    print("Loaded network: ", loaded_network)
-    
+
     settings = status.settings
 
     if loaded_network == False:
@@ -300,11 +306,16 @@ def run(status):
 
     else:
         
-        path = os.path.join("saved_models","product_database", "5_test_final_experiment_dnabase2_model_7107")
+        path = os.path.join("saved_models","product_database", "7_test_final_experiment_model_6044")
         network = NetworkStorage.loadNetwork(fileName=None, settings=settings, path=path)
         network.generateEnergy(status.Data_gen)
         acc = network.getAcurracy()
         print("Acc loaded network: ", acc)
+        print("Alai time loaded: ", status.Alai.computeTime())
+        L_1 = status.Alai.computeTime() // status.save_space_period
+        L_2 = status.Alai.computeTime() // status.save_net_period
+        print("L_1= ", L_1)
+        print("L_2= ", L_2)
         time.sleep(2)
 
         if status.save2database == True:
@@ -334,7 +345,6 @@ def run(status):
 
     L_1 = 1
     L_2 = 1
-
     save_6_layers = True
     save_17_layers = True
     save_18_layers = True
@@ -351,6 +361,15 @@ def run(status):
     save_45_layers = True
     save_48_layers = True
     save_51_layers = True
+
+    if loaded_network == True:
+        save_6_layers = False
+        save_17_layers = False
+        save_18_layers = False
+        save_19_layers = False
+        L_1 = status.Alai.computeTime() // status.save_space_period
+        L_2 = status.Alai.computeTime() // status.save_net_period
+
 
     while k<status.max_iter:
         #\begin{with gui}

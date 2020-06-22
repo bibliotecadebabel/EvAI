@@ -409,7 +409,7 @@ def __getAdjustFilterMutation(indexLayer, source_dendrites, network, adjustLayer
 
     if len(index_adn_list) > 0:
         
-        if mutationType is not None and mutationType == m_type.DEFAULT_ADD_FILTERS:
+        if mutationType is not None and (mutationType == m_type.DEFAULT_ADD_FILTERS or mutationType == m_type.DEFAULT_REMOVE_DENDRITE):
             index_adn_list = __verifyConvexDendrites(newNetwork=newNetwork, newFilter=newFilter, index_list=index_adn_list, targetIndex=indexLayer-1)
         
         mutation = Conv2dMutations.AdjustEntryFilters_Dendrite(adjustLayer=adjustLayer, indexList=index_adn_list,
