@@ -115,8 +115,19 @@ def DNA2graph_relable_test(x,y):
     dire.imprimir(g)
 
 def retract_h_test():
-    DNA=DNAs.DNA_h
-    DNA=dire.retract_dendrites(4,DNA)
+    DNA=DNA=((-1,1,3,11,11),(0, 3, 5, 3, 3),(0, 5, 5, 3,3),(0,5,13,2,2,2),
+            (1, 13, 2),
+            (2,),
+            (3,-1,0),
+            (3,0,1),
+            (3,1,2),
+            (3,2,3),
+            (3,3,4))
+    DNA=dire.spread_convex_dendrites(1,DNA)
+    print('The old DNA is')
+    print(DNA)
+    DNA=dire.retract_dendrites(1,DNA)
+    print('The new DNA is')
     print(DNA)
 
 def graph2DNA_test(x,y):
@@ -380,8 +391,8 @@ def retract_dendrites_test(x,y):
 #add_layer_test(11,11)
 #add_layer_test(11,11)
 #add_layer_den_test(11,11)
-add_filter(11,11)
-#retract_h_test()
+#add_filter(11,11)
+retract_h_test()
 #add_pool_layer_test(32,32)
 #fix_fully_conected_test(11,11)
 #compute_num_layers_test(11,11)

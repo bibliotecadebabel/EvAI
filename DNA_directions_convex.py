@@ -756,15 +756,17 @@ def retract_dendrites(num_layer,source_DNA):
         g.remove_edge(num_layer,old_index)
         t_node=g.key2node.get(old_index)
         t_layer=t_node.objects[0]
-        if is_convex(t_node):
+        if not(DNA_conditions.is_convex(source_DNA,g.node2key.get(t_node))):
             t_node.objects[0]=layer_chanel(t_layer,-node.objects[0][2])
         else:
+            print('is convex')
             other_parents=[parent for parent
                 in t_node.parents if not(parent==node)]
-            other_parent=other_parents[0]
-            otp_layer=other_parent.objects[0]
-            delta=t_layer[1]-otp_layer[2]
-            t_node.objects[0]=layer_chanel(t_layer,-delta)
+            if other_parents: 
+                other_parent=other_parents[0]
+                otp_layer=other_parent.objects[0]
+                delta=t_layer[1]-otp_layer[2]
+                t_node.objects[0]=layer_chanel(t_layer,-delta)
         dendrites.remove(g.key2node.get(old_index))
         landscape=[g.node2key.get(node_k)-num_layer-1
             for node_k in dendrites]
