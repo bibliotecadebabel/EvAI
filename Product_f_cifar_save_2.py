@@ -299,8 +299,19 @@ def run(status):
                         dt_array=dt_array, ricap=settings.ricap, evalLoss=settings.evalLoss)
 
     else:
+        
         path = os.path.join("saved_models","product_database", "5_test_final_experiment_dnabase2_model_7107")
         network = NetworkStorage.loadNetwork(fileName=None, settings=settings, path=path)
+        network.generateEnergy(status.Data_gen)
+        acc = network.getAcurracy()
+        print("Acc loaded network: ", acc)
+        time.sleep(2)
+
+        if status.save2database == True:
+            test_id = testDao.insert(testName=status.experiment_name, dt=status.dt_Max, dt_min=status.dt_min, batch_size=status.S,
+                    max_layers=status.max_layer_conv2d, max_filters=status.max_filter, max_filter_dense=status.max_filter_dense,
+                    max_kernel_dense=status.max_kernel_dense, max_pool_layer=status.max_pool_layer, max_parents=status.max_parents)
+
 
     status.stream.add_node(network.adn)
     status.stream.link_node(network.adn, network)
