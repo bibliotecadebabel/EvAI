@@ -111,12 +111,12 @@ if __name__ == '__main__':
     # Every PERIOD_SAVE_MODEL iterations, the best network (current center) will be stored on filesystem
     settings.period_save_model = 1
 
-    # EPOCHS
-    settings.epochs = 25
+    # MUTATIONS TO MAKE
+    settings.epochs = 32
 
     num_actions=1
 
-    settings.batch_size = int(input("Enter batchsize: "))
+    settings.batch_size = 64
     e =  50000 / settings.batch_size
     e = math.ceil(e)
     print("e = ", e)
@@ -142,39 +142,31 @@ if __name__ == '__main__':
     settings.max_best_iter = 0
 
     # dropout parameter
-    settings.dropout_value = float(input("dropout value: "))
+    settings.dropout_value = 0.05
 
     # weight_decay parameter
-    settings.weight_decay = float(input('weight_decay: '))
+    settings.weight_decay = 0.0005
 
     # momentum parameter
     settings.momentum = 0.9
 
     # INITIAL DNA
-    settings.initial_dna =  ((-1, 1, 3, 32, 32), (0, 3, 64, 3, 3),(0, 64, 128, 3, 3, 2), (0, 128, 256, 3, 3, 2),
-                            (0, 256, 128, 8, 8),
-                            (1, 128, 10),
-                            (2,),
-                            (3, -1, 0),
-                            (3, 0, 1),
-                            (3, 1, 2),
-                            (3, 2, 3),
-                            (3, 3, 4),
-                            (3, 4, 5))
+    settings.initial_dna =  DNAs.DNA_base_2
                             
     list_conditions={DNA_conditions.max_filter : 530,
-            DNA_conditions.max_filter_dense : 260,
+            DNA_conditions.max_filter_dense : 270,
             DNA_conditions.max_kernel_dense : 9,
+            DNA_conditions.max_pool_layer : 4,
             DNA_conditions.max_layer : 200,
             DNA_conditions.min_filter : 3,
             DNA_conditions.max_parents : 2,
             DNA_conditions.no_con_last_layer : 1}
 
     # TEST_NAME, the name of the experiment (unique)
-    settings.test_name = input("Enter TestName: ")
+    settings.test_name = "testing_mutations_random"
 
     # ENABLE_ACTIVATION, enable/disable relu
-    ENABLE_ACTIVATION = int(input("Enable activation? (1 = yes, 0 = no): "))
+    ENABLE_ACTIVATION = 1
 
     value = False
     if ENABLE_ACTIVATION == 1:
@@ -182,7 +174,7 @@ if __name__ == '__main__':
     settings.enable_activation = value
 
     # ENABLE_LAST_ACTIVATION, enable/disable last layer relu
-    ENABLE_LAST_ACTIVATION = int(input("Enable last layer activation? (1 = yes, 0 = no): "))
+    ENABLE_LAST_ACTIVATION = 1
 
     value = False
     if ENABLE_LAST_ACTIVATION == 1:
@@ -190,7 +182,7 @@ if __name__ == '__main__':
     settings.enable_last_activation = value
 
     # ENABLE_AUGMENTATION, enable/disable data augmentation
-    ENABLE_AUGMENTATION = int(input("Enable Data augmentation? (1 = yes, 0 = no): "))
+    ENABLE_AUGMENTATION = 1
 
     value = False
     if ENABLE_AUGMENTATION == 1:
@@ -198,14 +190,14 @@ if __name__ == '__main__':
     ENABLE_AUGMENTATION = value
 
     # ALLOW INTERRUPTS
-    ALLOW_INTERRUPTS = int(input("Allow Interrupt while training? (1 = yes, 0 = no): "))
+    ALLOW_INTERRUPTS = 0
     value = False
     if ALLOW_INTERRUPTS == 1:
         value = True
     settings.allow_interupts = value
 
     # ALLOW TRACK BATCHNORM
-    ENABLE_TRACK = int(input("Enable tracking var/mean batchnorm? (1 = yes, 0 = no): "))
+    ENABLE_TRACK = 1
     value = False
     if ENABLE_TRACK == 1:
         value = True
@@ -229,6 +221,5 @@ if __name__ == '__main__':
 
     settings.disable_mutation = False
 
-    print("**** WARNING DISABLE MUTATION = ", settings.disable_mutation)
     trainer = CommandExperimentCifar_Restarts.CommandExperimentCifar_Restarts(settings=settings)
     trainer.execute()
