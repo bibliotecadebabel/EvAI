@@ -31,7 +31,7 @@ from utilities.Abstract_classes.classes.Alaising_cosine import (
 import os
 from DAO.database.dao import TestDAO, TestResultDAO, TestModelDAO
 import const.training_type as TrainingType
-
+import utilities.NetworkStorage as NetworkStorage
 
 update_force_field=None
 
@@ -268,36 +268,44 @@ def run(status):
     print("cuda=", status.cuda)
 
     print("max layers: ", status.max_layer_conv2d)
-
-    settings = status.settings
-    network = nw.Network(status.Center,cudaFlag=settings.cuda,
-             momentum=settings.momentum,
-             weight_decay=settings.weight_decay,
-             enable_activation=settings.enable_activation,
-             enable_track_stats=settings.enable_track_stats,
-             dropout_value=settings.dropout_value,
-             dropout_function=settings.dropout_function,
-             enable_last_activation=settings.enable_last_activation,
-             version=settings.version, eps_batchnorm=settings.eps_batchorm
-             )
+    loaded_network = bool(input("any input to run loaded network"))
+    print("Loaded network: ", loaded_network)
     
-    print("starting pre-training")
+    settings = status.settings
 
-    print("iterations per epoch = ", status.iterations_per_epoch)
-    dt_array=status.Alai.get_increments(20*status.iterations_per_epoch)
+    if loaded_network == False:
+        network = nw.Network(status.Center,cudaFlag=settings.cuda,
+                momentum=settings.momentum,
+                weight_decay=settings.weight_decay,
+                enable_activation=settings.enable_activation,
+                enable_track_stats=settings.enable_track_stats,
+                dropout_value=settings.dropout_value,
+                dropout_function=settings.dropout_function,
+                enable_last_activation=settings.enable_last_activation,
+                version=settings.version, eps_batchnorm=settings.eps_batchorm
+                )
+        
+        print("starting pre-training")
 
-    if status.save2database == True:
-        test_id = testDao.insert(testName=status.experiment_name, dt=status.dt_Max, dt_min=status.dt_min, batch_size=status.S,
-                max_layers=status.max_layer_conv2d, max_filters=status.max_filter, max_filter_dense=status.max_filter_dense,
-                max_kernel_dense=status.max_kernel_dense, max_pool_layer=status.max_pool_layer, max_parents=status.max_parents)
+        print("iterations per epoch = ", status.iterations_per_epoch)
+        dt_array=status.Alai.get_increments(20*status.iterations_per_epoch)
 
-    network.iterTraining(dataGenerator=status.Data_gen,
-                    dt_array=dt_array, ricap=settings.ricap, evalLoss=settings.evalLoss)
+        if status.save2database == True:
+            test_id = testDao.insert(testName=status.experiment_name, dt=status.dt_Max, dt_min=status.dt_min, batch_size=status.S,
+                    max_layers=status.max_layer_conv2d, max_filters=status.max_filter, max_filter_dense=status.max_filter_dense,
+                    max_kernel_dense=status.max_kernel_dense, max_pool_layer=status.max_pool_layer, max_parents=status.max_parents)
+
+        network.iterTraining(dataGenerator=status.Data_gen,
+                        dt_array=dt_array, ricap=settings.ricap, evalLoss=settings.evalLoss)
+
+    else:
+        path = os.path.join("saved_models","product_database", "5_test_final_experiment_dnabase2_model_7107")
+        network = NetworkStorage.loadNetwork(fileName=None, settings=settings, path=path)
 
     status.stream.add_node(network.adn)
     status.stream.link_node(network.adn, network)
 
-    if status.save2database == True:
+    if status.save2database == True and loaded_network == False:
         dna_graph = status.Dynamics.phase_space.DNA_graph
         testResultDao.insert(idTest=test_id, iteration=0, dna_graph=dna_graph, current_alai_time=status.Alai.computeTime(), 
                                 reset_count=status.Alai.reset_count)
