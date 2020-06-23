@@ -386,7 +386,6 @@ def run(status):
             #    status.print_accuracy()
             #status.print_energy()
             status.print_predicted_actions()
-            time.sleep(1)
             if status.Alai:
                 status.Alai.update()
             #status.print_particles()
