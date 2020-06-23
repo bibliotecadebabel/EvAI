@@ -42,7 +42,7 @@ def Alaising(M,m,ep):
 
 def saveModel(test, network, iteration):
 
-    fileName = str(test.id)+"_post-training-model_alai20332_"+str(iteration)
+    fileName = str(test.id)+"_post-training-model_alai8602_"+str(iteration)
     final_path = os.path.join("saved_models","product_database", fileName)
 
     network.saveModel(final_path)
