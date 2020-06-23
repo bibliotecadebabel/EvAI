@@ -70,7 +70,7 @@ class Dynamic_DNA():
             p=self.node2plane(node)
             variance=p.variance
             dt=self.dt
-            p.velocity_potential+=-1/c_p*dt*p.energy
+            p.velocity_potential+=1/c_p*dt*p.energy
             if p.variance:
                 for kid in node.kids:
                     p_k=self.node2plane(kid)
