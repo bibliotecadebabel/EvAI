@@ -302,7 +302,7 @@ def run_local_ac():
         update_force_field_ac as update_force_field)
     status.update_force_field=update_force_field
     status.dt_Max=0.1
-    status.dt_min=0.00001
+    status.dt_min=0.01
     status.clear_period=200000
     status.max_iter=2001
     status.Alai_creator=Alai

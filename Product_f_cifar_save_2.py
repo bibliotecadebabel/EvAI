@@ -35,7 +35,7 @@ import utilities.NetworkStorage as NetworkStorage
 from Dyamic_DNA_f_methods import ( update_force_field_ac
     as update_force_field )
 
-#update_force_field=None
+update_force_field=None
 
 class Status():
     def __init__(self, display_size=None):
