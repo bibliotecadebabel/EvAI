@@ -35,7 +35,7 @@ import utilities.NetworkStorage as NetworkStorage
 from Dyamic_DNA_f_methods import ( update_force_field_ac
     as update_force_field )
 
-update_force_field=None
+#update_force_field=None
 
 class Status():
     def __init__(self, display_size=None):
@@ -387,6 +387,7 @@ def run(status):
             #    status.print_accuracy()
             #status.print_energy()
             status.print_predicted_actions()
+            time.sleep(1)
             if status.Alai:
                 status.Alai.update()
             #status.print_particles()

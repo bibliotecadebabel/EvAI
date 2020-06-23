@@ -72,7 +72,6 @@ class Dynamic_DNA():
             dt=self.dt
             p.velocity_potential+=-1/c_p*dt*p.energy
             if p.variance:
-                p.variance=1
                 for kid in node.kids:
                     p_k=self.node2plane(kid)
                     d_phi=p_k.velocity_potential-p.velocity_potential
@@ -189,7 +188,7 @@ class Dynamic_DNA():
         self.diffusion_coefficient=0
         self.lost_coefficient=50
         self.interaction_coefficient=0
-        self.dt=0.01
+        self.dt=0.1
         self.mutation_coefficient=mutation_coefficient
         self.clear_period=clear_period
         self.Graph=phase_space.DNA_graph
