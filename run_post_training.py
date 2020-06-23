@@ -42,7 +42,7 @@ def Alaising(M,m,ep):
 
 def saveModel(test, network, iteration):
 
-    fileName = str(test.id)+"_post-training-model_alai20332_"+str(iteration)
+    fileName = str(test.id)+"_post-training-model_alai8602_"+str(iteration)
     final_path = os.path.join("saved_models","product_database", fileName)
 
     network.saveModel(final_path)
@@ -170,7 +170,7 @@ if __name__ == '__main__':
         fileManager.setFileName("post_training_"+selected_test.name)
         fileManager.writeFile("")
 
-    path = os.path.join("saved_models","product_database", "8_test_recover_final_experiment_1_model_2622")
+    path = os.path.join("saved_models","product_database", "10_test_accelerated_evalactivate_model_2095")
     network = NetworkStorage.loadNetwork(fileName=None, settings=settings, path=path)
 
     avg_factor = len(settings.init_dt_array) // 4
