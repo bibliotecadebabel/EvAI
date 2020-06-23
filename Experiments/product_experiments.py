@@ -39,12 +39,12 @@ def run_cifar_user_input_bidi(save = False):
     import Product_f_cifar_save_2 as program
 
     status=program.Status()
-    
+
     status.max_layer_conv2d = 200
     status.max_filter = 530
     status.max_filter_dense = 270
     status.max_kernel_dense = 9
-    status.max_pool_layer = 4
+    status.max_pool_layer = 2
     status.max_parents = 2
 
     list_conditions={DNA_conditions.max_filter : status.max_filter,
@@ -210,7 +210,7 @@ def run_cifar_user_input_bidi(save = False):
 
     #status.Center=DNAs.non_lin_20
 
-    status.Center = ((-1, 1, 3, 32, 32), (0, 3, 64, 3, 3), (0, 64, 128, 5, 5), (0, 128, 256, 2, 2, 2), (0, 256, 128, 2, 2), (0, 128, 128, 4, 4), (0, 131, 128, 3, 3), (0, 128, 256, 3, 3), (0, 256, 256, 2, 2), (0, 320, 128, 3, 3, 2), (0, 128, 256, 3, 3, 2), (0, 256, 256, 3, 3), (0, 256, 256, 3, 3), (0, 128, 256, 3, 3), (0, 256, 512, 4, 4), (0, 256, 256, 3, 3), (0, 512, 256, 3, 3), (0, 768, 512, 3, 3), (0, 256, 256, 3, 3), (0, 512, 256, 3, 3, 2), (0, 512, 512, 4, 4), (0, 512, 512, 3, 3), (0, 512, 512, 4, 4), (0, 512, 512, 3, 3), (0, 512, 256, 8, 8), (1, 256, 10), (2,), (3, -1, 0), (3, 0, 1), (3, 1, 2), (3, 2, 3), (3, 3, 4), (3, 4, 5), (3, -1, 5), (3, 5, 6), (3, 6, 7), (3, 0, 8), (3, 7, 8), (3, 8, 9), (3, 9, 10), (3, 10, 11), (3, 8, 12), (3, 9, 13), (3, 4, 13), (3, 12, 14), (3, 14, 15), (3, 13, 15), (3, 15, 16), (3, 13, 16), (3, 11, 17), (3, 17, 18), (3, 16, 18), (3, 9, 19), (3, 18, 19), (3, 19, 20), (3, 20, 21), (3, 11, 21), (3, 21, 22), (3, 19, 22), (3, 22, 23), (3, 23, 24), (3, 24, 25))
+    status.Center = DNAs.DNA_base_2
     status.settings=settings
     program.run(status)
 
@@ -302,7 +302,7 @@ def run_local_ac():
         update_force_field_ac as update_force_field)
     status.update_force_field=update_force_field
     status.dt_Max=0.1
-    status.dt_min=0.00001
+    status.dt_min=0.01
     status.clear_period=200000
     status.max_iter=2001
     status.Alai_creator=Alai

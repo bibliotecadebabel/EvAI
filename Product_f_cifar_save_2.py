@@ -32,8 +32,10 @@ import os
 from DAO.database.dao import TestDAO, TestResultDAO, TestModelDAO
 import const.training_type as TrainingType
 import utilities.NetworkStorage as NetworkStorage
+from Dyamic_DNA_f_methods import ( update_force_field_ac
+    as update_force_field )
 
-update_force_field=None
+#update_force_field=None
 
 class Status():
     def __init__(self, display_size=None):
@@ -186,11 +188,16 @@ def initialize_parameters(self):
     self.dx = 2
 
 
-def create_objects(status):
+def create_objects(status, loaded_network):
     settings=status.settings
     status.Alai=Alai(min=status.dt_min,
          max=status.dt_Max,
             max_time=status.restart_period)
+
+    if loaded_network == True:
+        status.Alai.time = 14077 - 14076
+        status.Alai.reset_count = 1
+
     status.Data_gen=GeneratorFromCIFAR.GeneratorFromCIFAR(
     status.Comp, status.S, cuda=status.cuda, threads=status.threads,
         dataAugmentation=settings.enable_augmentation, transforms_mode=settings.transformations_compose)
@@ -239,20 +246,23 @@ def create_objects(status):
 
 def countLayers(center):
     count = 0
-    
+
     for layer in center:
 
         if layer[0] == 0:
             count += 1
-    
+
     return count
 
 def run(status):
+    loaded_network = bool(input("any input to run loaded network"))
+    print("Loaded network: ", loaded_network)
     status.Transfer=tran.TransferRemote(status,
         'remote2local.txt','local2remote.txt')
     #status.Transfer.readLoad()
     print(f'status.settings is {status.settings}')
-    create_objects(status)
+
+    create_objects(status, loaded_network)
     print('The value of typos after loading is')
     print(status.typos)
     print("objects created")
@@ -268,9 +278,7 @@ def run(status):
     print("cuda=", status.cuda)
 
     print("max layers: ", status.max_layer_conv2d)
-    loaded_network = bool(input("any input to run loaded network"))
-    print("Loaded network: ", loaded_network)
-    
+
     settings = status.settings
 
     if loaded_network == False:
@@ -284,7 +292,7 @@ def run(status):
                 enable_last_activation=settings.enable_last_activation,
                 version=settings.version, eps_batchnorm=settings.eps_batchorm
                 )
-        
+
         print("starting pre-training")
 
         print("iterations per epoch = ", status.iterations_per_epoch)
@@ -299,12 +307,17 @@ def run(status):
                         dt_array=dt_array, ricap=settings.ricap, evalLoss=settings.evalLoss)
 
     else:
-        
-        path = os.path.join("saved_models","product_database", "5_test_final_experiment_dnabase2_model_7107")
+
+        path = os.path.join("saved_models","product_database", "7_test_final_experiment_model_6044")
         network = NetworkStorage.loadNetwork(fileName=None, settings=settings, path=path)
         network.generateEnergy(status.Data_gen)
         acc = network.getAcurracy()
         print("Acc loaded network: ", acc)
+        print("Alai time loaded: ", status.Alai.computeTime())
+        L_1 = status.Alai.computeTime() // status.save_space_period
+        L_2 = status.Alai.computeTime() // status.save_net_period
+        print("L_1= ", L_1)
+        print("L_2= ", L_2)
         time.sleep(2)
 
         if status.save2database == True:
@@ -318,11 +331,11 @@ def run(status):
 
     if status.save2database == True and loaded_network == False:
         dna_graph = status.Dynamics.phase_space.DNA_graph
-        testResultDao.insert(idTest=test_id, iteration=0, dna_graph=dna_graph, current_alai_time=status.Alai.computeTime(), 
+        testResultDao.insert(idTest=test_id, iteration=0, dna_graph=dna_graph, current_alai_time=status.Alai.computeTime(),
                                 reset_count=status.Alai.reset_count)
 
-        saveModel(status, 0, testModelDao, test_id, TrainingType.PRE_TRAINING)  
-                            
+        saveModel(status, 0, testModelDao, test_id, TrainingType.PRE_TRAINING)
+
     #update(status)
     while False:
         update(status)
@@ -334,8 +347,6 @@ def run(status):
 
     L_1 = 1
     L_2 = 1
-
-    save_6_layers = True
     save_17_layers = True
     save_18_layers = True
     save_19_layers = True
@@ -351,6 +362,15 @@ def run(status):
     save_45_layers = True
     save_48_layers = True
     save_51_layers = True
+
+    if loaded_network == True:
+        save_6_layers = False
+        save_17_layers = False
+        save_18_layers = False
+        save_19_layers = False
+        L_1 = status.Alai.computeTime() // status.save_space_period
+        L_2 = status.Alai.computeTime() // status.save_net_period
+
 
     while k<status.max_iter:
         #\begin{with gui}
@@ -389,7 +409,7 @@ def run(status):
                     print("saving space: ", L_1)
                     L_1 += 1
                     dna_graph = status.Dynamics.phase_space.DNA_graph
-                    testResultDao.insert(idTest=test_id, iteration=k+1, dna_graph=dna_graph, current_alai_time=status.Alai.computeTime(), 
+                    testResultDao.insert(idTest=test_id, iteration=k+1, dna_graph=dna_graph, current_alai_time=status.Alai.computeTime(),
                                             reset_count=status.Alai.reset_count)
 
                 if status.Alai.computeTime() >= L_2*status.save_net_period:
@@ -397,11 +417,7 @@ def run(status):
                     L_2 += 1
                     saveModel(status, k+1, testModelDao, test_id, TrainingType.MUTATION)
 
-                if layers_count >= 6 and save_6_layers == True:
-                    save_checkpoint(status, testResultDao, layers_count, test_id, testModelDao, k)
-                    save_6_layers = False
-
-                elif layers_count >= 17 and save_17_layers == True:
+                if layers_count >= 17 and save_17_layers == True:
                     save_checkpoint(status, testResultDao, layers_count, test_id, testModelDao, k)
                     save_17_layers = False
 
@@ -411,7 +427,7 @@ def run(status):
 
                 elif layers_count >= 19 and save_19_layers == True:
                     save_checkpoint(status, testResultDao, layers_count, test_id, testModelDao, k)
-                    save_19_layers = False 
+                    save_19_layers = False
 
                 elif layers_count >= 24 and save_24_layers == True:
                     save_24_layers = False
@@ -420,7 +436,7 @@ def run(status):
                 elif layers_count >= 25 and save_25_layers == True:
                     save_25_layers = False
                     save_checkpoint(status, testResultDao, layers_count, test_id, testModelDao, k)
-                
+
                 elif layers_count >= 26 and save_26_layers == True:
                     save_26_layers = False
                     save_checkpoint(status, testResultDao, layers_count, test_id, testModelDao, k)
@@ -428,27 +444,27 @@ def run(status):
                 elif layers_count >= 27 and save_27_layers == True:
                     save_27_layers = False
                     save_checkpoint(status, testResultDao, layers_count, test_id, testModelDao, k)
-    
+
                 elif layers_count >= 30 and save_30_layers == True:
                     save_30_layers = False
                     save_checkpoint(status, testResultDao, layers_count, test_id, testModelDao, k)
-    
+
                 elif layers_count >= 33 and save_33_layers == True:
                     save_33_layers = False
                     save_checkpoint(status, testResultDao, layers_count, test_id, testModelDao, k)
-                
+
                 elif layers_count >= 36 and save_36_layers == True:
                     save_36_layers = False
                     save_checkpoint(status, testResultDao, layers_count, test_id, testModelDao, k)
-    
+
                 elif layers_count >= 39 and save_39_layers == True:
                     save_39_layers = False
                     save_checkpoint(status, testResultDao, layers_count, test_id, testModelDao, k)
-    
+
                 elif layers_count >= 42 and save_42_layers == True:
                     save_42_layers = False
                     save_checkpoint(status, testResultDao, layers_count, test_id, testModelDao, k)
-    
+
                 elif layers_count >= 45 and save_45_layers == True:
                     save_45_layers = False
                     save_checkpoint(status, testResultDao, layers_count, test_id, testModelDao, k)
@@ -456,23 +472,25 @@ def run(status):
                 elif layers_count >= 48 and save_48_layers == True:
                     save_48_layers = False
                     save_checkpoint(status, testResultDao, layers_count, test_id, testModelDao, k)
-    
+
                 elif layers_count >= 51 and save_51_layers == True:
                     save_51_layers = False
                     save_checkpoint(status, testResultDao, layers_count, test_id, testModelDao, k)
 
-                        
+                if layers_count >= 39:
+                    print("STOPPED MAX LAYERS: ", layers_count)
+                    break
         else:
             #print('inactive')
             pass
         k=k+1
 
 def save_checkpoint(status, testResultDao, layers_count, test_id, testModelDao, k):
-    print("saving model and space, current layers: ", layers_count)  
+    print("saving model and space, current layers: ", layers_count)
     dna_graph = status.Dynamics.phase_space.DNA_graph
-    testResultDao.insert(idTest=test_id, iteration=k+1, dna_graph=dna_graph, current_alai_time=status.Alai.computeTime(), 
+    testResultDao.insert(idTest=test_id, iteration=k+1, dna_graph=dna_graph, current_alai_time=status.Alai.computeTime(),
                             reset_count=status.Alai.reset_count)
-    saveModel(status, k+1, testModelDao, test_id, TrainingType.MUTATION) 
+    saveModel(status, k+1, testModelDao, test_id, TrainingType.MUTATION)
 
 def saveModel(status, k, testModelDao, test_id, trainingType):
     fileName = str(test_id)+"_"+status.experiment_name+"_model_"+str(k)
@@ -486,7 +504,7 @@ def saveModel(status, k, testModelDao, test_id, trainingType):
         #acc = net.getAcurracy()
         acc = 0
         testModelDao.insert(idTest=test_id, dna=str(net.adn),iteration=k, fileName=fileName, model_weight=acc,
-                                current_alai_time=status.Alai.computeTime(), reset_count=status.Alai.reset_count, 
+                                current_alai_time=status.Alai.computeTime(), reset_count=status.Alai.reset_count,
                                 training_type=trainingType)
 
 """

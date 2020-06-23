@@ -288,7 +288,13 @@ if __name__ == '__main__':
 
     #settings.initial_dna =   DNAs.DNA_ep25
 
+<<<<<<< HEAD
     settings.initial_dna = DNAs.DNA_noval_20_ac
+=======
+    settings.initial_dna = DNAs.DNA_random_32
+    print('The initial DNA is:')
+    print(settings.initial_dna)
+>>>>>>> b86a19b1fc231f2573a315a0fe9592d624a73d33
 
 
     """
