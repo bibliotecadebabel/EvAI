@@ -267,16 +267,32 @@ def Test_param_calculator():
 
 def TimeCalculator():
 
-    start_time = 1592708152.3694825
-    pretraining_end_time = 1592708379.8217592
-    mutation_end_time = 1592716542.878465
+    start_time = 1592834371.4477036
+    pretraining_end_time = 1592834714.5620644
+    mutation_end_time = 1592844855.1155725
+
+    start_time_2 = 1592852293.9096863
+    mutation_end_time_2 = 1592860923.368806
+
+    total_time = ((mutation_end_time - start_time) + (mutation_end_time_2 - start_time_2)) / 3600
 
     date_time = time.strftime('%Y-%m-%d %H:%M:%S', time.localtime(start_time))
     print("Test Date: ", date_time)
-    print("pre training time: ", (pretraining_end_time - start_time))
-    print("mutation time: ", (mutation_end_time - pretraining_end_time))
-    print("total time: ", (mutation_end_time - start_time))
+    #print("pre training time: ", (pretraining_end_time - start_time))
+    #print("mutation time: ", mutation_time)
+    print("total time: ", total_time)
 
+def TimeCalculator2():
+
+    init = 1592860678.2520623
+    final = 1592861146.3151975
+
+    time_200_mini_batches = (final - init) / 16
+    print("time 200 minibatches: ", time_200_mini_batches)
+    time_1_epoch = time_200_mini_batches * 782 / 200
+    print("time 1 epoch: ", time_1_epoch)
+    time_600_epochs = time_1_epoch * 600
+    print("time 600 epochs: ", time_600_epochs)
 def LayerCalculator():
 
     ADN = ((-1, 1, 3, 32, 32), (0, 3, 64, 4, 4), (0, 64, 64, 3, 3), (0, 64, 128, 3, 3, 2), (0, 128, 512, 3, 3, 2), (0, 512, 512, 3, 3), (0, 512, 256, 4, 4), (0, 384, 256, 3, 3), (0, 256, 128, 3, 3), (0, 128, 128, 3, 3), (0, 256, 512, 3, 3, 2), (0, 1024, 512, 3, 3), (0, 512, 512, 2, 2), (0, 512, 512, 3, 3), (0, 256, 128, 3, 3), (0, 640, 512, 2, 2), (0, 128, 128, 3, 3), (0, 512, 256, 3, 3), (0, 768, 512, 5, 5, 2), (0, 512, 512, 3, 3), (0, 512, 512, 3, 3), (0, 512, 512, 3, 3), (0, 1024, 512, 4, 4), (0, 256, 128, 4, 4), (0, 640, 512, 2, 2), (0, 512, 512, 4, 4), (0, 640, 512, 2, 2), (0, 512, 256, 8, 8), (1, 256, 10), (2,), (3, -1, 0), (3, 0, 1), (3, 1, 2), (3, 2, 3), (3, 3, 4), (3, 4, 5), (3, 5, 6), (3, 2, 6), (3, 6, 7), (3, 2, 8), (3, 8, 9), (3, 7, 9), (3, 9, 10), (3, 4, 10), (3, 10, 11), (3, 11, 12), (3, 3, 12), (3, 2, 13), (3, 7, 13), (3, 12, 14), (3, 13, 14), (3, 2, 15), (3, 15, 16), (3, 3, 16), (3, 14, 17), (3, 16, 17), (3, 12, 18), (3, 9, 18), (3, 18, 19), (3, 19, 20), (3, 20, 21), (3, 17, 21), (3, 5, 22), (3, 21, 23), (3, 22, 23), (3, 23, 24), (3, 17, 24), (3, 24, 25), (3, 22, 25), (3, 25, 26), (3, 26, 27), (3, 27, 28))
@@ -293,5 +309,5 @@ if __name__ == "__main__":
     #TestMemoryManager()
     #Test_Convex()
     #Test_param_calculator()
-    #TimeCalculator()
-    LayerCalculator()
+    TimeCalculator()
+    #LayerCalculator()
