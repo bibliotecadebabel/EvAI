@@ -10,6 +10,7 @@ class TestResultEntity():
         self.dna = None
         self.tangentPlane = None
         self.isCenter = 0
+        self.current_alai_time = 0
     
     def load(self, data):
 
@@ -22,6 +23,7 @@ class TestResultEntity():
         self.dna = json.loads(data[3])['dna']
         self.tangentPlane = tangentPlane
         self.isCenter = data[5]
+        self.current_alai_time = float(data[7])
 
         self.__tupleDna()
     

@@ -69,6 +69,25 @@ class TestResultDAO():
             value.append(resultTest)
         
         return value
+    
+    def findByLimitAlai(self, idTest, limit_alai):
+        
+        query = """SELECT * FROM test_result WHERE center = 1 AND id_test = ? """
+        data = (idTest,)
+
+        rows = self.__handler.executeQuery(query, data)
+
+        value = []
+        
+        for row in rows:
+            resultTest = TestResultEntity()
+
+            resultTest.load(data=row)
+
+            if resultTest.current_alai_time <= limit_alai:
+                value.append(resultTest)
+        
+        return value
 
     def delete(self, id):
         pass

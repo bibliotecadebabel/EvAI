@@ -33,8 +33,8 @@ class TestModelDAO():
 
     def findByLimitAlai(self, idTest, limit_alai_time):
 
-        query = """SELECT * FROM test_models WHERE id_test = ? AND current_alai_time <= ? AND type = 2"""
-        data = (idTest,limit_alai_time)
+        query = """SELECT * FROM test_models WHERE id_test = ? AND type < 3"""
+        data = (idTest,)
 
         rows = self.__handler.executeQuery(query, data)
 
@@ -43,7 +43,9 @@ class TestModelDAO():
         for row in rows:
             model = TestModelEntity()
             model.load(data=row)
-            result.append(model)
+            if model.current_alai_time <= limit_alai_time:
+                result.append(model)
+        
 
         return result
 
