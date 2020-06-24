@@ -188,7 +188,7 @@ class Dynamic_DNA():
         self.diffusion_coefficient=0
         self.lost_coefficient=50
         self.interaction_coefficient=0
-        self.dt=0.1
+        self.dt=0.01
         self.mutation_coefficient=mutation_coefficient
         self.clear_period=clear_period
         self.Graph=phase_space.DNA_graph
