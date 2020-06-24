@@ -431,6 +431,7 @@ class Network(nn.Module, na.NetworkAbstract):
     def iterTraining(self, dataGenerator, dt_array, ricap=None, evalLoss=False):
 
         try:
+            print("Using eva loss: ", evalLoss)
             save_acc = False
             current_epoch = 0
             iters = len(dt_array)

@@ -44,7 +44,7 @@ def run_cifar_user_input_bidi(save = False):
     status.max_filter = 530
     status.max_filter_dense = 270
     status.max_kernel_dense = 9
-    status.max_pool_layer = 2
+    status.max_pool_layer = 4
     status.max_parents = 2
 
     list_conditions={DNA_conditions.max_filter : status.max_filter,
@@ -171,7 +171,7 @@ def run_cifar_user_input_bidi(save = False):
     status.version='convex'
     status.cuda=bool(input("Any input for cuda : "))
 
-    settings.evalLoss = bool(input("Any input to activate Eval Loss : "))
+    settings.evalLoss = False
     augSettings = AugmentationSettings.AugmentationSettings()
     dict_transformations = {
         augSettings.baseline_customRandomCrop : True,
@@ -210,7 +210,7 @@ def run_cifar_user_input_bidi(save = False):
 
     #status.Center=DNAs.non_lin_20
 
-    status.Center = DNAs.DNA_base_2
+    status.Center = DNAs.DNA_base
     status.settings=settings
     program.run(status)
 
