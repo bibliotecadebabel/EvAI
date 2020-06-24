@@ -49,6 +49,14 @@ class TestModelDAO():
 
         return result
 
+    def updateAcc(self, acc, idModel):
+
+        query = """UPDATE test_models SET model_weight = ? WHERE id = ?;"""
+
+        data = (acc, idModel)
+
+        self.__handler.execute(query, data)
+
     def delete(self, id):
         pass
 

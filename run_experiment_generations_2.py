@@ -255,7 +255,6 @@ if __name__ == '__main__':
     settings.enable_track_stats = value
 
     # DROPOUT FUNCTION
-
     settings.dropout_function = dropout_function
 
     # INITIAL DNA
