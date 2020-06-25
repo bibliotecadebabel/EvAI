@@ -171,7 +171,7 @@ def run_cifar_user_input_bidi(save = False):
     status.version='convex'
     status.cuda=bool(input("Any input for cuda : "))
 
-    settings.evalLoss = False
+    settings.evalLoss = bool(input("Any input to activate EvalLoss : "))
     augSettings = AugmentationSettings.AugmentationSettings()
     dict_transformations = {
         augSettings.baseline_customRandomCrop : True,
