@@ -28,6 +28,7 @@ class MutationManager():
             self.__mutation_function = mutation_clone
         
         elif directions_version == versions_mutation.CONVEX_VERSION:
+            print("CONVEX MUTATION")
             self.__mutation_function = mutation_convex
 
         else:
