@@ -201,7 +201,9 @@ def node_2nd_max_particles(phase_space, node_max):
             node_particles = phase_space.node2particles(node)
             particles.append(node_particles)
 
+    print("2nd particles: ", particles)
     max_index=np.argmax(np.array(particles))
+    print("2nd max index: ", max_index)
     return phase_space.objects[max_index]
 
 def phase_space2node2remove(phase_space):
