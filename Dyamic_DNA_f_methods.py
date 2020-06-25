@@ -186,25 +186,25 @@ def node_max_particles(phase_space):
     max_index=np.argmax(np.array(particles))
     return phase_space.objects[max_index]
 
-def node_2nd_max_particles(phase_space, node_max):
-    '''
+def node_2nd_max_particles(phase_space):
+  
     particles=[
         phase_space.node2particles(node) for node in
             phase_space.objects
-                if node != node_max
             ]
-    '''
-    particles = []
-    for node in phase_space.objects:
-
-        if node != node_max:
-            node_particles = phase_space.node2particles(node)
-            particles.append(node_particles)
-
     print("2nd particles: ", particles)
+    
     max_index=np.argmax(np.array(particles))
-    print("2nd max index: ", max_index)
-    return phase_space.objects[max_index]
+    second_max_particles = 0
+    max_second_index = 0
+    for i in range(len(particles)):
+
+        if particles[i] >= second_max_particles and i != max_index:
+            second_max_particles = particles[i]
+            max_second_index = i
+
+    print("2nd max index: ", max_second_index)
+    return phase_space.objects[max_second_index]
 
 def phase_space2node2remove(phase_space):
     nodes=phase_space.objects
@@ -338,7 +338,7 @@ def update_from_select_09(self):
     p_m=Funct.node2num_particles(node_max)
     node_c = phase_space.key2node(phase_space.DNA_graph.center)
     #p_c=Funct.node2num_particles(node_c)
-    node_max_2 = node_2nd_max_particles(phase_space, node_max)
+    node_max_2 = node_2nd_max_particles(phase_space)
     p_m_2 = Funct.node2num_particles(node_max_2)
     
     #time.sleep(10)
