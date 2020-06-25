@@ -6,6 +6,7 @@ import numpy as np
 import DNA_graph_functions as Funct
 from random import randint
 from Particle import particle as particle
+import time
 
 
 def update_force_field_ac(self):
