@@ -186,6 +186,15 @@ def node_max_particles(phase_space):
     max_index=np.argmax(np.array(particles))
     return phase_space.objects[max_index]
 
+def node_2nd_max_particles(phase_space, max_particles):
+    particles=[
+        phase_space.node2particles(node) for node in
+            phase_space.objects
+                if phase_space.node2particles(node) != max_particles
+            ]
+    max_index=np.argmax(np.array(particles))
+    return phase_space.objects[max_index]
+
 def phase_space2node2remove(phase_space):
     nodes=phase_space.objects
     support_complement=[ node for node in nodes if
@@ -310,11 +319,13 @@ def update_from_select_09(self):
     version=self.version
     phase_space.time=phase_space.time+1
     node_max=node_max_particles(phase_space)
-    node_c = phase_space.key2node(phase_space.DNA_graph.center)
-    p_c=Funct.node2num_particles(node_c)
     p_m=Funct.node2num_particles(node_max)
-    print(f'The value of p_m is : {p_m} and p_c is : {p_c} ')
-    if (p_m>p_c*2):
+    #node_c = phase_space.key2node(phase_space.DNA_graph.center)
+    #p_c=Funct.node2num_particles(node_c)
+    node_max_2 = node_2nd_max_particles(phase_space, p_m)
+    p_m_2 = Funct.node2num_particles(node_max_2)
+    print(f'The value of p_m is : {p_m} and p_m_2 is : {p_m_2} ')
+    if (p_m>p_m_2*3):
         phase_space.time=0
         num_particles = phase_space.num_particles
         old_graph = phase_space.DNA_graph
