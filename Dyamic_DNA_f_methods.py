@@ -320,12 +320,12 @@ def update_from_select_09(self):
     phase_space.time=phase_space.time+1
     node_max=node_max_particles(phase_space)
     p_m=Funct.node2num_particles(node_max)
-    #node_c = phase_space.key2node(phase_space.DNA_graph.center)
-    #p_c=Funct.node2num_particles(node_c)
+    node_c = phase_space.key2node(phase_space.DNA_graph.center)
+    p_c=Funct.node2num_particles(node_c)
     node_max_2 = node_2nd_max_particles(phase_space, p_m)
     p_m_2 = Funct.node2num_particles(node_max_2)
     print(f'The value of p_m is : {p_m} and p_m_2 is : {p_m_2} ')
-    if (p_m>p_m_2*3):
+    if (p_m>p_m_2*3 and node_max != node_c):
         phase_space.time=0
         num_particles = phase_space.num_particles
         old_graph = phase_space.DNA_graph
