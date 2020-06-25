@@ -289,9 +289,9 @@ if __name__ == '__main__':
     #settings.initial_dna =   DNAs.DNA_ep25
 
 
-    settings.initial_dna = DNAs.DNA_noval_20_ac
+    settings.initial_dna = DNAs.DNA_noval_20_ac_b
 
-    
+
     print('The initial DNA is:')
     print(settings.initial_dna)
 
