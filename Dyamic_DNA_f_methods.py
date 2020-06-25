@@ -329,7 +329,7 @@ def update_from_select_09(self):
             phase_space.objects
     ]
     print("particles: ", list_particles)
-    time.sleep(10)
+    #time.sleep(10)
     print(f'The value of p_m is : {p_m} and p_m_2 is : {p_m_2} ')
     if (p_m>p_m_2*3 and node_max != node_c):
         phase_space.time=0
