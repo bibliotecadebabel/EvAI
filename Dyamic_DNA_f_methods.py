@@ -322,6 +322,7 @@ def update_from_select_09(self):
     p_m=Funct.node2num_particles(node_max)
     node_c = phase_space.key2node(phase_space.DNA_graph.center)
     #p_c=Funct.node2num_particles(node_c)
+    
     node_max_2 = node_2nd_max_particles(phase_space, node_max)
     p_m_2 = Funct.node2num_particles(node_max_2)
     print(f'The value of p_m is : {p_m} and p_m_2 is : {p_m_2} ')
