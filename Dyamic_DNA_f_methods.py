@@ -329,7 +329,7 @@ def update_from_select_09(self):
     selector=self.Selector
     version=self.version
     phase_space.time=phase_space.time+1
-    particles=[
+    list_particles=[
         phase_space.node2particles(node) for node in
             phase_space.objects
             ]
