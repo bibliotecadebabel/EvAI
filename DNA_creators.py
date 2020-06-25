@@ -2,7 +2,8 @@ import utilities.Quadrants as qu
 import utilities.Node as nd
 import utilities.Graphs as gr
 import TangentPlane as tplane
-
+import random
+import time
 
 class Creator():
 
@@ -89,7 +90,7 @@ class Creator():
 class Creator_from_selection_nm():
 
     def __init__(self,typos,condition,type_add_layer=None,num_morphisms=1,
-        Selector=None):
+        Selector=None, randomizeNM=True):
         if type_add_layer==None:
             from DNA_directions import directions
         elif type_add_layer=='inclusion':
@@ -119,7 +120,16 @@ class Creator_from_selection_nm():
         self.type_add_layer=type_add_layer
         self.num_morphisms=num_morphisms
         self.Selector=Selector
+        self.enable_randomize_nm = randomizeNM
 
+    def get_random_nm(self):
+
+        nm = self.num_morphisms
+
+        if self.enable_randomize_nm == True:
+            nm = random.randint(1, self.num_morphisms)
+
+        return nm
 
     def add_node(self,g,DNA):
         node=nd.Node()
@@ -153,7 +163,10 @@ class Creator_from_selection_nm():
                         DNA_f=DNA_o
                         label=[]
                         path=[]
-                        for m in range (self.num_morphisms):
+                        mutations_to_do = self.get_random_nm()
+                        print("morphisms: ", mutations_to_do)
+                        time.sleep(2)
+                        for m in range (mutations_to_do):
                             selector.update(DNA_f)
                             stop = False
                             while stop == False:
