@@ -3,6 +3,7 @@ import utilities.Node as nd
 import utilities.Graphs as gr
 import TangentPlane as tplane
 from DNA_creators import Creator as Creator_full
+import time
 
 class DNA_Graph():
 
@@ -26,6 +27,20 @@ class DNA_Graph():
 
     def update(self):
         pass
+
+    def complete(self):
+
+        node_parent = self.key2node(self.center)
+
+        for node_kid_a in node_parent.kids:
+
+            for node_kid_b in node_parent.kids:
+                
+                dna_a = self.node2key(node_kid_a)
+                dna_b = self.node2key(node_kid_b)
+
+                self.graph.add_edges(dna_a, [dna_b])
+                self.graph.add_edges(dna_b, [dna_a])
 
 
     def __init__(self,center,size,dim,condition,
@@ -54,6 +69,12 @@ class DNA_Graph():
         self.objects=list(g.key2node.values())
         self.version = type_add_layer
         self.node_max_particle=None
+
+        enable_complete = True
+        
+        if enable_complete == True:
+            self.complete()
+            print("complete done")
 
 
 

@@ -6,7 +6,7 @@ import utilities.Graphs as gr
 import utilities.P_trees as tr
 from timing import timing
 import children.pytorch.MutationManager as mutation_manager
-
+import time
 class DNA_Phase_space():
 
     def node2velocity_potential(self,node):
@@ -324,7 +324,28 @@ class DNA_Phase_space():
             print(f'{self.center()} : {self.node2particles(self.key2node(self.center()))} and its energy is {V_o}')
 
 
+    def updateNesterov(self):
 
+        node_parent = self.key2node(self.DNA_graph.center)       
+        tangent_plane_parent = node_parent.objects[0].objects[0]
+
+        nesterov_value = 0
+        for node_kid in node_parent.kids:
+            tangent_plane_kid = node_kid.objects[0].objects[0]
+            value = (tangent_plane_kid.energy - tangent_plane_parent.energy)*(tangent_plane_kid.velocity_potential - tangent_plane_parent.velocity_potential)*tangent_plane_kid.num_particles
+            nesterov_value += value
+
+        print("nesterov value = ", nesterov_value)
+        if nesterov_value >= 0:
+
+            tangent_plane_parent.velocity_potential = 0
+
+            for node_kid in node_parent.kids:
+                node_kid.objects[0].objects[0].velocity_potential = 0
+
+            for node in self.objects:
+                print("velcity potential node: ", node.objects[0].objects[0].velocity_potential)
+            
     def update(self):
         print('The center is')
         self.print_center()
@@ -341,6 +362,10 @@ class DNA_Phase_space():
         self.update_diffussion_field()
         print('Computing the external field took:')
         timing(self.update_external_field)
+
+        enable_nesterov = True
+        if enable_nesterov == True:
+            self.updateNesterov()
         #print('After external field, the signals are')
         #stream.print_signal()
         #print('Computing the interaction field took:')
