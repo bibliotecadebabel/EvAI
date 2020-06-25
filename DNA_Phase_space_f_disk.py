@@ -345,7 +345,7 @@ class DNA_Phase_space():
 
         print("total nesterov value = ", total_nesterov)
 
-        if total_nesterov >= 0:
+        if total_nesterov >= 0 or len(self.support) == 1:
 
             node_center.objects[0].objects[0].velocity_potential = 0
 

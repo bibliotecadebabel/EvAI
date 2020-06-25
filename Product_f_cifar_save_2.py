@@ -195,8 +195,8 @@ def create_objects(status, loaded_network):
             max_time=status.restart_period)
 
     if loaded_network == True:
-        status.Alai.time = 14077 - 14076
-        status.Alai.reset_count = 1
+        status.Alai.time = 34153 - 28152
+        status.Alai.reset_count = 2
 
     status.Data_gen=GeneratorFromCIFAR.GeneratorFromCIFAR(
     status.Comp, status.S, cuda=status.cuda, threads=status.threads,
@@ -308,7 +308,7 @@ def run(status):
 
     else:
 
-        path = os.path.join("saved_models","product_database", "7_test_final_experiment_model_6044")
+        path = os.path.join("saved_models","product_database", "12_test_2ndorder_eval_model_26734")
         network = NetworkStorage.loadNetwork(fileName=None, settings=settings, path=path)
         network.generateEnergy(status.Data_gen)
         acc = network.getAcurracy()
@@ -364,10 +364,7 @@ def run(status):
     save_51_layers = True
 
     if loaded_network == True:
-        save_6_layers = False
         save_17_layers = False
-        save_18_layers = False
-        save_19_layers = False
         L_1 = status.Alai.computeTime() // status.save_space_period
         L_2 = status.Alai.computeTime() // status.save_net_period
 
