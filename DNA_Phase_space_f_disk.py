@@ -6,7 +6,7 @@ import utilities.Graphs as gr
 import utilities.P_trees as tr
 from timing import timing
 import children.pytorch.MutationManager as mutation_manager
-import time
+
 class DNA_Phase_space():
 
     def node2velocity_potential(self,node):
@@ -323,24 +323,33 @@ class DNA_Phase_space():
         if node:
             print(f'{self.center()} : {self.node2particles(self.key2node(self.center()))} and its energy is {V_o}')
 
+    def computeNesterov(self, node_parent):
 
-    def updateNesterov(self):
-
-        node_parent = self.key2node(self.DNA_graph.center)       
         tangent_plane_parent = node_parent.objects[0].objects[0]
-
         nesterov_value = 0
+
         for node_kid in node_parent.kids:
             tangent_plane_kid = node_kid.objects[0].objects[0]
             value = (tangent_plane_kid.energy - tangent_plane_parent.energy)*(tangent_plane_kid.velocity_potential - tangent_plane_parent.velocity_potential)*tangent_plane_kid.num_particles
             nesterov_value += value
+        
+        return nesterov_value
 
-        print("nesterov value = ", nesterov_value)
-        if nesterov_value >= 0:
+    def updateNesterov(self):
 
-            tangent_plane_parent.velocity_potential = 0
+        node_center = self.key2node(self.DNA_graph.center)       
+        total_nesterov = 0
 
-            for node_kid in node_parent.kids:
+        for node in self.objects:
+            total_nesterov += self.computeNesterov(node)
+
+        print("total nesterov value = ", total_nesterov)
+
+        if total_nesterov >= 0:
+
+            node_center.objects[0].objects[0].velocity_potential = 0
+
+            for node_kid in node_center.kids:
                 node_kid.objects[0].objects[0].velocity_potential = 0
 
             for node in self.objects:

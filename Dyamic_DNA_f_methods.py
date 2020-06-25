@@ -324,7 +324,6 @@ def update_from_select_09(self):
         #node_max = phase_space.node_max_particles
         node_max = node_max_particles(phase_space)
         print("node_max particles:", Funct.node2num_particles(node_max))
-        time.sleep(5)
         center = phase_space.node2key(node_max)
         status=phase_space.status
         Alai=status.Alai
