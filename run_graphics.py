@@ -85,7 +85,7 @@ for selected_test in selected_test_list:
     axis_y = []
     max_xy = None
     max_acc = 0
-    last_particles = test_graphs[0].tangentPlane.num_particles
+    last_dna = test_graphs[0].dna
     min_range = 0
     last_acc = 0
     for graph in test_graphs:
@@ -99,8 +99,8 @@ for selected_test in selected_test_list:
         if acc > max_acc:
             max_acc = acc
             max_xy = [graph.current_alai_time / 782, max_acc]
-        
-        if graph.tangentPlane.num_particles != last_particles:
+            
+        if graph.dna != last_dna:
             min_y = convertPosition(acc*0.990)
             max_y = convertPosition(acc*1.010)
 
@@ -110,7 +110,7 @@ for selected_test in selected_test_list:
             else:
                 plt.axvline(x=graph.current_alai_time/782, ls="dotted", ymin=min_y, ymax=max_y, color=color_line)
 
-        last_particles = graph.tangentPlane.num_particles
+        last_dna = graph.dna
     
     ax.plot(axis_x,axis_y, format_line, label=label, color=color_graph)
     
@@ -125,7 +125,7 @@ ax.yaxis.set_major_formatter(matplotlib.ticker.StrMethodFormatter("{x:.2f}"))
 ax.title.set_text('First and Second Order Algorithms')
 
 y_ticks = np.arange(0.7, 1.00, 0.05)
-x_ticks = np.arange(axis_x[0], axis_x[-1]+1, 1)
+x_ticks = np.arange(axis_x[0], axis_x[-1]+1, 5)
 
 plt.yticks(y_ticks)
 plt.xticks(x_ticks)
@@ -148,3 +148,5 @@ pdf.savefig(fig, orientation='landscape' )
 
 plt.close()
 pdf.close()
+
+

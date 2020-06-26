@@ -238,7 +238,7 @@ def TestMemoryManager():
 
 def Test_param_calculator():
 
-    adn = ((-1, 1, 3, 32, 32), (0, 3, 128, 3, 3), (0, 128, 128, 4, 4), (0, 128, 256, 5, 5, 2), (0, 384, 128, 3, 3, 2), (0, 128, 128, 3, 3), (0, 128, 512, 3, 3, 2), (0, 128, 128, 2, 2), (0, 256, 256, 3, 3), (0, 256, 256, 5, 5), (0, 512, 256, 3, 3), (0, 256, 256, 3, 3), (0, 768, 512, 4, 4, 2), (0, 512, 512, 4, 4), (0, 512, 512, 2, 2), (0, 512, 512, 3, 3), (0, 1024, 256, 2, 2), (0, 256, 256, 8, 8), (1, 256, 10), (2,), (3, -1, 0), (3, 0, 1), (3, 1, 2), (3, 0, 3), (3, 2, 3), (3, 3, 4), (3, 4, 5), (3, 3, 6), (3, 2, 7), (3, 6, 8), (3, 7, 8), (3, 8, 9), (3, 2, 9), (3, 9, 10), (3, 10, 11), (3, 5, 11), (3, 5, 12), (3, 12, 13), (3, 13, 14), (3, 11, 15), (3, 14, 15), (3, 15, 16), (3, 16, 17), (3, 17, 18))
+    adn = test_DNAs.DNA_val_20_ac_b 
 
     total_params = 0
     conv2d = 0
@@ -269,20 +269,21 @@ def Test_param_calculator():
 
 def TimeCalculator():
 
-    start_time = 1592943164.3162282
-    #pretraining_end_time = 1592834714.5620644
-    mutation_end_time = 1592947553.3229296
+    start_time = 1593055924.4642408
+    pretraining_end_time = 1593056164.2837167
+    mutation_end_time = 1593071731.6843758
 
-    #start_time_2 = 1592852293.9096863
-    #mutation_end_time_2 = 1592860923.368806
+    start_time_2 = 1593075099.9702818
+    mutation_end_time_2 = 1593076326.8922641
 
-    #total_time = ((mutation_end_time - start_time) + (mutation_end_time_2 - start_time_2)) / 3600
+    mutation_time = ((mutation_end_time - pretraining_end_time) + (mutation_end_time_2 - start_time_2)) / 3600
+    total_time = ((mutation_end_time - start_time) + (mutation_end_time_2 - start_time_2)) / 3600
 
-    total_time = (mutation_end_time - start_time) / 3600
-    date_time = time.strftime('%Y-%m-%d %H:%M:%S', time.localtime(1592708152.3694825))
+    #total_time = (mutation_end_time - start_time) / 3600
+    date_time = time.strftime('%Y-%m-%d %H:%M:%S', time.localtime(start_time))
     print("Test Date: ", date_time)
-    #print("pre training time: ", (pretraining_end_time - start_time))
-    #print("mutation time: ", mutation_time)
+    print("pre training time: ", (pretraining_end_time - start_time))
+    print("mutation time: ", mutation_time)
     print("total time: ", total_time)
 
 def TimeCalculator2():
@@ -312,7 +313,7 @@ if __name__ == "__main__":
     #Test_Mutacion()
     #TestMemoryManager()
     #Test_Convex()
-    Test_param_calculator()
-    #TimeCalculator()
+    #Test_param_calculator()
+    TimeCalculator()
     #LayerCalculator()
     #print(test_DNAs.DNA_val_20)
