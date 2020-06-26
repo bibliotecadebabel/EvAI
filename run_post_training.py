@@ -172,15 +172,16 @@ if __name__ == '__main__':
         fileManager.setFileName("post_training_"+selected_test.name)
         fileManager.writeFile("")
 
-    path = os.path.join("saved_models","product_database", "13_recovering_2ndorder_eval_model_1163")
+    path = os.path.join("saved_models","product_database", "13_post-training-model_alai35753_0")
     network = NetworkStorage.loadNetwork(fileName=None, settings=settings, path=path)
 
     network.generateEnergy(dataGen)
     print("Loaded acc: ", network.getAcurracy())
 
-    mutationManager = MutationManager.MutationManager(directions_version="convex")
-    memoryManager = MemoryManager.MemoryManager()
+    #mutationManager = MutationManager.MutationManager(directions_version="convex")
+    #memoryManager = MemoryManager.MemoryManager()
 
+    '''
     NEW_DNA = ((-1, 1, 3, 32, 32), (0, 3, 128, 3, 3), (0, 128, 128, 3, 3), (0, 128, 128, 4, 4), 
                 (0, 128, 128, 3, 3), (0, 128, 256, 5, 5, 2), (0, 384, 128, 3, 3, 2), (0, 128, 128, 3, 3), 
                 (0, 128, 512, 3, 3, 2), (0, 128, 128, 2, 2), (0, 256, 256, 3, 3), (0, 256, 256, 5, 5), 
@@ -193,12 +194,13 @@ if __name__ == '__main__':
 
     oldNetwork = network
     network = mutationManager.executeMutation(network, NEW_DNA)
+    '''
     avg_factor = len(settings.init_dt_array) // 4
 
-    memoryManager.deleteNetwork(oldNetwork)
+    #memoryManager.deleteNetwork(oldNetwork)
 
-    network.generateEnergy(settings.dataGen)
-    saveModel(test=selected_test, network=network, iteration=0)
+    #network.generateEnergy(settings.dataGen)
+    #saveModel(test=selected_test, network=network, iteration=0)
 
     for i in range(settings.max_init_iter):
         print("iteration: ", i+1)
