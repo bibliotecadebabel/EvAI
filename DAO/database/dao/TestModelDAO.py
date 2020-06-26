@@ -43,7 +43,7 @@ class TestModelDAO():
         for row in rows:
             model = TestModelEntity()
             model.load(data=row)
-            if model.current_alai_time <= limit_alai_time:
+            if model.current_alai_time >= 800 and model.current_alai_time <= limit_alai_time:
                 result.append(model)
         
 

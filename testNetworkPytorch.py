@@ -248,11 +248,16 @@ def Test_param_calculator():
 
         if layer_type == 0:
             conv2d += 1
+
             if len(layer) < 6:
                 print("Layer type: ", layer_type, " - ", layer[1:5])
                 param_per_layer = 1
                 for param in layer[1:5]:
                     param_per_layer *= param
+                
+                #bias
+                param_per_layer += layer[2]
+
                 print("Layer params: ", param_per_layer)
                 total_params += param_per_layer
                 
@@ -269,20 +274,24 @@ def Test_param_calculator():
 
 def TimeCalculator():
 
-    start_time = 1593055924.4642408
-    pretraining_end_time = 1593056164.2837167
-    mutation_end_time = 1593071731.6843758
+    start_time = 1592834371.4477036
+    pretraining_end_time = 1592834714.5620644
+    mutation_end_time = 1592843276.0939608
 
-    start_time_2 = 1593075099.9702818
-    mutation_end_time_2 = 1593076326.8922641
+    #start_time_2 = 1593075099.9702818
+    #mutation_end_time_2 = 1593076326.8922641
 
-    mutation_time = ((mutation_end_time - pretraining_end_time) + (mutation_end_time_2 - start_time_2)) / 3600
-    total_time = ((mutation_end_time - start_time) + (mutation_end_time_2 - start_time_2)) / 3600
+    pretraining_time = (pretraining_end_time - start_time)  / 60
+    mutation_time = (mutation_end_time - pretraining_end_time) / 3600
+    total_time = (mutation_end_time - start_time) / 3600
+
+    #mutation_time = ((mutation_end_time - pretraining_end_time) + (mutation_end_time_2 - start_time_2)) / 3600
+    #total_time = ((mutation_end_time - start_time) + (mutation_end_time_2 - start_time_2)) / 3600
 
     #total_time = (mutation_end_time - start_time) / 3600
     date_time = time.strftime('%Y-%m-%d %H:%M:%S', time.localtime(start_time))
     print("Test Date: ", date_time)
-    print("pre training time: ", (pretraining_end_time - start_time))
+    print("pre training time: ", pretraining_time)
     print("mutation time: ", mutation_time)
     print("total time: ", total_time)
 
@@ -313,7 +322,7 @@ if __name__ == "__main__":
     #Test_Mutacion()
     #TestMemoryManager()
     #Test_Convex()
-    #Test_param_calculator()
-    TimeCalculator()
+    Test_param_calculator()
+    #TimeCalculator()
     #LayerCalculator()
     #print(test_DNAs.DNA_val_20)

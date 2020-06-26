@@ -125,12 +125,14 @@ ax.yaxis.set_major_formatter(matplotlib.ticker.StrMethodFormatter("{x:.2f}"))
 ax.title.set_text('First and Second Order Algorithms')
 
 y_ticks = np.arange(0.7, 1.00, 0.05)
-x_ticks = np.arange(axis_x[0], axis_x[-1]+1, 5)
+x_ticks = np.arange(2, 18, 2)
+#x_ticks = np.arange(axis_x[0], axis_x[-1]+1, 5)
+
 
 plt.yticks(y_ticks)
 plt.xticks(x_ticks)
 plt.xlabel("epochs")
-plt.ylabel("accuracy")
+plt.ylabel("validation accuracy")
 ax.legend()
 ax.grid(False)
 

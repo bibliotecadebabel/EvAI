@@ -84,7 +84,7 @@ class TestResultDAO():
 
             resultTest.load(data=row)
 
-            if resultTest.current_alai_time <= limit_alai:
+            if resultTest.current_alai_time >= 800 and resultTest.current_alai_time <= limit_alai:
                 value.append(resultTest)
         
         return value
