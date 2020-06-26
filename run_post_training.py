@@ -172,9 +172,25 @@ if __name__ == '__main__':
         fileManager.setFileName("post_training_"+selected_test.name)
         fileManager.writeFile("")
 
-    path = os.path.join("saved_models","product_database", "13_post-training-model_alai35753_0")
-    network = NetworkStorage.loadNetwork(fileName=None, settings=settings, path=path)
+    #path = os.path.join("saved_models","product_database", "13_post-training-model_alai35753_0")
+    #network = NetworkStorage.loadNetwork(fileName=None, settings=settings, path=path)
 
+    INIT_DNA_TESTING = ((-1, 1, 3, 32, 32), (0, 3, 128, 3, 3), (0, 128, 128, 3, 3), (0, 128, 128, 4, 4), 
+                (0, 128, 128, 3, 3), (0, 128, 256, 5, 5, 2), (0, 384, 128, 3, 3, 2), (0, 128, 128, 3, 3), 
+                (0, 128, 512, 3, 3, 2), (0, 128, 128, 2, 2), (0, 256, 256, 3, 3), (0, 256, 256, 5, 5), 
+                (0, 512, 256, 3, 3), (0, 256, 256, 3, 3), (0, 768, 512, 4, 4, 2), (0, 512, 512, 4, 4), 
+                (0, 512, 512, 2, 2), (0, 512, 512, 3, 3), (0, 1024, 256, 2, 2), (0, 256, 256, 8, 8), 
+                (1, 256, 10), (2,), (3, -1, 0), (3, 0, 1), (3, 1, 2), (3, 2, 3), (3, 3, 4), (3, 0, 5), (3, 4, 5), 
+                (3, 5, 6), (3, 6, 7), (3, 5, 8), (3, 4, 9), (3, 8, 10), (3, 9, 10), (3, 10, 11), (3, 4, 11), 
+                (3, 11, 12), (3, 12, 13), (3, 7, 13), (3, 7, 14), (3, 14, 15), (3, 15, 16), (3, 13, 17), 
+                (3, 16, 17), (3, 17, 18), (3, 18, 19), (3, 19, 20))
+
+    network = nw.Network(adn=INIT_DNA_TESTING, cudaFlag=settings.cuda,
+                                    momentum=settings.momentum, weight_decay=settings.weight_decay,
+                                    enable_activation=settings.enable_activation,
+                                    enable_track_stats=settings.enable_track_stats, dropout_value=settings.dropout_value,
+                                    dropout_function=settings.dropout_function, enable_last_activation=settings.enable_last_activation,
+                                    version=settings.version, eps_batchnorm=settings.eps_batchorm)
     network.generateEnergy(dataGen)
     print("Loaded acc: ", network.getAcurracy())
 
