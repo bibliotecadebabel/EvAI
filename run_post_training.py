@@ -15,6 +15,8 @@ import os
 import utilities.NetworkStorage as NetworkStorage
 import children.pytorch.MutationManager as MutationManager
 import utilities.MemoryManager as MemoryManager
+import torch
+import gc
 
 ###### EXPERIMENT SETTINGS ######
 
@@ -214,6 +216,9 @@ if __name__ == '__main__':
     avg_factor = len(settings.init_dt_array) // 4
 
     #memoryManager.deleteNetwork(oldNetwork)
+    
+    gc.collect()
+    torch.cuda.empty_cache()
 
     #network.generateEnergy(settings.dataGen)
     #saveModel(test=selected_test, network=network, iteration=0)
