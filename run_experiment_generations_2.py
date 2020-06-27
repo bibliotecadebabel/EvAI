@@ -258,15 +258,14 @@ if __name__ == '__main__':
     settings.dropout_function = dropout_function
 
     # INITIAL DNA
-    settings.initial_dna = ((-1, 1, 3, 32, 32), (0, 3, 128, 3, 3), (0, 128, 128, 3, 3), (0, 128, 128, 4, 4), (0, 128, 128, 3, 3), (0, 128, 256, 5, 5, 2), (0, 384, 128, 3, 3, 2), (0, 128, 128, 3, 3), (0, 128, 512, 3, 3, 2), (0, 128, 128, 2, 2), (0, 256, 256, 3, 3), (0, 256, 256, 5, 5), (0, 512, 256, 3, 3), (0, 256, 256, 3, 3), (0, 768, 512, 4, 4, 2), (0, 512, 512, 4, 4), (0, 512, 512, 2, 2), (0, 512, 512, 3, 3), (0, 1024, 256, 2, 2), (0, 256, 256, 8, 8), (1, 256, 10), (2,), (3, -1, 0), (3, 0, 1), (3, 1, 2), (3, 2, 3), (3, 3, 4), (3, 0, 5), (3, 4, 5), (3, 5, 6), (3, 6, 7), (3, 5, 8), (3, 4, 9), (3, 8, 10), (3, 9, 10), (3, 10, 11), (3, 4, 11), (3, 11, 12), (3, 12, 13), (3, 7, 13), (3, 7, 14), (3, 14, 15), (3, 15, 16), (3, 13, 17), (3, 16, 17), (3, 17, 18), (3, 18, 19), (3, 19, 20))
-
+    settings.initial_dna = ((-1, 1, 3, 32, 32), (0, 3, 128, 3, 3), (0, 128, 128, 3, 3), (0, 128, 128, 4, 4), (0, 128, 128, 3, 3), (0, 128, 256, 5, 5, 2), (0, 384, 128, 3, 3, 2), (0, 128, 128, 3, 3), (0, 128, 512, 3, 3, 2), (0, 128, 128, 2, 2), (0, 256, 256, 3, 3), (0, 256, 256, 5, 5), (0, 512, 256, 3, 3), (0, 256, 256, 3, 3), (0, 768, 512, 4, 4, 2), (0, 512, 512, 4, 4), (0, 512, 512, 2, 2), (0, 512, 512, 3, 3), (0, 1024, 512, 2, 2), (0, 512, 256, 8, 8), (1, 256, 10), (2,), (3, -1, 0), (3, 0, 1), (3, 1, 2), (3, 2, 3), (3, 3, 4), (3, 0, 5), (3, 4, 5), (3, 5, 6), (3, 6, 7), (3, 5, 8), (3, 4, 9), (3, 8, 10), (3, 9, 10), (3, 10, 11), (3, 4, 11), (3, 11, 12), (3, 12, 13), (3, 7, 13), (3, 7, 14), (3, 14, 15), (3, 15, 16), (3, 13, 17), (3, 16, 17), (3, 17, 18), (3, 18, 19), (3, 19, 20))
     
     print('The initial DNA is:')
     print(settings.initial_dna)
 
 
     dataCreator = CommandCreateDataGen.CommandCreateDataGen(cuda=settings.cuda)
-    dataCreator.execute(compression=2, batchSize=settings.batch_size, source=DATA_SOURCE, threads=THREADS, dataAugmentation=ENABLE_AUGMENTATION)
+    dataCreator.execute(compression=2, batchSize=settings.batch_size, source=DATA_SOURCE, threads=THREADS, dataAugmentation=ENABLE_AUGMENTATION, transformCompose=transform_compose)
     dataGen = dataCreator.returnParam()
 
     space, selector = DNA_Creator_s(dataGen.size[1], dataGen.size[2], dna=settings.initial_dna, version=settings.version)
