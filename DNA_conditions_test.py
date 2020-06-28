@@ -1,13 +1,80 @@
-import DNA_conditions as program
-import Bugs_direction_f as DNAs
-
-def restrict_conections_test(DNA):
-    print(program.restrict_conections(DNA))
+from DNA_conditions import max_layer, max_filter
+import test_DNAs as DNAs
+import DNA_conditions
 
 
-restrict_conections_test(DNAs.DNA_init)
-restrict_conections_test(DNAs.DNA_r)
+def DNA_conv_last():
+    DNA=DNAs.DNA_ep_85_5_pool
+    print(DNA_conditions.max_filter_dense(DNA,400))
 
+def DNA_max_pool_layer_test():
+    DNA=DNAs.DNA_calibration_2
+    print(DNA_conditions.max_pool_layer(DNA,10))
+
+def DNA_min_filter(x,y):
+    DNA=((-1, 3, 5, 3, 3),(0, 8, 8, 3,3),(0,11,5, x, y), (1, 5, 2), (2,))
+    print(DNA_conditions.min_filter(DNA,8))
+
+def DNA_max_filter(x,y):
+    center=((0, 3, 5, 3, 3),(0, 8, 8, 3,3),(0,11,5, x, y), (1, 5, 2), (2,))
+    print('The DNA is')
+    print(center)
+    M_filter=30
+    print('M_filter is')
+    print(M_filter)
+    print('The output of max filter is')
+    print(max_filter(center,M_filter))
+    M_filter=8
+    print('but when M_filter is')
+    print(M_filter)
+    print('The output of max filter is')
+    print(max_filter(center,M_filter))
+
+
+def max_parents_test():
+    DNA=DNAs.DNA_h
+    print(DNA_conditions.max_parents(DNA,1))
+
+def max_kernel_dense_test():
+    DNA=DNAs.DNA_h
+    print(DNA_conditions.max_kernel_dense(DNA,5))
+
+def dict2condition_test():
+    list_conditions={DNA_conditions.max_filter : 256,
+            DNA_conditions.max_filter_dense : 256,
+            DNA_conditions.max_kernel_dense : 9,
+            DNA_conditions.max_layer : 30,
+            DNA_conditions.min_filter : 3,
+            DNA_conditions.max_pool_layer : 5,
+            DNA_conditions.max_parents : 2}
+    def condition(DNA):
+        return DNA_conditions.dict2condition(DNA,dict)
+    DNA=DNAs.DNA_calibration_2
+    print(condition(DNA))
+
+def max_filter_test():
+    DNA=DNAs.DNA_calibration_2
+    print(DNA_conditions.max_filter(DNA,530))
+
+def DNA_con_image(x,y):
+    DNA=((-1,1,3,11,11),(0, 3, 5, 3, 3),(0, 8, 8,2,2,2),(0,8,120,6,6),
+            (1, 13, 2),
+            (2,),
+            (3,-1,0),
+            (3,0,1),(3,-1,1),
+            (3,1,2),
+            (3,2,3),
+            (3,3,4))
+    print(DNA_conditions.con_image(DNA,8))
+
+DNA_con_image(11,11)
+#DNA_conv_last()
+#max_filter_test()
+#dict2condition_test()
+#max_kernel_dense_test()
+#max_parents_test()
+#DNA_Creator_s(11,11)
+#DNA_max_filter(11,11)
 #layer_increase_i(11,11)
 #kernel_increase_i(11,11)
 #add_filter_i(11,11)

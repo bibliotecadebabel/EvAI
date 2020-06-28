@@ -1,15 +1,17 @@
 from DAO.database.DBHandler import DBHandler
 from Entities.TestResultEntity import TestResultEntity
 import json
+import time
 
 class TestResultDAO():
 
     def __init__(self, db='database_product.db'):
         self.__handler = DBHandler(db)
     
-    def insert(self, idTest, iteration, dna_graph):
+    def insert(self, idTest, iteration, dna_graph, current_alai_time=0, reset_count=0):
 
-        query = """INSERT INTO test_result(id_test, iteration, dna, tangentPlane, center) values(?,?,?,?,?);"""
+        current_time = str(time.time())
+        query = """INSERT INTO test_result(id_test, iteration, dna, tangentPlane, center, current_time, current_alai_time, reset_dt_count) values(?,?,?,?,?,?,?,?);"""
 
         rows = []
 
@@ -25,7 +27,7 @@ class TestResultDAO():
             if str(node.objects[0].shape) == str(dna_graph.center): 
                 isCenter = 1
 
-            data = (idTest, iteration, json_dna, json_tangent, isCenter)
+            data = (idTest, iteration, json_dna, json_tangent, isCenter, current_time, str(current_alai_time), reset_count)
 
             rows.append(data)
 
@@ -65,6 +67,25 @@ class TestResultDAO():
             resultTest.load(data=row)
 
             value.append(resultTest)
+        
+        return value
+    
+    def findByLimitAlai(self, idTest, limit_alai):
+        
+        query = """SELECT * FROM test_result WHERE center = 1 AND id_test = ? """
+        data = (idTest,)
+
+        rows = self.__handler.executeQuery(query, data)
+
+        value = []
+        
+        for row in rows:
+            resultTest = TestResultEntity()
+
+            resultTest.load(data=row)
+
+            if resultTest.current_alai_time >= 800 and resultTest.current_alai_time <= limit_alai:
+                value.append(resultTest)
         
         return value
 

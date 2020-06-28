@@ -333,15 +333,15 @@ class AlterDimensionKernel_Dendrite(Mutation):
             oldFilter = torch.cat((oldFilter, resized_1), dim=3)
             oldFilter = torch.cat((oldFilter, resized_2), dim=2)
             
-            new_normalize = 1 * oldFilter.shape[2] * oldFilter.shape[3]
+            #new_normalize = 1 * oldFilter.shape[2] * oldFilter.shape[3]
 
             del resized_1
             del resized_2
 
             
-            oldFilter = (oldFilter * new_normalize) / old_normalize
+            #oldFilter = (oldFilter * new_normalize) / old_normalize
 
-            oldBias = (oldBias * new_normalize) / old_normalize
+            #oldBias = (oldBias * new_normalize) / old_normalize
             
 
             newNode.setFilter(oldFilter)
@@ -350,28 +350,19 @@ class AlterDimensionKernel_Dendrite(Mutation):
         elif self._value < 0:
 
             shape = oldFilter.shape
-            old_normalize = 1 * shape[2] * shape[3]
+            #old_normalize = 1 * shape[2] * shape[3]
 
-            if cuda == True:
-                resized = torch.zeros(shape[0], shape[1], shape[2]-newDimensions, shape[3]-newDimensions).cuda()
-            else:
-                resized = torch.zeros(shape[0], shape[1], shape[2]-newDimensions, shape[3]-newDimensions)
-            
-            for out_channel in range(shape[0]):
-                for in_channel in range(shape[1]):
-                    for kernel_x in range(shape[2]-newDimensions):
-                        for kernel_y in range(shape[3]-newDimensions):
-                            resized[out_channel][in_channel][kernel_x][kernel_y] = oldFilter[out_channel][in_channel][kernel_x][kernel_y].clone()
-        
-
+            new_x = shape[2] - newDimensions
+            new_y = shape[3] - newDimensions
+            resized = oldFilter[:, :, :new_x, :new_y]
 
             del oldFilter
 
-            new_normalize = 1 * resized.shape[2] * resized.shape[3]
+            #new_normalize = 1 * resized.shape[2] * resized.shape[3]
             
-            resized = (resized * new_normalize) / old_normalize
+            #resized = (resized * new_normalize) / old_normalize
 
-            oldBias = (oldBias * new_normalize) / old_normalize
+            #oldBias = (oldBias * new_normalize) / old_normalize
             
             newNode.setFilter(resized)
             newNode.setBias(oldBias)
@@ -402,6 +393,7 @@ class AdjustEntryFilters_Dendrite():
 
         #print("range to remove=", value)
         newEntries = shape[1] - (abs(value[0] - value[1]) + 1)
+        #print("new entries: ", newEntries)
 
         if self.network.cudaFlag == True:
             adjustedOldFilter = torch.zeros(shape[0], newEntries, shape[2], shape[3]).cuda()
@@ -419,6 +411,7 @@ class AdjustEntryFilters_Dendrite():
                     index_accepted += 1
 
         value = self.__normalize(oldFilter=adjustedOldFilter, oldBias=oldBias, originalShape=shape)
+        #print("value shape: ", value[0].shape)
         return value
 
     def adjustEntryFilters(self, mutation_type):
@@ -480,6 +473,8 @@ class AdjustEntryFilters_Dendrite():
 
         range_add = [startIndex+1, startIndex+value]
 
+        #print("range to add: ", range_add)
+        #print("value: ", value)
         shape = oldFilter.shape
 
         if self.network.cudaFlag == True:
@@ -487,6 +482,8 @@ class AdjustEntryFilters_Dendrite():
         else:
             adjustedFilter = torch.zeros(shape[0], shape[1]+value, shape[2], shape[3])
 
+        #print("adjustfilter: ", adjustedFilter.size())
+        #print("oldfilter: ", oldFilter.size())
         #print("add range=", range_add)
         #print("new filter size=", adjustedFilter.shape) 
 
@@ -497,7 +494,8 @@ class AdjustEntryFilters_Dendrite():
                 if entries_channel >= range_add[0] and entries_channel <= range_add[1]:
                     pass
                 else:
-                    adjustedFilter[exit_channel][entries_channel] = oldFilter[exit_channel][index_accepted].clone()
+                    new_value = oldFilter[exit_channel][index_accepted].clone()
+                    adjustedFilter[exit_channel][entries_channel] = new_value
                     index_accepted += 1
         
         value = self.__normalize(oldFilter=adjustedFilter, oldBias=oldBias, originalShape=shape)

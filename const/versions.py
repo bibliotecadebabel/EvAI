@@ -1,0 +1,6 @@
+DENDRITES_VERSION = "f"
+CLONE_VERSION = "clone"
+POOL_VERSION = "pool"
+DUPLICATE_VERSION = "duplicate"
+H_VERSION = "h"
+CONVEX_VERSION = "convex"

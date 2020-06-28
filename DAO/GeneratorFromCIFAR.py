@@ -13,17 +13,44 @@ import torch.optim as optim
 
 
 class GeneratorFromCIFAR(Generator):
-    def __init__(self, comp, batchSize, cuda=False):
+    def __init__(self, comp, batchSize, cuda=False, threads=0, dataAugmentation=False, transforms_mode=None):
         super().__init__(comp, batchSize, "CIFAR", "folder", cuda=cuda)
 
-        self.batchSize = batchSize
-        self.transform = transforms.Compose([transforms.ToTensor(), transforms.Normalize((0.5, 0.5, 0.5), (0.5, 0.5, 0.5))])
-        self.trainset = torchvision.datasets.CIFAR10(root='./cifar', train=True, download=False, transform=self.transform)
-        self.testSet = torchvision.datasets.CIFAR10(root='./cifar', train=False, download=False, transform=self.transform)
+        if transforms_mode == None:
+            self.train_transform = transforms.Compose([
+                #transforms.RandomCrop(32, padding=4),
+                transforms.RandomAffine(0, translate=(0.1, 0.1)),
+                transforms.RandomHorizontalFlip(),
+                transforms.ToTensor(),
+                transforms.Normalize((0.5, 0.5, 0.5), (0.5, 0.5, 0.5)),
+            ])
+        else:
+            print("using transform parameter")
+            self.train_transform = transforms_mode
+            print(self.train_transform)
 
-        self._trainoader = torch.utils.data.DataLoader(self.trainset, batch_size=self.batchSize, shuffle=True, num_workers=0)
-        self._testloader = torch.utils.data.DataLoader(self.testSet, batch_size=self.batchSize, shuffle=False, num_workers=0)
+        self.test_transform = transforms.Compose([
+            transforms.ToTensor(), 
+            transforms.Normalize((0.5, 0.5, 0.5), (0.5, 0.5, 0.5))
+        ])
+
+        if dataAugmentation == False:
+            print("Data augmentation is disabled")
+            self.train_transform = transforms.Compose([
+                transforms.ToTensor(), 
+                transforms.Normalize((0.5, 0.5, 0.5), (0.5, 0.5, 0.5))
+            ])
+
+        self.batchSize = batchSize
+        self.trainset = torchvision.datasets.CIFAR10(root='./cifar', train=True, download=True, transform=self.train_transform)
+        self.testSet = torchvision.datasets.CIFAR10(root='./cifar', train=False, download=False, transform=self.test_transform)
+        self.evalSet = torchvision.datasets.CIFAR10(root='./cifar', train=False, download=False, transform=self.test_transform)
+        print("threads = ", threads)
+        self._trainoader = torch.utils.data.DataLoader(self.trainset, batch_size=self.batchSize, shuffle=True, num_workers=threads)
+        self._testloader = torch.utils.data.DataLoader(self.testSet, batch_size=32, shuffle=False, num_workers=threads)
+        self._evalloader = torch.utils.data.DataLoader(self.evalSet, batch_size=32, shuffle=True, num_workers=threads)
         self.type = datagen_type.DATABASE_IMAGES
+        self.total_steps = len(self._trainoader)
 
     def generateData(self):
 
@@ -35,13 +62,14 @@ class GeneratorFromCIFAR(Generator):
 
             inputs, labels = data
 
-            inputs = inputs*255
-
             self.data = [inputs, labels]
 
             if i >= 0:
                 break
 
+
+    def getRandomSample(self, i):
+        pass
 
     def __generateTestData(self):
 

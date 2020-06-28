@@ -4,6 +4,8 @@ import children.pytorch.Functions as functions
 import children.pytorch.NetworkAbastract as na
 import const.propagate_mode as const
 import const.datagenerator_type as datagen_type
+import const.versions as directions_version
+import utilities.Augmentation as Augmentation
 
 import torch
 import torch.nn as nn
@@ -12,18 +14,46 @@ import torch.tensor as tensor
 import utilities.Graphs as Graphs
 import torch.optim as optim
 
+import os
+import time
+
 class Network(nn.Module, na.NetworkAbstract):
 
-    def __init__(self, adn, cudaFlag=True, momentum=0.0, weight_decay=0.0):
+    def __init__(self, adn, cudaFlag=True, momentum=0.0, weight_decay=0.0, 
+                enable_activation=True, enable_track_stats=True, dropout_value=0, 
+                dropout_function=None, enable_last_activation=True, version=None, eps_batchnorm=None):
         nn.Module.__init__(self)
-        na.NetworkAbstract.__init__(self,adn=adn, cuda=cudaFlag, momentum=momentum, weight_decay=weight_decay)
+        na.NetworkAbstract.__init__(self,adn=adn, cuda=cudaFlag, momentum=momentum, weight_decay=weight_decay, 
+                                enable_activaiton=enable_activation, enable_track_stats=enable_track_stats, dropout_value=dropout_value,
+                                enable_last_activation=enable_last_activation)
+        
+        self.dropout_function = dropout_function
+        self.version = version
+        self.eps_batchnorm = eps_batchnorm
+
+        if dropout_function == None:
+            self.dropout_function = self.__defaultDropoutFunction
+        
+    
         self.__lenghNodes = 0
-        self.__conv2d_propagate_mode = const.CONV2D_DEFAULT
+        self.__total_layers = 0
         self.__accumulated_loss = 0
         self.__accuracy = 0
+
+        self.__conv2d_propagate_mode = const.CONV2D_MULTIPLE_INPUTS
+
+        if self.version == directions_version.H_VERSION or self.version == directions_version.CONVEX_VERSION:
+            self.__conv2d_propagate_mode = const.CONV2D_PADDING
+
         self.createStructure()
         self.__currentEpoch = 0
         self.optimizer = optim.SGD(self.parameters(), lr=0.1, momentum=self.momentum, weight_decay=self.weight_decay)
+        self.eval_iter = None  
+        self.acc_array = []
+          
+    def __defaultDropoutFunction(self, base_p, total_layers, index_layer, isPool=False):
+
+        return base_p
 
     def createStructure(self):
 
@@ -51,15 +81,75 @@ class Network(nn.Module, na.NetworkAbstract):
         self.nodes[0].objects.append(ly.Layer(node=self.nodes[0], value=None, propagate=functions.Nothing, cudaFlag=self.cudaFlag))
 
         indexNode = 1
+        index_layer = 0
+
         for adn in self.adn:
+
             tupleBody = adn
 
-            if tupleBody[0] >= 0 and tupleBody[0] <= 2:
-                layer = self.factory.findValue(tupleBody, propagate_mode=self.__conv2d_propagate_mode)
+            if tupleBody[0] != -1 and tupleBody[0] != 3:
+                
+                layer = self.factory.findValue(tupleBody, propagate_mode=self.__conv2d_propagate_mode, 
+                                        enable_activation=self.enable_activation)
+
                 layer.node = self.nodes[indexNode]
                 self.nodes[indexNode].objects.append(layer)
                 attributeName = "layer"+str(indexNode)
                 self.setAttribute(attributeName, layer.object)
+                
+                if index_layer == self.__total_layers - 2 and self.enable_last_activation == False:
+                    layer.enable_activation = False
+
+                if tupleBody[0] == 0 or tupleBody[0] == 1:
+                    
+                    if self.cudaFlag == True:
+                        tensor_h = torch.nn.Parameter(torch.tensor(1.0, requires_grad=True).cuda())
+                    else:
+                        tensor_h = torch.nn.Parameter(torch.tensor(1.0, requires_grad=True))
+
+                    if len(tupleBody) > 5:
+                        dropout_value = self.dropout_function(self.dropout_value, self.__total_layers, index_layer, True)
+                    else:
+                        dropout_value = self.dropout_function(self.dropout_value, self.__total_layers, index_layer, False)
+
+                    layer.dropout_value = dropout_value
+                    conv2d_dropout = torch.nn.Dropout2d(p=layer.dropout_value)
+
+                    if self.cudaFlag == True:
+                        conv2d_dropout = conv2d_dropout.cuda()                    
+
+                    layer.setDropoutObject(conv2d_dropout)
+                    attributeName_dropout = "layer_dropout"+str(indexNode)
+                    self.setAttribute(attributeName_dropout, layer.getDropoutObject())
+                    
+                    layer.tensor_h = tensor_h
+                    attributeName_h = "layer_h"+str(indexNode)
+                    self.setAttribute(attributeName_h, layer.tensor_h)
+                    index_layer += 1
+
+                if tupleBody[0] == 0:
+
+                    if self.eps_batchnorm == None:
+                        conv2d_batchnorm = torch.nn.BatchNorm2d(tupleBody[2], track_running_stats=self.enable_track_stats)
+                    else:
+                        conv2d_batchnorm = torch.nn.BatchNorm2d(tupleBody[2], track_running_stats=self.enable_track_stats, eps=self.eps_batchnorm)
+
+                    if self.cudaFlag == True:
+                        conv2d_batchnorm = conv2d_batchnorm.cuda()
+                    
+                    layer.setBatchNormObject(conv2d_batchnorm)
+                    attributeName_batch = "layer_batchnorm"+str(indexNode)
+                    self.setAttribute(attributeName_batch, layer.getBatchNormObject())
+
+                    if len(tupleBody) > 5:
+                        conv2d_pool = torch.nn.MaxPool2d((tupleBody[5], tupleBody[5]), stride=None, ceil_mode=True)
+
+                        if self.cudaFlag == True:
+                            conv2d_pool = conv2d_pool.cuda()
+
+                        layer.setPool(conv2d_pool)
+                        attributeName_pool = "layer_pool"+str(indexNode)
+                        self.setAttribute(attributeName_pool, layer.getPool())
 
                 indexNode += 1
 
@@ -70,15 +160,16 @@ class Network(nn.Module, na.NetworkAbstract):
 
     def __generateLengthNodes(self):
 
+        self.__total_layers = 0
         for i in range(len(self.adn)):
 
             tupleBody = self.adn[i]
 
-            if tupleBody[0] >= 0 and tupleBody[0] <= 2:
+            if tupleBody[0] != -1 and tupleBody[0] != 3:
                 self.__lenghNodes += 1
 
-            if tupleBody[0] == 3:
-                self.__conv2d_propagate_mode = const.CONV2D_MULTIPLE_INPUTS
+                if tupleBody[0] == 0 or tupleBody[0] == 1:
+                    self.__total_layers += 1
 
         self.__lenghNodes += 1
 
@@ -113,12 +204,14 @@ class Network(nn.Module, na.NetworkAbstract):
 
         self.nodes[0].objects[0].value = dataElement
         self.updateGradFlag(True)
+
         self(dataElement)
         self.__doBackward()
         self.updateGradFlag(False)
 
     def __doTraining(self, inputs, labels_data):
 
+        self.__getLossLayer().setRicap(None)
         self.assignLabels(labels_data)
         self.total_value = 0
         self.optimizer.zero_grad()
@@ -128,7 +221,21 @@ class Network(nn.Module, na.NetworkAbstract):
         self.total_value = self.__getLossLayer().value.item()
         self.__accumulated_loss += self.total_value
 
-        self.history_loss.append(self.total_value)
+    
+    def __doTrainingRICAP(self, inputs, labels_data, ricap : Augmentation.Ricap):
+
+        self.__getLossLayer().setEnableRicap(True)
+        self.assignLabels(labels_data)
+        self.total_value = 0
+        self.optimizer.zero_grad()
+
+        patched_images = ricap.doRicap(inputs=inputs, target=labels_data, cuda=self.cudaFlag)        
+        self.__getLossLayer().setRicap(ricap)
+        self.Train(patched_images, 1, 1)
+        self.optimizer.step()
+
+        self.total_value = self.__getLossLayer().value.item()
+        self.__accumulated_loss += self.total_value
 
     def TrainingALaising(self, dataGenerator, epochs, alaising_object, period_show_accuracy):
         epoch = 0
@@ -158,8 +265,6 @@ class Network(nn.Module, na.NetworkAbstract):
                     inputs, labels_data = data[0].cuda(), data[1].cuda()
                 else:
                     inputs, labels_data = data[0], data[1]
-
-                inputs = inputs * 255
 
                 self.assignLabels(labels_data)
 
@@ -193,8 +298,6 @@ class Network(nn.Module, na.NetworkAbstract):
             else:
                 inputs, labels_data = data[0], data[1]
 
-            inputs = inputs * 255
-
             self.assignLabels(labels_data)
             self.total_value = 0
             self.optimizer.zero_grad()
@@ -210,26 +313,29 @@ class Network(nn.Module, na.NetworkAbstract):
         print("end step=", start_step)
         print("end energy=", self.getAverageLoss(total_steps//4))
 
-    def TrainingCosineLR_Restarts(self, dataGenerator, max_dt, min_dt, epochs, restart_dt=1, show_accuarcy=False):
+    def TrainingCosineLR_Restarts(self, dataGenerator, max_dt, min_dt, epochs, restart_dt=1, show_accuarcy=False, fileManager=None):
 
+        print("momentum=", self.momentum)
+        print("weight decay=", self.weight_decay)
         self.optimizer = optim.SGD(self.parameters(), lr=max_dt, momentum=self.momentum, weight_decay=self.weight_decay)
         total_steps = len(dataGenerator._trainoader)
 
-        print_every = total_steps // 4
+        print_every = total_steps // 8
         epoch = 0
 
-        scheduler = optim.lr_scheduler.CosineAnnealingLR(self.optimizer, total_steps * restart_dt, eta_min=min_dt)
-
+        #scheduler = optim.lr_scheduler.CosineAnnealingLR(self.optimizer, total_steps * restart_dt, eta_min=min_dt)
         while epoch < epochs:
-
-            if epoch % restart_dt == 0:
-                scheduler = optim.lr_scheduler.CosineAnnealingLR(self.optimizer, total_steps * restart_dt, eta_min=min_dt)
+            start_time = time.time()
+            #if epoch % restart_dt == 0:
+            #    scheduler = optim.lr_scheduler.CosineAnnealingLR(self.optimizer, total_steps * restart_dt, eta_min=min_dt)
 
             if show_accuarcy == True and epoch > 0:
 
                 if epoch % 5 == 0:
                     self.generateEnergy(dataGen=dataGenerator)
                     print("ACCURACY= ", self.getAcurracy())
+                    fileManager.appendFile("epoch: "+str(epoch)+" - Acc: "+str(self.getAcurracy()))
+
 
             for i, data in enumerate(dataGenerator._trainoader):
 
@@ -238,14 +344,12 @@ class Network(nn.Module, na.NetworkAbstract):
                 else:
                     inputs, labels_data = data[0], data[1]
 
-                inputs = inputs * 255
-
                 self.assignLabels(labels_data)
                 self.total_value = 0
                 self.optimizer.zero_grad()
                 self.Train(inputs, 1, 1)
                 self.optimizer.step()
-                scheduler.step()
+                #scheduler.step()
 
                 self.total_value = self.__getLossLayer().value.item()
                 self.__accumulated_loss += self.total_value
@@ -253,11 +357,173 @@ class Network(nn.Module, na.NetworkAbstract):
 
 
                 if i % print_every == print_every - 1:
-                    self.__printValues(epoch + 1, i, avg=(total_steps//4))
+                    self.__printValues(epoch + 1, i, avg=(print_every))
 
             epoch+= 1
+            
+            end_time = time.time()
 
+            print("epoch time: ", (end_time - start_time))
 
+    def trainingWarmRestarts(self, dataGenerator, dt_max, dt_min, epochs, restar_period, ricap=None, evalLoss=False, fileManager=None):
+
+        try:
+
+            print("epochs= ", epochs)
+            print("restart period =", restar_period)
+            iters = len(dataGenerator._trainoader)
+            print_every = iters // 4
+            start = time.time()
+            restarts = int(restar_period*iters) 
+            
+            self.optimizer = optim.SGD(self.parameters(), lr=dt_max, momentum=self.momentum, weight_decay=self.weight_decay)
+            
+            scheduler = optim.lr_scheduler.CosineAnnealingLR(self.optimizer, restarts, eta_min=dt_min)
+            for epoch in range(epochs):
+
+                
+                if evalLoss == True:
+                    self.eval_iter = iter(dataGenerator._evalloader)
+                
+                for i, data in enumerate(dataGenerator._trainoader):
+                    
+                    if self.cudaFlag == True:
+                        inputs, labels_data = data[0].cuda(), data[1].cuda()
+                    else:
+                        inputs, labels_data = data[0], data[1]
+                    
+                    
+                    if ricap == None:
+                        self.__doTraining(inputs=inputs, labels_data=labels_data)
+                    else:
+                        self.__doTrainingRICAP(inputs=inputs, labels_data=labels_data, ricap=ricap)
+
+                    scheduler.step()
+
+                    if evalLoss == False:
+                        self.history_loss.append(self.total_value)
+                    else:
+                        self.__generateEvalLoss(dataGenerator)
+                            
+                    if print_every > 0:
+
+                        if i % print_every == print_every - 1 or i == 0 or i == iters - 1 or i == iters or i == iters + 1:
+                            
+                            end_time = time.time() - start
+                            self.__printValues(epoch=epoch+1, i=i, avg=print_every, end_time=end_time)
+                            start = time.time()
+
+                if epoch % restar_period == restar_period - 1:
+                    
+                    self.generateEnergy(dataGenerator)
+                    print("Current Accuracy: ", self.getAcurracy())
+                    print("dt: ", self.optimizer.param_groups[0]['lr'])
+                    if fileManager is not None:
+                        fileManager.appendFile("epoch: "+str(epoch+1)+" - Acc: "+str(self.getAcurracy())+" - Loss: "+str(self.getAverageLoss(print_every)))
+
+                    self.optimizer = optim.SGD(self.parameters(), lr=dt_max, momentum=self.momentum, weight_decay=self.weight_decay)
+                    scheduler = optim.lr_scheduler.CosineAnnealingLR(self.optimizer, restarts, eta_min=dt_min)
+        except:
+            print("ERROR TRAINING")
+            print("DNA: ", self.adn)
+            raise
+
+    def iterTraining(self, dataGenerator, dt_array, ricap=None, evalLoss=False):
+
+        try:
+            print("Using eva loss: ", evalLoss)
+            save_acc = False
+            current_epoch = 0
+            iters = len(dt_array)
+
+            print_every = iters // 4
+            start = time.time()
+            data_iter = iter(dataGenerator._trainoader)
+
+            if evalLoss == True:
+                self.eval_iter = iter(dataGenerator._evalloader)
+            
+            i = 0
+
+            while i < iters:
+                
+                try:
+                                        
+                    data = next(data_iter)
+
+                    self.optimizer = optim.SGD(self.parameters(), lr=dt_array[i], momentum=self.momentum, weight_decay=self.weight_decay)
+
+                    if self.cudaFlag == True:
+                        inputs, labels_data = data[0].cuda(), data[1].cuda()
+                    else:
+                        inputs, labels_data = data[0], data[1]
+                    
+                    
+                    if ricap == None:
+                        self.__doTraining(inputs=inputs, labels_data=labels_data)
+                    else:
+                        self.__doTrainingRICAP(inputs=inputs, labels_data=labels_data, ricap=ricap)
+
+                    self.__currentEpoch = i
+                    
+                    if evalLoss == False:
+                        self.history_loss.append(self.total_value)
+                    else:
+                        self.__generateEvalLoss(dataGenerator)
+                        
+                    if print_every > 0:
+
+                        if i % print_every == print_every - 1:
+                            
+                            end_time = time.time() - start
+                            self.__printValues(epoch=1, i=i, avg=print_every, end_time=end_time)
+                            start = time.time()
+                    i+= 1
+
+                except StopIteration:
+                    current_epoch += 1
+                    save_acc = True
+                    data_iter = iter(dataGenerator._trainoader)
+
+        except:
+            print("ERROR TRAINING")
+            print("DNA: ", self.adn)
+            raise
+
+    def __generateEvalLoss(self, dataGenerator):
+
+        with torch.no_grad():
+            stop = False
+
+            eval_data = None
+
+            while stop == False:
+
+                try:
+                    eval_data = next(self.eval_iter)
+                    stop = True
+                except StopIteration:
+                    self.eval_iter =  iter(dataGenerator._evalloader)
+                
+            model = self.eval()
+
+            if self.cudaFlag == True:
+                inputs, labels = eval_data[0].cuda(), eval_data[1].cuda()
+            else:
+                inputs, labels = eval_data[0], eval_data[1]
+            
+            if len(inputs.size()) > 4:
+                self.__getLossLayer().setCrops(inputs.shape[1])
+                inputs = inputs.view(-1, inputs.shape[2], inputs.shape[3], inputs.shape[4])
+
+            self.__getLossLayer().setEnableRicap(False)
+
+            model.assignLabels(labels)
+            model.nodes[0].objects[0].value = inputs 
+            model(model.nodes[0].objects[0].value)
+            eval_loss = model.__getLossLayer().value.item()
+            self.history_loss.append(eval_loss)
+            self.train()
 
     def getLRCosine(self, total_steps, base_dt, etamin):
 
@@ -296,6 +562,8 @@ class Network(nn.Module, na.NetworkAbstract):
 
             i=0
 
+            print_every = p // 4
+            start_time = time.time()
             while i < p:
 
                 if dt is not None:
@@ -307,10 +575,16 @@ class Network(nn.Module, na.NetworkAbstract):
                     inputs, labels_data = dataGenerator.data[0], dataGenerator.data[1]
 
                 self.__doTraining(inputs=inputs, labels_data=labels_data)
-
+                self.history_loss.append(self.total_value)
                 self.__currentEpoch = i
 
                 dataGenerator.update()
+
+                if print_every > 0:
+                    if i % print_every == print_every - 1:
+                        end_time = time.time() - start_time
+                        self.__printValues(1, i, avg=print_every, end_time=end_time)
+                        start_time = time.time()
 
                 i=i+1
 
@@ -330,7 +604,7 @@ class Network(nn.Module, na.NetworkAbstract):
                 inputs, labels_data = data[0], data[1]
 
             self.__doTraining(inputs=inputs, labels_data=labels_data)
-
+            self.history_loss.append(self.total_value)
             self.__currentEpoch = i
             i += 1
 
@@ -351,10 +625,8 @@ class Network(nn.Module, na.NetworkAbstract):
                     else:
                         inputs, labels_data = data[0], data[1]
 
-                    inputs = inputs * 255
-
                     self.__doTraining(inputs=inputs, labels_data=labels_data)
-
+                    self.history_loss.append(self.total_value)
                 self.__currentEpoch = epoch
                 epoch += 1
 
@@ -374,7 +646,7 @@ class Network(nn.Module, na.NetworkAbstract):
                         inputs, labels_data = data[0], data[1]
 
                     self.__doTraining(inputs=inputs, labels_data=labels_data)
-
+                    self.history_loss.append(self.total_value)
                     i += 1
                 self.__currentEpoch = epoch
                 epoch += 1
@@ -409,7 +681,11 @@ class Network(nn.Module, na.NetworkAbstract):
         newObjects = []
         newADN = tuple(list(self.adn))
 
-        network = Network(newADN,cudaFlag=self.cudaFlag)
+        network = Network(newADN,cudaFlag=self.cudaFlag, momentum=self.momentum, 
+            weight_decay=self.weight_decay, enable_activation=self.enable_activation, 
+            enable_track_stats=self.enable_track_stats, dropout_value=self.dropout_value, 
+            dropout_function=self.dropout_function, enable_last_activation=self.enable_last_activation,
+            version=self.version, eps_batchnorm=self.eps_batchnorm)
 
         for i in range(len(self.nodes) - 1):
             layerToClone = self.nodes[i].objects[0]
@@ -420,17 +696,29 @@ class Network(nn.Module, na.NetworkAbstract):
 
             if layerToClone.getFilter() is not None:
                 layer.setFilter(layerToClone.getFilter().clone())
+            
+            if layerToClone.tensor_h is not None:
+                layer.tensor_h.data = layerToClone.tensor_h.data.clone()
+                
+            layer.setBarchNorm(layerToClone.getBatchNormObject())
 
         network.total_value = self.total_value
         network.momentum = self.momentum
         network.weight_decay = self.weight_decay
+        network.enable_activation = self.enable_activation
+        network.enable_track_stats = self.enable_track_stats
+
+        network.history_loss = self.history_loss[-200:]
 
         return network
 
     def generateEnergy(self, dataGen):
 
         accuracy = 0
-        print("generate energy")
+
+        model = self.eval()
+        #model = model.eval()
+
         with torch.no_grad():
 
             total = 0
@@ -443,11 +731,16 @@ class Network(nn.Module, na.NetworkAbstract):
                 else:
                     inputs, labels = data[0], data[1]
 
-                self.assignLabels(labels)
-                self.nodes[0].objects[0].value = inputs*255 # DESNORMALIZAR!
-                self(self.nodes[0].objects[0].value)
+                if len(inputs.size()) > 4:
+                    self.__getLossLayer().setCrops(inputs.shape[1])
+                    inputs = inputs.view(-1, inputs.shape[2], inputs.shape[3], inputs.shape[4])
 
-                linearValue = self.__getLayerProbability().value
+                self.__getLossLayer().setEnableRicap(False)
+                model.assignLabels(labels)
+                model.nodes[0].objects[0].value = inputs 
+                model(model.nodes[0].objects[0].value)
+
+                linearValue = model.__getLayerProbability().value
 
                 _, predicted = torch.max(linearValue.data, 1)
 
@@ -456,7 +749,11 @@ class Network(nn.Module, na.NetworkAbstract):
 
             accuracy = correct / total
 
+        del model
+        
         self.__accuracy = accuracy
+        self.train()
+    
 
     def getAcurracy(self):
 
@@ -467,6 +764,16 @@ class Network(nn.Module, na.NetworkAbstract):
         torch.save({
             'model_state_dict': self.state_dict(),
             'optimizer_state_dict': self.optimizer.state_dict(),
+            'adn': self.adn,
+            'cuda': self.cudaFlag,
+            'momentum': self.momentum,
+            'weight_decay': self.weight_decay,
+            'enable_activation': self.enable_activation,
+            'enable_track_stats': self.enable_track_stats,
+            'dropout_value': self.dropout_value,
+            'enable_last_activation': self.enable_last_activation,
+            'version': self.version,
+            'eps_batchnorm': self.eps_batchnorm
             }, path)
 
 
@@ -477,5 +784,39 @@ class Network(nn.Module, na.NetworkAbstract):
         self.optimizer.load_state_dict(checkpoint['optimizer_state_dict'])
         self.train()
 
-    def __printValues(self, epoch, i, avg=1):
-        print("[{:d}, {:d}, lr={:.10f}, Loss={:.10f}]".format(epoch, i+1, self.optimizer.param_groups[0]['lr'], self.getAverageLoss(avg)))
+    def loadParameters(self, checkpoint):
+        self.load_state_dict(checkpoint['model_state_dict'])
+        self.optimizer.load_state_dict(checkpoint['optimizer_state_dict'])
+        self.train()
+
+    def __printValues(self, epoch, i, avg=1, end_time=None):
+
+        if end_time is None:
+            print("[{:d}, {:d}, lr={:.10f}, Loss={:.10f}]".format(epoch, i+1, self.optimizer.param_groups[0]['lr'], self.getAverageLoss(avg)))
+        else:
+            print("[{:d}, {:d}, lr={:.10f}, Loss={:.10f}, Time={:.4f}]".format(epoch, i+1, self.optimizer.param_groups[0]['lr'], self.getAverageLoss(avg), end_time))
+    
+    def __printAcc(self, epoch, acc):
+        print("[Epoch={:d}, lr={:.10f}, Acc={:.4f}]".format(epoch, self.optimizer.param_groups[0]['lr'], acc))
+    
+
+    def deleteParameters(self):
+        
+        for node in self.nodes:
+            node.objects[0].deleteParam()
+            del node
+
+        del self.optimizer
+        del self.nodes
+        del self.history_loss
+
+        if self.cudaFlag == True:
+            torch.cuda.empty_cache()
+        
+    def printH(self):
+
+        for node in self.nodes:
+            layer = node.objects[0]
+
+            print("adn layer: ", layer.adn)
+            print("h: ", layer.tensor_h)

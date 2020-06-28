@@ -39,22 +39,32 @@ def Nothing(layer):
 ############### FUNCIONES PROPAGATE ###############
 
 def conv2d_propagate(layer):
-
-    print("default mode")
+    print("ERROR NO PROPAGATE")
+    pass
+    '''
     parent = layer.node.parents[0].objects[0]
+    
+    if layer.dropout_value > 0:
+        dropout = torch.nn.Dropout2d(p=layer.dropout_value)
+        output_dropout = dropout(parent.value)
+        value = layer.object(output_dropout)
+    else:
+        value = layer.object(parent.value)
 
-    shapeFilter = layer.getFilter().shape
-    
-    normalize = 1 * shapeFilter[2] * shapeFilter[3]
 
-    value = layer.object(parent.value) / normalize
+    #value = layer.doNormalize(value)
     
-    sigmoid = torch.nn.Sigmoid()
+    layer.value = value
     
-    layer.value = sigmoid(value) + torch.nn.functional.relu(value)
-    
+    if layer.enable_activation == True:
+        
+        sigmoid = torch.nn.Sigmoid()
+        layer.value = sigmoid(value) + torch.nn.functional.relu(value)
+    '''
 def conv2d_propagate_images(layer): ## MUTATION: ADDING IMAGE TO INPUT IN EVERY CONVOLUTION LAYER
-    
+    print("ERROR NO PROPAGATE")
+    pass
+    '''
     parent = layer.node.parents[0].objects[0]
 
     if parent.adn is None:
@@ -62,17 +72,23 @@ def conv2d_propagate_images(layer): ## MUTATION: ADDING IMAGE TO INPUT IN EVERY 
     else:
         layer.image = parent.image
 
-    kid = layer.node.kids[0].objects[0]
+    kid = layer.node.kids[0].objects[0]  
 
-    shapeFilter = layer.getFilter().shape
+    if layer.dropout_value > 0:
+        dropout = torch.nn.Dropout2d(p=layer.dropout_value)
+        output_dropout = dropout(parent.value)
+        value = layer.object(output_dropout)
+    else:
+        value = layer.object(parent.value)
     
-    normalize = shapeFilter[2] * shapeFilter[3]
+    #value = layer.doNormalize(value)
 
-    value = layer.object(parent.value) / normalize
+    layer.value = value
     
-    sigmoid = torch.nn.Sigmoid()
-    
-    layer.value = sigmoid(value) + torch.nn.functional.relu(value)
+    if layer.enable_activation == True:
+        
+        sigmoid = torch.nn.Sigmoid()
+        layer.value = sigmoid(value) + torch.nn.functional.relu(value)
 
     if kid.adn is not None and kid.adn[0] == 0: #Check if is conv2d
 
@@ -90,39 +106,86 @@ def conv2d_propagate_images(layer): ## MUTATION: ADDING IMAGE TO INPUT IN EVERY 
                 layer.value = torch.cat((layer.image, newValue), dim=1)
         else:
             print("OUTPUT LARGER THAN INPUTS")
-        
+    '''
 def conv2d_propagate_multipleInputs(layer): ## MUTATION: Multiple inputs per convolutional layer
     
-    parent = layer.node.parents[0].objects[0]
-    
-    #print("current layer= ", layer.adn)
-    current_input = __getInput(layer, parent.value)
+    #parent = layer.node.parents[0].objects[0]
 
-    shapeFilter = layer.getFilter().shape
-    
-    normalize = 1 * shapeFilter[2] * shapeFilter[3]
+    current_input = __getInput(layer)
 
-    value = layer.object(current_input) / normalize
+    if layer.getPool() is not None:
+        current_input = layer.doPool(current_input)
+
+    if layer.dropout_value > 0:
+        output_dropout = layer.doDropout(current_input)
+        value = layer.object(output_dropout)
+    else:
+        value = layer.object(current_input)
+
+    value = layer.doNormalize(value)
     
-    sigmoid = torch.nn.Sigmoid()
+    layer.value = value
     
-    layer.value = sigmoid(value) + torch.nn.functional.relu(value)
+    if layer.enable_activation == True:
+        layer.value = torch.nn.functional.relu(value)
+
+def conv2d_propagate_padding(layer):
+    
+    #parent = layer.node.parents[0].objects[0]
+
+    current_input = __getInput(layer)
+
+    if layer.getPool() is not None:
+        current_input = layer.doPool(current_input)
+
+    kernel = layer.adn[3]
+    #print("kernel: ", kernel)
+    
+    #print("original shape: ", current_input.shape)
+
+    if layer.node.kids[0].objects[0].adn[0] == 0:
+        current_input = __padInput(targetTensor=current_input, kernel_size=kernel)
+
+    if layer.dropout_value > 0:
+        output_dropout = layer.doDropout(current_input)
+        value = layer.object(output_dropout)
+    else:
+        value = layer.object(current_input)
+
+    #print("output shape: ", value.shape)
+    value = layer.doNormalize(value)
+    
+    layer.value = value
+    
+    if layer.enable_activation == True:
+        layer.value = torch.nn.functional.relu(value)
 
 def linear_propagate(layer):
 
     parent = layer.node.parents[0].objects[0]
 
     shape = parent.value.shape
-    
-    #print("value last conv2d= ", shape)
 
-    layer.value = layer.object(parent.value.view(shape[0], -1 ))
+    value = parent.value.view(shape[0], -1 )
+
+    if layer.dropout_value > 0:
+        output_dropout = layer.doDropout(value)
+        value = layer.object(output_dropout)
+    else:
+        value = layer.object(value)
+
+    layer.value = value
 
 def MSEloss_propagate(layer):
 
     parent = layer.node.parents[0].objects[0]
 
-    layer.value = layer.object(parent.value, layer.label)
+    value = parent.value
+
+    if layer.getRicap() != None and layer.getEnableRicap() == True:
+        layer.value = layer.getRicap().generateLoss(layer)
+    else:
+        layer.value = layer.object(value, layer.label)
 
 ############### CREADOR DE TENSORES ###############
 
@@ -163,7 +226,19 @@ def deleteLastTensorDimension(oldTensor, newShape):
 
     return newFilter
 
-def __getBiggestInput(layerList):
+def __padInput(targetTensor, kernel_size):
+    pad_tensor = targetTensor
+    
+    target_shape = targetTensor.shape
+    refference_size = kernel_size - 1
+
+    if refference_size > 0:
+        pad_tensor = torch.nn.functional.pad(targetTensor,(0, refference_size, 0, refference_size),"constant", 0)
+    
+    #print("pad shape: ", pad_tensor.shape)
+    return pad_tensor
+
+def __getBiggestKernelInput(layerList):
 
     kernel = 0
     biggest_input = None
@@ -182,7 +257,26 @@ def __getBiggestInput(layerList):
     
     return biggest_input
 
-def __doPad(targetTensor, refferenceTensor):
+def __getBiggestDepthInput(layerList):
+
+    depth = 0
+    biggest_input = None
+
+    for layer in layerList:
+        
+        shape = layer.value.shape
+        
+        if depth < shape[1]:
+
+            depth = shape[1]
+            biggest_input = layer.value
+    
+    #if kernel < currentInput.shape[2]:
+    #    biggest_input = currentInput
+    
+    return biggest_input
+
+def __doPadKernel(targetTensor, refferenceTensor):
 
     pad_tensor = targetTensor
     
@@ -193,49 +287,83 @@ def __doPad(targetTensor, refferenceTensor):
 
     if diff_kernel > 0:
         pad_tensor = torch.nn.functional.pad(targetTensor,(0, diff_kernel, 0, diff_kernel),"constant", 0)
-        del targetTensor
     
     return pad_tensor
 
-def __getInput(layer, parentOutput):
+def __doPadDepth(targetTensor, refferenceTensor):
+
+    pad_tensor = targetTensor
     
-    len_other_inputs = len(layer.other_inputs)
+    target_shape = targetTensor.shape
+    refference_shape = refferenceTensor.shape
 
-    value = parentOutput
+    diff_depth = abs(refference_shape[1] - target_shape[1])
 
-    if len_other_inputs > 0:
+    if diff_depth > 0:
+        pad_tensor = torch.nn.functional.pad(targetTensor,(0, 0, 0, 0, 0, diff_depth),"constant", 0)
+    
+    return pad_tensor
+
+def __getInput(layer):
+    
+    input_channels = layer.adn[1]
+
+    parents_outputs_channels = 0
+
+    value = None
+    
+    for parent_layer in layer.other_inputs:  
+        parents_outputs_channels += parent_layer.value.shape[1]
+    
+    biggest_input_kernel = __getBiggestKernelInput(layer.other_inputs)
+
+    if input_channels == parents_outputs_channels:
+
+        concat_tensor_list = []
+
+        for i in range(len(layer.other_inputs)):
+            
+            current_input = layer.other_inputs[i].value.clone()
+            padded_input = __doPadKernel(current_input, biggest_input_kernel)
+            del current_input
+            concat_tensor_list.append(padded_input)
+
+        value = torch.cat(tuple(concat_tensor_list), dim=1)
+
+        for tensorPadded in concat_tensor_list:
+            del tensorPadded
         
-        with torch.no_grad():   
+        del concat_tensor_list
+    else:
 
-            #normal_input = parentOutput.clone()
+        biggest_input_depth = __getBiggestDepthInput(layer.other_inputs) 
 
-            #biggest_input = __getBiggestInput(normal_input, layer.other_inputs)
+        sum_tensor_list = []
+        #print("h: ", layer.tensor_h)
+
+        for i in range(len(layer.other_inputs)):
             
-            biggest_input = __getBiggestInput(layer.other_inputs)
-            #normal_input = __doPad(normal_input, biggest_input)
-
-            concat_tensor_list = []
-
-            for i in range(len(layer.other_inputs)):
-                
-                #print("concat layer=", layer.other_inputs[i].adn)
-                current_input = layer.other_inputs[i].value.clone()
-                #print("concat input= ", current_input.shape)
-
-                current_input = __doPad(current_input, biggest_input)
-                #print("concat input padded= ", current_input.shape)
-
-                concat_tensor_list.append(current_input)
-
-
-            value = torch.cat(tuple(concat_tensor_list), dim=1)
-
-            #print("final input size=", value.shape)
-
-            for tensorPadded in concat_tensor_list:
-                del tensorPadded
+            current_input = layer.other_inputs[i].value.clone()
+            padded_input_kernel = __doPadKernel(current_input, biggest_input_kernel)
+            padded_input_depth = __doPadDepth(padded_input_kernel, biggest_input_depth)
+            del current_input, padded_input_kernel
             
-            del concat_tensor_list
+            if i == 0:
+                padded_input_depth = padded_input_depth * layer.tensor_h
+            
+            elif i == (len(layer.other_inputs) - 1):
+                padded_input_depth = padded_input_depth * (1 - layer.tensor_h)
+
+            sum_tensor_list.append(padded_input_depth)
+
+        value = sum_tensor_list[0]
+        for tensor in sum_tensor_list[1:]:
+            value += tensor
+
+        for tensorPadded in sum_tensor_list:
+            del tensorPadded
+        
+        del sum_tensor_list        
 
     return value
 

@@ -1,4 +1,5 @@
-from TestNetwork.commands import CommandCreateDataGen, CommandExperimentCifar_Restarts
+from TestNetwork.commands import CommandCreateDataGen, CommandExperimentCifar_Restarts_monotone
+from TestNetwork.commands import  CommandExperimentCifar_Restarts_monotone as CommandExperimentCifar_Restarts
 from DNA_conditions import max_layer,max_filter
 from DNA_creators import Creator
 from DNA_Graph import DNA_Graph
@@ -17,16 +18,16 @@ DATA_SOURCE = 'cifar'
 PERIOD_SAVE = 1
 
 # Every PERDIOD_NEWSPACE iterations, a new DNA GRAPH will be generated with the dna of the lowest energy network as center.
-PERIOD_NEWSPACE = 1 
+PERIOD_NEWSPACE = 1
 
 # Every PERIOD_SAVE_MODEL iterations, the best network (current center) will be stored on filesystem
 PERIOD_SAVE_MODEL = 1
 
 # EPOCHS
-EPOCHS = 20
+EPOCHS = 200
 
 # MAX - MIN DTs FOR EPOCHS 1 TO 10
-MAX_DT = 0.05
+MAX_DT = 0.08
 MIN_DT = 0.00001
 
 # MAX - MIN DTs FOR THE REST OF THE EXPERIMENT
@@ -34,7 +35,7 @@ MAX_DT_2 = 0.001
 MIN_DT_2 = 0.000001
 
 # weight_decay parameter
-WEIGHT_DECAY = 0.0005
+WEIGHT_DECAY = 0.00001
 
 # momentum parameter
 MOMENTUM = 0.9
@@ -45,15 +46,29 @@ CUDA = True
 # MAX LAYER MUTATION (CONDITION)
 MAX_LAYERS = 15
 
+TRIAL_EPOCS=1
 # MAX FILTERS MUTATION (CONDITION)
-MAX_FILTERS = 60
+MAX_FILTERS = 49
 
 # TEST_NAME, the name of the experiment (unique)
 TEST_NAME = "cifar_experiment_ver2"
 
 # INITIAL DNA
-DNA = ((-1,1,3,32,32),(0,3, 15, 3 , 3),(0,18, 15, 3,  3),(0,33, 50, 32, 32),(1, 50,10),(2,),(3,-1,0),(3,0,1),(3,-1,1), 
-        (3,1,2),(3,0,2),(3,-1,2),(3,2,3),(3,3,4))
+x=32
+y=32
+DNA = ((-1,1,3,x,y),
+        (0,3, 5, 7 , 7),
+        (0,5, 5, 7 , 7),
+        (0,5, 5, 7,  7),
+        (0,5, 48, x-18, y-18),
+        (1, 48,10),
+         (2,),
+        (3,-1,0),
+        (3,0,1),
+        (3,1,2),
+        (3,2,3),
+        (3,3,4))
+
 
 
 def DNA_Creator_s(x,y, dna):
@@ -72,16 +87,21 @@ def DNA_Creator_s(x,y, dna):
     return [space, selector]
 
 
+if CUDA:
 
-dataCreator = CommandCreateDataGen.CommandCreateDataGen(cuda=CUDA)
+    dataCreator = CommandCreateDataGen.CommandCreateDataGen(cuda=CUDA)
+
+
+
 dataCreator.execute(compression=2, batchSize=BATCH_SIZE, source=DATA_SOURCE)
 dataGen = dataCreator.returnParam()
 
 space, selector = DNA_Creator_s(dataGen.size[1], dataGen.size[2], dna=DNA)
 
 trainer = CommandExperimentCifar_Restarts.CommandExperimentCifar_Restarts(initialDNA=DNA, dataGen=dataGen, testName=TEST_NAME,
-                                                                            selector=selector, weight_decay=WEIGHT_DECAY, 
-                                                                                momentum=MOMENTUM, space=space, cuda=CUDA)
-                                                                
-trainer.execute(periodSave=PERIOD_SAVE, periodNewSpace=PERIOD_NEWSPACE, periodSaveModel=PERIOD_SAVE_MODEL, 
+                                                                            selector=selector, weight_decay=WEIGHT_DECAY,
+                                                                                momentum=MOMENTUM, space=space, cuda=CUDA,
+                                                                                trial_epocs=TRIAL_EPOCS)
+
+trainer.execute(periodSave=PERIOD_SAVE, periodNewSpace=PERIOD_NEWSPACE, periodSaveModel=PERIOD_SAVE_MODEL,
                 epochs=EPOCHS, min_dt=MIN_DT, max_dt=MAX_DT, min_dt_2=MIN_DT_2, max_dt_2=MAX_DT_2)

@@ -6,6 +6,7 @@ import numpy as np
 import DNA_graph_functions as Funct
 from random import randint
 from Particle import particle as particle
+import time
 
 
 def update_force_field_ac(self):
@@ -185,6 +186,26 @@ def node_max_particles(phase_space):
     max_index=np.argmax(np.array(particles))
     return phase_space.objects[max_index]
 
+def node_2nd_max_particles(phase_space):
+  
+    particles=[
+        phase_space.node2particles(node) for node in
+            phase_space.objects
+            ]
+    print("2nd particles: ", particles)
+    
+    max_index=np.argmax(np.array(particles))
+    second_max_particles = 0
+    max_second_index = 0
+    for i in range(len(particles)):
+
+        if particles[i] >= second_max_particles and i != max_index:
+            second_max_particles = particles[i]
+            max_second_index = i
+
+    print("2nd max index: ", max_second_index)
+    return phase_space.objects[max_second_index]
+
 def phase_space2node2remove(phase_space):
     nodes=phase_space.objects
     support_complement=[ node for node in nodes if
@@ -308,21 +329,35 @@ def update_from_select_09(self):
     selector=self.Selector
     version=self.version
     phase_space.time=phase_space.time+1
+    list_particles=[
+        phase_space.node2particles(node) for node in
+            phase_space.objects
+            ]
+    print("particles: ", list_particles)
     node_max=node_max_particles(phase_space)
-    node_c = phase_space.key2node(phase_space.DNA_graph.center)
-    p_c=Funct.node2num_particles(node_c)
     p_m=Funct.node2num_particles(node_max)
-    print(f'The value of p_m is : {p_m} and p_c is : {p_c} ')
-    if (p_m>p_c*2) or (
-        phase_space.time>4000):
+    node_c = phase_space.key2node(phase_space.DNA_graph.center)
+    p_c=Funct.node2num_particles(node_c)    
+    print(f'The value of p_m is : {p_m} and pc is : {p_c} ')
+    if (p_m>p_c*3):
         phase_space.time=0
         num_particles = phase_space.num_particles
         old_graph = phase_space.DNA_graph
         old_center= old_graph.center
         condition = old_graph.condition
         typos = old_graph.typos
-        node_max = phase_space.node_max_particles
+        #node_max = phase_space.node_max_particles
+        node_max = node_max_particles(phase_space)
+        print("node_max particles:", Funct.node2num_particles(node_max))
         center = phase_space.node2key(node_max)
+        status=phase_space.status
+        Alai=status.Alai
+        stream=phase_space.stream
+        delta=stream.key2len_hist(center)
+        Alai.update(delta)
+        stream.signals_off()
+        stream.key2signal_on(center)
+        stream.clear()
         selector.update(old_graph,new_center=center)
         actions=selector.get_predicted_actions()
         x = old_graph.x_dim
@@ -333,7 +368,6 @@ def update_from_select_09(self):
         phase_space.objects = space.objects
         phase_space.support=[]
         phase_space.create_particles(num_particles+1)
-        phase_space.stream.signals_off()
         phase_space.attach_balls()
         phase_space.max_changed = False
         phase_space.node_max_particles = None
@@ -342,15 +376,69 @@ def update_from_select_09(self):
         self.objects=phase_space.objects
         self.support=phase_space.support
         self.Graph=phase_space.DNA_graph
-    elif False:
+    #elif False:
     #elif phase_space.time>self.clear_period:
-        phase_space.time=0
-        node2remove=phase_space2node2remove(phase_space)
-        node_c = phase_space.key2node(phase_space.DNA_graph.center)
-        if node2remove and not (node2remove==node_c):
-            remove_node(phase_space,node2remove)
-            new_DNA=add_node(phase_space,selector)
+    #    phase_space.time=0
+    #    node2remove=phase_space2node2remove(phase_space)
+    #    node_c = phase_space.key2node(phase_space.DNA_graph.center)
+    #    if node2remove and not (node2remove==node_c):
+    #        remove_node(phase_space,node2remove)
+    #        new_DNA=add_node(phase_space,selector)
 
+
+def update_from_select_nm(self):
+    phase_space=self.phase_space
+    creator=self.Creator
+    selector=self.Selector
+    version=self.version
+    phase_space.time=phase_space.time+1
+    list_particles=[
+        phase_space.node2particles(node) for node in
+            phase_space.objects
+            ]
+    print("particles: ", list_particles)
+    node_max=node_max_particles(phase_space)
+    p_m=Funct.node2num_particles(node_max)
+    node_c = phase_space.key2node(phase_space.DNA_graph.center)
+    p_c=Funct.node2num_particles(node_c)    
+    print(f'The value of p_m is : {p_m} and pc is : {p_c} ')
+    if (p_m>p_c*3):
+        phase_space.time=0
+        num_particles = phase_space.num_particles
+        old_graph = phase_space.DNA_graph
+        old_center= old_graph.center
+        condition = old_graph.condition
+        typos = old_graph.typos
+        #node_max = phase_space.node_max_particles
+        node_max = node_max_particles(phase_space)
+        print("node_max particles:", Funct.node2num_particles(node_max))
+        center = phase_space.node2key(node_max)
+        status=phase_space.status
+        Alai=status.Alai
+        stream=phase_space.stream
+        delta=stream.key2len_hist(center)
+        Alai.update(delta)
+        stream.signals_off()
+        stream.key2signal_on(center)
+        stream.clear()
+        selector.update(center)
+        actions=selector.get_predicted_actions()
+        x = old_graph.x_dim
+        y = old_graph.y_dim
+        space=DNA_Graph(center,1,(x,y),condition,actions,
+            version,creator, selector=selector, num_morphisms=5)
+        phase_space.DNA_graph = space
+        phase_space.objects = space.objects
+        phase_space.support=[]
+        phase_space.create_particles(num_particles+1)
+        phase_space.attach_balls()
+        phase_space.max_changed = False
+        phase_space.node_max_particles = None
+        self.space = space
+        self.phase_space= phase_space
+        self.objects=phase_space.objects
+        self.support=phase_space.support
+        self.Graph=phase_space.DNA_graph
 
 def update_from_select(self):
     phase_space=self.phase_space

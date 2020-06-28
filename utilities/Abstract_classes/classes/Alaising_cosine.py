@@ -1,5 +1,6 @@
 import numpy as np
 import copy
+import time
 
 def pcos(x):
     if x>np.pi:
@@ -13,6 +14,7 @@ class Alaising():
         self.max_time=max_time
         self.time=time
         self.type='default'
+        self.reset_count = 0
     def get_increments(self,size):
         m=self.min
         M=self.max
@@ -26,8 +28,18 @@ class Alaising():
                      for t in range(t_o+size,t_o)]
         return m+1/2*(M-m)*(1+pcos(t_o/t_M*np.pi))
 
-    def update(self):
-        self.time+=1
+    def update(self,delta=1):
+        self.time+=delta
+        print(f'The current time is : {self.time} with reset count : {self.reset_count}')
+        if self.time>self.max_time:
+            self.time=0
+            self.reset_count += 1
+
+    def computeTime(self):
+
+        value = self.time + (self.max_time * self.reset_count)
+
+        return value
 
     def restart(self):
         self.time+=0
@@ -54,6 +66,10 @@ class Damped_Alaising():
         self.current_min=initial_min
         self.local_time=0
         self.type='dampening'
+    def pcos(self,x):
+        if x>np.pi:
+            x=x-np.pi
+        return np.cos(x)
 
     def get_increments(self,size,update=True):
         m=self.current_min
@@ -77,7 +93,7 @@ class Damped_Alaising():
                 Alai.rewind()
             ouput=output.reverse()
             return output
-        return m+1/2*(M-m)*(1+pcos(t_o/t_M*np.pi))
+        return m+1/2*(M-m)*(1+self.pcos(t_o/t_M*np.pi))
 
     def update_amplitude(self):
         n=self.Max_iter

@@ -6,6 +6,14 @@ import children.pytorch.NetworkDendrites as nw
 import os
 import time
 
+
+def Alaising(M,m,ep):
+    M=10**(-M)
+    m=10**(-m)
+    return [ m+1/2*(M-m)*(1+pcos(t/e*np.pi))
+             for t in range(0,ep)]
+
+
 def test():
     print('done')
 
@@ -58,10 +66,10 @@ def compute_output(g, node):
         node.objects.append([x-x_l+1, y-y_l+1])
 
 def num_layers(DNA):
-    return len([0 for layer in DNA if layer[0] == 0])
+    return len([0 for layer in DNA if (layer[0] == 0) or (layer[0] == 4)])
 
 def DNA2num_layers(DNA):
-     output=len([0 for layer in DNA if layer[0] == 0])
+     output=len([0 for layer in DNA if (layer[0] == 0) or (layer[0] == 4)])
      return output
 
 def DNA2synapses(DNA):

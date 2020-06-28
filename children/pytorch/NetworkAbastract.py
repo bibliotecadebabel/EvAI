@@ -4,17 +4,21 @@ import Factory.TensorFactory as tensorFactory
 
 class NetworkAbstract(ABC):
 
-    def __init__(self, adn, cuda, momentum, weight_decay):
+    def __init__(self, adn, cuda, momentum, weight_decay, enable_activaiton, enable_track_stats=True, dropout_value=0, enable_last_activation=True):
         self.cudaFlag = cuda
         self.adn = adn
         self.nodes = []
+        self.enable_track_stats = enable_track_stats
         self.momentum = momentum 
-        self.weight_decay = weight_decay 
+        self.weight_decay = weight_decay
+        self.enable_activation = enable_activaiton 
         self.label = tensorFactory.createTensor(body=[1], cuda=self.cudaFlag, requiresGrad=False)
         self.factory = factory.LayerGenerator(cuda=self.cudaFlag)
         self.foward_value = None   
         self.total_value = 0
         self.history_loss = []
+        self.dropout_value = dropout_value
+        self.enable_last_activation = enable_last_activation
 
     #@abstractmethod
     #def train(self):
@@ -56,6 +60,10 @@ class NetworkAbstract(ABC):
 
             if layer.getFilterDer() is not None:
                 layer.getFilterDer().requires_grad = flag
+            
+            if layer.tensor_h is not None:
+                layer.tensor_h.requires_grad = flag
+                
     
     def assignLabels(self, label):
 

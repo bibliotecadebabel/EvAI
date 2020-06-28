@@ -2,6 +2,9 @@ from utilities.Abstract_classes.AbstractSelector import Selector, Observation
 import random
 import DNA_graph_functions as Funct
 import numpy as np
+from DNA_conditions import max_layer,max_filter
+
+
 
 
 class centered_random_selector(Selector):
@@ -10,26 +13,33 @@ class centered_random_selector(Selector):
             num_layer=1):
             super().__init__(time=time,path=path,weight=weight)
             self.num_layer=num_layer
-    def __init__(self,num_actions=8,directions=None,
+    def __init__(self,num_actions=5,directions=None,
         condition=None,
         mutations=(
-        (0,1,0,0),
-        (1,0,0,0),
-        (0,0,1,1),
-        (0,0,1),
+        (0,1,0,0),(0,-1,0,0),
+        (1,0,0,0),(4,0,0,0),
+        (0,0,1,1),(0,0,-1,-1),
+        (0,0,1),(0,0,-1),
         )):
         print('The condition is')
         print(condition)
         super().__init__(self.Observation_creator)
         self.mutations=mutations
         self.num_actions=num_actions
-        self.max_observation_size = 4
+        self.max_observation_size = 5
         self.current_num_layer=None
+        self.version = directions
         if directions=='dupiclate':
             from DNA_directions_duplicate import directions
             self.directions=directions
         elif directions=='clone':
             from DNA_directions_clone import directions as directions
+            self.directions=directions
+        elif directions=='pool':
+            from DNA_directions_pool import directions as directions
+            self.directions=directions
+        elif directions=='h':
+            from DNA_directions_h import directions as directions
             self.directions=directions
         else:
             from DNA_directions_f import directions as directions
@@ -138,8 +148,9 @@ class centered_random_selector(Selector):
         num_mutations=len(self.mutations)
         k=0
         l=0
+        print(self.mutations)
         while len(self.predicted_actions)<self.num_actions:
-            layer=int(np.random.normal(0, self.current_num_layer))+self.center
+            layer=int(np.random.normal(0, 3*self.current_num_layer))+self.center
             if layer>-1 and layer<self.current_num_layer+1:
                 mutation=random.randint(0,num_mutations-1)
                 DNA=self.center_key
