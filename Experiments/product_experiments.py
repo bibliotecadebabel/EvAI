@@ -33,10 +33,12 @@ import utilities.Augmentation as Augmentation_Utils
 import const.versions as directions_version
 import tests_scripts.test_DNAs as DNAs
 
-def run_cifar_user_input_bidi(save = False):
+def run_cifar_user_input_bidi():
     
     import Geometric.Products.Product_f_cifar_save_2 as program
     #import Product_f_cifar_save_nm as program
+
+    save=bool(input('Insert any input to save'))
     status=program.Status()
 
     status.max_layer_conv2d = 200
