@@ -6,7 +6,6 @@ import numpy as np
 import TangentPlane as tplane
 import utilities.Graphs as gr
 import math
-import V_graphics as cd
 import children.Data_generator as dgen
 import children.Interfaces as Inter
 import children.Operations as Op

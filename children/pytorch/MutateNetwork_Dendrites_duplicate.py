@@ -2,8 +2,8 @@ import children.pytorch.NetworkDendrites as nw
 import children.Interfaces as Inter
 import children.pytorch.Functions as Functions
 from mutations.Dictionary import MutationsDictionary
-import DNA_directions_duplicate as direction_dna
-import torch as torch
+import Geometric.Directions.DNA_directions_duplicate as direction_dna
+import torch
 import mutations.Convolution2d.Mutations as Conv2dMutations
 import mutations.BatchNormalization.BatchNormalization as batchMutate
 import const.mutation_type as m_type

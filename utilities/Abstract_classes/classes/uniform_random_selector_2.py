@@ -1,8 +1,8 @@
 from utilities.Abstract_classes.AbstractSelector import Selector, Observation
 import random
-import DNA_graph_functions as Funct
+import Geometric.Graphs.DNA_graph_functions as Funct
 import numpy as np
-from DNA_conditions import max_layer,max_filter
+from Geometric.Conditions.DNA_conditions import max_layer,max_filter
 
 
 
@@ -30,22 +30,22 @@ class centered_random_selector(Selector):
         self.current_num_layer=None
         self.version = directions
         if directions=='dupiclate':
-            from DNA_directions_duplicate import directions
+            from Geometric.Directions.DNA_directions_duplicate import directions
             self.directions=directions
         elif directions=='clone':
-            from DNA_directions_clone import directions as directions
+            from Geometric.Directions.DNA_directions_clone import directions as directions
             self.directions=directions
         elif directions=='pool':
-            from DNA_directions_pool import directions as directions
+            from Geometric.Directions.DNA_directions_pool import directions as directions
             self.directions=directions
         elif directions=='h':
-            from DNA_directions_h import directions as directions
+            from Geometric.Directions.DNA_directions_h import directions as directions
             self.directions=directions
         elif directions=='convex':
-            from DNA_directions_convex import directions as directions
+            from Geometric.Directions.DNA_directions_convex import directions as directions
             self.directions=directions
         else:
-            from DNA_directions_f import directions as directions
+            from Geometric.Directions.DNA_directions_f import directions as directions
             self.directions=directions
         self.center_key=None
         self.condition=condition

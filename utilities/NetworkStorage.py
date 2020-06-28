@@ -1,9 +1,9 @@
 import torch
 import os
-import TestNetwork.ExperimentSettings
+import utilities.ExperimentSettings
 import children.pytorch.NetworkDendrites as nw
 
-def loadNetwork(fileName, settings : TestNetwork.ExperimentSettings.ExperimentSettings, path=None):
+def loadNetwork(fileName, settings : utilities.ExperimentSettings.ExperimentSettings, path=None):
 
     if path is None:
         path = os.path.join("saved_models","cifar", fileName)

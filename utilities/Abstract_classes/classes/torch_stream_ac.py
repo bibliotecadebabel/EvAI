@@ -5,7 +5,7 @@ import torch
 import torch.nn as nn
 import torch.tensor as tensor
 import torch.optim as optim
-from DNA_graph_functions import DNA2size, net2file,file2net
+from Geometric.Graphs.DNA_graph_functions import DNA2size, net2file,file2net
 
 import time
 

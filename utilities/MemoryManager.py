@@ -2,7 +2,6 @@ import torch
 import utilities.NetworkStorage as NetworkStorage
 import os
 import time
-import torch
 import gc
 
 class MemoryManager():

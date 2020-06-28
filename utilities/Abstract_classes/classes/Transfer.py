@@ -1,4 +1,4 @@
-from Transfer.Product_transfer import Transfer
+from Transfer.z import Transfer
 
 class TransferLocal(Transfer):
     def __init__(self,status,name_read,name_write):

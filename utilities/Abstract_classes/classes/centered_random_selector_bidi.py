@@ -1,6 +1,6 @@
 from utilities.Abstract_classes.AbstractSelector import Selector, Observation
 import random
-import DNA_graph_functions as Funct
+import Geometric.Graphs.DNA_graph_functions as Funct
 import numpy as np
 
 
@@ -26,13 +26,13 @@ class centered_random_selector(Selector):
         self.max_observation_size = 4
         self.current_num_layer=None
         if directions=='dupiclate':
-            from DNA_directions_duplicate import directions
+            from Geometric.Directions.DNA_directions_duplicate import directions
             self.directions=directions
         elif directions=='clone':
-            from DNA_directions_clone import directions as directions
+            from Geometric.Directions.DNA_directions_clone import directions as directions
             self.directions=directions
         else:
-            from DNA_directions_f import directions as directions
+            from Geometric.Directions.DNA_directions_f import directions as directions
             self.directions=directions
         self.center_key=None
         self.condition=condition
