@@ -3,6 +3,8 @@ database_product.db
 remote2local.txt
 saved_models/
 .remote-sync.json
+models.txt
+post_training_acc.txt
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
