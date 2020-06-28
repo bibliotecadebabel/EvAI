@@ -285,7 +285,7 @@ def run(status):
             )
 
     print("starting pre-training")
-    dt_array=status.Alai.get_increments(20)#*status.iterations_per_epoch)
+    dt_array=status.Alai.get_increments(20*status.iterations_per_epoch)
 
     network.iterTraining(dataGenerator=status.Data_gen,
                     dt_array=dt_array, ricap=settings.ricap, evalLoss=settings.evalLoss)
