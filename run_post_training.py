@@ -113,6 +113,7 @@ if __name__ == '__main__':
                 version=settings.version, eps_batchnorm=settings.eps_batchorm)
 
     print("Model: ", network.adn)
+    fileManager.appendFile("MODEL: "+str(network.adn))
     print("Starting training: 3 iterations of 200 epochs (total epochs: 600)")
     for i in range(settings.max_init_iter):
         print("iteration: ", i+1)
