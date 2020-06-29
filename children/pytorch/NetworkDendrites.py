@@ -432,6 +432,7 @@ class Network(nn.Module, na.NetworkAbstract):
 
         try:
             print("Using eva loss: ", evalLoss)
+            print("ricap: ", ricap)
             save_acc = False
             current_epoch = 0
             iters = len(dt_array)
