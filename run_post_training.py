@@ -59,7 +59,7 @@ if __name__ == '__main__':
     INIT_ITER = 200*e
     settings.init_dt_array =  Alaising(1.2,99,INIT_ITER)
     settings.max_init_iter = 5
-    settings.dropout_value = 0
+    settings.dropout_value = 0.05
     settings.weight_decay = 0.0005
     settings.momentum = 0.9
     settings.cuda = True
@@ -69,7 +69,7 @@ if __name__ == '__main__':
     settings.enable_last_activation = True
     settings.enable_track_stats = True
     settings.enable_augmentation = True
-    
+
     settings.ricap = Augmentation_Utils.Ricap(beta=0.3)
 
     dataCreator = CommandCreateDataGen.CommandCreateDataGen(cuda=settings.cuda)
