@@ -69,6 +69,7 @@ if __name__ == '__main__':
     settings.enable_last_activation = True
     settings.enable_track_stats = True
     settings.enable_augmentation = True
+    
     settings.ricap = Augmentation_Utils.Ricap(beta=0.3)
 
     dataCreator = CommandCreateDataGen.CommandCreateDataGen(cuda=settings.cuda)
