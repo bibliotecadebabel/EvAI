@@ -42,7 +42,7 @@ class Status():
         self.dt_min=0.0001
         self.max_iter=250
         self.max_layer=7
-        self.update_force_field=update_force_field
+        self.update_force_field=None
         self.condition=None
         self.experiment_name='experiment_cifar'
         self.save_space_period=200
