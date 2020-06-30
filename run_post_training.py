@@ -58,7 +58,7 @@ if __name__ == '__main__':
     
     INIT_ITER = 200*e
     settings.init_dt_array =  Alaising(1.2,99,INIT_ITER)
-    settings.max_init_iter = 5
+    settings.max_init_iter = 3
     settings.dropout_value = 0.05
     settings.weight_decay = 0.0005
     settings.momentum = 0.9
