@@ -196,7 +196,7 @@ def create_objects(status):
             max_time=status.restart_period)
     status.Data_gen=GeneratorFromCIFAR.GeneratorFromCIFAR(
     status.Comp, status.S, cuda=status.cuda, threads=status.threads,
-        dataAugmentation=settings.enable_augmentation, transforms_mode=settings.transformations_compose)
+        dataAugmentation=settings.enable_augmentation)
     status.Data_gen.dataConv2d()
     dataGen=status.Data_gen
     x = dataGen.size[1]

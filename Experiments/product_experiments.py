@@ -41,7 +41,7 @@ def run_cifar_user_input_bidi():
     save=bool(input('Insert any input to save'))
     status=program.Status()
 
-    status.max_layer_conv2d = 200
+    status.max_layer_conv2d = int(input("Enter max conv2d layers: "))
     status.max_filter = 530
     status.max_filter_dense = 270
     status.max_kernel_dense = 9
@@ -159,6 +159,7 @@ def run_cifar_user_input_bidi():
     status.cuda=bool(input("Any input for cuda : "))
 
     settings.evalLoss = bool(input("Any input to activate EvalLoss : "))
+    '''
     augSettings = AugmentationSettings.AugmentationSettings()
     dict_transformations = {
         augSettings.baseline_customRandomCrop : True,
@@ -168,6 +169,8 @@ def run_cifar_user_input_bidi():
 
     transform_compose = augSettings.generateTransformCompose(dict_transformations, False)
     settings.transformations_compose = transform_compose
+    '''
+
     settings.ricap = Augmentation_Utils.Ricap(beta=0.3)
 
     settings.cuda = status.cuda

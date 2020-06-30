@@ -199,7 +199,7 @@ def create_objects(status, loaded_network):
 
     status.Data_gen=GeneratorFromCIFAR.GeneratorFromCIFAR(
     status.Comp, status.S, cuda=status.cuda, threads=status.threads,
-        dataAugmentation=settings.enable_augmentation, transforms_mode=settings.transformations_compose)
+        dataAugmentation=settings.enable_augmentation)
     status.Data_gen.dataConv2d()
     dataGen=status.Data_gen
     x = dataGen.size[1]
@@ -346,21 +346,10 @@ def run(status):
 
     L_1 = 1
     L_2 = 1
-    save_17_layers = True
-    save_18_layers = True
-    save_19_layers = True
-    save_24_layers = True
     save_25_layers = True
-    save_26_layers = True
-    save_27_layers = True
     save_30_layers = True
-    save_33_layers = True
+    save_35_layers = True
     save_36_layers = True
-    save_39_layers = True
-    save_42_layers = True
-    save_45_layers = True
-    save_48_layers = True
-    save_51_layers = True
 
     if loaded_network == True:
         save_17_layers = False
@@ -413,65 +402,21 @@ def run(status):
                     L_2 += 1
                     saveModel(status, k+1, testModelDao, test_id, TrainingType.MUTATION)
 
-                if layers_count >= 17 and save_17_layers == True:
+                if layers_count >= 17 and save_25_layers == True:
                     save_checkpoint(status, testResultDao, layers_count, test_id, testModelDao, k)
-                    save_17_layers = False
-
-                elif layers_count >= 18 and save_18_layers == True:
-                    save_checkpoint(status, testResultDao, layers_count, test_id, testModelDao, k)
-                    save_18_layers = False
-
-                elif layers_count >= 19 and save_19_layers == True:
-                    save_checkpoint(status, testResultDao, layers_count, test_id, testModelDao, k)
-                    save_19_layers = False
-
-                elif layers_count >= 24 and save_24_layers == True:
-                    save_24_layers = False
-                    save_checkpoint(status, testResultDao, layers_count, test_id, testModelDao, k)
-
-                elif layers_count >= 25 and save_25_layers == True:
                     save_25_layers = False
-                    save_checkpoint(status, testResultDao, layers_count, test_id, testModelDao, k)
 
-                elif layers_count >= 26 and save_26_layers == True:
-                    save_26_layers = False
+                elif layers_count >= 18 and save_30_layers == True:
                     save_checkpoint(status, testResultDao, layers_count, test_id, testModelDao, k)
-
-                elif layers_count >= 27 and save_27_layers == True:
-                    save_27_layers = False
-                    save_checkpoint(status, testResultDao, layers_count, test_id, testModelDao, k)
-
-                elif layers_count >= 30 and save_30_layers == True:
                     save_30_layers = False
-                    save_checkpoint(status, testResultDao, layers_count, test_id, testModelDao, k)
 
-                elif layers_count >= 33 and save_33_layers == True:
-                    save_33_layers = False
+                elif layers_count >= 19 and save_35_layers == True:
                     save_checkpoint(status, testResultDao, layers_count, test_id, testModelDao, k)
+                    save_35_layers = False
 
-                elif layers_count >= 36 and save_36_layers == True:
+                elif layers_count >= 19 and save_36_layers == True:
+                    save_checkpoint(status, testResultDao, layers_count, test_id, testModelDao, k)
                     save_36_layers = False
-                    save_checkpoint(status, testResultDao, layers_count, test_id, testModelDao, k)
-
-                elif layers_count >= 39 and save_39_layers == True:
-                    save_39_layers = False
-                    save_checkpoint(status, testResultDao, layers_count, test_id, testModelDao, k)
-
-                elif layers_count >= 42 and save_42_layers == True:
-                    save_42_layers = False
-                    save_checkpoint(status, testResultDao, layers_count, test_id, testModelDao, k)
-
-                elif layers_count >= 45 and save_45_layers == True:
-                    save_45_layers = False
-                    save_checkpoint(status, testResultDao, layers_count, test_id, testModelDao, k)
-
-                elif layers_count >= 48 and save_48_layers == True:
-                    save_48_layers = False
-                    save_checkpoint(status, testResultDao, layers_count, test_id, testModelDao, k)
-
-                elif layers_count >= 51 and save_51_layers == True:
-                    save_51_layers = False
-                    save_checkpoint(status, testResultDao, layers_count, test_id, testModelDao, k)
 
                 if layers_count >= 39:
                     print("STOPPED MAX LAYERS: ", layers_count)
