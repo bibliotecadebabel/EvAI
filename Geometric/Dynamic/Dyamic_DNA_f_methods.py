@@ -339,7 +339,7 @@ def update_from_select_09(self):
     node_c = phase_space.key2node(phase_space.DNA_graph.center)
     p_c=Funct.node2num_particles(node_c)    
     print(f'The value of p_m is : {p_m} and pc is : {p_c} ')
-    if (p_m>p_c*3):
+    if (p_m>p_c*2):
         phase_space.time=0
         num_particles = phase_space.num_particles
         old_graph = phase_space.DNA_graph
@@ -402,7 +402,7 @@ def update_from_select_nm(self):
     node_c = phase_space.key2node(phase_space.DNA_graph.center)
     p_c=Funct.node2num_particles(node_c)    
     print(f'The value of p_m is : {p_m} and pc is : {p_c} ')
-    if (p_m>p_c*3):
+    if (p_m>p_c*2):
         phase_space.time=0
         num_particles = phase_space.num_particles
         old_graph = phase_space.DNA_graph

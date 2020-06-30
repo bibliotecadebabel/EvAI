@@ -1,4 +1,4 @@
-import Experiments.main  as experiments
+import Experiments.product_experiments  as experiments
 
 if __name__== '__main__':
     

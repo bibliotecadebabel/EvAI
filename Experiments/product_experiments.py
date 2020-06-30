@@ -236,7 +236,7 @@ def run_local_ac():
     status=program.Status()
     from Dyamic_DNA_f_methods import (
         update_force_field_ac as update_force_field)
-    status.update_force_field=update_force_field
+    status.update_force_field=None
     status.dt_Max=0.1
     status.dt_min=0.01
     status.clear_period=200000
