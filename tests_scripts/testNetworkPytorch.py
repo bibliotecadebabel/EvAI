@@ -1,22 +1,22 @@
 import children.pytorch.NetworkDendrites as nw_dendrites
 from DAO import GeneratorFromImage, GeneratorFromCIFAR
 
-from DNA_Graph import DNA_Graph
-from DNA_creators import Creator_from_selection_nm as Creator_nm
+from Geometric.Graphs.DNA_Graph import DNA_Graph
+from Geometric.Creators.DNA_creators import Creator_from_selection_nm as Creator_nm
 from utilities.Abstract_classes.classes.uniform_random_selector import(
     centered_random_selector as Selector_creator)
-from DNA_conditions import max_layer,max_filter,max_filter_dense
-import DNA_directions_convex as direction_dna
+from Geometric.Conditions.DNA_conditions import max_layer,max_filter,max_filter_dense
+import Geometric.Directions.DNA_directions_convex as direction_dna
 import children.pytorch.MutationManager as MutationManager
 import const.versions as directions_version
 
 import os
 import utilities.NetworkStorage as StorageManager
-import TestNetwork.ExperimentSettings as ExperimentSettings
-import TestNetwork.AugmentationSettings as AugmentationSettings
+import utilities.ExperimentSettings as ExperimentSettings
+import utilities.AugmentationSettings as AugmentationSettings
 
 import utilities.MemoryManager as MemoryManager
-import test_DNAs
+import tests_scripts.test_DNAs as test_DNAs
 import torch
 import time
 import gc
@@ -297,18 +297,28 @@ def TimeCalculator():
 
 def TimeCalculator2():
 
-    init = 1592860678.2520623
-    final = 1592861146.3151975
+    #init = 1593541402.0297086
+    #final = 1593541564.913432
 
+    init = 1593076326.1944137
+    final = 1593076503.2711444
     time_200_mini_batches = (final - init) / 16
-    print("time 200 minibatches: ", time_200_mini_batches)
-    time_1_epoch = time_200_mini_batches * 782 / 200
-    print("time 1 epoch: ", time_1_epoch)
+    print("time 200 minibatches (s): ", time_200_mini_batches)
+    time_1_epoch = time_200_mini_batches * 782 / 47
+    print("time 1 epoch (s): ", time_1_epoch)
+    time_200_epochs = time_1_epoch * 200
+    print("time 200 epochs (hr): ", time_200_epochs / 3600)
+    time_400_epochs = time_1_epoch * 400
+    print("time 400 epochs (hr): ", time_400_epochs / 3600)
     time_600_epochs = time_1_epoch * 600
-    print("time 600 epochs: ", time_600_epochs)
+    print("time 600 epochs (hr): ", time_600_epochs / 3600)
+
+
 def LayerCalculator():
 
-    ADN = ((-1, 1, 3, 32, 32), (0, 3, 512, 4, 4), (0, 512, 128, 3, 3), (0, 128, 512, 3, 3, 2), (0, 512, 512, 2, 2), (0, 512, 256, 3, 3, 2), (0, 256, 256, 3, 3), (0, 256, 512, 3, 3), (0, 512, 512, 3, 3), (0, 256, 256, 3, 3), (0, 768, 512, 3, 3), (0, 256, 256, 3, 3), (0, 256, 256, 3, 3), (0, 768, 512, 4, 4), (0, 768, 512, 2, 2), (0, 512, 512, 3, 3), (0, 512, 512, 3, 3), (0, 512, 512, 4, 4), (0, 512, 512, 3, 3), (0, 512, 256, 8, 8), (1, 256, 10), (2,), (3, -1, 0), (3, 0, 1), (3, 1, 2), (3, -1, 2), (3, 2, 3), (3, 3, 4), (3, 4, 5), (3, 5, 6), (3, 6, 7), (3, 4, 8), (3, 7, 9), (3, 8, 9), (3, 4, 10), (3, 10, 11), (3, 9, 12), (3, 11, 12), (3, 12, 13), (3, 4, 13), (3, 13, 14), (3, 14, 15), (3, 4, 15), (3, 15, 16), (3, 16, 17), (3, 17, 18), (3, 18, 19), (3, 19, 20))
+    ADN = ((-1, 1, 3, 32, 32), (0, 3, 128, 4, 4), (0, 128, 128, 3, 3, 2), (0, 128, 128, 2, 2), (0, 128, 256, 2, 2, 2), (0, 128, 128, 3, 3), (0, 128, 256, 3, 3), (0, 256, 512, 2, 2), (0, 256, 128, 3, 3), (0, 512, 512, 3, 3), (0, 512, 512, 3, 3), (0, 640, 512, 3, 3, 2), (0, 768, 512, 3, 3), (0, 640, 512, 4, 4, 2), (0, 512, 512, 4, 4), (0, 512, 512, 2, 2), (0, 512, 512, 3, 3), (0, 1024, 256, 3, 3), (0, 256, 256, 2, 2), (0, 256, 512, 3, 3), (0, 512, 256, 4, 4), (0, 512, 512, 5, 5), (0, 1024, 512, 2, 2), (0, 512, 512, 4, 4), (0, 512, 512, 3, 3), (0, 512, 512, 4, 4), (0, 512, 512, 2, 2), (0, 512, 512, 3, 3), (0, 512, 512, 3, 3), (0, 512, 512, 3, 3), (0, 1024, 512, 2, 2), (0, 512, 512, 3, 3), (0, 512, 256, 3, 3), (0, 512, 256, 4, 4), (0, 768, 256, 3, 3), (0, 256, 256, 8, 8), (1, 256, 10), (2,), (3, -1, 0), (3, 0, 1), (3, 1, 2), (3, 2, 3), (3, 2, 4), (3, 4, 5), (3, 3, 6), (3, 5, 7), (3, 3, 7), (3, 6, 8), (3, 8, 9), (3, 7, 10), (3, 9, 10), (3, 10, 11), (3, 3, 11), (3, 11, 12), (3, 1, 12), (3, 12, 13), (3, 13, 14), (3, 14, 15), (3, 10, 16), (3, 15, 16), (3, 3, 17), (3, 17, 18), (3, 18, 19), (3, 3, 19), (3, 16, 20), (3, 19, 20), (3, 20, 21), (3, 13, 21), (3, 21, 22), (3, 22, 23), (3, 23, 24), (3, 12, 24), (3, 24, 25), (3, 25, 26), (3, 3, 26), (3, 26, 27), (3, 27, 28), (3, 28, 29), (3, 12, 29), (3, 25, 30), (3, 29, 31), (3, 30, 31), (3, 31, 32), (3, 3, 32), (3, 32, 33), (3, 21, 33), (3, 33, 34), (3, 34, 35), (3, 35, 36))    
+    
+    
     count = 0
     for layer in ADN:
 
