@@ -56,7 +56,7 @@ if __name__ == '__main__':
 
     # Training parameters
     
-    INIT_ITER = 200*e
+    INIT_ITER = 1*e
     settings.init_dt_array =  Alaising(1.2,99,INIT_ITER)
     settings.max_init_iter = 3
     settings.dropout_value = 0.05
