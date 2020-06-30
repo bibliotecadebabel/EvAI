@@ -402,23 +402,23 @@ def run(status):
                     L_2 += 1
                     saveModel(status, k+1, testModelDao, test_id, TrainingType.MUTATION)
 
-                if layers_count >= 17 and save_25_layers == True:
+                if layers_count >= 25 and save_25_layers == True:
                     save_checkpoint(status, testResultDao, layers_count, test_id, testModelDao, k)
                     save_25_layers = False
 
-                elif layers_count >= 18 and save_30_layers == True:
+                elif layers_count >= 30 and save_30_layers == True:
                     save_checkpoint(status, testResultDao, layers_count, test_id, testModelDao, k)
                     save_30_layers = False
 
-                elif layers_count >= 19 and save_35_layers == True:
+                elif layers_count >= 35 and save_35_layers == True:
                     save_checkpoint(status, testResultDao, layers_count, test_id, testModelDao, k)
                     save_35_layers = False
 
-                elif layers_count >= 19 and save_36_layers == True:
+                elif layers_count >= 36 and save_36_layers == True:
                     save_checkpoint(status, testResultDao, layers_count, test_id, testModelDao, k)
                     save_36_layers = False
 
-                if layers_count >= 39:
+                if layers_count >= status.max_layer_conv2d:
                     print("STOPPED MAX LAYERS: ", layers_count)
                     break
         else:
