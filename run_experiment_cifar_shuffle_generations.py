@@ -189,7 +189,7 @@ if __name__ == '__main__':
 
     # dropout parameter
     #settings.dropout_value = float(input("dropout value: "))
-    settings.dropout_value = 0.05
+    settings.dropout_value = 0.10
 
     # weight_decay parameter
     #settings.weight_decay = float(input('weight_decay: '))
