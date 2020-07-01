@@ -1,20 +1,21 @@
 import children.pytorch.MutationManager as mutation_manager
 import children.pytorch.NetworkDendrites as nw
 from DAO.database.dao import TestDAO, TestResultDAO, TestModelDAO
-from DNA_Graph import DNA_Graph
+from Geometric.Graphs.DNA_Graph import DNA_Graph as DNA_Graph
 #from utilities.Abstract_classes.classes.uniform_random_selector_2 import centered_random_selector as random_selector
-from DNA_creators import Creator_from_selection as Creator_s
+from Geometric.Creators.DNA_creators import Creator_from_selection as Creator_s
 import const.path_models as const_path
-import TestNetwork.ExperimentSettings
+import utilities.ExperimentSettings as ExperimentSettings
 import os
 import time
 import utilities.FileManager as FileManager
 import torch
 import const.training_type as TrainingType
+import utilities
 
 class CommandExperimentCifar_Restarts():
 
-    def __init__(self, settings : TestNetwork.ExperimentSettings.ExperimentSettings):
+    def __init__(self, settings : utilities.ExperimentSettings.ExperimentSettings):
         self.__space = settings.initial_space
         self.__selector = settings.selector
         self.__networks = []
