@@ -1,3 +1,3 @@
 import tests_scripts.testNetworkPytorch as test
 
-test.TimeCalculator2()
+test.Test_param_calculator()

@@ -238,7 +238,7 @@ def TestMemoryManager():
 
 def Test_param_calculator():
 
-    adn = test_DNAs.DNA_val_20_ac_b 
+    adn = test_DNAs.DNA_val_25 
 
     total_params = 0
     conv2d = 0
