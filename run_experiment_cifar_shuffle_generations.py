@@ -189,7 +189,7 @@ if __name__ == '__main__':
 
     # dropout parameter
     #settings.dropout_value = float(input("dropout value: "))
-    settings.dropout_value = 0.10
+    settings.dropout_value = 0.05
 
     # weight_decay parameter
     #settings.weight_decay = float(input('weight_decay: '))
@@ -289,7 +289,7 @@ if __name__ == '__main__':
     #settings.initial_dna =   DNAs.DNA_ep25
 
 
-    settings.initial_dna = DNAs.DNA_val_25
+    settings.initial_dna = DNAs.DNA_val_20_ac_b
 
     print('The initial DNA is:')
     print(settings.initial_dna)

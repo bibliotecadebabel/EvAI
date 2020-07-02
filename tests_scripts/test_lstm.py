@@ -10,9 +10,10 @@ wordsConverter = WordsConverter.WordsConverter(cuda=CUDA)
 
 "hola felix morales hola desire mendoza"
 words = ["hola felix morales", "felix morales hola", "morales hola desire", "hola desire mendoza#"]
-#print(words)
+
 
 words_tensor = wordsConverter.convertWordsToTensor(words)
+print("input tensor: ", words_tensor.size())
 
 print(words_tensor.size())
 

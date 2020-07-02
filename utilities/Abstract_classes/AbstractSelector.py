@@ -12,17 +12,24 @@ class Selector(ABC):
 
     def __init__(self, Observation_creator: Observation):
         self.observation_creator = Observation_creator
+        
+        # Current path + peso de todas las redes.
         self.observations = []
         self.actions = []
         self.predicted_actions = []
         self.net = None
+        
+        # Historico de mejores direcciones que se le aplico a la mejor red.
         self.current_path = []
+        
         self.max_path_size = 4
         self.max_observation_size = 20
         self.current_time = 0
         self.training_time = 200
         self.dt = 0.01
         self.current_path=[]
+
+        # Ultimo layer en el cual se le aplico la mutacion a la mejor red.
         self.center=0
         self.flags=True
 
