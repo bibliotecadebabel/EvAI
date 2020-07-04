@@ -1,3 +1,3 @@
-import tests_scripts.testNetworkPytorch as test
+import tests_scripts.test_mutation_lstm as test
 
-test.Test_param_calculator()
+test.test()

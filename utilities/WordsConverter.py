@@ -67,7 +67,7 @@ class WordsConverter():
                 tensorValue[i][j] = self.getTensor(letter)
                 j += 1
             i += 1
-        
+
         return tensorValue
 
 

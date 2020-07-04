@@ -15,7 +15,7 @@ words = ["hola felix morales", "felix morales hola", "morales hola desire", "hol
 words_tensor = wordsConverter.convertWordsToTensor(words)
 print("input tensor: ", words_tensor.size())
 
-print(words_tensor.size())
+print(words_tensor)
 
 word_amount = words_tensor.shape[0]
 letters_max = words_tensor.shape[1]
