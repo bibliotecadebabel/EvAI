@@ -37,8 +37,11 @@ class InternalModuleVariant():
         if last_ht is not None:
 
             clone_ct = last_ct.clone()
-            clone_ct.transpose_(1,2)
-
+            clone_ct = torch.reshape(clone_ct.transpose_(1,2), (-1,20,8))
+            
+            #print("clone ct: ", clone_ct.size())
+            #print("last ht: ", last_ht.size())
+            #print("xt: ", xt.size())
             currentInput_ht = torch.cat((clone_ct, last_ht, xt), dim=1)
         else:
             currentInput_ht = xt
@@ -48,7 +51,7 @@ class InternalModuleVariant():
         if last_ht is not None:
             
             clone_ct = self.ct.clone()
-            clone_ct.transpose_(1,2)
+            clone_ct = torch.reshape(clone_ct.transpose_(1,2), (-1,20,8))
 
             currentInput_ct = torch.cat((clone_ct, last_ht, xt), dim=1)
         else:
@@ -63,10 +66,13 @@ class InternalModuleVariant():
         sigmoid_it = torch.nn.Sigmoid()
         tanh_cand = torch.nn.Tanh()
 
+        #print("current input ct: ",currentInput.size())
         ft = self.convFt(currentInput)
+        #print("ft: ", ft.size())
         ft = sigmoid_ft(ft)
 
         it = self.convIt(currentInput)
+        #print("it: ", it.size())
         it = sigmoid_it(it)
 
         candidates = self.convCand(currentInput)
@@ -78,19 +84,27 @@ class InternalModuleVariant():
         a = it * candidates
 
         self.ct = ft + a
+        #print("ct: ", self.ct.size())
 
     def __computeHt(self, currentInput):
-
+        
+        #print("input ht: ", currentInput.size())
         sigmoid_ot = torch.nn.Sigmoid()
         tanh_ct = torch.nn.Tanh()
 
         ot = self.convOt(currentInput)
+        #print("output ht: ", ot.size())
         ot = sigmoid_ot(ot)
         
         a = tanh_ct(self.ct)
 
+        #print("a: ", a.shape)
+        #print("ot: ", ot.shape)
         self.ht = ot * a
+        #print("output ht: ", self.ht.size())
         self.ht.transpose_(1, 2)
+        self.ht = torch.reshape(self.ht, (-1, 20, 8))
+        #print("ht: ", self.ht.size())
 
     def updateGradFlag(self, flag):
 

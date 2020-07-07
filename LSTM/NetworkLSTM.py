@@ -51,7 +51,9 @@ class NetworkLSTM(nn.Module):
             inchannels = self.inChannels
 
             if i > 0:
-                inchannels += 2
+                
+                #inchannels += 2 #version 1
+                inchannels += self.inChannels * 2 #version 2
             
             internal = InternalModuleVariant.InternalModuleVariant(kernelSize=self.kernelSize, inChannels=inchannels, outChannels=self.outChannels, cudaFlag=self.cudaFlag)
             self.internalModules.append(internal)
@@ -110,23 +112,40 @@ class NetworkLSTM(nn.Module):
     def __getInputModule(self, moduleIndex, wordsTensor):
         batch = wordsTensor.shape[0]
         wordValue = wordsTensor.shape[2]
-        value = TensorFactory.createTensorZeros(tupleShape=(batch, 1, wordValue), cuda=self.cudaFlag, requiresGrad=False)
-        
+        shape = wordsTensor.shape
+
+        if len(shape) > 3:
+            value = TensorFactory.createTensorZeros(tupleShape=(shape[0], shape[2], shape[3]), cuda=self.cudaFlag, requiresGrad=False)
+        else:
+            value = TensorFactory.createTensorZeros(tupleShape=(shape[0], 1, shape[2]), cuda=self.cudaFlag, requiresGrad=False)
+
         i = 0
         for word in wordsTensor:
+            #print("word: ", word.size())
             letter = word[moduleIndex]
-            value[i][0] = letter.clone()
+            #print("letter: ", letter.size())
+            value[i] = letter.clone()
+            #print("value[i]: ", value[i].size())
             i += 1
-        
+
+        #print("input module: ", value.size())
         return value
             
 
     def __generateEnergy(self):
+        
+        pesos = [4, 10, 30, 1]
 
+        tensor = torch.tensor([[[4], [10], [30], [1]]], dtype=torch.float32, requires_grad=False).cuda()
+        
         indexModule = 0
         energy = 0
         for module in self.internalModules:
+            
+            print("shape: ", module.ht.size())
+            print("shape input: ", self.modulesXT[indexModule+1].size())
             value = module.ht - self.modulesXT[indexModule+1]
+            value = torch.bmm(tensor, value)
             value = torch.mul(value, value)
             energy += value
             indexModule += 1
@@ -178,9 +197,31 @@ class NetworkLSTM(nn.Module):
             last_ct = module.ct
         
         ht = self.internalModules[modules-1].ht
+        print("ht predict size: ", ht.size())
+        #print("predict: ", ht)
 
-        index = torch.argmax(ht, dim=2)
+        if len(ht.shape) > 2:
+            predicted_values = [-1, -1]
+            max_value = -1
 
-        return index.item()
+            for index_layer in range(ht.shape[1]):
+
+                for index_mutation in range(ht.shape[2]):
+                    
+                    value = ht[0][index_layer][index_mutation]
+
+                    if value >= max_value:
+                        max_value = value
+                        predicted_values[0] = index_layer
+                        predicted_values[1] = index_mutation
+            
+            print("predicted: ", predicted_values)
+
+            return predicted_values
+
+        else:
+            
+            index = torch.argmax(ht, dim=2)
+            return index.item()
 
             
