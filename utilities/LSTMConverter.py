@@ -84,7 +84,8 @@ class LSTMConverter():
         value = TensorFactory.createTensorZeros(tupleShape=(1, self.limit_directions-1, self.max_layers, self.mutations), cuda=self.cuda)
 
         for i in range(self.limit_directions-1):
-                value[0][i] = self.directionToTensor(observation.directions[i])
+            print("direction: ", observation.directions[i])
+            value[0][i] = self.directionToTensor(observation.directions[i])
 
         return value           
             
@@ -108,6 +109,12 @@ class LSTMConverter():
             raise Exception("Error converting tensor to direction {}".format(tensor))
 
         return (index_values[0],mutation)
+    
+    def predictedToDirection(self, predicted_values):
+
+        mutation = self.index_to_mutation.get(predicted_values[1])
+
+        return (predicted_values[0], mutation)
 
 
 

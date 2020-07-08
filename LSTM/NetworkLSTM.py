@@ -68,11 +68,11 @@ class NetworkLSTM(nn.Module):
             self.setAttribute(attr_3, internal.convCand)
             self.setAttribute(attr_4, internal.convOt)
     
-    def Train(self, dataElement):
+    def Train(self, dataElement, observations):
     
         self.updateGradFlag(True)
         self(dataElement)
-        self.__generateEnergy()
+        self.__generateEnergy(observations)
         self.__doBackward()
         self.updateGradFlag(False)
 
@@ -90,21 +90,21 @@ class NetworkLSTM(nn.Module):
         for indexModule in range(length):
             self.modulesXT.append(self.__getInputModule(indexModule, data))
 
-    def Training(self, data, dt=0.1, p=1):
+    def Training(self, data, observations, dt=0.1, p=1):
         
         self.optimizer = optim.SGD(self.parameters(), lr=dt, momentum=0)
         self.__createModulesXT(data)
         i = 0
-        
+        print_every = p // 4
         while i < p:
             self.energy = 0
             self.optimizer.zero_grad()
-            self.Train(data)
+            self.Train(data, observations)
             self.optimizer.step()
 
             
-            if i % 10 == 0:
-                print("L=", self.energy, "i=", i)
+            if i % print_every == print_every - 1:
+                print("L=", self.energy, "i=", i+1)
             
             i += 1
         
@@ -132,19 +132,26 @@ class NetworkLSTM(nn.Module):
         return value
             
 
-    def __generateEnergy(self):
+    def __generateEnergy(self, observations):
         
-        pesos = [4, 10, 30, 1]
+        #pesos = [4, 10, 30, 1]
 
-        tensor = torch.tensor([[[4], [10], [30], [1]]], dtype=torch.float32, requires_grad=False).cuda()
+        weights = []
+        for observation in observations:
+            weights.append([[observation.weight]])
         
+        #print("weights:" , weights)
+
+        tensor = torch.tensor(weights, dtype=torch.float32, requires_grad=False).cuda()
+        #print("tensor: ", tensor.size())
         indexModule = 0
         energy = 0
         for module in self.internalModules:
             
-            print("shape: ", module.ht.size())
-            print("shape input: ", self.modulesXT[indexModule+1].size())
+            #print("shape: ", module.ht.size())
+            #print("shape input: ", self.modulesXT[indexModule+1].size())
             value = module.ht - self.modulesXT[indexModule+1]
+            value = torch.reshape(value, (-1, 1, 160))
             value = torch.bmm(tensor, value)
             value = torch.mul(value, value)
             energy += value
@@ -153,7 +160,7 @@ class NetworkLSTM(nn.Module):
         self.energy = torch.div(energy, self.lenModules+1).sum()
 
         # multiplicar por peso de la palabra (cantidad de particulas)
-        self.energy = self.energy*1000
+        #self.energy = self.energy
 
     def forward(self, wordsTensor):
         last_ht = None
@@ -197,8 +204,6 @@ class NetworkLSTM(nn.Module):
             last_ct = module.ct
         
         ht = self.internalModules[modules-1].ht
-        print("ht predict size: ", ht.size())
-        #print("predict: ", ht)
 
         if len(ht.shape) > 2:
             predicted_values = [-1, -1]
@@ -215,8 +220,6 @@ class NetworkLSTM(nn.Module):
                         predicted_values[0] = index_layer
                         predicted_values[1] = index_mutation
             
-            print("predicted: ", predicted_values)
-
             return predicted_values
 
         else:
