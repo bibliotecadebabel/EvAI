@@ -1,5 +1,7 @@
 import Factory.TensorFactory as TensorFactory
 import numpy as np
+import const.general_values as const_values
+import torch
 
 class LSTMConverter():
 
@@ -14,7 +16,7 @@ class LSTMConverter():
         self.mutation_to_index = {}
         self.index_to_mutation = {}
 
-        self.mutation_to_index[(1,1,1,1)] = -1 # space
+        self.mutation_to_index[const_values.EMPTY_MUTATION] = const_values.EMPTY_INDEX_LAYER
         self.mutation_to_index[(1,0,0,0)] = 0
         self.mutation_to_index[(0,1,0,0)] = 1
         self.mutation_to_index[(4,0,0,0)] = 2
@@ -24,7 +26,7 @@ class LSTMConverter():
         self.mutation_to_index[(0,0,1,1)] = 6
         self.mutation_to_index[(0,0,-1,-1)] = 7
         
-        self.index_to_mutation[-1] = (1,1,1,1)
+        self.index_to_mutation[const_values.EMPTY_INDEX_LAYER] = const_values.EMPTY_MUTATION
         self.index_to_mutation[0] = (1,0,0,0)
         self.index_to_mutation[1] = (0,1,0,0)
         self.index_to_mutation[2] = (4,0,0,0)
@@ -84,8 +86,8 @@ class LSTMConverter():
         value = TensorFactory.createTensorZeros(tupleShape=(1, self.limit_directions-1, self.max_layers, self.mutations), cuda=self.cuda)
 
         for i in range(self.limit_directions-1):
-            print("direction: ", observation.directions[i])
-            value[0][i] = self.directionToTensor(observation.directions[i])
+            print("direction: ", observation.directions[i+1])
+            value[0][i] = self.directionToTensor(observation.directions[i+1])
 
         return value           
             
@@ -110,14 +112,31 @@ class LSTMConverter():
 
         return (index_values[0],mutation)
     
-    def predictedToDirection(self, predicted_values):
+    def predictedToDirection(self, predicted_layer_index, predicted_mutation_index):
 
-        mutation = self.index_to_mutation.get(predicted_values[1])
+        mutation = self.index_to_mutation.get(predicted_mutation_index)
 
-        return (predicted_values[0], mutation)
+        return (predicted_layer_index, mutation)
 
+    def topKPredictedDirections(self, predicted_tensor, k=2):
+        
+        topk_tensors = torch.topk(predicted_tensor, k=1)
+        predicted_values_tensor = topk_tensors[0].view(-1)
+        print(predicted_values_tensor)
+        predicted_mutation_index = topk_tensors[1].view(-1)
 
+        topk_layer_index = torch.topk(predicted_values_tensor, k=k)[1].view(-1)
 
-
+        predicted_directions = []
+        for i in range(k):
+            
+            top_i_layer_index = topk_layer_index[i].item()
+            top_i_mutation_index = predicted_mutation_index[top_i_layer_index].item()
+            
+            predicted_direction = self.predictedToDirection(top_i_layer_index, top_i_mutation_index)
+            
+            predicted_directions.append(predicted_direction)
+           
+        print(predicted_directions)
 
 

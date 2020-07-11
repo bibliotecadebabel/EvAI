@@ -119,6 +119,10 @@ def node2num_particles(node):
     p=node2plane(node)
     return p.num_particles
 
+def node2energy(node):
+    p=node2plane(node)
+    return p.energy
+
 def node2direction(node):
     p= node2plane(node)
     return p.direction

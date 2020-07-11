@@ -10,11 +10,11 @@ import Factory.TensorFactory as TensorFactory
 
 class NetworkLSTM(nn.Module):
 
-    def __init__(self, max_letters, inChannels, outChannels, kernelSize, cudaFlag=True):
+    def __init__(self, observation_size, inChannels, outChannels, kernelSize, cudaFlag=True):
         super(NetworkLSTM, self).__init__()
 
         self.cudaFlag = cudaFlag
-        self.lenModules = max_letters-1
+        self.lenModules = observation_size-1
         self.inChannels = inChannels
         self.outChannels = outChannels
         self.kernelSize = kernelSize
@@ -205,26 +205,21 @@ class NetworkLSTM(nn.Module):
         
         ht = self.internalModules[modules-1].ht
 
-        if len(ht.shape) > 2:
-            predicted_values = [-1, -1]
-            max_value = -1
+        
+        
+        predicted_values = [-1, -1]
+        max_value = -1
 
-            for index_layer in range(ht.shape[1]):
+        for index_layer in range(ht.shape[1]):
 
-                for index_mutation in range(ht.shape[2]):
+            for index_mutation in range(ht.shape[2]):
                     
-                    value = ht[0][index_layer][index_mutation]
+                value = ht[0][index_layer][index_mutation]
 
-                    if value >= max_value:
-                        max_value = value
-                        predicted_values[0] = index_layer
-                        predicted_values[1] = index_mutation
-            
-            return predicted_values
-
-        else:
-            
-            index = torch.argmax(ht, dim=2)
-            return index.item()
-
+                if value >= max_value:
+                    max_value = value
+                    predicted_values[0] = index_layer
+                    predicted_values[1] = index_mutation
+        
+        return [ht, predicted_values]
             

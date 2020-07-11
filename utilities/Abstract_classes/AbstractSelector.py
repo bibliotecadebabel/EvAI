@@ -29,7 +29,7 @@ class Selector(ABC):
         self.dt = 0.01
         self.current_path=[]
 
-        # Ultimo layer en el cual se le aplico la mutacion a la mejor red.
+        self.last_mutated_layer = 0
         self.center=0
         self.flags=True
 
@@ -38,9 +38,11 @@ class Selector(ABC):
             print(text)
 
     def update_current_path(self,space):
-        self.current_path.append(self.space2action(space))
-        if len(self.current_path)>self.max_path_size:
-            self.current_path.pop(0)
+
+        #if not isinstance(space, tuple):
+        #    self.current_path.append(self.space2action(space))
+        #    if len(self.current_path)>self.max_path_size:
+        #        self.current_path.pop(0)
         pass
 
     def forget_path(self,path):

@@ -37,8 +37,9 @@ class InternalModuleVariant():
         if last_ht is not None:
 
             clone_ct = last_ct.clone()
+            #print("ct: ", clone_ct.size())
             clone_ct = torch.reshape(clone_ct.transpose_(1,2), (-1,20,8))
-            
+            #print("ct2: ", clone_ct.size())
             #print("clone ct: ", clone_ct.size())
             #print("last ht: ", last_ht.size())
             #print("xt: ", xt.size())
