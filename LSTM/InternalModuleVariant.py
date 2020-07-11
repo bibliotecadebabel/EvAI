@@ -12,6 +12,7 @@ class InternalModuleVariant():
         self.__createStructure(inChannels=inChannels, outChannels=outChannels)
         self.ct = None
         self.ht = None
+        self.xt = None
 
     
     def __createStructure(self, inChannels, outChannels):
@@ -27,22 +28,20 @@ class InternalModuleVariant():
             self.convOt.cuda()
 
     def compute(self, xt, last_ht=None, last_ct=None):
-        
+
         currentInput_ct = None
         currentInput_ht = None
 
         clone_ht = None
         clone_ct = None
 
-        if last_ht is not None:
+        self.xt = xt
 
+        if last_ht is not None:
+            
             clone_ct = last_ct.clone()
-            #print("ct: ", clone_ct.size())
-            clone_ct = torch.reshape(clone_ct.transpose_(1,2), (-1,20,8))
-            #print("ct2: ", clone_ct.size())
-            #print("clone ct: ", clone_ct.size())
-            #print("last ht: ", last_ht.size())
-            #print("xt: ", xt.size())
+            clone_ct.transpose_(1,2)            
+            clone_ct = torch.reshape(clone_ct, (-1,xt.shape[1],xt.shape[2]))
             currentInput_ht = torch.cat((clone_ct, last_ht, xt), dim=1)
         else:
             currentInput_ht = xt
@@ -52,7 +51,8 @@ class InternalModuleVariant():
         if last_ht is not None:
             
             clone_ct = self.ct.clone()
-            clone_ct = torch.reshape(clone_ct.transpose_(1,2), (-1,20,8))
+            clone_ct.transpose_(1,2)            
+            clone_ct = torch.reshape(clone_ct, (-1,xt.shape[1],xt.shape[2]))
 
             currentInput_ct = torch.cat((clone_ct, last_ht, xt), dim=1)
         else:
@@ -89,7 +89,6 @@ class InternalModuleVariant():
 
     def __computeHt(self, currentInput):
         
-        #print("input ht: ", currentInput.size())
         sigmoid_ot = torch.nn.Sigmoid()
         tanh_ct = torch.nn.Tanh()
 
@@ -104,7 +103,7 @@ class InternalModuleVariant():
         self.ht = ot * a
         #print("output ht: ", self.ht.size())
         self.ht.transpose_(1, 2)
-        self.ht = torch.reshape(self.ht, (-1, 20, 8))
+        self.ht = torch.reshape(self.ht, (-1, self.xt.shape[1], self.xt.shape[2]))
         #print("ht: ", self.ht.size())
 
     def updateGradFlag(self, flag):

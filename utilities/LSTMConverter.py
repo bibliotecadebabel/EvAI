@@ -120,23 +120,21 @@ class LSTMConverter():
 
     def topKPredictedDirections(self, predicted_tensor, k=2):
         
-        topk_tensors = torch.topk(predicted_tensor, k=1)
-        predicted_values_tensor = topk_tensors[0].view(-1)
-        print(predicted_values_tensor)
-        predicted_mutation_index = topk_tensors[1].view(-1)
-
-        topk_layer_index = torch.topk(predicted_values_tensor, k=k)[1].view(-1)
-
+        shape = predicted_tensor.shape
+        tensor = predicted_tensor.view(shape[0], 1, shape[1]*shape[2])
         predicted_directions = []
-        for i in range(k):
-            
-            top_i_layer_index = topk_layer_index[i].item()
-            top_i_mutation_index = predicted_mutation_index[top_i_layer_index].item()
-            
-            predicted_direction = self.predictedToDirection(top_i_layer_index, top_i_mutation_index)
-            
-            predicted_directions.append(predicted_direction)
-           
-        print(predicted_directions)
 
+        topk_tensors = torch.topk(tensor, k=k)
+        predicted_indexs_tensor = topk_tensors[1].view(-1)
+        
+        for i in range(predicted_indexs_tensor.shape[0]):
+
+            index = predicted_indexs_tensor[i].item()
+
+            top_i_layer_index = index // shape[2]
+            top_i_mutation_index = index - (shape[2]*top_i_layer_index)
+            predicted_direction = self.predictedToDirection(top_i_layer_index, top_i_mutation_index)
+            predicted_directions.append(predicted_direction)
+
+        return predicted_directions
 

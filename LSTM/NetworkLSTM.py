@@ -148,10 +148,8 @@ class NetworkLSTM(nn.Module):
         energy = 0
         for module in self.internalModules:
             
-            #print("shape: ", module.ht.size())
-            #print("shape input: ", self.modulesXT[indexModule+1].size())
             value = module.ht - self.modulesXT[indexModule+1]
-            value = torch.reshape(value, (-1, 1, 160))
+            value = torch.reshape(value, (value.shape[0], 1, value.shape[1]*value.shape[2]))
             value = torch.bmm(tensor, value)
             value = torch.mul(value, value)
             energy += value
@@ -186,7 +184,6 @@ class NetworkLSTM(nn.Module):
     
     def predict(self, x):
     
-        indexModule = 0
         last_ht = None
         last_ct = None
 
@@ -204,22 +201,6 @@ class NetworkLSTM(nn.Module):
             last_ct = module.ct
         
         ht = self.internalModules[modules-1].ht
-
         
-        
-        predicted_values = [-1, -1]
-        max_value = -1
-
-        for index_layer in range(ht.shape[1]):
-
-            for index_mutation in range(ht.shape[2]):
-                    
-                value = ht[0][index_layer][index_mutation]
-
-                if value >= max_value:
-                    max_value = value
-                    predicted_values[0] = index_layer
-                    predicted_values[1] = index_mutation
-        
-        return [ht, predicted_values]
+        return ht
             
