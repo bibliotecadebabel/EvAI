@@ -6,6 +6,7 @@ import children.pytorch.NetworkDendrites as nw
 import os
 import time
 import statistics
+import math
 
 def Alaising(M,m,ep):
     M=10**(-M)
@@ -137,8 +138,9 @@ def normalize(dataset):
     std = statistics.stdev(dataset)
 
     for i in range(len(dataset)):
-
-        dataset[i] = (dataset[i] - mean)/std
+        
+        norm = (dataset[i] - mean)/std
+        dataset[i] = math.exp(norm)
     
     return dataset
 

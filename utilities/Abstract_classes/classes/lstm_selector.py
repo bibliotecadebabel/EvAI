@@ -122,7 +122,7 @@ class centered_random_selector(Selector):
             for node in node_c.kids:
 
                 if Funct.node2energy(node) > 0:
-                    weight_array.append(Funct.node2energy(node))
+                    weight_array.append(Funct.node2energy(node)*10)
 
             weight_array = Funct.normalize(dataset=weight_array)
             for node in node_c.kids:
