@@ -209,6 +209,11 @@ class CommandExperimentCifar_Restarts():
 
             nodeCenter = self.__getNodeCenter(newSpace)
 
+            if len(nodeCenter.kids) >= 0:
+                print("kids: ", len(nodeCenter.kids))
+                stop = True
+
+            '''
             if len(nodeCenter.kids) >= self.__selector.num_actions:
                 print("num actions: ", self.__selector.num_actions)
                 print("kids: ", len(nodeCenter.kids))
@@ -217,13 +222,14 @@ class CommandExperimentCifar_Restarts():
             else:
                 print("num actions: ", self.__selector.num_actions)
                 print("kids: ", len(nodeCenter.kids))
+                
                 for node in nodeCenter.kids:
                     direction = node.objects[0].objects[0].direction
                     print("direction accepted: ", direction)
 
                 print("CURRENT CENTER: ", newCenter)
                 raise Exception
-
+            '''
 
 
         self.__space = None

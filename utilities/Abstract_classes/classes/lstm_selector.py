@@ -224,13 +224,10 @@ class centered_random_selector(Selector):
                 elif self.mutations[mutation] == (1, 0, 0, 0):
                     self.__addLayer_convex(mutation)
                 else:
-                    DNA=self.center_key
-                    condition=self.condition
-                    new_DNA=self.directions.get(self.mutations[mutation])(
-                        layer,DNA)
-                    new_DNA=condition(new_DNA)
-                    if  (not ( (layer,self.mutations[mutation]) in
-                        self.predicted_actions) and new_DNA):
+                   
+                    direction_accepted = self.verify_direction(layer=layer, mutation=self.mutations[mutation])
+
+                    if direction_accepted == True:
                         self.predicted_actions.append( (layer,self.mutations[mutation]) )
                 k=k+1
             l=l+1
@@ -258,15 +255,9 @@ class centered_random_selector(Selector):
                 layer = direction[0]
                 mutation = direction[1]
 
-                DNA=self.center_key
-                condition=self.condition
-                new_DNA=self.directions.get(mutation)(
-                    layer,DNA)
+                direction_accepted = self.verify_direction(layer=layer, mutation=mutation)
 
-                new_DNA=condition(new_DNA)
-
-                if  (not ( (layer,mutation) in self.predicted_actions) and new_DNA):
-                    
+                if direction_accepted == True:  
                     self.predicted_actions.append( (layer,mutation) )
                 
                 if len(self.predicted_actions) >= top_directions:
@@ -291,14 +282,9 @@ class centered_random_selector(Selector):
             i = 0
             while stop == False and i < 200:
 
-                DNA=self.center_key
-                condition=self.condition
-                new_DNA=self.directions.get(self.mutations[mutation])(
-                    layer,DNA)
-                new_DNA=condition(new_DNA)
+                direction_accepted = self.verify_direction(layer=layer, mutation=self.mutations[mutation])
 
-                if  (not ( (layer,self.mutations[mutation]) in
-                    self.predicted_actions) and new_DNA):
+                if direction_accepted == True:
                     self.predicted_actions.append( (layer,self.mutations[mutation]) )
                     stop = True
 
@@ -331,14 +317,29 @@ class centered_random_selector(Selector):
                 break
         
 
+        direction_accepted = self.verify_direction(layer=selected_index, mutation=self.mutations[mutation])
+
+        if direction_accepted == True:
+            self.predicted_actions.append( (selected_index, self.mutations[mutation]) )
+
+    def verify_direction(self, layer, mutation):
+
+        value = False
+        
         DNA=self.center_key
         condition=self.condition
-        new_DNA=self.directions.get(self.mutations[mutation])(selected_index,DNA)
+        new_DNA=self.directions.get(mutation)(layer, DNA)
         new_DNA=condition(new_DNA)
 
-        if  (not ( (selected_index,self.mutations[mutation]) in self.predicted_actions) and new_DNA):
+        if  (not ( (layer, mutation) in self.predicted_actions) and new_DNA):
+            value = True
+        
+        if mutation == (1,0,0,0) or mutation == (4,0,0,0):
 
-            self.predicted_actions.append( (selected_index, self.mutations[mutation]) )
+            if (layer + 1) == self.current_num_layer:
+                value = False
+        
+        return value
 
     def get_predicted_actions(self):
         #return tuple([(action[0],self.mutations[action[1]])

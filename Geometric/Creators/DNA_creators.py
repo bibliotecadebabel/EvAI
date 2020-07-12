@@ -230,6 +230,7 @@ class Creator_from_selection():
         self.condition=condition
         self.directions=directions
         self.type_add_layer=type_add_layer
+        print("type add layer: ", type_add_layer)
 
 
     def add_node(self,g,DNA):
@@ -266,8 +267,11 @@ class Creator_from_selection():
         #                       print('The value of DNA_o is:')
         #                       print(DNA_o)
                                 direction=self.directions.get(typo[1])
+                                
                                 if direction:
+                                    #print("layer: ", typo[0], " - mutation: ", typo[1])
                                     DNA_f=condition(direction(k,DNA_o))
+                                    #print(DNA_f)
                                     if DNA_f:
                                         self.add_node(g,DNA_f)
                                         node_f=g.key2node.get(DNA_f)
@@ -278,6 +282,7 @@ class Creator_from_selection():
                                             p=self.node2plane(node)
                                             if not (p.direction):
                                                 p.direction=label
+                                        #print("kids: ", len(center.kids))
                 if center.kids:
                     for kid in center.kids:
                         self.create(kid,size-1,g)
