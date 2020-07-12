@@ -30,31 +30,28 @@ def test():
     observations = []
 
     for i in range(num_actions):
-        observation = Observation.Observation()
+        observation = Observation.Observation(path=directions_per_observations[i], weight=observations_weight[i], time=0)
         print("observation: ", i)
-        for direction in directions_per_observations[i]:
-            print(direction)
-            observation.directions.append(direction)
-        
-        observation.weight = observations_weight[i]
+        print("path: ", observation.path)
+        print("weight: ", observation.weight)
         observations.append(observation)
 
     input_lstm = lstmConverter.generateLSTMInput(observations=observations)
     print(input_lstm.size())
-
+    current_path = Observation.Observation(path=[(2,(4,0,0,0)), (2,(4,0,0,0))], weight=1, time=0)
     network = nw_lstm.NetworkLSTM(observation_size=observation_size, inChannels=max_layers_lstm, 
                                     outChannels=max_layers_lstm*lstmConverter.mutations, kernelSize=lstmConverter.mutations, cudaFlag=True)
     
-    print("empezando entrenamiento")
-    network.Training(data=input_lstm, dt=0.0001, p=2000, observations=observations)
-    print("entrenamiento finalizado")
+    i = 0
+    while i < 200 : 
+        print("empezando entrenamiento")
+        network.Training(data=input_lstm, dt=0.001, p=100, observations=observations)
+        print("entrenamiento finalizado")
 
-
-    stop = False
-    
-    for observation in observations:
-        predict = lstmConverter.generateLSTMPredict(observation=observation)
+        predict = lstmConverter.generateLSTMPredict(observation=current_path)
         predicted = network.predict(predict)
         predicted_directions = lstmConverter.topKPredictedDirections(predicted_tensor=predicted, k=num_actions//2)
         print(predicted_directions)
+        
+        i += 1
 

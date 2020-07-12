@@ -5,7 +5,7 @@ import Geometric.TangentPlane as tplane
 import children.pytorch.NetworkDendrites as nw
 import os
 import time
-
+import statistics
 
 def Alaising(M,m,ep):
     M=10**(-M)
@@ -130,3 +130,45 @@ def node2direction(node):
 def set_num_particles(node,particles):
     p=node2plane(node)
     p.num_particles=particles
+
+def normalize(dataset):
+
+    mean = statistics.mean(dataset) 
+    std = statistics.stdev(dataset)
+
+    for i in range(len(dataset)):
+
+        dataset[i] = (dataset[i] - mean)/std
+    
+    return dataset
+
+def absolute2relative(direction, last_layer, max_layers):
+
+    current_layer = direction[0]
+
+    relative_layer = current_layer - last_layer
+
+    if relative_layer < 0:
+        relative_layer = abs(relative_layer)
+        relative_layer = relative_layer + max_layers - 1
+    
+    relative_direction = (relative_layer, direction[1])
+
+    return relative_direction
+
+def relative2absolute(direction, last_layer, max_layers):
+
+    current_relative = direction[0]
+
+    if current_relative >= max_layers:
+
+        current_relative = current_relative - max_layers + 1
+        absolute_layer = last_layer - current_relative
+    
+    else:
+        absolute_layer = current_relative + last_layer
+
+    absolute_direction = (absolute_layer, direction[1])
+
+    return absolute_direction
+

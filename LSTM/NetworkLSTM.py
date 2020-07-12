@@ -92,6 +92,7 @@ class NetworkLSTM(nn.Module):
 
     def Training(self, data, observations, dt=0.1, p=1):
         
+        self.modulesXT = []
         self.optimizer = optim.SGD(self.parameters(), lr=dt, momentum=0)
         self.__createModulesXT(data)
         i = 0
@@ -149,7 +150,9 @@ class NetworkLSTM(nn.Module):
         for module in self.internalModules:
             
             value = module.ht - self.modulesXT[indexModule+1]
+            #print("value 1: ", value.size())
             value = torch.reshape(value, (value.shape[0], 1, value.shape[1]*value.shape[2]))
+            #print("value 2: ", value.size())
             value = torch.bmm(tensor, value)
             value = torch.mul(value, value)
             energy += value

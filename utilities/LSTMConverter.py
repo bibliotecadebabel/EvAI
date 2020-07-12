@@ -63,7 +63,7 @@ class LSTMConverter():
       
         for observation in range(num_observations):
 
-            directions = observations[observation].directions
+            directions = observations[observation].path
             num_directions = len(directions)
 
             tensors_directions = []
@@ -82,12 +82,15 @@ class LSTMConverter():
         return value
 
     def generateLSTMPredict(self, observation):
+        
+        directions_number = len(observation.path)
 
-        value = TensorFactory.createTensorZeros(tupleShape=(1, self.limit_directions-1, self.max_layers, self.mutations), cuda=self.cuda)
+        value = TensorFactory.createTensorZeros(tupleShape=(1, directions_number, self.max_layers, self.mutations), cuda=self.cuda)
 
-        for i in range(self.limit_directions-1):
-            print("direction: ", observation.directions[i+1])
-            value[0][i] = self.directionToTensor(observation.directions[i+1])
+        for i in range(directions_number):
+            
+            print("direction: ", observation.path[i])
+            value[0][i] = self.directionToTensor(observation.path[i])
 
         return value           
             

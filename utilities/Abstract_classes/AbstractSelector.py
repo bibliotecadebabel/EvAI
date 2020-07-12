@@ -6,6 +6,7 @@ class Observation(ABC):
         self.path = path
         self.weight = weight
         self.time = time
+        self.absolute_path = []
 
 
 class Selector(ABC):
@@ -25,9 +26,8 @@ class Selector(ABC):
         self.max_path_size = 4
         self.max_observation_size = 20
         self.current_time = 0
-        self.training_time = 200
-        self.dt = 0.01
-        self.current_path=[]
+        self.training_time = 2000
+        self.dt = 0.0001
 
         self.last_mutated_layer = 0
         self.center=0
@@ -37,13 +37,11 @@ class Selector(ABC):
         if self.flags:
             print(text)
 
-    def update_current_path(self,space):
+    def update_current_path(self,space, new_center):
 
-        #if not isinstance(space, tuple):
-        #    self.current_path.append(self.space2action(space))
-        #    if len(self.current_path)>self.max_path_size:
-        #        self.current_path.pop(0)
+
         pass
+        
 
     def forget_path(self,path):
         while len(path) > self.max_path_size:
@@ -65,13 +63,13 @@ class Selector(ABC):
 
     def update(self,space,new_center=None):
         self.register_observations(space,new_center)
-        self.update_current_path(space)
-        self.update_current_center(space,new_center)
+        self.update_current_path(space, new_center)
         self.train()
         self.print_flag('Updating predicted actions')
         self.update_predicted_actions()
         self.current_time = self.current_time+1
         self.forget_observations()
+        self.update_current_center(space,new_center)
         pass
 
     #should create net given hyperparameters

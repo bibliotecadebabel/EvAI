@@ -12,21 +12,21 @@ modulo_1 = "hola"
 module_2 = "ijkb"
 wordsConverter = WordsConverter.WordsConverter(cuda=CUDA)
 '''
-current_path =" "
+current_path ="  "
 alazar: h,o,l,a
 words = [" hh", " oo", " ll", " aa"]
-current_path = " l"
+current_path = "  l"
 rpedict: " l"
 produce: 
 al azar: j k
 words_2 = [" ll", " lh", " lk", " lj"]
 current_path = " lk"
-predict: " l"
+predict: "lk"
 produce: k j
 alzar: m n
 words_3 = ["lkk", "lkj", "lkm", "lkn"]
 current_path "lkn"
-predict = "lkn"
+predict = "kn"
 produce: k,j
 '''
 words_tensor = wordsConverter.convertWordsToTensor(words)

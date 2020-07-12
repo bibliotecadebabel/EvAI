@@ -29,7 +29,6 @@ class centered_random_selector(Selector):
         super().__init__(self.Observation_creator)
         self.mutations=mutations
         self.num_actions=num_actions
-        self.max_observation_size = 5
         self.current_num_layer=None
         self.version = directions
         
@@ -54,7 +53,11 @@ class centered_random_selector(Selector):
         self.center_key=None
         self.condition=condition
         
-        self.max_layers_lstm = 20
+        self.max_layers_condition = 10
+        self.max_layers_lstm = self.max_layers_condition*2 #positive and negative relative position
+        self.max_observation_size = 3
+        self.max_path_size = self.max_observation_size-1
+
         self.converter = LSTMConverter.LSTMConverter(cuda=True, max_layers=self.max_layers_lstm, 
                                                         limit_directions=self.max_observation_size)
 
@@ -65,6 +68,9 @@ class centered_random_selector(Selector):
         self.input_lstm = None
         self.current_path = self.observation_creator(num_layer=0,
             path=[const_values.EMPTY_DIRECTION], weight=1)
+        self.current_path.absolute_path.append(const_values.EMPTY_DIRECTION)
+        
+        
 
 
     def Action2tensor(self,action):
@@ -111,32 +117,46 @@ class centered_random_selector(Selector):
             
             self.observations = []
             
+            weight_array = []
+            i = 0
             for node in node_c.kids:
 
-                if Funct.node2num_particles(node) > 0:
-                    
-                    observation_path = []
-                    for direction in self.current_path:
-                        observation_path.append(direction)
-                    observation_path.append(Funct.node2direction(node))
+                if Funct.node2energy(node) > 0:
+                    weight_array.append(Funct.node2energy(node))
 
-                    # Accuracy
-                    observation_weight = Funct.node2energy(node) * 10
+            weight_array = Funct.normalize(dataset=weight_array)
+            for node in node_c.kids:
+
+                if Funct.node2energy(node) > 0:
+
+                    observation_path = []
+                    for direction in self.current_path.path:
+                        observation_path.append(direction)
+
+                    absolute_direction = Funct.node2direction(node)
+                    relative_direction = Funct.absolute2relative(direction=absolute_direction, last_layer=self.last_mutated_layer, 
+                                                                    max_layers=self.max_layers_condition)
+                    observation_path.append(relative_direction)
+
+                    if len(observation_path) > self.max_observation_size:
+                        observation_path.pop(0)
                     
-                    observation = self.observation_creator(path=observation_path, weight=observation_weight)
+                    observation = self.observation_creator(path=observation_path, weight=weight_array[i])
                     self.observations.append(observation)
+
+                    i += 1
 
     def update_current_center(self,space=None,new_center=None):
 
         if type(space) is not tuple:
 
-            node_nc = space.key2node(new_center)
-            direction = Funct.node2direction(node_nc)
+            #node_nc = space.key2node(new_center)
+            direction = self.current_path.absolute_path[-1]
 
-            if not(new_center==space.center) and direction is not None:
+            if not(new_center==space.center) and direction is not None and direction[0] != const_values.EMPTY_INDEX_LAYER:
 
-                self.center = direction[0] - self.last_mutated_layer
                 self.last_mutated_layer = direction[0]
+                print("last layer mutated: ", self.last_mutated_layer)
             
 
 
@@ -155,11 +175,39 @@ class centered_random_selector(Selector):
     def forget_weight(self,observation):
         pass
 
+    def update_current_path(self,space, new_center):
+        
+        if not isinstance(space, tuple) and new_center is not None:
+            node_nc = space.key2node(new_center)
+            absolute_direction = Funct.node2direction(node_nc)
+            relative_direction = Funct.absolute2relative(direction=absolute_direction, last_layer=self.last_mutated_layer,
+                                                            max_layers=self.max_layers_condition)
+            self.current_path.path.append(relative_direction)
+            self.current_path.absolute_path.append(absolute_direction)
+
+            if len(self.current_path.path)>self.max_path_size:
+                self.current_path.path.pop(0)
+                self.current_path.absolute_path.pop(0)
+
     def train(self):
-        pass
+        
+        if self.observations is not None and len(self.observations) > 0:
+
+            for i in range(len(self.observations)):
+                print("i: ", i)
+                print("path: ", self.observations[i].path)
+                print("weight: ", self.observations[i].weight)
+
+            print("current path: ", self.current_path.path)                
+            input_lstm = self.converter.generateLSTMInput(observations=self.observations)
+            print("starting lstm training")
+            self.net.Training(data=input_lstm, observations=self.observations, dt=self.dt, p=self.training_time)
 
     def update_predicted_actions(self):
+
         self.predicted_actions=[]
+        self.__run_predict()
+        #print("predicted actions 1: ", self.predicted_actions)
         num_layer=self.current_num_layer
         num_mutations=len(self.mutations)
         k=0
@@ -181,11 +229,50 @@ class centered_random_selector(Selector):
                     new_DNA=self.directions.get(self.mutations[mutation])(
                         layer,DNA)
                     new_DNA=condition(new_DNA)
-                    if  (not ([layer,mutation] in
+                    if  (not ( (layer,self.mutations[mutation]) in
                         self.predicted_actions) and new_DNA):
-                        self.predicted_actions.append([layer,mutation])
+                        self.predicted_actions.append( (layer,self.mutations[mutation]) )
                 k=k+1
             l=l+1
+        print("predicted actions: ", self.predicted_actions)
+        time.sleep(5)
+
+    def __run_predict(self):
+
+        if self.observations is not None and len(self.observations) > 0:
+            
+            input_predict = self.converter.generateLSTMPredict(observation=self.current_path)
+            top_directions = len(self.observations) // 2
+            predicted_tensor = self.net.predict(x=input_predict)
+            predicted_relative_directions = self.converter.topKPredictedDirections(predicted_tensor=predicted_tensor, k=len(self.observations))
+
+            predicted_absolute_directions = []
+
+            for relative_direction in predicted_relative_directions:
+                absolute_direction = Funct.relative2absolute(direction=relative_direction, last_layer=self.last_mutated_layer,
+                                                                max_layers=self.max_layers_condition)
+                predicted_absolute_directions.append(absolute_direction)
+
+            for direction in predicted_absolute_directions:
+                
+                layer = direction[0]
+                mutation = direction[1]
+
+                DNA=self.center_key
+                condition=self.condition
+                new_DNA=self.directions.get(mutation)(
+                    layer,DNA)
+
+                new_DNA=condition(new_DNA)
+
+                if  (not ( (layer,mutation) in self.predicted_actions) and new_DNA):
+                    
+                    self.predicted_actions.append( (layer,mutation) )
+                
+                if len(self.predicted_actions) >= top_directions:
+                    break
+            
+            print("predicted by lstm: ", self.predicted_actions)
 
     def __dendrites_mutation(self, mutation):
 
@@ -210,9 +297,9 @@ class centered_random_selector(Selector):
                     layer,DNA)
                 new_DNA=condition(new_DNA)
 
-                if  (not ([layer,mutation] in
+                if  (not ( (layer,self.mutations[mutation]) in
                     self.predicted_actions) and new_DNA):
-                    self.predicted_actions.append([layer,mutation])
+                    self.predicted_actions.append( (layer,self.mutations[mutation]) )
                     stop = True
 
                 i += 1
@@ -244,13 +331,19 @@ class centered_random_selector(Selector):
                 break
         
 
-        self.predicted_actions.append([selected_index,mutation])
+        DNA=self.center_key
+        condition=self.condition
+        new_DNA=self.directions.get(self.mutations[mutation])(selected_index,DNA)
+        new_DNA=condition(new_DNA)
 
+        if  (not ( (selected_index,self.mutations[mutation]) in self.predicted_actions) and new_DNA):
+
+            self.predicted_actions.append( (selected_index, self.mutations[mutation]) )
 
     def get_predicted_actions(self):
-        return tuple([(action[0],self.mutations[action[1]])
-        for action in self.predicted_actions])
-
+        #return tuple([(action[0],self.mutations[action[1]])
+        #for action in self.predicted_actions])
+        return self.predicted_actions
     def DNA2new_DNA(self,DNA):
         directions=self.directions
         self.update_predicted_actions()
