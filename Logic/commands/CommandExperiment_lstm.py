@@ -12,7 +12,7 @@ import utilities.FileManager as FileManager
 import torch
 import const.training_type as TrainingType
 import utilities
-
+import utilities.MemoryManager as MemoryManager
 class CommandExperimentCifar_Restarts():
 
     def __init__(self, settings : utilities.ExperimentSettings.ExperimentSettings):
@@ -30,12 +30,7 @@ class CommandExperimentCifar_Restarts():
         self.__bestNetwork = None
 
         if self.__settings.loadedNetwork == None:
-            self.__bestNetwork = nw.Network(adn=settings.initial_dna, cudaFlag=settings.cuda,
-                                    momentum=settings.momentum, weight_decay=settings.weight_decay,
-                                    enable_activation=settings.enable_activation,
-                                    enable_track_stats=settings.enable_track_stats, dropout_value=settings.dropout_value,
-                                    dropout_function=settings.dropout_function, enable_last_activation=settings.enable_last_activation,
-                                    version=settings.version, eps_batchnorm=settings.eps_batchorm)
+            self.__bestNetwork = self.__createNetwork(dna=settings.initial_dna)
         else:
             self.__bestNetwork = self.__settings.loadedNetwork
 
@@ -49,19 +44,20 @@ class CommandExperimentCifar_Restarts():
             self.__fileManager.setFileName(self.__settings.test_name)
             self.__fileManager.writeFile("")
 
+        self.__memoryManager = MemoryManager.MemoryManager()
 
+    def __createNetwork(self, dna):
 
+        settings = self.__settings
+        return nw.Network(adn=dna, cudaFlag=settings.cuda,
+                                    momentum=settings.momentum, weight_decay=settings.weight_decay,
+                                    enable_activation=settings.enable_activation,
+                                    enable_track_stats=settings.enable_track_stats, dropout_value=settings.dropout_value,
+                                    dropout_function=settings.dropout_function, enable_last_activation=settings.enable_last_activation,
+                                    version=settings.version, eps_batchnorm=settings.eps_batchorm)
 
     def __generateNetworks(self):
-
-        networks = self.__networks
-        del networks
-
-        nodes = self.__nodes
-        del nodes
-
-        self.__networks = []
-        self.__nodes = []
+        
 
         space = self.__space
         nodeCenter = self.__getNodeCenter(self.__space)
@@ -70,13 +66,19 @@ class CommandExperimentCifar_Restarts():
 
         print("new space's center: =", self.__bestNetwork.adn)
         centerNetwork = self.__bestNetwork
+        
+        for network in self.__networks:
+            self.__memoryManager.deleteNetwork(network=network)
+
+        self.__networks = []
+        self.__nodes = []
 
         self.__nodes.append(nodeCenter)
         self.__networks.append(centerNetwork)
 
         for nodeKid in nodeCenter.kids:
-            kidADN = space.node2key(nodeKid)
-            kidNetwork = self.mutation_manager.executeMutation(centerNetwork, kidADN)
+            kidDNA = space.node2key(nodeKid)
+            kidNetwork = self.__createNetwork(dna=kidDNA)
             self.__nodes.append(nodeKid)
             self.__networks.append(kidNetwork)
 
@@ -124,7 +126,6 @@ class CommandExperimentCifar_Restarts():
         for i in range(max_iter):
             print("iteration: ", i+1)
             network.iterTraining(self.__settings.dataGen, dt_array, self.__settings.ricap)
-            #network.Training(data=self.__settings.dataGen, dt=dt_array, p=len(dt_array), full_database=True)
             network.generateEnergy(self.__settings.dataGen)
             current_accuracy = network.getAcurracy()
             print("current accuracy=", current_accuracy)
@@ -184,12 +185,7 @@ class CommandExperimentCifar_Restarts():
     def __generateNewSpace(self, firstTime=False):
         oldSpace = self.__space
         newCenter = self.__bestNetwork.adn
-
-       
-            
-        #self.__selector = random_selector(num_actions=self.__selector.num_actions, directions=self.__selector.version,
-        #                                    condition=self.__selector.condition, mutations=self.__selector.mutations)
-            
+    
         if firstTime == True:
             self.__selector.update(newCenter)
         else:
@@ -212,25 +208,6 @@ class CommandExperimentCifar_Restarts():
             if len(nodeCenter.kids) >= 0:
                 print("kids: ", len(nodeCenter.kids))
                 stop = True
-
-            '''
-            if len(nodeCenter.kids) >= self.__selector.num_actions:
-                print("num actions: ", self.__selector.num_actions)
-                print("kids: ", len(nodeCenter.kids))
-                time.sleep(2)
-                stop = True
-            else:
-                print("num actions: ", self.__selector.num_actions)
-                print("kids: ", len(nodeCenter.kids))
-                
-                for node in nodeCenter.kids:
-                    direction = node.objects[0].objects[0].direction
-                    print("direction accepted: ", direction)
-
-                print("CURRENT CENTER: ", newCenter)
-                raise Exception
-            '''
-
 
         self.__space = None
         self.__space = newSpace
