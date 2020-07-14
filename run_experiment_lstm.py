@@ -162,7 +162,7 @@ if __name__ == '__main__':
             DNA_conditions.min_filter : 3,
             DNA_conditions.max_pool_layer : 4,
             DNA_conditions.max_parents : 2,
-            DNA_conditions.no_con_last_layer = 1}
+            DNA_conditions.no_con_last_layer : 1}
 
     # TEST_NAME, the name of the experiment (unique)
     settings.test_name = input("Enter TestName: ")
