@@ -56,7 +56,7 @@ def DNA_Creator_s(x,y, dna, version):
     (0,1,0,0),(0,1,0,0),
     (4,0,0,0),
     (0,0,1),
-    (0,0,1,1),
+    (0,0,1,1),(0,0,-1,-1),
     (0,0,2),
     ))
     selector.update(dna)
@@ -209,7 +209,7 @@ if __name__ == '__main__':
     settings.dropout_function = dropout_function
     # INITIAL DNA
 
-    settings.initial_dna = DNAs.DNA_base_test
+    settings.initial_dna = DNAs.DNA_base
 
     print('The initial DNA is:')
     print(settings.initial_dna)
