@@ -156,12 +156,13 @@ if __name__ == '__main__':
     MAX_FILTERS_DENSE = 256
 
     list_conditions={DNA_conditions.max_filter : 530,
-            DNA_conditions.max_filter_dense : 530,
+            DNA_conditions.max_filter_dense : 270,
             DNA_conditions.max_kernel_dense : 9,
-            DNA_conditions.max_layer : 200,
+            DNA_conditions.max_layer : 20,
             DNA_conditions.min_filter : 3,
-            DNA_conditions.max_pool_layer : 10,
-            DNA_conditions.max_parents : 2}
+            DNA_conditions.max_pool_layer : 4,
+            DNA_conditions.max_parents : 2,
+            DNA_conditions.no_con_last_layer = 1}
 
     # TEST_NAME, the name of the experiment (unique)
     settings.test_name = input("Enter TestName: ")
