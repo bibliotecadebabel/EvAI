@@ -59,3 +59,4 @@ class ExperimentSettings():
         self.ricap = None
         self.evalLoss = False
         self.transformations_compose = None
+        self.iteration_per_epoch = 1

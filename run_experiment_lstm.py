@@ -91,6 +91,7 @@ if __name__ == '__main__':
     e =  50000 / settings.batch_size
     e = math.ceil(e)
     print("e = ", e)
+    settings.iteration_per_epoch = e
 
     # DATA SOURCE ('default' -> Pikachu, 'cifar' -> CIFAR)
     DATA_SOURCE = 'cifar'
@@ -125,7 +126,7 @@ if __name__ == '__main__':
 
 
     # JOINED DT PARAMETERS
-    JOINED_ITER = 100 #1*e
+    JOINED_ITER = 200 #1*e
     #settings.joined_dt_array = Alaising(2,6,e)
     settings.joined_dt_array = Alaising(1.2,99,JOINED_ITER)
     settings.max_joined_iter = 1

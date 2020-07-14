@@ -10,7 +10,8 @@ CREATE TABLE IF NOT EXISTS "test_models" (
 	"current_time" TEXT NOT NULL,
 	"current_alai_time" TEXT NOT NULL,
 	"reset_dt_count" INTEGER NOT NULL,
-	"type" INTEGER NOT NULL
+	"type" INTEGER NOT NULL,
+	"direction" TEXT
 );
 DROP TABLE IF EXISTS "test_result";
 CREATE TABLE IF NOT EXISTS "test_result" (

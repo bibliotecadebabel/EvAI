@@ -62,10 +62,10 @@ class CommandExperimentCifar_Restarts():
         space = self.__space
         nodeCenter = self.__getNodeCenter(self.__space)
 
-        centerNetwork = None
+        #centerNetwork = None
 
         print("new space's center: =", self.__bestNetwork.adn)
-        centerNetwork = self.__bestNetwork
+        #centerNetwork = self.__bestNetwork
         
         for network in self.__networks:
             self.__memoryManager.deleteNetwork(network=network)
@@ -73,8 +73,9 @@ class CommandExperimentCifar_Restarts():
         self.__networks = []
         self.__nodes = []
 
-        self.__nodes.append(nodeCenter)
-        self.__networks.append(centerNetwork)
+        
+        #self.__nodes.append(nodeCenter)
+        #self.__networks.append(centerNetwork)
 
         for nodeKid in nodeCenter.kids:
             kidDNA = space.node2key(nodeKid)
@@ -150,8 +151,8 @@ class CommandExperimentCifar_Restarts():
 
                 print("---- EPOCH #", j)
 
-                for i  in range(1, len(self.__networks)):
-                    print("Training net #", i, " - direction: ", self.__actions[i-1])
+                for i  in range(len(self.__networks)):
+                    print("Training net #", i, " - direction: ", self.__actions[i])
                     self.__networks[i] = self.__trainNetwork(network=self.__networks[i], dt_array=self.__settings.joined_dt_array, max_iter=self.__settings.max_joined_iter)
 
                 self.__saveEnergy()
@@ -159,7 +160,8 @@ class CommandExperimentCifar_Restarts():
 
                 self.__bestNetwork = self.__getBestNetwork()
 
-                self.__saveModel(network=self.__bestNetwork, test_id=test_id, iteration=j)
+                current_iteration = j * len(self.__settings.joined_dt_array) * self.__settings.max_joined_iter
+                self.__saveModel(network=self.__bestNetwork, test_id=test_id, iteration=current_iteration)
 
                 self.__generateNewSpace()
                 self.__generateNetworks()
@@ -171,7 +173,7 @@ class CommandExperimentCifar_Restarts():
 
         highest_accuracy = -1
         bestNetwork = None
-        for network in self.__networks[1:]:
+        for network in self.__networks:
 
             #network.generateEnergy(self.__settings.dataGen)
             #print("network accuracy=", network.getAcurracy())
@@ -218,12 +220,14 @@ class CommandExperimentCifar_Restarts():
         fileName = str(test_id)+"_"+self.__settings.test_name+"_model_"+str(iteration)
         final_path = os.path.join("saved_models","cifar", fileName)
 
+        
         dna = str(network.adn)
         accuracy = network.getAcurracy()
-
+        node = self.__space.key2node(network.adn)
+        direction = str(node.objects[0].objects[0].direction)
         network.saveModel(final_path)
 
         self.__testModelDao.insert(idTest=test_id,dna=dna,iteration=iteration,fileName=fileName, model_weight=accuracy, 
-                                training_type=TrainingType.POST_TRAINING)
+                                training_type=TrainingType.MUTATION, current_alai_time=iteration, direction=direction)
 
         print("model saved with accuarcy= ", accuracy)
