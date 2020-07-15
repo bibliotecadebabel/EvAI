@@ -255,12 +255,6 @@ class centered_random_selector(Selector):
                 layer = direction[0]
                 mutation = direction[1]
 
-                if layer < 0:
-                    layer = 0
-                
-                if layer >= self.current_num_layer:
-                    layer = self.current_num_layer - 1
-
                 direction_accepted = self.verify_direction(layer=layer, mutation=mutation)
 
                 if direction_accepted == True:  
@@ -333,28 +327,29 @@ class centered_random_selector(Selector):
         try:
 
             value = False
-            
-            DNA=self.center_key
-            condition=self.condition
-            new_DNA=self.directions.get(mutation)(layer, DNA)
-            new_DNA=condition(new_DNA)
 
-            if  (not ( (layer, mutation) in self.predicted_actions) and new_DNA):
-                value = True
-            
-            if mutation == (1,0,0,0) or mutation == (4,0,0,0):
+            if layer >= 0 and layer < self.current_num_layer:
 
-                if (layer + 1) == self.current_num_layer:
-                    value = False
+                DNA=self.center_key
+                condition=self.condition
+                new_DNA=self.directions.get(mutation)(layer, DNA)
+                new_DNA=condition(new_DNA)
 
-            return value
+                if  (not ( (layer, mutation) in self.predicted_actions) and new_DNA):
+                    value = True
+                
+                if mutation == (1,0,0,0) or mutation == (4,0,0,0):
 
+                    if (layer + 1) == self.current_num_layer:
+                        value = False
         except:
             print("ERROR MUTATING DNA")
             print("layer: ", layer)
             print("mutation: ", mutation)
             print("last mutated layer: ", self.last_mutated_layer)
             raise
+        
+        return value
 
     def get_predicted_actions(self):
         #return tuple([(action[0],self.mutations[action[1]])
