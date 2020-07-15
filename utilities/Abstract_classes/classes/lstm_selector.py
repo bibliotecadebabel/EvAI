@@ -53,7 +53,7 @@ class centered_random_selector(Selector):
         self.center_key=None
         self.condition=condition
         
-        self.max_layers_condition = 10
+        self.max_layers_condition = 20
         self.max_layers_lstm = self.max_layers_condition*2 #positive and negative relative position
         self.max_observation_size = 3
         self.max_path_size = self.max_observation_size-1
