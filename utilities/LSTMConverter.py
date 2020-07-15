@@ -21,20 +21,20 @@ class LSTMConverter():
         self.mutation_to_index[(0,1,0,0)] = 1
         self.mutation_to_index[(4,0,0,0)] = 2
         self.mutation_to_index[(0,0,1)] = 3
-        self.mutation_to_index[(0,0,-1)] = 4
-        self.mutation_to_index[(0,0,2)] = 5
-        self.mutation_to_index[(0,0,1,1)] = 6
-        self.mutation_to_index[(0,0,-1,-1)] = 7
+        #self.mutation_to_index[(0,0,-1)] = 4
+        self.mutation_to_index[(0,0,2)] = 4
+        self.mutation_to_index[(0,0,1,1)] = 5
+        self.mutation_to_index[(0,0,-1,-1)] = 6
         
         self.index_to_mutation[const_values.EMPTY_INDEX_LAYER] = const_values.EMPTY_MUTATION
         self.index_to_mutation[0] = (1,0,0,0)
         self.index_to_mutation[1] = (0,1,0,0)
         self.index_to_mutation[2] = (4,0,0,0)
         self.index_to_mutation[3] = (0,0,1)
-        self.index_to_mutation[4] = (0,0,-1)
-        self.index_to_mutation[5] = (0,0,2)
-        self.index_to_mutation[6] = (0,0,1,1)
-        self.index_to_mutation[7] = (0,0,-1,-1)
+        #self.index_to_mutation[4] = (0,0,-1)
+        self.index_to_mutation[4] = (0,0,2)
+        self.index_to_mutation[5] = (0,0,1,1)
+        self.index_to_mutation[6] = (0,0,-1,-1)
 
     def directionToTensor(self, direction):
 
