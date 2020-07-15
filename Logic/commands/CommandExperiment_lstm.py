@@ -152,7 +152,7 @@ class CommandExperimentCifar_Restarts():
                 print("---- EPOCH #", j)
 
                 for i  in range(len(self.__networks)):
-                    print("Training net #", i, " - direction: ", self.__actions[i])
+                    print("Training net #", i, " - direction: ", self.__getDirection(network=self.__networks[i]) ) 
                     self.__networks[i] = self.__trainNetwork(network=self.__networks[i], dt_array=self.__settings.joined_dt_array, max_iter=self.__settings.max_joined_iter)
 
                 self.__saveEnergy()
@@ -168,6 +168,13 @@ class CommandExperimentCifar_Restarts():
 
                 torch.cuda.empty_cache()
 
+    def __getDirection(self, network):
+
+        node = self.__space.key2node(network.adn)
+
+        direction = node.objects[0].objects[0].direction
+
+        return direction
 
     def __getBestNetwork(self):
 

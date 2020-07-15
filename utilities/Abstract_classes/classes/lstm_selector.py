@@ -255,6 +255,12 @@ class centered_random_selector(Selector):
                 layer = direction[0]
                 mutation = direction[1]
 
+                if layer < 0:
+                    layer = 0
+                
+                if layer >= self.current_num_layer:
+                    layer = self.current_num_layer - 1
+
                 direction_accepted = self.verify_direction(layer=layer, mutation=mutation)
 
                 if direction_accepted == True:  
@@ -316,7 +322,7 @@ class centered_random_selector(Selector):
                 selected_index = i
                 break
         
-
+        
         direction_accepted = self.verify_direction(layer=selected_index, mutation=self.mutations[mutation])
 
         if direction_accepted == True:
@@ -324,22 +330,31 @@ class centered_random_selector(Selector):
 
     def verify_direction(self, layer, mutation):
 
-        value = False
-        
-        DNA=self.center_key
-        condition=self.condition
-        new_DNA=self.directions.get(mutation)(layer, DNA)
-        new_DNA=condition(new_DNA)
+        try:
 
-        if  (not ( (layer, mutation) in self.predicted_actions) and new_DNA):
-            value = True
-        
-        if mutation == (1,0,0,0) or mutation == (4,0,0,0):
+            value = False
+            
+            DNA=self.center_key
+            condition=self.condition
+            new_DNA=self.directions.get(mutation)(layer, DNA)
+            new_DNA=condition(new_DNA)
 
-            if (layer + 1) == self.current_num_layer:
-                value = False
-        
-        return value
+            if  (not ( (layer, mutation) in self.predicted_actions) and new_DNA):
+                value = True
+            
+            if mutation == (1,0,0,0) or mutation == (4,0,0,0):
+
+                if (layer + 1) == self.current_num_layer:
+                    value = False
+
+            return value
+
+        except:
+            print("ERROR MUTATING DNA")
+            print("layer: ", layer)
+            print("mutation: ", mutation)
+            print("last mutated layer: ", self.last_mutated_layer)
+            raise
 
     def get_predicted_actions(self):
         #return tuple([(action[0],self.mutations[action[1]])
