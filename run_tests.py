@@ -1,3 +1,3 @@
-import tests_scripts.test_mutation_lstm as test
+import tests_scripts.testNetworkPytorch as test
 
-test.test()
+test.Test_Mutacion()

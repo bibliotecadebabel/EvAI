@@ -69,7 +69,7 @@ class NetworkLSTM(nn.Module):
             self.setAttribute(attr_4, internal.convOt)
     
     def Train(self, dataElement, observations):
-    
+        
         self.updateGradFlag(True)
         self(dataElement)
         self.__generateEnergy(observations)

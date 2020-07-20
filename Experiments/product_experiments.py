@@ -76,7 +76,7 @@ def run_cifar_user_input_bidi():
     settings = ExperimentSettings.ExperimentSettings()
 
 
-    settings.version = directions_version.CONVEX_VERSION
+    settings.version = directions_version.POOL_VERSION
     settings.dropout_function = dropout_function
     settings.eps_batchorm = 0.001
     settings.momentum = 0.9
@@ -143,19 +143,19 @@ def run_cifar_user_input_bidi():
     from utilities.Abstract_classes.classes.uniform_random_selector_2 import (
         centered_random_selector as Selector)
     status.mutations=(
-    (1,0,0,0),(1,0,0,0),
-    (0,1,0,0),(0,1,0,0),
-    (4,0,0,0),
-    (0,0,1),(0,0,-1),
+    #(1,0,0,0),(1,0,0,0),
+    (0,1,0,0),(0,-1,0,0),
+    #(4,0,0,0),
+    #(0,0,1),(0,0,-1),
     (0,0,1,1),(0,0,-1,-1),
-    (0,0,2)
+    #(0,0,2)
     )
     status.num_actions=int(input("num_actions : "))
 
     status.Selector_creator=Selector
     status.log_size=int(input("Log size : "))
     status.min_log_size=100
-    status.version='convex'
+    status.version=settings.version
     status.cuda=bool(input("Any input for cuda : "))
 
     settings.evalLoss = bool(input("Any input to activate EvalLoss : "))
@@ -186,7 +186,7 @@ def run_cifar_user_input_bidi():
     x=32
     y=32
 
-    status.Center = DNAs.DNA_base
+    status.Center = DNAs.DNA_base_p_version
     status.settings=settings
     program.run(status)
 

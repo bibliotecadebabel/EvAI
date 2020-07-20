@@ -1,11 +1,11 @@
 import utilities.Quadrants as qu
 import utilities.Node as nd
 import utilities.Graphs as gr
-import TangentPlane as tplane
-import DNA_directions_pool as dire
-from DNA_conditions import max_layer,max_filter,max_filter_dense
-from test_DNAs import DNA_ep20, DNA_h, DNA_ep6
-import test_DNAs as DNAs
+import Geometric.TangentPlane as tplane
+import Geometric.Directions.DNA_directions_pool as dire
+from Geometric.Conditions.DNA_conditions import max_layer,max_filter,max_filter_dense
+from tests_scripts.test_DNAs import DNA_ep20, DNA_h, DNA_ep6
+import tests_scripts.test_DNAs as DNAs
 
 
 
@@ -136,13 +136,13 @@ def remove_layer_test(x,y):
         print(DNA)
 
 def add_layer_test(x,y):
-    DNA=DNAs.DNA_ep9
+    DNA=DNAs.DNA_base_test
     g=dire.DNA2graph(DNA)
     print('The old DNA is')
     print(DNA)
     #while DNA:
     print('The new DNA is')
-    DNA=dire.add_layer(4,DNA)
+    DNA=dire.add_layer(1,DNA)
     print(DNA)
     print(condition(DNA))
     #g=dire.DNA2graph(DNA)

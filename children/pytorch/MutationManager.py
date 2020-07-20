@@ -32,7 +32,7 @@ class MutationManager():
             self.__mutation_function = mutation_convex
 
         else:
-            self.__mutation_function = mutation_dendrites
+            self.__mutation_function = mutation_pool
 
     def getMuation(self):
         

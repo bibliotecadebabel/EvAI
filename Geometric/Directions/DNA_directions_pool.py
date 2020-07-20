@@ -222,7 +222,7 @@ def increase_filters(num_layer,source_DNA):
         node_t=g.key2node.get(num_layer)
         layer=node_t.objects[0]
         if layer[0]==0:
-            increase_amount = node_t.objects[0][2]
+            increase_amount = 1#node_t.objects[0][2]
             node_t.objects[0]=layer_filter(node_t.objects[0],
                 increase_amount)
             for kid in node_t.kids:
@@ -247,7 +247,7 @@ def decrease_filters(num_layer,source_DNA):
             if node_t.objects[0][2]<3:
                 return None
             else:
-                decrease_amount = node_t.objects[0][2] // 2
+                decrease_amount = 1#node_t.objects[0][2] // 2
                 node_t.objects[0]=layer_filter(node_t.objects[0],
                     -decrease_amount)
                 for kid in node_t.kids:
