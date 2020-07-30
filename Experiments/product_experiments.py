@@ -33,15 +33,15 @@ import utilities.Augmentation as Augmentation_Utils
 import const.versions as directions_version
 import tests_scripts.test_DNAs as DNAs
 
-def run_cifar_user_input_bidi():
+def run_cifar_user_input_bidi(test_name,mutations_actions, const_direction_version):
     
     import Geometric.Products.Product_f_cifar_save_2 as program
     #import Product_f_cifar_save_nm as program
 
-    save=bool(input('Insert any input to save'))
+    save=True#bool(input('Insert any input to save'))
     status=program.Status()
 
-    status.max_layer_conv2d = int(input("Enter max conv2d layers: "))
+    status.max_layer_conv2d = 22
     status.max_filter = 530
     status.max_filter_dense = 270
     status.max_kernel_dense = 9
@@ -76,11 +76,11 @@ def run_cifar_user_input_bidi():
     settings = ExperimentSettings.ExperimentSettings()
 
 
-    settings.version = directions_version.POOL_VERSION
+    settings.version = const_direction_version#directions_version.POOL_VERSION
     settings.dropout_function = dropout_function
     settings.eps_batchorm = 0.001
     settings.momentum = 0.9
-    custom=bool(input('No input for defaults :'))
+    custom=False#bool(input('No input for defaults :'))
     if custom == True :
         ENABLE_ACTIVATIO = int(input("Enable last layer activation? (1 = yes, 0 = no): "))
         ENABLE_LAST_ACTIVATION = int(input("Enable last layer activation? (1 = yes, 0 = no): "))
@@ -128,7 +128,7 @@ def run_cifar_user_input_bidi():
         value = False
     settings.enable_track_stats = value
 
-    status.S=int(input("Batch size : "))
+    status.S=64
     e =  50000 / status.S
     status.iterations_per_epoch = math.ceil(e)
 
@@ -142,23 +142,16 @@ def run_cifar_user_input_bidi():
     #status.max_filter=51
     from utilities.Abstract_classes.classes.uniform_random_selector_2 import (
         centered_random_selector as Selector)
-    status.mutations=(
-    #(1,0,0,0),(1,0,0,0),
-    (0,1,0,0),(0,-1,0,0),
-    #(4,0,0,0),
-    #(0,0,1),(0,0,-1),
-    (0,0,1,1),(0,0,-1,-1),
-    #(0,0,2)
-    )
-    status.num_actions=int(input("num_actions : "))
+    status.mutations=mutations_actions
+    status.num_actions=8#int(input("num_actions : "))
 
     status.Selector_creator=Selector
-    status.log_size=int(input("Log size : "))
+    status.log_size=200#int(input("Log size : "))
     status.min_log_size=100
     status.version=settings.version
-    status.cuda=bool(input("Any input for cuda : "))
+    status.cuda=True#bool(input("Any input for cuda : "))
 
-    settings.evalLoss = bool(input("Any input to activate EvalLoss : "))
+    settings.evalLoss = True#bool(input("Any input to activate EvalLoss : "))
     '''
     augSettings = AugmentationSettings.AugmentationSettings()
     dict_transformations = {
@@ -177,11 +170,11 @@ def run_cifar_user_input_bidi():
 
 
 
-    status.mutation_coefficient=float(input("mutation_coefficient : "))
+    status.mutation_coefficient=1#float(input("mutation_coefficient : "))
     if save:
-        status.experiment_name=input("insert experiment name : ")
-        status.save_space_period=int(input("save_space_period : "))
-        status.save_net_period=int(input("save_space_net_period : "))
+        status.experiment_name=test_name#input("insert experiment name : ")
+        status.save_space_period=200#int(input("save_space_period : "))
+        status.save_net_period=600#int(input("save_space_net_period : "))
     status.save2database=save
     x=32
     y=32

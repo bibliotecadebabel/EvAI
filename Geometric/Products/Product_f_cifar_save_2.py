@@ -254,7 +254,7 @@ def countLayers(center):
     return count
 
 def run(status):
-    loaded_network = bool(input("any input to run loaded network"))
+    loaded_network = False#bool(input("any input to run loaded network"))
     print("Loaded network: ", loaded_network)
     status.Transfer=tran.TransferRemote(status,
         'remote2local.txt','local2remote.txt')

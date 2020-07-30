@@ -38,6 +38,9 @@ class centered_random_selector(Selector):
         elif directions=='pool':
             from Geometric.Directions.DNA_directions_pool import directions as directions
             self.directions=directions
+        elif directions=='pool_duplicate':
+            from Geometric.Directions.DNA_directions_pool_duplicate import directions as directions
+            self.directions=directions
         elif directions=='h':
             from Geometric.Directions.DNA_directions_h import directions as directions
             self.directions=directions

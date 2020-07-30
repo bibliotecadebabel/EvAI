@@ -51,14 +51,8 @@ def DNA_Creator_s(x,y, dna, version):
     selector = None
     selector=random_selector(condition=condition,
         directions=version, num_actions=num_actions,
-        mutations=(
-    (1,0,0,0),(1,0,0,0),
-    (0,1,0,0),(0,1,0,0),
-    (4,0,0,0),
-    (0,0,1),
-    (0,0,1,1),(0,0,-1,-1),
-    (0,0,2),
-    ))
+        mutations=((0,1,0,0),(0,-1,0,0),(0,0,1,1),(0,0,-1,-1)) 
+    )
     selector.update(dna)
     actions=selector.get_predicted_actions()
     #actions = ((0, (0,1,0,0)), (1, (0,1,0,0)), (0, (1,0,0,0)))
@@ -81,12 +75,12 @@ if __name__ == '__main__':
 
     transform_compose = augSettings.generateTransformCompose(dict_transformations, False)
     # DIRECTIONS VERSION
-    settings.version = 'convex'
+    settings.version = directions_version.POOL_VERSION
     # NUM OF THREADS
     THREADS = int(input("Enter threads: "))
 
     # BATCH SIZE
-    settings.batch_size = int(input("Enter batchsize: "))
+    settings.batch_size = 64
 
     e =  50000 / settings.batch_size
     e = math.ceil(e)
@@ -109,7 +103,7 @@ if __name__ == '__main__':
     settings.period_save_model = 1
 
     # EPOCHS
-    settings.epochs = int(input("Enter amount of epochs: "))
+    settings.epochs = 2000
 
     settings.eps_batchorm = 0.001
 
@@ -165,10 +159,10 @@ if __name__ == '__main__':
             DNA_conditions.no_con_last_layer : 1}
 
     # TEST_NAME, the name of the experiment (unique)
-    settings.test_name = input("Enter TestName: ")
+    settings.test_name = "test_lstm_1"
 
     # ENABLE_ACTIVATION, enable/disable relu
-    ENABLE_ACTIVATION = int(input("Enable activation? (1 = yes, 0 = no): "))
+    ENABLE_ACTIVATION = 1
 
     value = False
     if ENABLE_ACTIVATION == 1:
@@ -176,7 +170,7 @@ if __name__ == '__main__':
     settings.enable_activation = value
 
     # ENABLE_LAST_ACTIVATION, enable/disable last layer relu
-    ENABLE_LAST_ACTIVATION = int(input("Enable last layer activation? (1 = yes, 0 = no): "))
+    ENABLE_LAST_ACTIVATION = 1
 
     value = False
     if ENABLE_LAST_ACTIVATION == 1:
@@ -184,7 +178,7 @@ if __name__ == '__main__':
     settings.enable_last_activation = value
 
     # ENABLE_AUGMENTATION, enable/disable data augmentation
-    ENABLE_AUGMENTATION = int(input("Enable Data augmentation? (1 = yes, 0 = no): "))
+    ENABLE_AUGMENTATION = 1
 
     value = False
     if ENABLE_AUGMENTATION == 1:
@@ -192,14 +186,14 @@ if __name__ == '__main__':
     ENABLE_AUGMENTATION = value
 
     # ALLOW INTERRUPTS
-    ALLOW_INTERRUPTS = int(input("Allow Interrupt while training? (1 = yes, 0 = no): "))
+    ALLOW_INTERRUPTS = 0
     value = False
     if ALLOW_INTERRUPTS == 1:
         value = True
     settings.allow_interupts = value
 
     # ALLOW TRACK BATCHNORM
-    ENABLE_TRACK = int(input("Enable tracking var/mean batchnorm? (1 = yes, 0 = no): "))
+    ENABLE_TRACK = 1
     value = False
     if ENABLE_TRACK == 1:
         value = True
@@ -210,7 +204,7 @@ if __name__ == '__main__':
     settings.dropout_function = dropout_function
     # INITIAL DNA
 
-    settings.initial_dna = DNAs.DNA_base
+    settings.initial_dna = DNAs.DNA_base_p_version
 
     print('The initial DNA is:')
     print(settings.initial_dna)

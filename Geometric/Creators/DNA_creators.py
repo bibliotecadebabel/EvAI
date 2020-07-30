@@ -105,6 +105,9 @@ class Creator_from_selection_nm():
         elif type_add_layer=='pool':
             from Geometric.Directions.DNA_directions_pool import directions,directions_labels
             self.directions_labels=directions_labels
+        elif type_add_layer=='pool_duplicate':
+            from Geometric.Directions.DNA_directions_pool_duplicate import directions,directions_labels
+            self.directions_labels=directions_labels
         elif type_add_layer=='h':
             from Geometric.Directions.DNA_directions_h import directions,directions_labels
             self.directions_labels=directions_labels
@@ -216,6 +219,9 @@ class Creator_from_selection():
             self.directions_labels=directions_labels
         elif type_add_layer=='pool':
             from Geometric.Directions.DNA_directions_pool import directions,directions_labels
+            self.directions_labels=directions_labels
+        elif type_add_layer=='pool_duplicate':
+            from Geometric.Directions.DNA_directions_pool_duplicate import directions,directions_labels
             self.directions_labels=directions_labels
         elif type_add_layer=='h':
             from Geometric.Directions.DNA_directions_h import directions,directions_labels

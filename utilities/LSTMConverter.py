@@ -5,18 +5,35 @@ import torch
 
 class LSTMConverter():
 
-    def __init__(self, cuda, max_layers, limit_directions=3):
+    def __init__(self, cuda, max_layers, mutation_list, limit_directions=3):
         self.cuda = cuda
+        self.__mutation_list = mutation_list
         self.__createDictionary()
+        print("mutation to index: ", self.mutation_to_index)
+        print("index to mutation: ", self.index_to_mutation)
+
         self.mutations = len(self.mutation_to_index) - 1
         self.max_layers = max_layers
         self.limit_directions = limit_directions
 
     def __createDictionary(self):
+
+        index_mutation = 0
         self.mutation_to_index = {}
         self.index_to_mutation = {}
 
         self.mutation_to_index[const_values.EMPTY_MUTATION] = const_values.EMPTY_INDEX_LAYER
+        self.index_to_mutation[const_values.EMPTY_INDEX_LAYER] = const_values.EMPTY_MUTATION
+
+        for mutation in self.__mutation_list:
+
+            if mutation not in self.mutation_to_index:
+
+                self.mutation_to_index[mutation] = index_mutation
+                self.index_to_mutation[index_mutation] = mutation
+                index_mutation += 1
+
+        '''
         self.mutation_to_index[(1,0,0,0)] = 0
         self.mutation_to_index[(0,1,0,0)] = 1
         self.mutation_to_index[(4,0,0,0)] = 2
@@ -35,6 +52,7 @@ class LSTMConverter():
         self.index_to_mutation[4] = (0,0,2)
         self.index_to_mutation[5] = (0,0,1,1)
         self.index_to_mutation[6] = (0,0,-1,-1)
+        '''
 
     def directionToTensor(self, direction):
 

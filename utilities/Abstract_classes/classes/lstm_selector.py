@@ -41,6 +41,9 @@ class centered_random_selector(Selector):
         elif directions=='pool':
             from Geometric.Directions.DNA_directions_pool import directions as directions
             self.directions=directions
+        elif directions=='pool_duplicate':
+            from Geometric.Directions.DNA_directions_pool_duplicate import directions as directions
+            self.directions=directions
         elif directions=='h':
             from Geometric.Directions.DNA_directions_h import directions as directions
             self.directions=directions
@@ -58,7 +61,7 @@ class centered_random_selector(Selector):
         self.max_observation_size = 3
         self.max_path_size = self.max_observation_size-1
 
-        self.converter = LSTMConverter.LSTMConverter(cuda=True, max_layers=self.max_layers_lstm, 
+        self.converter = LSTMConverter.LSTMConverter(cuda=True, max_layers=self.max_layers_lstm, mutation_list=self.mutations,
                                                         limit_directions=self.max_observation_size)
 
         self.net = net_lstm.NetworkLSTM(observation_size=self.max_observation_size, 
