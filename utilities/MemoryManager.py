@@ -45,7 +45,7 @@ class MemoryManager():
         network_loaded = None
         
         if file_name == None:
-            print("No network saved with adn: ", adn)
+            print("No network saved with dna: ", adn)
         else:
             path = os.path.join(self.__basepath, file_name)
             network_loaded = NetworkStorage.loadNetwork(fileName=file_name, settings=settings, path=path)
