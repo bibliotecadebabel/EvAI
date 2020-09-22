@@ -6,9 +6,9 @@ class MutateBatchNormalization():
 
     def doMutate(self, oldBatchNorm, newLayer):
 
-        if oldBatchNorm is not None and newLayer.getBatchNorm() is not None:
+        if oldBatchNorm is not None and newLayer.get_batch_norm() is not None:
 
-            new_batchNorm = newLayer.getBatchNorm()
+            new_batchNorm = newLayer.get_batch_norm()
 
             shape_oldBatch = oldBatchNorm.weight.shape[0]
             shape_newBatch = new_batchNorm.weight.shape[0]
@@ -36,7 +36,7 @@ class MutateBatchNormalization():
             if oldBatchNorm.num_batches_tracked is not None:
                 new_batchNorm.num_batches_tracked = oldBatchNorm.num_batches_tracked.clone()
             
-            newLayer.setBarchNorm(new_batchNorm)
+            newLayer.set_batch_norm(new_batchNorm)
 
             del new_batchNorm
 

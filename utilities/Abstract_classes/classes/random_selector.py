@@ -45,7 +45,7 @@ class random_selector(Selector):
     def space2action(self,space):
         return None
 
-    def forget_weight(self,observation):
+    def forget_filters(self,observation):
         pass
 
     def train(self):

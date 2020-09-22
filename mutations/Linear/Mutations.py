@@ -34,8 +34,8 @@ class AlterExitFilterMutation(Mutation):
             oldFilter[shape[0]] = oldFilter[shape[0]-1].clone()
             oldBias[shape[0]] = oldBias[shape[0]-1].clone()
 
-            newNode.setFilter(oldFilter)
-            newNode.setBias(oldBias) 
+            newNode.set_filters(oldFilter)
+            newNode.set_bias(oldBias) 
 
             del resized
         
@@ -46,8 +46,8 @@ class AlterExitFilterMutation(Mutation):
             oldFilter.resize_(shape[0]-1, shape[1])
             oldBias.resize_(shape[0]-1)
 
-            newNode.setFilter(oldFilter)
-            newNode.setBias(oldBias)
+            newNode.set_filters(oldFilter)
+            newNode.set_bias(oldBias)
 
 class AlterEntryFilterMutation(Mutation):
 
@@ -81,8 +81,8 @@ class AlterEntryFilterMutation(Mutation):
             for i in range(oldFilter.shape[0]):
                 oldFilter[i][oldFilter.shape[1]-1] = oldFilter[i][oldFilter.shape[1]-2].clone()
             '''
-            newNode.setFilter(oldFilter)
-            newNode.setBias(oldBias)
+            newNode.set_filters(oldFilter)
+            newNode.set_bias(oldBias)
 
             del resized
         
@@ -102,6 +102,6 @@ class AlterEntryFilterMutation(Mutation):
             
             del oldFilter
 
-            newNode.setFilter(resized)
-            newNode.setBias(oldBias)
+            newNode.set_filters(resized)
+            newNode.set_bias(oldBias)
         

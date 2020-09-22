@@ -91,14 +91,14 @@ def __defaultMutationProcess(oldNetwork, network, lenghtAdn):
         oldLayer = oldNetwork.nodes[i].objects[0]
         newLayer = network.nodes[i].objects[0]
 
-        if oldLayer.getFilter() is not None:
+        if oldLayer.get_filters() is not None:
 
             adjustFilterMutation = __getAdjustFilterMutation(indexLayer=i, source_dendrites=source_dendrites,
-                                                                network=oldNetwork, adjustLayer=oldLayer, newFilter=newLayer.getFilter(),
+                                                                network=oldNetwork, adjustLayer=oldLayer, newFilter=newLayer.get_filters(),
                                                                 mutationType=mutation_type, newNetwork=network)
 
-            oldFilter = oldLayer.getFilter()
-            oldBias = oldLayer.getBias()
+            oldFilter = oldLayer.get_filters()
+            oldBias = oldLayer.get_bias()
 
             if adjustFilterMutation is not None:
 
@@ -109,7 +109,7 @@ def __defaultMutationProcess(oldNetwork, network, lenghtAdn):
             if oldLayer.tensor_h is not None:
                 h_value = oldLayer.tensor_h.data.clone()
 
-            __doMutate(oldFilter=oldFilter, oldBias=oldBias, oldBatchnorm=oldLayer.getBatchNorm(),
+            __doMutate(oldFilter=oldFilter, oldBias=oldBias, oldBatchnorm=oldLayer.get_batch_norm(),
                         newLayer=newLayer, flagCuda=network.cudaFlag, layerType=oldLayer.adn[0], oldH=h_value)
 
         if network.cudaFlag == True:
@@ -142,8 +142,8 @@ def __addLayerMutationProcess(oldNetwork, network, lenghtOldAdn, indexAdded, mut
         if oldLayer.tensor_h is not None:
             h_value = oldLayer.tensor_h.data.clone()
 
-        if oldLayer.getFilter() is not None:
-            __doMutate(oldFilter=oldLayer.getFilter(), oldBias=oldLayer.getBias(), oldBatchnorm=oldLayer.getBatchNorm(),
+        if oldLayer.get_filters() is not None:
+            __doMutate(oldFilter=oldLayer.get_filters(), oldBias=oldLayer.get_bias(), oldBatchnorm=oldLayer.get_batch_norm(),
                         newLayer=newLayer, flagCuda=network.cudaFlag, layerType=oldLayer.adn[0], oldH=h_value)
 
         if network.cudaFlag == True:
@@ -169,14 +169,14 @@ def __removeLayerMutationProcess(oldNetwork, network, lengthNewAdn, indexRemoved
         oldLayer = oldNetwork.nodes[indexOldLayer].objects[0]
         newLayer = network.nodes[indexNewLayer].objects[0]
 
-        if oldLayer.getFilter() is not None:
+        if oldLayer.get_filters() is not None:
 
             adjustFilterMutation = __getAdjustFilterMutation(indexLayer=indexOldLayer, source_dendrites=source_dendrites,
                                                                 network=oldNetwork, adjustLayer=oldLayer, 
-                                                                newFilter=newLayer.getFilter())
+                                                                newFilter=newLayer.get_filters())
 
-            oldFilter = oldLayer.getFilter()
-            oldBias = oldLayer.getBias()
+            oldFilter = oldLayer.get_filters()
+            oldBias = oldLayer.get_bias()
 
             if adjustFilterMutation is not None:
 
@@ -187,7 +187,7 @@ def __removeLayerMutationProcess(oldNetwork, network, lengthNewAdn, indexRemoved
             if oldLayer.tensor_h is not None:
                 h_value = oldLayer.tensor_h.data.clone()
 
-            __doMutate(oldFilter=oldFilter, oldBias=oldBias, oldBatchnorm=oldLayer.getBatchNorm(),
+            __doMutate(oldFilter=oldFilter, oldBias=oldBias, oldBatchnorm=oldLayer.get_batch_norm(),
                         newLayer=newLayer, flagCuda=network.cudaFlag, layerType=oldLayer.adn[0], oldH=h_value)
 
         if network.cudaFlag == True:
@@ -201,7 +201,7 @@ def __doMutate(oldFilter, oldBias, oldBatchnorm, layerType,  newLayer, flagCuda,
     dictionaryMutation = MutationsDictionary()
 
     mutation_list = dictionaryMutation.getMutationList(layerType=layerType,
-        oldFilter=oldFilter, newFilter=newLayer.getFilter())
+        oldFilter=oldFilter, newFilter=newLayer.get_filters())
 
     if mutation_list is not None:
 
@@ -209,16 +209,16 @@ def __doMutate(oldFilter, oldBias, oldBatchnorm, layerType,  newLayer, flagCuda,
         for mutation in mutation_list:
 
             mutation.doMutate(oldFilter, oldBias, newLayer, cuda=flagCuda)
-            oldFilter = newLayer.getFilter()
-            oldBias = newLayer.getBias()
+            oldFilter = newLayer.get_filters()
+            oldBias = newLayer.get_bias()
 
         norm_mutation = batchMutate.MutateBatchNormalization()
         norm_mutation.doMutate(oldBatchNorm=oldBatchnorm, newLayer=newLayer)
 
     else:
-        newLayer.setFilter(oldFilter)
-        newLayer.setBias(oldBias)
-        newLayer.setBarchNorm(oldBatchnorm)
+        newLayer.set_filters(oldFilter)
+        newLayer.set_bias(oldBias)
+        newLayer.set_batch_norm(oldBatchnorm)
     
     if newLayer.tensor_h is not None:
         newLayer.tensor_h.data = oldH

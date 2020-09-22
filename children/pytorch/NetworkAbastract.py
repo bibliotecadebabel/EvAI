@@ -20,10 +20,6 @@ class NetworkAbstract(ABC):
         self.dropout_value = dropout_value
         self.enable_last_activation = enable_last_activation
 
-    #@abstractmethod
-    #def train(self):
-    #    pass
-
     def setAttribute(self, name, value):
         setattr(self,name,value)
 
@@ -49,34 +45,25 @@ class NetworkAbstract(ABC):
 
             layer = node.objects[0]
 
-            if layer.getBias() is not None:
-                layer.getBias().requires_grad = flag
+            if layer.get_bias() is not None:
+                layer.get_bias().requires_grad = flag
 
-            if layer.getBiasDer() is not None:
-                layer.getBiasDer().requires_grad = flag
+            if layer.get_bias_grad() is not None:
+                layer.get_bias_grad().requires_grad = flag
 
-            if layer.getFilter() is not None:
-                layer.getFilter().requires_grad = flag
+            if layer.get_filters() is not None:
+                layer.get_filters().requires_grad = flag
 
-            if layer.getFilterDer() is not None:
-                layer.getFilterDer().requires_grad = flag
+            if layer.get_filters_grad() is not None:
+                layer.get_filters_grad().requires_grad = flag
             
             if layer.tensor_h is not None:
                 layer.tensor_h.requires_grad = flag
                 
     
-    def assignLabels(self, label):
+    def assignLabels(self, labels):
 
-        for node in self.nodes:
-            node.objects[0].label = label
-
-    def getAverageLoss_test(self, iterations):
-
-        average = self.__accumulated_loss / iterations
-
-        self.__accumulated_loss = 0
-
-        return average
+        self.nodes[len(self.nodes)-1].objects[0].set_labels(labels)
     
     def getAverageLoss(self, iterations):
 

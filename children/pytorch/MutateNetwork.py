@@ -48,7 +48,7 @@ def __defaultMutationProcess(oldNetwork, network, lenghtAdn):
         oldLayer = oldNetwork.nodes[i].objects[0]
         newLayer = network.nodes[i].objects[0]
 
-        if oldLayer.getFilter() is not None:
+        if oldLayer.get_filters() is not None:
             __doMutate(oldLayer, newLayer, network.cudaFlag)
         
         if network.cudaFlag == True:
@@ -66,7 +66,7 @@ def __addLayerMutationProcess(oldNetwork, network, lenghtOldAdn):
         oldLayer = oldNetwork.nodes[i].objects[0]
         newLayer = network.nodes[i+1].objects[0]
 
-        if oldLayer.getFilter() is not None:
+        if oldLayer.get_filters() is not None:
             __doMutate(oldLayer, newLayer, network.cudaFlag)
         
         if network.cudaFlag == True:
@@ -79,7 +79,7 @@ def __removeLayerMutationProcess(oldNetwork, network, lenghtNewAdn):
         oldLayer = oldNetwork.nodes[i+1].objects[0]
         newLayer = network.nodes[i].objects[0]
 
-        if oldLayer.getFilter() is not None:
+        if oldLayer.get_filters() is not None:
             __doMutate(oldLayer, newLayer, network.cudaFlag)
         
         if network.cudaFlag == True:
@@ -91,14 +91,14 @@ def __doMutate(oldLayer, newLayer, flagCuda):
 
     mutation = dictionaryMutation.getMutation(oldLayer.adn, newLayer.adn)
     
-    oldBias = oldLayer.getBias().clone()
-    oldFilter = oldLayer.getFilter().clone()
+    oldBias = oldLayer.get_bias().clone()
+    oldFilter = oldLayer.get_filters().clone()
 
     if mutation is not None:
         mutation.doMutate(oldFilter, oldBias, newLayer, cuda=flagCuda)
     else:
-        newLayer.setFilter(oldFilter)
-        newLayer.setBias(oldBias)
+        newLayer.set_filters(oldFilter)
+        newLayer.set_bias(oldBias)
 
 def __initNewConvolution(newConvolution):
     factor_n = 0.25

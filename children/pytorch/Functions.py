@@ -41,88 +41,27 @@ def Nothing(layer):
 def conv2d_propagate(layer):
     print("ERROR NO PROPAGATE")
     pass
-    '''
-    parent = layer.node.parents[0].objects[0]
-    
-    if layer.dropout_value > 0:
-        dropout = torch.nn.Dropout2d(p=layer.dropout_value)
-        output_dropout = dropout(parent.value)
-        value = layer.object(output_dropout)
-    else:
-        value = layer.object(parent.value)
 
-
-    #value = layer.doNormalize(value)
-    
-    layer.value = value
-    
-    if layer.enable_activation == True:
-        
-        sigmoid = torch.nn.Sigmoid()
-        layer.value = sigmoid(value) + torch.nn.functional.relu(value)
-    '''
 def conv2d_propagate_images(layer): ## MUTATION: ADDING IMAGE TO INPUT IN EVERY CONVOLUTION LAYER
     print("ERROR NO PROPAGATE")
     pass
-    '''
-    parent = layer.node.parents[0].objects[0]
-
-    if parent.adn is None:
-        layer.image = parent.value
-    else:
-        layer.image = parent.image
-
-    kid = layer.node.kids[0].objects[0]  
-
-    if layer.dropout_value > 0:
-        dropout = torch.nn.Dropout2d(p=layer.dropout_value)
-        output_dropout = dropout(parent.value)
-        value = layer.object(output_dropout)
-    else:
-        value = layer.object(parent.value)
     
-    #value = layer.doNormalize(value)
-
-    layer.value = value
-    
-    if layer.enable_activation == True:
-        
-        sigmoid = torch.nn.Sigmoid()
-        layer.value = sigmoid(value) + torch.nn.functional.relu(value)
-
-    if kid.adn is not None and kid.adn[0] == 0: #Check if is conv2d
-
-        inputShape = layer.image.shape
-        outputShape = layer.value.shape
-        
-        diff_kernel = abs(inputShape[2] - outputShape[2])
-        
-        if inputShape[2] >= outputShape[2]:
-            
-            with torch.no_grad():
-                newValue = layer.value.data.clone()
-                newValue = torch.nn.functional.pad(newValue,(0, diff_kernel, 0, diff_kernel),"constant", 0)
-
-                layer.value = torch.cat((layer.image, newValue), dim=1)
-        else:
-            print("OUTPUT LARGER THAN INPUTS")
-    '''
 def conv2d_propagate_multipleInputs(layer): ## MUTATION: Multiple inputs per convolutional layer
     
     #parent = layer.node.parents[0].objects[0]
 
     current_input = __getInput(layer)
 
-    if layer.getPool() is not None:
-        current_input = layer.doPool(current_input)
+    if layer.get_pool() is not None:
+        current_input = layer.apply_pooling(current_input)
 
     if layer.dropout_value > 0:
-        output_dropout = layer.doDropout(current_input)
+        output_dropout = layer.apply_dropout(current_input)
         value = layer.object(output_dropout)
     else:
         value = layer.object(current_input)
 
-    value = layer.doNormalize(value)
+    value = layer.apply_normalization(value)
     
     layer.value = value
     
@@ -135,8 +74,8 @@ def conv2d_propagate_padding(layer):
 
     current_input = __getInput(layer)
 
-    if layer.getPool() is not None:
-        current_input = layer.doPool(current_input)
+    if layer.get_pool() is not None:
+        current_input = layer.apply_pooling(current_input)
 
     kernel = layer.adn[3]
     #print("kernel: ", kernel)
@@ -147,13 +86,13 @@ def conv2d_propagate_padding(layer):
         current_input = __padInput(targetTensor=current_input, kernel_size=kernel)
 
     if layer.dropout_value > 0:
-        output_dropout = layer.doDropout(current_input)
+        output_dropout = layer.apply_dropout(current_input)
         value = layer.object(output_dropout)
     else:
         value = layer.object(current_input)
 
     #print("output shape: ", value.shape)
-    value = layer.doNormalize(value)
+    value = layer.apply_normalization(value)
     
     layer.value = value
     
@@ -169,7 +108,7 @@ def linear_propagate(layer):
     value = parent.value.view(shape[0], -1 )
 
     if layer.dropout_value > 0:
-        output_dropout = layer.doDropout(value)
+        output_dropout = layer.apply_dropout(value)
         value = layer.object(output_dropout)
     else:
         value = layer.object(value)
@@ -182,10 +121,10 @@ def MSEloss_propagate(layer):
 
     value = parent.value
 
-    if layer.getRicap() != None and layer.getEnableRicap() == True:
-        layer.value = layer.getRicap().generateLoss(layer)
+    if layer.get_ricap() != None and layer.get_enable_ricap() == True:
+        layer.value = layer.get_ricap().generateLoss(layer)
     else:
-        layer.value = layer.object(value, layer.label)
+        layer.value = layer.object(value, layer.labels)
 
 ############### CREADOR DE TENSORES ###############
 
@@ -252,9 +191,6 @@ def __getBiggestKernelInput(layerList):
             kernel = shape[2]
             biggest_input = layer.value
     
-    #if kernel < currentInput.shape[2]:
-    #    biggest_input = currentInput
-    
     return biggest_input
 
 def __getBiggestDepthInput(layerList):
@@ -270,9 +206,6 @@ def __getBiggestDepthInput(layerList):
 
             depth = shape[1]
             biggest_input = layer.value
-    
-    #if kernel < currentInput.shape[2]:
-    #    biggest_input = currentInput
     
     return biggest_input
 
@@ -312,18 +245,18 @@ def __getInput(layer):
 
     value = None
     
-    for parent_layer in layer.other_inputs:  
+    for parent_layer in layer.connected_layers:  
         parents_outputs_channels += parent_layer.value.shape[1]
     
-    biggest_input_kernel = __getBiggestKernelInput(layer.other_inputs)
+    biggest_input_kernel = __getBiggestKernelInput(layer.connected_layers)
 
     if input_channels == parents_outputs_channels:
 
         concat_tensor_list = []
 
-        for i in range(len(layer.other_inputs)):
+        for i in range(len(layer.connected_layers)):
             
-            current_input = layer.other_inputs[i].value.clone()
+            current_input = layer.connected_layers[i].value.clone()
             padded_input = __doPadKernel(current_input, biggest_input_kernel)
             del current_input
             concat_tensor_list.append(padded_input)
@@ -336,14 +269,14 @@ def __getInput(layer):
         del concat_tensor_list
     else:
 
-        biggest_input_depth = __getBiggestDepthInput(layer.other_inputs) 
+        biggest_input_depth = __getBiggestDepthInput(layer.connected_layers) 
 
         sum_tensor_list = []
         #print("h: ", layer.tensor_h)
 
-        for i in range(len(layer.other_inputs)):
+        for i in range(len(layer.connected_layers)):
             
-            current_input = layer.other_inputs[i].value.clone()
+            current_input = layer.connected_layers[i].value.clone()
             padded_input_kernel = __doPadKernel(current_input, biggest_input_kernel)
             padded_input_depth = __doPadDepth(padded_input_kernel, biggest_input_depth)
             del current_input, padded_input_kernel
@@ -351,7 +284,7 @@ def __getInput(layer):
             if i == 0:
                 padded_input_depth = padded_input_depth * layer.tensor_h
             
-            elif i == (len(layer.other_inputs) - 1):
+            elif i == (len(layer.connected_layers) - 1):
                 padded_input_depth = padded_input_depth * (1 - layer.tensor_h)
 
             sum_tensor_list.append(padded_input_depth)

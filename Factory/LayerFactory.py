@@ -33,19 +33,12 @@ class LayerGenerator(AbstractFactory.FactoryClass):
 
         self.__verifyCuda(layer)
         
-        if propagate_mode == const.CONV2D_MULTIPLE_INPUTS:
-            value = ly.Layer(objectTorch=layer, propagate=functions.conv2d_propagate_multipleInputs, value=None, adn=tupleBody, 
-                cudaFlag=self.__cuda, enable_activation=enable_activation)
-        elif propagate_mode == const.CONV2D_IMAGE_INPUTS:
-            value = ly.Layer(objectTorch=layer, propagate=functions.conv2d_propagate_images, value=None, adn=tupleBody, 
-                cudaFlag=self.__cuda, enable_activation=enable_activation)
-        
-        elif propagate_mode == const.CONV2D_PADDING:
-            value = ly.Layer(objectTorch=layer, propagate=functions.conv2d_propagate_padding, value=None, adn=tupleBody, 
-                cudaFlag=self.__cuda, enable_activation=enable_activation)
+        if propagate_mode == const.CONV2D_PADDING:
+            value = ly.Layer(torch_object=layer, propagate=functions.conv2d_propagate_padding, adn=tupleBody, 
+                                enable_activation=enable_activation)
         else:
-            value = ly.Layer(objectTorch=layer, propagate=functions.conv2d_propagate, value=None, adn=tupleBody, 
-                cudaFlag=self.__cuda, enable_activation=enable_activation)
+            value = ly.Layer(torch_object=layer, propagate=functions.conv2d_propagate_multipleInputs, adn=tupleBody,
+                                enable_activation=enable_activation)
 
         return value
 
@@ -56,7 +49,7 @@ class LayerGenerator(AbstractFactory.FactoryClass):
 
         self.__verifyCuda(layer)
         
-        value = ly.Layer(objectTorch=layer, adn=tupleBody,propagate=functions.linear_propagate, value=None, cudaFlag=self.__cuda)
+        value = ly.Layer(torch_object=layer, adn=tupleBody,propagate=functions.linear_propagate)
 
         return value
 
@@ -66,7 +59,7 @@ class LayerGenerator(AbstractFactory.FactoryClass):
         
         self.__verifyCuda(layer)
 
-        value = ly.Layer(objectTorch=layer, adn=tupleBody, propagate=functions.MSEloss_propagate, cudaFlag=self.__cuda)
+        value = ly.Layer(torch_object=layer, adn=tupleBody, propagate=functions.MSEloss_propagate)
 
         return value
 
@@ -76,31 +69,9 @@ class LayerGenerator(AbstractFactory.FactoryClass):
             layer.cuda()
 
     def __initConv2d(self, layer, kernel_shape):
-
-        #kernel_product = math.sqrt(kernel_shape[0] * kernel_shape[1] * kernel_shape[2])
-
-        #torch.nn.init.kaiming_uniform_(layer.weight, mode='fan_in', nonlinearity='relu')
         torch.nn.init.xavier_uniform_(layer.weight)
         torch.nn.init.zeros_(layer.bias)
-        #torch.nn.init.xavier_uniform_(layer.bias)
-        '''
-        torch.nn.init.normal_(layer.weight, mean=0.0, std=1.0)
-        torch.nn.init.normal_(layer.bias, mean=0.0, std=1.0)
-        layer.weight = torch.nn.Parameter(torch.div(torch.mul(layer.weight, math.sqrt(2)), kernel_product).clone())
-        layer.bias = torch.nn.Parameter(torch.div(torch.mul(layer.bias, math.sqrt(2)), kernel_product).clone())
-            '''
 
     def __initLinear(self, layer, entrys):
-
-        #entry_product = math.sqrt(entrys)
-    
-  
         torch.nn.init.xavier_uniform_(layer.weight)
         torch.nn.init.zeros_(layer.bias)
-        #torch.nn.init.xavier_uniform_(layer.bias)
-        '''
-        torch.nn.init.normal_(layer.weight, mean=0.0, std=1.0)
-        torch.nn.init.normal_(layer.bias, mean=0.0, std=1.0)
-        layer.weight = torch.nn.Parameter(torch.div(torch.mul(layer.weight, math.sqrt(2)), entry_product).clone())
-        layer.bias = torch.nn.Parameter(torch.div(torch.mul(layer.bias, math.sqrt(2)), entry_product).clone())
-        '''

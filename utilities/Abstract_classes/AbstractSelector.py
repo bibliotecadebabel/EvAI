@@ -51,7 +51,7 @@ class Selector(ABC):
     def forget_observation(self,observation):
         path=observation.path
         self.forget_path(path)
-        self.forget_weight(observation)
+        self.forget_filters(observation)
         pass
 
     def forget_observations(self):
@@ -97,7 +97,7 @@ class Selector(ABC):
         pass
 
     @abstractmethod
-    def forget_weight(self,observation):
+    def forget_filters(self,observation):
         pass
 
 

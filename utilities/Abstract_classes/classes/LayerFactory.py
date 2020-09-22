@@ -31,7 +31,7 @@ class LayerGenerator(AbstractFactory.FactoryClass):
         self.__verifyCuda(layer)
         self.__verifyCuda(valueLayerConv2d)
         
-        value = ly.Layer(objectTorch=layer, propagate=functions.conv2d_propagate, value=valueLayerConv2d)
+        value = ly.Layer(torch_object=layer, propagate=functions.conv2d_propagate, value=valueLayerConv2d)
         
         return value
 
@@ -43,7 +43,7 @@ class LayerGenerator(AbstractFactory.FactoryClass):
         self.__verifyCuda(layer)
         self.__verifyCuda(valueLayerLinear)
         
-        value = ly.Layer(objectTorch=layer, propagate=functions.linear_propagate, value=valueLayerLinear)
+        value = ly.Layer(torch_object=layer, propagate=functions.linear_propagate, value=valueLayerLinear)
 
         return value
 
@@ -53,7 +53,7 @@ class LayerGenerator(AbstractFactory.FactoryClass):
         
         self.__verifyCuda(layer)
 
-        value = ly.Layer(objectTorch=layer, propagate=functions.MSEloss_propagate)
+        value = ly.Layer(torch_object=layer, propagate=functions.MSEloss_propagate)
 
         return value
 

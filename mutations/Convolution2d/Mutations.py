@@ -40,8 +40,8 @@ class AlterExitFilterMutation(Mutation):
                 oldFilter[i] = oldFilter[old_shape[0]-1].clone()
                 oldBias[i] = oldBias[old_shape[0]-1].clone()
 
-            newNode.setFilter(oldFilter)
-            newNode.setBias(oldBias)
+            newNode.set_filters(oldFilter)
+            newNode.set_bias(oldBias)
 
             del resized
         
@@ -52,8 +52,8 @@ class AlterExitFilterMutation(Mutation):
             oldFilter.resize_(old_shape[0]-value, old_shape[1], old_shape[2], old_shape[3])
             oldBias.resize_(old_shape[0]-value)
 
-            newNode.setFilter(oldFilter)
-            newNode.setBias(oldBias)
+            newNode.set_filters(oldFilter)
+            newNode.set_bias(oldBias)
 
 class AlterEntryFilterMutation(Mutation):
 
@@ -88,8 +88,8 @@ class AlterEntryFilterMutation(Mutation):
                 for j in range(old_shape[1], resized_shape[1]):
                     oldFilter[i][j] = oldFilter[i][old_shape[1]-1].clone()
 
-            newNode.setFilter(oldFilter)
-            newNode.setBias(oldBias)
+            newNode.set_filters(oldFilter)
+            newNode.set_bias(oldBias)
             
             del resized
 
@@ -108,8 +108,8 @@ class AlterEntryFilterMutation(Mutation):
 
             del oldFilter
 
-            newNode.setFilter(resized)
-            newNode.setBias(oldBias)
+            newNode.set_filters(resized)
+            newNode.set_bias(oldBias)
 
 class AlterDimensionKernel(Mutation):
 
@@ -151,8 +151,8 @@ class AlterDimensionKernel(Mutation):
                     for x in range(shape[2]+1):
                         oldFilter[out_channel][in_channel][x][shape[3]] = oldFilter[out_channel][in_channel][x][shape[3]-1].clone()
 
-            newNode.setFilter(oldFilter)
-            newNode.setBias(oldBias)
+            newNode.set_filters(oldFilter)
+            newNode.set_bias(oldBias)
         
         elif self._value < 0:
 
@@ -173,8 +173,8 @@ class AlterDimensionKernel(Mutation):
 
             del oldFilter
 
-            newNode.setFilter(resized)
-            newNode.setBias(oldBias)
+            newNode.set_filters(resized)
+            newNode.set_bias(oldBias)
 
 ########## DENDRITE MUTATIONS ##########
 
@@ -214,8 +214,8 @@ class AlterExitFilterMutation_Dendrite(Mutation):
                 oldFilter[i] = oldFilter[old_shape[0]-1].clone()
                 oldBias[i] = oldBias[old_shape[0]-1].clone()
 
-            newNode.setFilter(oldFilter)
-            newNode.setBias(oldBias)
+            newNode.set_filters(oldFilter)
+            newNode.set_bias(oldBias)
 
             del resized
         
@@ -226,8 +226,8 @@ class AlterExitFilterMutation_Dendrite(Mutation):
             oldFilter.resize_(old_shape[0]-value, old_shape[1], old_shape[2], old_shape[3])
             oldBias.resize_(old_shape[0]-value)
 
-            newNode.setFilter(oldFilter)
-            newNode.setBias(oldBias)
+            newNode.set_filters(oldFilter)
+            newNode.set_bias(oldBias)
 
 class AlterEntryFilterMutation_Dendrite(Mutation):
 
@@ -247,7 +247,7 @@ class AlterEntryFilterMutation_Dendrite(Mutation):
     def doMutate(self, oldFilter, oldBias, newNode, cuda):
 
         old_shape = oldFilter.shape
-        new_filter_shape = newNode.getFilter().shape
+        new_filter_shape = newNode.get_filters().shape
 
         if self._value > 0:
 
@@ -268,8 +268,8 @@ class AlterEntryFilterMutation_Dendrite(Mutation):
                 oldBias = (oldBias * new_normalize) / old_normalize
             '''
 
-            newNode.setFilter(oldFilter)
-            newNode.setBias(oldBias)
+            newNode.set_filters(oldFilter)
+            newNode.set_bias(oldBias)
 
             del resized
 
@@ -296,8 +296,8 @@ class AlterEntryFilterMutation_Dendrite(Mutation):
             '''
             del oldFilter
 
-            newNode.setFilter(resized)
-            newNode.setBias(oldBias)
+            newNode.set_filters(resized)
+            newNode.set_bias(oldBias)
 
 class AlterDimensionKernel_Dendrite(Mutation):
 
@@ -344,8 +344,8 @@ class AlterDimensionKernel_Dendrite(Mutation):
             #oldBias = (oldBias * new_normalize) / old_normalize
             
 
-            newNode.setFilter(oldFilter)
-            newNode.setBias(oldBias)
+            newNode.set_filters(oldFilter)
+            newNode.set_bias(oldBias)
         
         elif self._value < 0:
 
@@ -364,8 +364,8 @@ class AlterDimensionKernel_Dendrite(Mutation):
 
             #oldBias = (oldBias * new_normalize) / old_normalize
             
-            newNode.setFilter(resized)
-            newNode.setBias(oldBias)
+            newNode.set_filters(resized)
+            newNode.set_bias(oldBias)
 
 class AdjustEntryFilters_Dendrite():
 
@@ -384,8 +384,8 @@ class AdjustEntryFilters_Dendrite():
     # Only use when mutation is remove layer or remove dendrite
     def removeFilters(self):
 
-        oldFilter = self.adjustLayer.getFilter()
-        oldBias = self.adjustLayer.getBias()
+        oldFilter = self.adjustLayer.get_filters()
+        oldBias = self.adjustLayer.get_bias()
 
         shape = oldFilter.shape
 
@@ -416,7 +416,7 @@ class AdjustEntryFilters_Dendrite():
 
     def adjustEntryFilters(self, mutation_type):
         
-        value = [self.adjustLayer.getFilter(), self.adjustLayer.getBias()]
+        value = [self.adjustLayer.get_filters(), self.adjustLayer.get_bias()]
 
         if mutation_type == m_type.DEFAULT_ADD_FILTERS:
             value =  self.__increaseEntryFilters()
@@ -429,8 +429,8 @@ class AdjustEntryFilters_Dendrite():
 
     def __decreaseEntryFilters(self):
         
-        oldFilter = self.adjustLayer.getFilter()
-        oldBias = self.adjustLayer.getBias()
+        oldFilter = self.adjustLayer.get_filters()
+        oldBias = self.adjustLayer.get_bias()
         newFilter = self.newFilter
 
         shape = oldFilter.shape
@@ -465,8 +465,8 @@ class AdjustEntryFilters_Dendrite():
 
         startIndex = self.getTargetRange()[1]
 
-        oldFilter = self.adjustLayer.getFilter()
-        oldBias = self.adjustLayer.getBias()
+        oldFilter = self.adjustLayer.get_filters()
+        oldBias = self.adjustLayer.get_bias()
         newFilter = self.newFilter
 
         value = abs(newFilter.shape[1] - oldFilter.shape[1])

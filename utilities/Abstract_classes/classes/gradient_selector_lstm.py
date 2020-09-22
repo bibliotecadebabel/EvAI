@@ -19,7 +19,7 @@ class Gradient_selector_lstm(Selector):
     def space2action(self,space):
         pass
 
-    def forget_weight(self,observation):
+    def forget_filters(self,observation):
         pass
 
     def train(self):

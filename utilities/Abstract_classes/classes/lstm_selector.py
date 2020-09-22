@@ -175,7 +175,7 @@ class centered_random_selector(Selector):
         
         return None
 
-    def forget_weight(self,observation):
+    def forget_filters(self,observation):
         pass
 
     def update_current_path(self,space, new_center):

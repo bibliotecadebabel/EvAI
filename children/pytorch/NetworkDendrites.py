@@ -78,7 +78,7 @@ class Network(nn.Module, na.NetworkAbstract):
 
     def __assignLayers(self):
 
-        self.nodes[0].objects.append(ly.Layer(node=self.nodes[0], value=None, propagate=functions.Nothing, cudaFlag=self.cudaFlag))
+        self.nodes[0].objects.append(ly.Layer(node=self.nodes[0], propagate=functions.Nothing, cudaFlag=self.cudaFlag))
 
         indexNode = 1
         index_layer = 0
@@ -98,7 +98,7 @@ class Network(nn.Module, na.NetworkAbstract):
                 self.setAttribute(attributeName, layer.object)
                 
                 if index_layer == self.__total_layers - 2 and self.enable_last_activation == False:
-                    layer.enable_activation = False
+                    layer.set_enable_activation(False)
 
                 if tupleBody[0] == 0 or tupleBody[0] == 1:
                     
@@ -112,15 +112,15 @@ class Network(nn.Module, na.NetworkAbstract):
                     else:
                         dropout_value = self.dropout_function(self.dropout_value, self.__total_layers, index_layer, False)
 
-                    layer.dropout_value = dropout_value
-                    conv2d_dropout = torch.nn.Dropout2d(p=layer.dropout_value)
+                    layer.set_dropout_value(dropout_value)
+                    conv2d_dropout = torch.nn.Dropout2d(p=dropout_value)
 
                     if self.cudaFlag == True:
                         conv2d_dropout = conv2d_dropout.cuda()                    
 
-                    layer.setDropoutObject(conv2d_dropout)
+                    layer.set_dropout(conv2d_dropout)
                     attributeName_dropout = "layer_dropout"+str(indexNode)
-                    self.setAttribute(attributeName_dropout, layer.getDropoutObject())
+                    self.setAttribute(attributeName_dropout, layer.get_dropout())
                     
                     layer.tensor_h = tensor_h
                     attributeName_h = "layer_h"+str(indexNode)
@@ -137,9 +137,9 @@ class Network(nn.Module, na.NetworkAbstract):
                     if self.cudaFlag == True:
                         conv2d_batchnorm = conv2d_batchnorm.cuda()
                     
-                    layer.setBatchNormObject(conv2d_batchnorm)
+                    layer.set_batch_norm_object(conv2d_batchnorm)
                     attributeName_batch = "layer_batchnorm"+str(indexNode)
-                    self.setAttribute(attributeName_batch, layer.getBatchNormObject())
+                    self.setAttribute(attributeName_batch, layer.get_batch_norm_object())
 
                     if len(tupleBody) > 5:
                         conv2d_pool = torch.nn.MaxPool2d((tupleBody[5], tupleBody[5]), stride=None, ceil_mode=True)
@@ -147,16 +147,16 @@ class Network(nn.Module, na.NetworkAbstract):
                         if self.cudaFlag == True:
                             conv2d_pool = conv2d_pool.cuda()
 
-                        layer.setPool(conv2d_pool)
+                        layer.set_pool(conv2d_pool)
                         attributeName_pool = "layer_pool"+str(indexNode)
-                        self.setAttribute(attributeName_pool, layer.getPool())
+                        self.setAttribute(attributeName_pool, layer.get_pool())
 
                 indexNode += 1
 
             elif tupleBody[0] == 3:
                 input_node = tupleBody[1]+1
                 target_node = tupleBody[2]+1
-                self.nodes[target_node].objects[0].other_inputs.append(self.nodes[input_node].objects[0])
+                self.nodes[target_node].objects[0].connected_layers.append(self.nodes[input_node].objects[0])
 
     def __generateLengthNodes(self):
 
@@ -211,7 +211,7 @@ class Network(nn.Module, na.NetworkAbstract):
 
     def __doTraining(self, inputs, labels_data):
 
-        self.__getLossLayer().setRicap(None)
+        self.__getLossLayer().set_ricap(None)
         self.assignLabels(labels_data)
         self.total_value = 0
         self.optimizer.zero_grad()
@@ -224,13 +224,13 @@ class Network(nn.Module, na.NetworkAbstract):
     
     def __doTrainingRICAP(self, inputs, labels_data, ricap : Augmentation.Ricap):
 
-        self.__getLossLayer().setEnableRicap(True)
+        self.__getLossLayer().set_enable_ricap(True)
         self.assignLabels(labels_data)
         self.total_value = 0
         self.optimizer.zero_grad()
 
         patched_images = ricap.doRicap(inputs=inputs, target=labels_data, cuda=self.cudaFlag)        
-        self.__getLossLayer().setRicap(ricap)
+        self.__getLossLayer().set_ricap(ricap)
         self.Train(patched_images, 1, 1)
         self.optimizer.step()
 
@@ -514,10 +514,10 @@ class Network(nn.Module, na.NetworkAbstract):
                 inputs, labels = eval_data[0], eval_data[1]
             
             if len(inputs.size()) > 4:
-                self.__getLossLayer().setCrops(inputs.shape[1])
+                self.__getLossLayer().set_crops(inputs.shape[1])
                 inputs = inputs.view(-1, inputs.shape[2], inputs.shape[3], inputs.shape[4])
 
-            self.__getLossLayer().setEnableRicap(False)
+            self.__getLossLayer().set_enable_ricap(False)
 
             model.assignLabels(labels)
             model.nodes[0].objects[0].value = inputs 
@@ -692,16 +692,16 @@ class Network(nn.Module, na.NetworkAbstract):
             layerToClone = self.nodes[i].objects[0]
             layer = network.nodes[i].objects[0]
 
-            if layerToClone.getBias() is not None:
-                layer.setBias(layerToClone.getBias().clone())
+            if layerToClone.get_bias() is not None:
+                layer.set_bias(layerToClone.get_bias().clone())
 
-            if layerToClone.getFilter() is not None:
-                layer.setFilter(layerToClone.getFilter().clone())
+            if layerToClone.get_filters() is not None:
+                layer.set_filters(layerToClone.get_filters().clone())
             
             if layerToClone.tensor_h is not None:
                 layer.tensor_h.data = layerToClone.tensor_h.data.clone()
                 
-            layer.setBarchNorm(layerToClone.getBatchNormObject())
+            layer.set_batch_norm(layerToClone.get_batch_norm_object())
 
         network.total_value = self.total_value
         network.momentum = self.momentum
@@ -733,10 +733,10 @@ class Network(nn.Module, na.NetworkAbstract):
                     inputs, labels = data[0], data[1]
 
                 if len(inputs.size()) > 4:
-                    self.__getLossLayer().setCrops(inputs.shape[1])
+                    self.__getLossLayer().set_crops(inputs.shape[1])
                     inputs = inputs.view(-1, inputs.shape[2], inputs.shape[3], inputs.shape[4])
 
-                self.__getLossLayer().setEnableRicap(False)
+                self.__getLossLayer().set_enable_ricap(False)
                 model.assignLabels(labels)
                 model.nodes[0].objects[0].value = inputs 
                 model(model.nodes[0].objects[0].value)
