@@ -76,8 +76,6 @@ class NetworkLSTM(nn.Module):
         self.__doBackward()
         self.updateGradFlag(False)
 
-        #self.total_value += ((self.__getLossLayer().value)).item()
-
     def __createModulesXT(self, data):
         
         for indexModule in range(self.lenModules):

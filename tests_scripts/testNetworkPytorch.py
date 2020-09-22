@@ -14,6 +14,7 @@ import const.versions as directions_version
 import os
 import utilities.NetworkStorage as StorageManager
 import utilities.ExperimentSettings as ExperimentSettings
+import utilities.Augmentation as Augmentation
 import utilities.AugmentationSettings as AugmentationSettings
 
 import utilities.MemoryManager as MemoryManager
@@ -21,19 +22,19 @@ import tests_scripts.test_DNAs as test_DNAs
 import torch
 import time
 import gc
+import numpy as np
+import math
 
-def dropout_function(base_p, total_conv2d, index_conv2d):
-    value = 0
-    if index_conv2d == 2:
-        value = 0.2
-    if index_conv2d == 4:
-        value = 0.3
-    if index_conv2d == 6:
-        value = 0.4
-    if index_conv2d == 7:
-        value = 0.5
+def pcos(x):
+    if x>np.pi:
+        x-np.pi
+    return np.cos(x)
 
-    return value
+def Alaising(M,m,ep):
+    M=10**(-M)
+    m=10**(-m)
+    return [ m+1/2*(M-m)*(1+pcos(t/ep*np.pi))
+             for t in range(0,ep)]
 
 def generateSpace(x,y):
     max_layers=10
@@ -159,35 +160,60 @@ def Test_Convex():
 
 def TestMemoryManager():
     
+    epochs = 10
+    batch_size = 64
+
+    def dropout_function(base_p, total_layers, index_layer, isPool=False):
+
+        value = 0
+        if index_layer != 0 and isPool == False:
+            value = base_p
+
+        if index_layer == total_layers - 2:
+            value = base_p
+
+        print("conv2d: ", index_layer, " - dropout: ", value, " - isPool: ", isPool)
+
+        return value
+
     settings = ExperimentSettings.ExperimentSettings()
     settings.momentum = 0.9
-    settings.dropout_value = 0
+    settings.dropout_value = 0.05
     settings.weight_decay = 0.0005
     settings.enable_activation = True
-    settings.enable_last_activation = False
+    settings.enable_last_activation = True
     settings.enable_track_stats = True
-    settings.version = directions_version.H_VERSION
-    
-    dataGen = GeneratorFromCIFAR.GeneratorFromCIFAR(2,  128, threads=0, dataAugmentation=True)
+    settings.version = directions_version.CONVEX_VERSION
+    settings.eps_batchorm = 0.001
+    settings.dropout_function = dropout_function
+    settings.ricap = Augmentation.Ricap(beta=0.3)
+
+    dataGen = GeneratorFromCIFAR.GeneratorFromCIFAR(2,  batch_size, threads=0, dataAugmentation=True)
     dataGen.dataConv2d()
     memoryManager = MemoryManager.MemoryManager()
 
     mutation_manager = MutationManager.MutationManager(directions_version=settings.version)
 
-    adn = test_DNAs.DNA_calibration_3
+    adn = test_DNAs.DNA_base
+
+    e =  50000 / batch_size
+    e = math.ceil(e)
+    print("e: ", e)
+    print("total iterations: ", epochs*e)
+    dt_array = Alaising(1.2, 99, epochs*e)
 
     input("press to continue: before load network")
     network = nw_dendrites.Network(adn, cudaFlag=True, momentum=settings.momentum, weight_decay=settings.weight_decay,
-                                    enable_activation=settings.enable_activation, enable_track_stats=settings.enable_track_stats,
-                                    dropout_value=settings.dropout_value, enable_last_activation=settings.enable_last_activation,
-                                    version=settings.version)
+                                    enable_activation=settings.enable_activation,
+                                    enable_track_stats=settings.enable_track_stats, dropout_value=settings.dropout_value,
+                                    dropout_function=settings.dropout_function, enable_last_activation=settings.enable_last_activation,
+                                    version=settings.version, eps_batchnorm=settings.eps_batchorm)
 
     
     input("press to continue: before training network")
-    
-    network.TrainingCosineLR_Restarts(dataGenerator=dataGen, max_dt=0.001, min_dt=0.001, epochs=1, restart_dt=1, 
-                                        show_accuarcy=True)
 
+    network.iterTraining(dataGenerator=dataGen,dt_array=dt_array, ricap=settings.ricap, evalLoss=True)
+    
     network.generateEnergy(dataGen)
     print("net acc: ", network.getAcurracy())
 

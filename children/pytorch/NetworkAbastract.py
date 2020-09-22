@@ -1,6 +1,7 @@
 from abc import ABC, abstractmethod
 import Factory.LayerFactory as factory
 import Factory.TensorFactory as tensorFactory
+import children.pytorch.layers.learnable_layers.layer_learnable as layer_learnable
 
 class NetworkAbstract(ABC):
 
@@ -45,20 +46,22 @@ class NetworkAbstract(ABC):
 
             layer = node.objects[0]
 
-            if layer.get_bias() is not None:
-                layer.get_bias().requires_grad = flag
+            if isinstance(layer, layer_learnable.LearnableLayer):
 
-            if layer.get_bias_grad() is not None:
-                layer.get_bias_grad().requires_grad = flag
+                if layer.get_bias() is not None:
+                    layer.get_bias().requires_grad = flag
 
-            if layer.get_filters() is not None:
-                layer.get_filters().requires_grad = flag
+                if layer.get_bias_grad() is not None:
+                    layer.get_bias_grad().requires_grad = flag
 
-            if layer.get_filters_grad() is not None:
-                layer.get_filters_grad().requires_grad = flag
-            
-            if layer.tensor_h is not None:
-                layer.tensor_h.requires_grad = flag
+                if layer.get_filters() is not None:
+                    layer.get_filters().requires_grad = flag
+
+                if layer.get_filters_grad() is not None:
+                    layer.get_filters_grad().requires_grad = flag
+                
+                if layer.tensor_h is not None:
+                    layer.tensor_h.requires_grad = flag
                 
     
     def assignLabels(self, labels):
@@ -81,3 +84,11 @@ class NetworkAbstract(ABC):
         value = self.history_loss.copy()
         self.history_loss = []
         return value
+    
+    def getLossLayer(self):
+
+        return self.nodes[len(self.nodes)-1].objects[0]
+
+    def getLayerProbability(self):
+
+        return self.nodes[len(self.nodes)-2].objects[0]

@@ -1,21 +1,26 @@
-from abc import ABC, abstractmethod
+from abc import abstractmethod
 
-class Layer(ABC):
+class Layer():
 
-    def __init__(self, adn=None, node=None, torch_object=None):
-        self.object = torch_object
-        self.node = node
+    def __init__(self, adn):
+        
+        self.adn = adn
+        self.object = None
+        self.node = None
         self.value = None
         self.connected_layers = []
-        self.adn = adn
-        
-        #self.__batchnorm = None # CONV2D
-        #self.__pool = None # CONV2D
     
-    @abstractmethod
     def propagate(self):
         pass
 
-    @abstractmethod
     def deleteParam(self):
         pass
+
+    def viewGraph(self):
+
+        print("graph of: ", self.adn)
+        for kid in self.node.kids:
+            print("kid: ", kid.objects[0].adn)
+        
+        for parent in self.node.parents:
+            print("parent: ", parent.objects[0].adn)

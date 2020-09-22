@@ -5,9 +5,9 @@ import torch
 
 class Conv2dLayer(layer.LearnableLayer):
 
-    def __init__(self, adn, node, torch_object, enable_activation, propagate_mode):
+    def __init__(self, adn, torch_object, enable_activation, propagate_mode):
         
-        layer.LearnableLayer.__init__(self, adn=adn, node=node, torch_object=torch_object)
+        layer.LearnableLayer.__init__(self, adn=adn, torch_object=torch_object)
 
         self.__enable_activation = enable_activation
         self.__batchnorm = None
@@ -101,7 +101,7 @@ class Conv2dLayer(layer.LearnableLayer):
         self.value = value
         
         if self.__enable_activation == True:
-            layer.value = torch.nn.functional.relu(value)
+            self.value = torch.nn.functional.relu(value)
     
     def __propagate_padding(self):
 
@@ -115,7 +115,7 @@ class Conv2dLayer(layer.LearnableLayer):
         if self.node.kids[0].objects[0].adn[0] == 0:
             current_input = self.__do_pad_input(targetTensor=current_input, kernel_size=kernel)
 
-        if self.get_dropout_value > 0:
+        if self.get_dropout_value() > 0:
             output_dropout = self.apply_dropout(current_input)
             value = self.object(output_dropout)
         else:
@@ -126,7 +126,7 @@ class Conv2dLayer(layer.LearnableLayer):
         self.value = value
         
         if self.__enable_activation == True:
-            layer.value = torch.nn.functional.relu(value)
+            self.value = torch.nn.functional.relu(value)
 
     def propagate(self):
         self.__propagate_function()

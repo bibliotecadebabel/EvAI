@@ -4,26 +4,12 @@ import torch
 
 def Propagation(layer, n=None):
 
-    if n is None:
-        
-        for parent in layer.node.parents:
+    for parent in layer.node.parents:
 
-            layerParent = parent.objects[0]
-            Propagation(layerParent)
+        layerParent = parent.objects[0]
+        Propagation(layerParent)
 
-        layer.propagate(layer)
-    else:
-        if n == 0:
-            pass
-        
-        else:
-            n -= 1
-            for parent in layer.node.parents:
-
-                layerParent = parent.objects[0]
-                Propagation(layerParent, n)
-
-            layer.propagate(layer)
+    layer.propagate()
 
 def BackPropagation(layer):
 

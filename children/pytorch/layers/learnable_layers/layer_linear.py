@@ -5,15 +5,15 @@ import torch
 
 class LinearLayer(layer.LearnableLayer):
 
-    def __init__(self, adn, node, torch_object):
+    def __init__(self, adn, torch_object):
         
-        layer.LearnableLayer.__init__(self, adn=adn, node=node, torch_object=torch_object)
+        layer.LearnableLayer.__init__(self, adn=adn, torch_object=torch_object)
 
 
     def propagate(self):
 
         parent = self.node.parents[0].objects[0]
-
+        
         shape = parent.value.shape
 
         value = parent.value.view(shape[0], -1 )
@@ -24,7 +24,7 @@ class LinearLayer(layer.LearnableLayer):
         else:
             value = self.object(value)
 
-        layer.value = value
+        self.value = value
     
     def deleteParam(self):
 

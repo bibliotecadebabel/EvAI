@@ -1,5 +1,6 @@
 import children.pytorch.Node as nd
-import children.pytorch.Layer as ly
+import children.pytorch.layers.learnable_layers.layer_learnable as layer_learnable
+import children.pytorch.layers.learnable_layers.layer_conv2d as layer_conv2d
 import children.pytorch.Functions as functions
 import children.pytorch.NetworkAbastract as na
 import const.propagate_mode as const
@@ -35,8 +36,7 @@ class Network(nn.Module, na.NetworkAbstract):
             self.dropout_function = self.__defaultDropoutFunction
         
     
-        self.__lenghNodes = 0
-        self.__total_layers = 0
+        self.__len_nodes = 0
         self.__accumulated_loss = 0
         self.__accuracy = 0
 
@@ -51,7 +51,7 @@ class Network(nn.Module, na.NetworkAbstract):
         self.eval_iter = None  
         self.acc_array = []
           
-    def __defaultDropoutFunction(self, base_p, total_layers, index_layer, isPool=False):
+    def __defaultDropoutFunction(self, base_p, total_layers, index_learnable_layer, isPool=False):
 
         return base_p
 
@@ -59,14 +59,19 @@ class Network(nn.Module, na.NetworkAbstract):
 
         graph = Graphs.Graph(True)
 
-        self.__generateLengthNodes()
+        for i in range(len(self.adn)):
 
-        for i in range(0, self.__lenghNodes):
+            layer_tuple = self.adn[i]
+
+            if layer_tuple[0] != 3:
+                self.__len_nodes += 1
+
+        for i in range(self.__len_nodes):
             self.nodes.append(nd.Node())
 
-        for i in range(0, self.__lenghNodes):
+        for i in range(self.__len_nodes):
 
-            if i < (self.__lenghNodes - 1):
+            if i < (self.__len_nodes - 1):
                 graph.add_node(i, self.nodes[i])
                 graph.add_node(i + 1, self.nodes[i + 1])
                 graph.add_edges(i, [i+1])
@@ -74,22 +79,22 @@ class Network(nn.Module, na.NetworkAbstract):
 
         self.nodes = list(graph.key2node.values())
 
-        self.__assignLayers()
+        self.__assign_layers()
 
-    def __assignLayers(self):
+    def __assign_layers(self):
 
-        self.nodes[0].objects.append(ly.Layer(node=self.nodes[0], propagate=functions.Nothing, cudaFlag=self.cudaFlag))
+        #self.nodes[0].objects.append(ly.Layer(adn=self.adn[0], node=self.nodes[0]))
 
-        indexNode = 1
-        index_layer = 0
+        indexNode = 0
+        index_learnable_layer = 0
 
         for adn in self.adn:
 
-            tupleBody = adn
+            layer_tuple = adn
 
-            if tupleBody[0] != -1 and tupleBody[0] != 3:
+            if layer_tuple[0] != 3:
                 
-                layer = self.factory.findValue(tupleBody, propagate_mode=self.__conv2d_propagate_mode, 
+                layer = self.factory.findValue(layer_tuple, propagate_mode=self.__conv2d_propagate_mode, 
                                         enable_activation=self.enable_activation)
 
                 layer.node = self.nodes[indexNode]
@@ -97,20 +102,22 @@ class Network(nn.Module, na.NetworkAbstract):
                 attributeName = "layer"+str(indexNode)
                 self.setAttribute(attributeName, layer.object)
                 
-                if index_layer == self.__total_layers - 2 and self.enable_last_activation == False:
-                    layer.set_enable_activation(False)
+                #if index_learnable_layer == self.__total_layers - 2 and self.enable_last_activation == False:
+                #    layer.set_enable_activation(False)
 
-                if tupleBody[0] == 0 or tupleBody[0] == 1:
+                if isinstance(layer, layer_learnable.LearnableLayer):
                     
                     if self.cudaFlag == True:
                         tensor_h = torch.nn.Parameter(torch.tensor(1.0, requires_grad=True).cuda())
                     else:
                         tensor_h = torch.nn.Parameter(torch.tensor(1.0, requires_grad=True))
 
-                    if len(tupleBody) > 5:
-                        dropout_value = self.dropout_function(self.dropout_value, self.__total_layers, index_layer, True)
-                    else:
-                        dropout_value = self.dropout_function(self.dropout_value, self.__total_layers, index_layer, False)
+                    layer_pool = False
+
+                    if layer_tuple[0] == 0 and len(layer_tuple) > 5:
+                        layer_pool = True
+
+                    dropout_value = self.dropout_function(self.dropout_value, self.__len_nodes-1, index_learnable_layer, layer_pool)
 
                     layer.set_dropout_value(dropout_value)
                     conv2d_dropout = torch.nn.Dropout2d(p=dropout_value)
@@ -125,53 +132,39 @@ class Network(nn.Module, na.NetworkAbstract):
                     layer.tensor_h = tensor_h
                     attributeName_h = "layer_h"+str(indexNode)
                     self.setAttribute(attributeName_h, layer.tensor_h)
-                    index_layer += 1
 
-                if tupleBody[0] == 0:
+                    index_learnable_layer += 1
 
-                    if self.eps_batchnorm == None:
-                        conv2d_batchnorm = torch.nn.BatchNorm2d(tupleBody[2], track_running_stats=self.enable_track_stats)
-                    else:
-                        conv2d_batchnorm = torch.nn.BatchNorm2d(tupleBody[2], track_running_stats=self.enable_track_stats, eps=self.eps_batchnorm)
+                    if isinstance(layer, layer_conv2d.Conv2dLayer):
 
-                    if self.cudaFlag == True:
-                        conv2d_batchnorm = conv2d_batchnorm.cuda()
-                    
-                    layer.set_batch_norm_object(conv2d_batchnorm)
-                    attributeName_batch = "layer_batchnorm"+str(indexNode)
-                    self.setAttribute(attributeName_batch, layer.get_batch_norm_object())
-
-                    if len(tupleBody) > 5:
-                        conv2d_pool = torch.nn.MaxPool2d((tupleBody[5], tupleBody[5]), stride=None, ceil_mode=True)
+                        if self.eps_batchnorm == None:
+                            conv2d_batchnorm = torch.nn.BatchNorm2d(layer_tuple[2], track_running_stats=self.enable_track_stats)
+                        else:
+                            conv2d_batchnorm = torch.nn.BatchNorm2d(layer_tuple[2], track_running_stats=self.enable_track_stats, eps=self.eps_batchnorm)
 
                         if self.cudaFlag == True:
-                            conv2d_pool = conv2d_pool.cuda()
+                            conv2d_batchnorm = conv2d_batchnorm.cuda()
+                        
+                        layer.set_batch_norm_object(conv2d_batchnorm)
+                        attributeName_batch = "layer_batchnorm"+str(indexNode)
+                        self.setAttribute(attributeName_batch, layer.get_batch_norm_object())
 
-                        layer.set_pool(conv2d_pool)
-                        attributeName_pool = "layer_pool"+str(indexNode)
-                        self.setAttribute(attributeName_pool, layer.get_pool())
+                        if len(layer_tuple) > 5:
+                            conv2d_pool = torch.nn.MaxPool2d((layer_tuple[5], layer_tuple[5]), stride=None, ceil_mode=True)
+
+                            if self.cudaFlag == True:
+                                conv2d_pool = conv2d_pool.cuda()
+
+                            layer.set_pool(conv2d_pool)
+                            attributeName_pool = "layer_pool"+str(indexNode)
+                            self.setAttribute(attributeName_pool, layer.get_pool())
 
                 indexNode += 1
 
-            elif tupleBody[0] == 3:
-                input_node = tupleBody[1]+1
-                target_node = tupleBody[2]+1
+            else:
+                input_node = layer_tuple[1]+1
+                target_node = layer_tuple[2]+1
                 self.nodes[target_node].objects[0].connected_layers.append(self.nodes[input_node].objects[0])
-
-    def __generateLengthNodes(self):
-
-        self.__total_layers = 0
-        for i in range(len(self.adn)):
-
-            tupleBody = self.adn[i]
-
-            if tupleBody[0] != -1 and tupleBody[0] != 3:
-                self.__lenghNodes += 1
-
-                if tupleBody[0] == 0 or tupleBody[0] == 1:
-                    self.__total_layers += 1
-
-        self.__lenghNodes += 1
 
     def Predict(self, image, label):
 
@@ -191,8 +184,8 @@ class Network(nn.Module, na.NetworkAbstract):
 
     def getProbability(self):
 
-        value = self.__getLayerProbability().value
-        #print("output linear: ", value)
+        value = self.getLayerProbability().value
+
         sc = value[0][0]
         sn = value[0][1]
 
@@ -211,30 +204,30 @@ class Network(nn.Module, na.NetworkAbstract):
 
     def __doTraining(self, inputs, labels_data):
 
-        self.__getLossLayer().set_ricap(None)
+        self.getLossLayer().set_ricap(None)
         self.assignLabels(labels_data)
         self.total_value = 0
         self.optimizer.zero_grad()
         self.Train(inputs, 1, 1)
         self.optimizer.step()
 
-        self.total_value = self.__getLossLayer().value.item()
+        self.total_value = self.getLossLayer().value.item()
         self.__accumulated_loss += self.total_value
 
     
     def __doTrainingRICAP(self, inputs, labels_data, ricap : Augmentation.Ricap):
 
-        self.__getLossLayer().set_enable_ricap(True)
+        self.getLossLayer().set_enable_ricap(True)
         self.assignLabels(labels_data)
         self.total_value = 0
         self.optimizer.zero_grad()
 
         patched_images = ricap.doRicap(inputs=inputs, target=labels_data, cuda=self.cudaFlag)        
-        self.__getLossLayer().set_ricap(ricap)
+        self.getLossLayer().set_ricap(ricap)
         self.Train(patched_images, 1, 1)
         self.optimizer.step()
 
-        self.total_value = self.__getLossLayer().value.item()
+        self.total_value = self.getLossLayer().value.item()
         self.__accumulated_loss += self.total_value
 
     def TrainingALaising(self, dataGenerator, epochs, alaising_object, period_show_accuracy):
@@ -273,7 +266,7 @@ class Network(nn.Module, na.NetworkAbstract):
                 self.Train(inputs, 1, 1)
                 self.optimizer.step()
 
-                self.total_value = self.__getLossLayer().value.item()
+                self.total_value = self.getLossLayer().value.item()
                 self.__accumulated_loss += self.total_value
                 self.history_loss.append(self.total_value)
 
@@ -304,7 +297,7 @@ class Network(nn.Module, na.NetworkAbstract):
             self.Train(inputs, 1, 1)
             self.optimizer.step()
 
-            self.total_value = self.__getLossLayer().value.item()
+            self.total_value = self.getLossLayer().value.item()
             self.__accumulated_loss += self.total_value
             self.history_loss.append(self.total_value)
 
@@ -351,7 +344,7 @@ class Network(nn.Module, na.NetworkAbstract):
                 self.optimizer.step()
                 #scheduler.step()
 
-                self.total_value = self.__getLossLayer().value.item()
+                self.total_value = self.getLossLayer().value.item()
                 self.__accumulated_loss += self.total_value
                 self.history_loss.append(self.total_value)
 
@@ -437,7 +430,7 @@ class Network(nn.Module, na.NetworkAbstract):
             current_epoch = 0
             iters = len(dt_array)
 
-            print_every = iters // 4
+            print_every = iters // 10
             start = time.time()
             data_iter = iter(dataGenerator._trainoader)
 
@@ -514,15 +507,15 @@ class Network(nn.Module, na.NetworkAbstract):
                 inputs, labels = eval_data[0], eval_data[1]
             
             if len(inputs.size()) > 4:
-                self.__getLossLayer().set_crops(inputs.shape[1])
+                self.getLossLayer().set_crops(inputs.shape[1])
                 inputs = inputs.view(-1, inputs.shape[2], inputs.shape[3], inputs.shape[4])
 
-            self.__getLossLayer().set_enable_ricap(False)
+            self.getLossLayer().set_enable_ricap(False)
 
             model.assignLabels(labels)
             model.nodes[0].objects[0].value = inputs 
             model(model.nodes[0].objects[0].value)
-            eval_loss = model.__getLossLayer().value.item()
+            eval_loss = model.getLossLayer().value.item()
             self.history_loss.append(eval_loss)
             self.train()
 
@@ -662,20 +655,11 @@ class Network(nn.Module, na.NetworkAbstract):
 
     def __doFoward(self):
 
-        functions.Propagation(self.__getLossLayer())
+        functions.Propagation(self.getLossLayer())
 
     def __doBackward(self):
 
-        self.__getLossLayer().value.backward()
-
-
-    def __getLossLayer(self):
-
-        return self.nodes[len(self.nodes)-1].objects[0]
-
-    def __getLayerProbability(self):
-
-        return self.nodes[len(self.nodes)-2].objects[0]
+        self.getLossLayer().value.backward()
 
     def clone(self):
 
@@ -733,15 +717,15 @@ class Network(nn.Module, na.NetworkAbstract):
                     inputs, labels = data[0], data[1]
 
                 if len(inputs.size()) > 4:
-                    self.__getLossLayer().set_crops(inputs.shape[1])
+                    self.getLossLayer().set_crops(inputs.shape[1])
                     inputs = inputs.view(-1, inputs.shape[2], inputs.shape[3], inputs.shape[4])
 
-                self.__getLossLayer().set_enable_ricap(False)
+                self.getLossLayer().set_enable_ricap(False)
                 model.assignLabels(labels)
                 model.nodes[0].objects[0].value = inputs 
                 model(model.nodes[0].objects[0].value)
 
-                linearValue = model.__getLayerProbability().value
+                linearValue = model.getLayerProbability().value
 
                 _, predicted = torch.max(linearValue.data, 1)
 
