@@ -437,7 +437,7 @@ class Network(nn.Module, na.NetworkAbstract):
             current_epoch = 0
             iters = len(dt_array)
 
-            print_every = iters // 4
+            print_every = iters // 10
             start = time.time()
             data_iter = iter(dataGenerator._trainoader)
 
