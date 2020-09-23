@@ -40,7 +40,7 @@ def test():
     print(input_lstm.size())
     current_path = Observation.Observation(path=[(2,(4,0,0,0)), (2,(4,0,0,0))], weight=1, time=0)
     network = nw_lstm.NetworkLSTM(observation_size=observation_size, inChannels=max_layers_lstm, 
-                                    outChannels=max_layers_lstm*lstmConverter.mutations, kernelSize=lstmConverter.mutations, cudaFlag=True)
+                                    outChannels=max_layers_lstm*lstmConverter.mutations, kernelSize=lstmConverter.mutations, cuda_flag=True)
     
     i = 0
     while i < 200 : 

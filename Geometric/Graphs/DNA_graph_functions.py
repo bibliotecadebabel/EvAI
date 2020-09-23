@@ -2,7 +2,7 @@ import utilities.Quadrants as qu
 import utilities.Node as nd
 import utilities.Graphs as gr
 import Geometric.TangentPlane as tplane
-import children.pytorch.NetworkDendrites as nw
+import children.pytorch.network_dendrites as nw
 import os
 import time
 import statistics
@@ -32,13 +32,13 @@ def net2file(net,file=None):
     if not(file):
         file=str(time.time()).replace(".", "")
     final_path = os.path.join("temporary_nets", str(file))
-    net.saveModel(final_path)
+    net.save_model(final_path)
     return file
 
-def file2net(file, DNA, cudaFlag = False):
-    net= nw.Network(DNA,cudaFlag = False)
+def file2net(file, DNA, cuda_flag = False):
+    net= nw.Network(DNA,cuda_flag = False)
     final_path = os.path.join("temporary_nets",file)
-    net.loadModel(final_path)
+    net.load_model(final_path)
     return net
 
 

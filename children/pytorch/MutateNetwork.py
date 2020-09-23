@@ -8,13 +8,13 @@ import torch as torch
 
 def executeMutation(oldNetwork, newAdn):
     
-    network = nw.Network(newAdn, cudaFlag=oldNetwork.cudaFlag, momentum=oldNetwork.momentum)
+    network = nw.Network(newAdn, cuda_flag=oldNetwork.cuda_flag, momentum=oldNetwork.momentum)
 
     length_newadn = len(newAdn)
     length_oldadn = len(oldNetwork.adn)
 
-    oldNetwork.updateGradFlag(False)
-    network.updateGradFlag(False)
+    oldNetwork.set_grad_flag(False)
+    network.set_grad_flag(False)
 
     addLayer = False
     removeLayer = False
@@ -36,8 +36,8 @@ def executeMutation(oldNetwork, newAdn):
 
         __removeLayerMutationProcess(oldNetwork=oldNetwork, network=network, lenghtNewAdn=length_newadn)
 
-    oldNetwork.updateGradFlag(True)
-    network.updateGradFlag(True)
+    oldNetwork.set_grad_flag(True)
+    network.set_grad_flag(True)
 
     return network
 
@@ -49,9 +49,9 @@ def __defaultMutationProcess(oldNetwork, network, lenghtAdn):
         newLayer = network.nodes[i].objects[0]
 
         if oldLayer.get_filters() is not None:
-            __doMutate(oldLayer, newLayer, network.cudaFlag)
+            __doMutate(oldLayer, newLayer, network.cuda_flag)
         
-        if network.cudaFlag == True:
+        if network.cuda_flag == True:
             torch.cuda.empty_cache()
         
 def __addLayerMutationProcess(oldNetwork, network, lenghtOldAdn):
@@ -67,9 +67,9 @@ def __addLayerMutationProcess(oldNetwork, network, lenghtOldAdn):
         newLayer = network.nodes[i+1].objects[0]
 
         if oldLayer.get_filters() is not None:
-            __doMutate(oldLayer, newLayer, network.cudaFlag)
+            __doMutate(oldLayer, newLayer, network.cuda_flag)
         
-        if network.cudaFlag == True:
+        if network.cuda_flag == True:
             torch.cuda.empty_cache()
 
 def __removeLayerMutationProcess(oldNetwork, network, lenghtNewAdn):
@@ -80,12 +80,12 @@ def __removeLayerMutationProcess(oldNetwork, network, lenghtNewAdn):
         newLayer = network.nodes[i].objects[0]
 
         if oldLayer.get_filters() is not None:
-            __doMutate(oldLayer, newLayer, network.cudaFlag)
+            __doMutate(oldLayer, newLayer, network.cuda_flag)
         
-        if network.cudaFlag == True:
+        if network.cuda_flag == True:
             torch.cuda.empty_cache()
 
-def __doMutate(oldLayer, newLayer, flagCuda):
+def __doMutate(oldLayer, newLayer, cuda_flag):
     
     dictionaryMutation = MutationsDictionary()
 
@@ -95,7 +95,7 @@ def __doMutate(oldLayer, newLayer, flagCuda):
     oldFilter = oldLayer.get_filters().clone()
 
     if mutation is not None:
-        mutation.doMutate(oldFilter, oldBias, newLayer, cuda=flagCuda)
+        mutation.doMutate(oldFilter, oldBias, newLayer, cuda=cuda_flag)
     else:
         newLayer.set_filters(oldFilter)
         newLayer.set_bias(oldBias)

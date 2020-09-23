@@ -1,4 +1,4 @@
-import children.pytorch.NetworkDendrites as nw
+import children.pytorch.network_dendrites as nw
 from Logic.commands import CommandCreateDataGen
 from DAO.database.dao import TestDAO, TestResultDAO, TestModelDAO
 import numpy as np
@@ -76,7 +76,7 @@ def Alaising(M,m,ep):
 
 def createNetwork(dna, settings):
 
-    return nw.Network(adn=dna, cudaFlag=settings.cuda,
+    return nw.Network(adn=dna, cuda_flag=settings.cuda,
                                     momentum=settings.momentum, weight_decay=settings.weight_decay,
                                     enable_activation=settings.enable_activation,
                                     enable_track_stats=settings.enable_track_stats, dropout_value=settings.dropout_value,
@@ -86,9 +86,9 @@ def createNetwork(dna, settings):
 def trainNetwork(network, id, dao, memoryManager, settings, name):
 
     print("### TRAINING ", name, " ###")
-    network.iterTraining(settings.dataGen, settings.joined_dt_array, settings.ricap)
-    network.generateEnergy(settings.dataGen)
-    current_accuracy = network.getAcurracy()
+    network.training_custom_dt(settings.dataGen, settings.joined_dt_array, settings.ricap)
+    network.generate_accuracy(settings.dataGen)
+    current_accuracy = network.get_accuracy()
     print("current accuracy=", current_accuracy)
     memoryManager.deleteNetwork(network)
     dao.updateAcc(acc=current_accuracy, idModel=id)

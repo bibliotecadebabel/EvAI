@@ -112,7 +112,7 @@ class Network:
         self.total_value = 0
 
     def Predict(self, image):
-        self.assignLabels("c")
+        self.assign_labels("c")
         self.nodes[0].objects[0].value = image[0]
 
         Functions.Propagation(self.nodes[4].objects[0])
@@ -153,14 +153,14 @@ class Network:
         self.nodes[0].objects[0].value = dataElement[0]
         #self.nodes[3].objects[0].label = dataElement[1]
 
-        self.assignLabels(dataElement[1])
+        self.assign_labels(dataElement[1])
 
         Functions.Propagation(self.nodes[4].objects[0])
         Functions.BackPropagation(self.nodes[0].objects[0])
 
         self.Acumulate_der(n, peso)
 
-    def assignLabels(self, label):
+    def assign_labels(self, label):
 
         for node in self.nodes:
             node.objects[0].label = label

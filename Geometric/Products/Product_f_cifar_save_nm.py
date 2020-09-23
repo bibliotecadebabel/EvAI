@@ -18,7 +18,7 @@ from Geometric.Dynamic.Dynamic_DNA_f import Dynamic_DNA
 from utilities.Abstract_classes.classes.torch_stream_disk import TorchStream
 from utilities.Abstract_classes.classes.positive_random_selector import(
     centered_random_selector as Selector)
-import children.pytorch.NetworkDendrites as nw
+import children.pytorch.network_dendrites as nw
 from Geometric.Conditions.DNA_conditions import max_layer,max_filter
 from Geometric.Creators.DNA_creators import Creator_from_selection_nm as Creator
 from Geometric.Dynamic.Dyamic_DNA_f_methods import update_from_select_nm  as space_updater
@@ -150,8 +150,8 @@ class Status():
         if center:
             stream=self.stream
             net=stream.get_net(center)
-            net.generateEnergy(self.Data_gen)
-            print(f'The acurrarcy is : {net.getAcurracy()}')
+            net.generate_accuracy(self.Data_gen)
+            print(f'The acurrarcy is : {net.get_accuracy()}')
             time.sleep(4)
         pass
 
@@ -282,7 +282,7 @@ def run(status):
     settings = status.settings
 
     if loaded_network == False:
-        network = nw.Network(status.Center,cudaFlag=settings.cuda,
+        network = nw.Network(status.Center,cuda_flag=settings.cuda,
                 momentum=settings.momentum,
                 weight_decay=settings.weight_decay,
                 enable_activation=settings.enable_activation,
@@ -303,15 +303,15 @@ def run(status):
                     max_layers=status.max_layer_conv2d, max_filters=status.max_filter, max_filter_dense=status.max_filter_dense,
                     max_kernel_dense=status.max_kernel_dense, max_pool_layer=status.max_pool_layer, max_parents=status.max_parents)
 
-        network.iterTraining(dataGenerator=status.Data_gen,
+        network.training_custom_dt(dataGenerator=status.Data_gen,
                         dt_array=dt_array, ricap=settings.ricap, evalLoss=settings.evalLoss)
 
     else:
 
         path = os.path.join("saved_models","product_database", "7_test_final_experiment_model_6044")
         network = NetworkStorage.loadNetwork(fileName=None, settings=settings, path=path)
-        network.generateEnergy(status.Data_gen)
-        acc = network.getAcurracy()
+        network.generate_accuracy(status.Data_gen)
+        acc = network.get_accuracy()
         print("Acc loaded network: ", acc)
         print("Alai time loaded: ", status.Alai.computeTime())
         L_1 = status.Alai.computeTime() // status.save_space_period
@@ -334,7 +334,7 @@ def run(status):
         testResultDao.insert(idTest=test_id, iteration=0, dna_graph=dna_graph, current_alai_time=status.Alai.computeTime(),
                                 reset_count=status.Alai.reset_count)
 
-        saveModel(status, 0, testModelDao, test_id, TrainingType.PRE_TRAINING)
+        save_model(status, 0, testModelDao, test_id, TrainingType.PRE_TRAINING)
 
     #update(status)
     while False:
@@ -415,7 +415,7 @@ def run(status):
                 if status.Alai.computeTime() >= L_2*status.save_net_period:
                     print("saving model: ", L_2)
                     L_2 += 1
-                    saveModel(status, k+1, testModelDao, test_id, TrainingType.MUTATION)
+                    save_model(status, k+1, testModelDao, test_id, TrainingType.MUTATION)
 
                 if layers_count >= 17 and save_17_layers == True:
                     save_checkpoint(status, testResultDao, layers_count, test_id, testModelDao, k)
@@ -490,18 +490,18 @@ def save_checkpoint(status, testResultDao, layers_count, test_id, testModelDao, 
     dna_graph = status.Dynamics.phase_space.DNA_graph
     testResultDao.insert(idTest=test_id, iteration=k+1, dna_graph=dna_graph, current_alai_time=status.Alai.computeTime(),
                             reset_count=status.Alai.reset_count)
-    saveModel(status, k+1, testModelDao, test_id, TrainingType.MUTATION)
+    save_model(status, k+1, testModelDao, test_id, TrainingType.MUTATION)
 
-def saveModel(status, k, testModelDao, test_id, trainingType):
+def save_model(status, k, testModelDao, test_id, trainingType):
     fileName = str(test_id)+"_"+status.experiment_name+"_model_"+str(k)
     final_path = os.path.join("saved_models","product_database",fileName)
     stream=status.Dynamics.phase_space.stream
     center=status.Dynamics.phase_space.center()
     if center:
         net=stream.get_net(center)
-        net.saveModel(final_path)
-        #net.generateEnergy(status.Data_gen)
-        #acc = net.getAcurracy()
+        net.save_model(final_path)
+        #net.generate_accuracy(status.Data_gen)
+        #acc = net.get_accuracy()
         acc = 0
         testModelDao.insert(idTest=test_id, dna=str(net.adn),iteration=k, fileName=fileName, model_weight=acc,
                                 current_alai_time=status.Alai.computeTime(), reset_count=status.Alai.reset_count,

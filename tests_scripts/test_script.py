@@ -1,5 +1,5 @@
 import children.pytorch.Network as nw
-import children.pytorch.NetworkDendrites as nw_dendrites
+import children.pytorch.network_dendrites as nw_dendrites
 import children.Interfaces as Inter
 import children.pytorch.Functions as Functions
 import children.pytorch.MutateNetwork as MutateNetwork
@@ -85,16 +85,16 @@ def Test_Mutacion():
             (0, 64, 64, 3, 3), (0, 64, 128, 3, 3, 2), (0, 128, 128, 3, 3), (0, 128, 128, 1, 1, 2), (1, 128, 10), (2,),
             (3, -1, 0), (3, 0, 1), (3, 1, 2), (3, 2, 3), (3, 3, 4), (3, 4, 5), (3, 5, 6), (3, 6, 7), (3, 7, 8))
 
-    network = nw_dendrites.Network(adn=adn, cudaFlag=True, momentum=0.9, weight_decay=0,
+    network = nw_dendrites.Network(adn=adn, cuda_flag=True, momentum=0.9, weight_decay=0,
                 enable_activation=True, enable_track_stats=True, dropout_value=0.2, dropout_function=dropout_function)
 
 
-    network.TrainingCosineLR_Restarts(dataGenerator=dataGen, max_dt=0.001, min_dt=0.001, epochs=800, restart_dt=800, show_accuarcy=True, fileManager=fileManager)
+    network.training_cosine_dt(dataGenerator=dataGen, max_dt=0.001, min_dt=0.001, epochs=800, restart_dt=800, show_accuarcy=True, fileManager=fileManager)
 
-    network.generateEnergy(dataGen)
-    print("Final accuracy: ", network.getAcurracy())
+    network.generate_accuracy(dataGen)
+    print("Final accuracy: ", network.get_accuracy())
 
-    fileManager.appendFile("epoch: 400 - Acc: "+str(network.getAcurracy()))
+    fileManager.appendFile("epoch: 400 - Acc: "+str(network.get_accuracy()))
 
 
 if __name__ == "__main__":

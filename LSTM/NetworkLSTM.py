@@ -10,10 +10,10 @@ import Factory.TensorFactory as TensorFactory
 
 class NetworkLSTM(nn.Module):
 
-    def __init__(self, observation_size, inChannels, outChannels, kernelSize, cudaFlag=True):
+    def __init__(self, observation_size, inChannels, outChannels, kernelSize, cuda_flag=True):
         super(NetworkLSTM, self).__init__()
 
-        self.cudaFlag = cudaFlag
+        self.cuda_flag = cuda_flag
         self.lenModules = observation_size-1
         self.inChannels = inChannels
         self.outChannels = outChannels
@@ -25,10 +25,10 @@ class NetworkLSTM(nn.Module):
 
         self.__createStructure()
 
-    def setAttribute(self, name, value):
+    def set_attribute(self, name, value):
         setattr(self,name,value)
 
-    def __getAttribute(self, name):
+    def __get_attribute(self, name):
 
         attribute = None
         try:
@@ -38,7 +38,7 @@ class NetworkLSTM(nn.Module):
 
         return attribute
 
-    def deleteAttribute(self, name):
+    def delete_attribute(self, name):
         try:
             delattr(self, name)
         except AttributeError:
@@ -55,7 +55,7 @@ class NetworkLSTM(nn.Module):
                 #inchannels += 2 #version 1
                 inchannels += self.inChannels * 2 #version 2
             
-            internal = InternalModuleVariant.InternalModuleVariant(kernelSize=self.kernelSize, inChannels=inchannels, outChannels=self.outChannels, cudaFlag=self.cudaFlag)
+            internal = InternalModuleVariant.InternalModuleVariant(kernelSize=self.kernelSize, inChannels=inchannels, outChannels=self.outChannels, cuda_flag=self.cuda_flag)
             self.internalModules.append(internal)
             
             attr_1 = "internal_"+str(i)+"_convFT"
@@ -63,18 +63,18 @@ class NetworkLSTM(nn.Module):
             attr_3 = "internal_"+str(i)+"_convCND"
             attr_4 = "internal_"+str(i)+"_convOT"
 
-            self.setAttribute(attr_1, internal.convFt)
-            self.setAttribute(attr_2, internal.convIt)
-            self.setAttribute(attr_3, internal.convCand)
-            self.setAttribute(attr_4, internal.convOt)
+            self.set_attribute(attr_1, internal.convFt)
+            self.set_attribute(attr_2, internal.convIt)
+            self.set_attribute(attr_3, internal.convCand)
+            self.set_attribute(attr_4, internal.convOt)
     
     def Train(self, dataElement, observations):
         
-        self.updateGradFlag(True)
+        self.set_grad_flag(True)
         self(dataElement)
-        self.__generateEnergy(observations)
+        self.__generate_accuracy(observations)
         self.__doBackward()
-        self.updateGradFlag(False)
+        self.set_grad_flag(False)
 
     def __createModulesXT(self, data):
         
@@ -114,9 +114,9 @@ class NetworkLSTM(nn.Module):
         shape = wordsTensor.shape
 
         if len(shape) > 3:
-            value = TensorFactory.createTensorZeros(tupleShape=(shape[0], shape[2], shape[3]), cuda=self.cudaFlag, requiresGrad=False)
+            value = TensorFactory.createTensorZeros(tupleShape=(shape[0], shape[2], shape[3]), cuda=self.cuda_flag, requiresGrad=False)
         else:
-            value = TensorFactory.createTensorZeros(tupleShape=(shape[0], 1, shape[2]), cuda=self.cudaFlag, requiresGrad=False)
+            value = TensorFactory.createTensorZeros(tupleShape=(shape[0], 1, shape[2]), cuda=self.cuda_flag, requiresGrad=False)
 
         i = 0
         for word in wordsTensor:
@@ -131,7 +131,7 @@ class NetworkLSTM(nn.Module):
         return value
             
 
-    def __generateEnergy(self, observations):
+    def __generate_accuracy(self, observations):
         
         #pesos = [4, 10, 30, 1]
 
@@ -177,11 +177,11 @@ class NetworkLSTM(nn.Module):
     def __doBackward(self):
         self.energy.backward()
 
-    def updateGradFlag(self, flag):
+    def set_grad_flag(self, flag):
 
         for module in self.internalModules:
 
-            module.updateGradFlag(flag)
+            module.set_grad_flag(flag)
     
     def predict(self, x):
     

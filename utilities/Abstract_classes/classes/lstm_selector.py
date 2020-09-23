@@ -67,7 +67,7 @@ class centered_random_selector(Selector):
         self.net = net_lstm.NetworkLSTM(observation_size=self.max_observation_size, 
                                             inChannels=self.max_layers_lstm, 
                                             outChannels=self.max_layers_lstm*self.converter.mutations, 
-                                            kernelSize=self.converter.mutations, cudaFlag=True)
+                                            kernelSize=self.converter.mutations, cuda_flag=True)
         self.input_lstm = None
         self.current_path = self.observation_creator(num_layer=0,
             path=[const_values.EMPTY_DIRECTION], weight=1)

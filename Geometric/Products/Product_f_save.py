@@ -270,7 +270,7 @@ def run(status):
                     testResultDao.insert(idTest=test_id, iteration=k+1, dna_graph=dna_graph)
 
                 if k % status.save_net_period == status.save_net_period - 1:
-                    saveModel(status, k+1, testModelDao, test_id)
+                    save_model(status, k+1, testModelDao, test_id)
             #status.print_particles()
             #status.print_particles()
             #status.print_max_particles()
@@ -284,14 +284,14 @@ def run(status):
             pass
         k=k+1
 
-def saveModel(status, k, testModelDao, test_id):
+def save_model(status, k, testModelDao, test_id):
     fileName = str(test_id)+"_"+status.experiment_name+"_model_"+str(k)
     final_path = os.path.join("saved_models","product_database",fileName)
     stream=status.Dynamics.phase_space.stream
     center=status.Dynamics.phase_space.center()
     if center:
         net=stream.get_net(center)
-        net.saveModel(final_path)
+        net.save_model(final_path)
         testModelDao.insert(idTest=test_id, dna=str(net.adn),iteration=k, fileName=fileName, model_weight=0)
         
 """

@@ -52,7 +52,7 @@ class DBHandler():
 
             self.__connection.commit()
 
-        except Exception as ex:
+        except Exception:
 
             print("query=", query)
             print("data=", data)
@@ -82,7 +82,7 @@ class DBHandler():
 
 
 
-        except Exception as ex:
+        except Exception:
 
             print("query=", query)
             print("data=", data)

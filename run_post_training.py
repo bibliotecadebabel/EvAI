@@ -5,7 +5,7 @@ import const.file_names as FileNames
 import numpy as np
 import utilities.Augmentation as Augmentation_Utils
 import math
-import children.pytorch.NetworkDendrites as nw
+import children.pytorch.network_dendrites as nw
 import utilities.FileManager as FileManager
 import utilities.CheckpointModel as CheckPoint
 import json
@@ -103,7 +103,7 @@ if __name__ == '__main__':
             dna = item.dna
 
     
-    network = nw.Network(dna,cudaFlag=settings.cuda,
+    network = nw.Network(dna,cuda_flag=settings.cuda,
                 momentum=settings.momentum,
                 weight_decay=settings.weight_decay,
                 enable_activation=settings.enable_activation,
@@ -118,12 +118,12 @@ if __name__ == '__main__':
     print("Starting training: 3 iterations of 200 epochs (total epochs: 600)")
     for i in range(settings.max_init_iter):
         print("iteration: ", i+1)
-        network.iterTraining(settings.dataGen, settings.init_dt_array, settings.ricap)
-        network.generateEnergy(settings.dataGen)
-        current_accuracy = network.getAcurracy()
+        network.training_custom_dt(settings.dataGen, settings.init_dt_array, settings.ricap)
+        network.generate_accuracy(settings.dataGen)
+        current_accuracy = network.get_accuracy()
         print("current accuracy=", current_accuracy)
             
         if settings.save_txt == True:
-            loss = network.getAverageLoss(avg_factor)
+            loss = network.get_average_loss(avg_factor)
             fileManager.appendFile("iter: "+str(i+1)+" - Acc: "+str(current_accuracy)+" - Loss: "+str(loss))
     

@@ -1,5 +1,5 @@
 from utilities.Abstract_classes.AbstractStream import Stream, Charge_log
-import children.pytorch.NetworkDendrites as nw
+import children.pytorch.network_dendrites as nw
 from DAO import GeneratorFromImage
 import torch
 import torch.nn as nn
@@ -168,7 +168,7 @@ class TorchStream(Stream):
         if not(node):
             self.add_node(key)
             network = nw.Network(key,
-                                 cudaFlag=self.cuda,momentum=0.9,
+                                 cuda_flag=self.cuda,momentum=0.9,
                                  weight_decay=0.0005,
                                  )
             self.link_node(key,network)

@@ -1,5 +1,5 @@
 from utilities.Abstract_classes.AbstractStream import Stream, Charge_log
-import children.pytorch.NetworkDendrites as nw
+import children.pytorch.network_dendrites as nw
 from DAO import GeneratorFromImage
 import torch
 import torch.nn as nn
@@ -82,7 +82,7 @@ class TorchStream(Stream):
                 if self.status:
                     if self.status.cuda:
                         torch.cuda.empty_cache()
-                net.iterTraining(dataGenerator=self.dataGen,
+                net.training_custom_dt(dataGenerator=self.dataGen,
                     dt_array=Alai.get_increments(self.log_size))
             log.charge(net.history_loss)
             net.history_loss=[]
@@ -103,7 +103,7 @@ class TorchStream(Stream):
                 if self.status:
                     if self.status.cuda:
                         torch.cuda.empty_cache()
-                net.iterTraining(dataGenerator=self.dataGen,
+                net.training_custom_dt(dataGenerator=self.dataGen,
                     dt_array=dt)
 #            net.Training(data=self.dataGen,
 #                p=self.log_size-5,
@@ -144,7 +144,7 @@ class TorchStream(Stream):
         if not(node):
             self.add_node(key)
             settings=self.settings
-            network = nw.Network(key,cudaFlag=settings.cuda,
+            network = nw.Network(key,cuda_flag=settings.cuda,
              momentum=settings.momentum,
              weight_decay=settings.weight_decay,
              enable_activation=settings.enable_activation,

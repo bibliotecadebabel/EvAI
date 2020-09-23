@@ -5,9 +5,9 @@ import torch.tensor as tensor
 
 class InternalModule():
 
-    def __init__(self, kernelSize, inChannels, outChannels, cudaFlag=True):
+    def __init__(self, kernelSize, inChannels, outChannels, cuda_flag=True):
 
-        self.cudaFlag = cudaFlag
+        self.cuda_flag = cuda_flag
         self.kernelSize = kernelSize
         self.__createStructure(inChannels=inChannels, outChannels=outChannels)
         self.ct = None
@@ -20,7 +20,7 @@ class InternalModule():
         self.convCand = nn.Conv1d(inChannels, outChannels, self.kernelSize)
         self.convOt = nn.Conv1d(inChannels, outChannels, self.kernelSize)
 
-        if self.cudaFlag == True:
+        if self.cuda_flag == True:
             self.convFt.cuda()
             self.convIt.cuda()
             self.convCand.cuda()
@@ -74,7 +74,7 @@ class InternalModule():
 
         self.ht.transpose_(1, 2)
 
-    def updateGradFlag(self, flag):
+    def set_grad_flag(self, flag):
 
         self.convFt.weight.requires_grad = flag
         self.convFt.bias.requires_grad = flag

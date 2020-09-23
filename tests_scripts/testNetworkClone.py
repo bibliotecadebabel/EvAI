@@ -1,6 +1,6 @@
 import DNA_directions_clone as dire
 import children.pytorch.MutateNetwork_Dendrites_clone as Mutate_Clone
-import children.pytorch.NetworkDendrites as nw_dendrites
+import children.pytorch.network_dendrites as nw_dendrites
 from DAO import GeneratorFromImage, GeneratorFromCIFAR
 
 def add_layer_test(parentDNA, index_layer):
@@ -24,16 +24,16 @@ def test_clone():
 
     #mutate_DNA = add_layer_test(parentDNA, 0)
 
-    network = nw_dendrites.Network(parentDNA, cudaFlag=True, momentum=0.9)
-    network.loadModel("saved_models/cifar/3_cifar_test_restart-clone_1_model_20")
+    network = nw_dendrites.Network(parentDNA, cuda_flag=True, momentum=0.9)
+    network.load_model("saved_models/cifar/3_cifar_test_restart-clone_1_model_20")
 
     print("original network DNA= ", network.adn)
-    network.generateEnergy(dataGen)
-    print("Accuracy= ", network.getAcurracy())
+    network.generate_accuracy(dataGen)
+    print("Accuracy= ", network.get_accuracy())
 
-    network.TrainingCosineLR_Restarts(dataGenerator=dataGen, base_dt=base_dt, epochs=10, etamin=min_dt, weight_decay=0.0005)
-    network.generateEnergy(dataGen)
-    print("Accuracy= ", network.getAcurracy())
+    network.training_cosine_dt(dataGenerator=dataGen, base_dt=base_dt, epochs=10, etamin=min_dt, weight_decay=0.0005)
+    network.generate_accuracy(dataGen)
+    print("Accuracy= ", network.get_accuracy())
         
 
 test_clone()

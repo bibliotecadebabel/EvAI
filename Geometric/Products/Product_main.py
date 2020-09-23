@@ -17,7 +17,7 @@ from Geometric.Dynamic.Dynamic_DNA_f import Dynamic_DNA
 from utilities.Abstract_classes.classes.torch_stream_disk import TorchStream
 from utilities.Abstract_classes.classes.positive_random_selector import(
     centered_random_selector as Selector)
-import children.pytorch.NetworkDendrites as nw
+import children.pytorch.network_dendrites as nw
 from Geometric.Conditions.DNA_conditions import max_layer,max_filter
 from Geometric.Creators.DNA_creators import Creator_from_selection as Creator
 from Geometric.Dynamic.Dyamic_DNA_f_methods import update_from_select_09  as space_updater
@@ -151,8 +151,8 @@ class Status():
         if center:
             stream=self.stream
             net=stream.get_net(center)
-            net.generateEnergy(self.Data_gen)
-            print(f'The acurrarcy is : {net.getAcurracy()}')
+            net.generate_accuracy(self.Data_gen)
+            print(f'The acurrarcy is : {net.get_accuracy()}')
             time.sleep(4)
         pass
 
@@ -273,7 +273,7 @@ def run(status):
 
     settings = status.settings
 
-    network = nw.Network(status.Center,cudaFlag=settings.cuda,
+    network = nw.Network(status.Center,cuda_flag=settings.cuda,
             momentum=settings.momentum,
             weight_decay=settings.weight_decay,
             enable_activation=settings.enable_activation,
@@ -287,7 +287,7 @@ def run(status):
     print("starting pre-training")
     dt_array=status.Alai.get_increments(20*status.iterations_per_epoch)
 
-    network.iterTraining(dataGenerator=status.Data_gen,
+    network.training_custom_dt(dataGenerator=status.Data_gen,
                     dt_array=dt_array, ricap=settings.ricap, evalLoss=settings.evalLoss)
 
     status.stream.add_node(network.adn)

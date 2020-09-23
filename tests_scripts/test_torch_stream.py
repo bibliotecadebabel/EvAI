@@ -18,7 +18,7 @@ def create_network(filters,dataGen):
     y = dataGen.size[2]
     networkADN = ((0, 3, ks[0], x, y), (1, ks[0], 2), (2,))
     network = nw.Network(networkADN,
-                         cudaFlag=False)
+                         cuda_flag=False)
     return network
 
 def create_DNA(filters,dataGen):

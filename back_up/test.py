@@ -98,7 +98,7 @@ def Test_node_0(network,n=1000,dt=0.1):
     layer_i=network.nodes[0].objects[0]
     while k<n:
         network.Predict(layer_i.value)
-        network.assignLabels("n")
+        network.assign_labels("n")
         network.Reset_der_total()
         #j=1
         #while j<5:

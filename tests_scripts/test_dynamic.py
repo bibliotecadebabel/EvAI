@@ -13,10 +13,10 @@ class Net(nn.Module):
         super(Net, self).__init__()
         self.objects = objects
 
-    def setAttribute(self, name, value):
+    def set_attribute(self, name, value):
         setattr(self,name,value)
     
-    def __getAttribute(self, name):
+    def __get_attribute(self, name):
 
         attribute = None
         try:
@@ -26,7 +26,7 @@ class Net(nn.Module):
 
         return attribute
     
-    def deleteAttribute(self, name):
+    def delete_attribute(self, name):
         try:
             delattr(self, name)
         except AttributeError:
@@ -34,7 +34,7 @@ class Net(nn.Module):
     
     def executeLayer(self, layerName, x):
 
-        layer = self.__getAttribute(layerName)
+        layer = self.__get_attribute(layerName)
 
         if layer is not None:
             
@@ -64,8 +64,8 @@ def Test_dynamicNetwork(dataGen):
     objects = [dataGen.size[1], dataGen.size[2],k]
     net = Net(objects).to(device)
 
-    net.setAttribute("conv1", nn.Conv2d(3, objects[2], objects[0], objects[1]).cuda())
-    net.setAttribute("fc1", nn.Linear(objects[2] * 1 * 1, 2).cuda())
+    net.set_attribute("conv1", nn.Conv2d(3, objects[2], objects[0], objects[1]).cuda())
+    net.set_attribute("fc1", nn.Linear(objects[2] * 1 * 1, 2).cuda())
 
     criterion = nn.CrossEntropyLoss()
     optimizer = optim.SGD(net.parameters(), lr=0.01, momentum=0.1)
@@ -89,7 +89,7 @@ def Test_dynamicNetwork(dataGen):
 
             if j % 2000 == 1999:    # print every 2000 mini-batches
                 print("Energy: ", running_loss, "i = ", j+1)
-                #net.deleteAttribute("fc2")
+                #net.delete_attribute("fc2")
                 running_loss = 0.0
 
 

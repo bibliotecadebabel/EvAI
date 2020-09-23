@@ -1,4 +1,4 @@
-import children.pytorch.NetworkDendrites as nw_dendrites
+import children.pytorch.network_dendrites as nw_dendrites
 from DAO import GeneratorFromImage, GeneratorFromCIFAR
 
 from Geometric.Graphs.DNA_Graph import DNA_Graph
@@ -112,21 +112,21 @@ def Test_Mutacion():
 
     mutation_manager = MutationManager.MutationManager(directions_version=version)
     
-    parent_network = nw_dendrites.Network(adn=PARENT_DNA, cudaFlag=True, momentum=0.9, weight_decay=0, 
+    parent_network = nw_dendrites.Network(adn=PARENT_DNA, cuda_flag=True, momentum=0.9, weight_decay=0, 
                 enable_activation=True, enable_track_stats=True, dropout_value=0.2, dropout_function=None, version=version)
 
-    parent_network.TrainingCosineLR_Restarts(dataGenerator=dataGen, max_dt=0.001, min_dt=0.001, epochs=1, restart_dt=1, 
+    parent_network.training_cosine_dt(dataGenerator=dataGen, max_dt=0.001, min_dt=0.001, epochs=1, restart_dt=1, 
                                         show_accuarcy=True)
 
-    parent_network.generateEnergy(dataGen)
-    print("original acc: ", parent_network.getAcurracy())
+    parent_network.generate_accuracy(dataGen)
+    print("original acc: ", parent_network.get_accuracy())
     mutate_network = mutation_manager.executeMutation(parent_network, MUTATE_DNA)
-    mutate_network.generateEnergy(dataGen)
-    print("mutated acc: ", mutate_network.getAcurracy())
-    mutate_network.TrainingCosineLR_Restarts(dataGenerator=dataGen, max_dt=0.001, min_dt=0.001, epochs=1, restart_dt=1, show_accuarcy=True)
+    mutate_network.generate_accuracy(dataGen)
+    print("mutated acc: ", mutate_network.get_accuracy())
+    mutate_network.training_cosine_dt(dataGenerator=dataGen, max_dt=0.001, min_dt=0.001, epochs=1, restart_dt=1, show_accuarcy=True)
 
-    mutate_network.generateEnergy(dataGen)
-    print("mutated acc after training: ", mutate_network.getAcurracy())
+    mutate_network.generate_accuracy(dataGen)
+    print("mutated acc after training: ", mutate_network.get_accuracy())
 
 def Test_Convex():
     augSettings = AugmentationSettings.AugmentationSettings()
@@ -151,7 +151,7 @@ def Test_Convex():
         (3, 0, 1), (3, 1, 2), (3, 2, 3), (3, 3, 4), (3, 5, 6))
 
 
-    parent_network = nw_dendrites.Network(adn=ADN, cudaFlag=True, momentum=0.9, weight_decay=0, 
+    parent_network = nw_dendrites.Network(adn=ADN, cuda_flag=True, momentum=0.9, weight_decay=0, 
                 enable_activation=True, enable_track_stats=True, dropout_value=0, dropout_function=None, version=version)   
 
     print("starting mutation")
@@ -160,7 +160,7 @@ def Test_Convex():
 
 def TestMemoryManager():
     
-    epochs = 10
+    epochs = 2
     batch_size = 64
 
     def dropout_function(base_p, total_layers, index_layer, isPool=False):
@@ -203,7 +203,7 @@ def TestMemoryManager():
     dt_array = Alaising(1.2, 99, epochs*e)
 
     input("press to continue: before load network")
-    network = nw_dendrites.Network(adn, cudaFlag=True, momentum=settings.momentum, weight_decay=settings.weight_decay,
+    network = nw_dendrites.Network(adn, cuda_flag=True, momentum=settings.momentum, weight_decay=settings.weight_decay,
                                     enable_activation=settings.enable_activation,
                                     enable_track_stats=settings.enable_track_stats, dropout_value=settings.dropout_value,
                                     dropout_function=settings.dropout_function, enable_last_activation=settings.enable_last_activation,
@@ -212,10 +212,10 @@ def TestMemoryManager():
     
     input("press to continue: before training network")
 
-    network.iterTraining(dataGenerator=dataGen,dt_array=dt_array, ricap=settings.ricap, evalLoss=True)
+    network.training_custom_dt(dataGenerator=dataGen,dt_array=dt_array, ricap=settings.ricap, evalLoss=True)
     
-    network.generateEnergy(dataGen)
-    print("net acc: ", network.getAcurracy())
+    network.generate_accuracy(dataGen)
+    print("net acc: ", network.get_accuracy())
 
     input("press to continue: before save network")
     memoryManager.saveTempNetwork(network)
@@ -225,8 +225,8 @@ def TestMemoryManager():
     network_loaded = memoryManager.loadTempNetwork(adn, settings)
     input("press to continue: after load temp network")
     
-    network_loaded.generateEnergy(dataGen)
-    print("loaded acc: ", network_loaded.getAcurracy())
+    network_loaded.generate_accuracy(dataGen)
+    print("loaded acc: ", network_loaded.get_accuracy())
 
     input("press to continue: before mutate network (remove layer 1)")
     dna_mutate = direction_dna.remove_layer(1, network_loaded.adn)
@@ -237,15 +237,13 @@ def TestMemoryManager():
     memoryManager.deleteNetwork(network_loaded)
     input("press to continue: after delete old network")
 
-    network_mutate.generateEnergy(dataGen)
-    print("mutated acc: ", network_mutate.getAcurracy())
+    network_mutate.generate_accuracy(dataGen)
+    print("mutated acc: ", network_mutate.get_accuracy())
     input("press to conitnue: before training mutate network")
-    network_mutate.TrainingCosineLR_Restarts(dataGenerator=dataGen, 
-                                    max_dt=0.001, min_dt=0.001, epochs=1, restart_dt=1,        
-                                    show_accuarcy=True)
+    network_mutate.training_custom_dt(dataGenerator=dataGen,dt_array=dt_array, ricap=settings.ricap, evalLoss=True)
     input("press to conitnue: after training mutate network")
-    network_mutate.generateEnergy(dataGen)
-    print("mutate net acc: ", network_mutate.getAcurracy())
+    network_mutate.generate_accuracy(dataGen)
+    print("mutate net acc: ", network_mutate.get_accuracy())
 
     input("press to continue: before save network")
     memoryManager.saveTempNetwork(network_mutate)
@@ -255,8 +253,8 @@ def TestMemoryManager():
     network_loaded = memoryManager.loadTempNetwork(dna_mutate, settings)
     input("press to continue: after load network")
 
-    network_loaded.generateEnergy(dataGen)
-    print("loaded acc: ", network_loaded.getAcurracy())
+    network_loaded.generate_accuracy(dataGen)
+    print("loaded acc: ", network_loaded.get_accuracy())
 
     input("press to continue: before mutate network (remove layer 1)")
     dna_mutate_2 = direction_dna.remove_layer(1, network_loaded.adn)
@@ -267,15 +265,13 @@ def TestMemoryManager():
     memoryManager.deleteNetwork(network_loaded)
     input("press to continue: after delete old network")
 
-    network_mutate.generateEnergy(dataGen)
-    print("mutated acc: ", network_mutate.getAcurracy())
+    network_mutate.generate_accuracy(dataGen)
+    print("mutated acc: ", network_mutate.get_accuracy())
     input("press to conitnue: before training mutate network")
-    network_mutate.TrainingCosineLR_Restarts(dataGenerator=dataGen, 
-                                    max_dt=0.001, min_dt=0.001, epochs=1, restart_dt=1,        
-                                    show_accuarcy=True)
+    network_mutate.training_custom_dt(dataGenerator=dataGen,dt_array=dt_array, ricap=settings.ricap, evalLoss=True)
     input("press to conitnue: after training mutate network")
-    network_mutate.generateEnergy(dataGen)
-    print("mutate net acc: ", network_mutate.getAcurracy())
+    network_mutate.generate_accuracy(dataGen)
+    print("mutate net acc: ", network_mutate.get_accuracy())
 
     input("press to continue: before save network")
     memoryManager.saveTempNetwork(network_mutate)

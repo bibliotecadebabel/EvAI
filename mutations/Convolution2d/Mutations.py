@@ -395,7 +395,7 @@ class AdjustEntryFilters_Dendrite():
         newEntries = shape[1] - (abs(value[0] - value[1]) + 1)
         #print("new entries: ", newEntries)
 
-        if self.network.cudaFlag == True:
+        if self.network.cuda_flag == True:
             adjustedOldFilter = torch.zeros(shape[0], newEntries, shape[2], shape[3]).cuda()
         else:
             adjustedOldFilter = torch.zeros(shape[0], newEntries, shape[2], shape[3])
@@ -439,7 +439,7 @@ class AdjustEntryFilters_Dendrite():
         value = abs(newFilter.shape[1] - oldFilter.shape[1])
         conserved_range = [range_filter[0], abs(range_filter[1] - value)]
         remove_gane = [conserved_range[1]+1, range_filter[1]]
-        if self.network.cudaFlag == True:
+        if self.network.cuda_flag == True:
             adjustedFilter = torch.zeros(shape[0], shape[1]-value, shape[2], shape[3]).cuda()
         else:
             adjustedFilter = torch.zeros(shape[0], shape[1]-value, shape[2], shape[3])
@@ -477,7 +477,7 @@ class AdjustEntryFilters_Dendrite():
         #print("value: ", value)
         shape = oldFilter.shape
 
-        if self.network.cudaFlag == True:
+        if self.network.cuda_flag == True:
             adjustedFilter = torch.zeros(shape[0], shape[1]+value, shape[2], shape[3]).cuda()
         else:
             adjustedFilter = torch.zeros(shape[0], shape[1]+value, shape[2], shape[3])

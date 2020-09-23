@@ -119,8 +119,8 @@ class Status():
         if center:
             stream=status.stream
             net=stream.get_net(center)
-            net.generateEnergy(status.Data_gen)
-            print(f'The acurrarcy is : {net.getAcurracy()}')
+            net.generate_accuracy(status.Data_gen)
+            print(f'The acurrarcy is : {net.get_accuracy()}')
             time.sleep(4)
         pass
 

@@ -1,5 +1,5 @@
 import children.pytorch.MutationManager as mutation_manager
-import children.pytorch.NetworkDendrites as nw
+import children.pytorch.network_dendrites as nw
 from DAO.database.dao import TestDAO, TestResultDAO, TestModelDAO
 from Geometric.Graphs.DNA_Graph import DNA_Graph as DNA_Graph
 #from utilities.Abstract_classes.classes.uniform_random_selector_2 import centered_random_selector as random_selector
@@ -30,7 +30,7 @@ class CommandExperimentCifar_Restarts():
         self.__bestNetwork = None
 
         if self.__settings.loadedNetwork == None:
-            self.__bestNetwork = nw.Network(adn=settings.initial_dna, cudaFlag=settings.cuda,
+            self.__bestNetwork = nw.Network(adn=settings.initial_dna, cuda_flag=settings.cuda,
                                     momentum=settings.momentum, weight_decay=settings.weight_decay,
                                     enable_activation=settings.enable_activation,
                                     enable_track_stats=settings.enable_track_stats, dropout_value=settings.dropout_value,
@@ -93,8 +93,8 @@ class CommandExperimentCifar_Restarts():
                 nodeAdn = self.__space.node2key(node)
 
                 if str(nodeAdn) == str(network.adn):
-                    node.objects[0].objects[0].energy = network.getAverageLoss(average_loss)
-                    print("saving energy network #", i, " - L=", network.getAverageLoss(average_loss))
+                    node.objects[0].objects[0].energy = network.get_average_loss(average_loss)
+                    print("saving energy network #", i, " - L=", network.get_average_loss(average_loss))
                     i +=1
 
     def __getEnergyNode(self, node):
@@ -118,20 +118,20 @@ class CommandExperimentCifar_Restarts():
         dt_array_len = len(dt_array)
         avg_factor = dt_array_len // 4
         
-        network.generateEnergy(self.__settings.dataGen)
-        best_accuracy = network.getAcurracy()
+        network.generate_accuracy(self.__settings.dataGen)
+        best_accuracy = network.get_accuracy()
         print("initial accuracy= ", best_accuracy)
 
         for i in range(max_iter):
             print("iteration: ", i+1)
-            network.iterTraining(self.__settings.dataGen, dt_array, self.__settings.ricap)
+            network.training_custom_dt(self.__settings.dataGen, dt_array, self.__settings.ricap)
             #network.Training(data=self.__settings.dataGen, dt=dt_array, p=len(dt_array), full_database=True)
-            network.generateEnergy(self.__settings.dataGen)
-            current_accuracy = network.getAcurracy()
+            network.generate_accuracy(self.__settings.dataGen)
+            current_accuracy = network.get_accuracy()
             print("current accuracy=", current_accuracy)
 
             if allow_save_txt == True and self.__settings.save_txt == True:
-                loss = network.getAverageLoss(avg_factor)
+                loss = network.get_average_loss(avg_factor)
                 self.__fileManager.appendFile("iter: "+str(i+1)+" - Acc: "+str(current_accuracy)+" - Loss: "+str(loss))
 
         return network
@@ -154,7 +154,7 @@ class CommandExperimentCifar_Restarts():
 
 
 
-        self.__saveModel(self.__bestNetwork, test_id=test_id, iteration=0)
+        self.__save_model(self.__bestNetwork, test_id=test_id, iteration=0)
 
         if self.__settings.disable_mutation == False:
 
@@ -179,7 +179,7 @@ class CommandExperimentCifar_Restarts():
                 self.__bestNetwork = self.__trainNetwork(network=self.__bestNetwork, dt_array=self.__settings.best_dt_array,
                                             max_iter=self.__settings.max_best_iter, keep_clone=True)
 
-                self.__saveModel(network=self.__bestNetwork, test_id=test_id, iteration=j)
+                self.__save_model(network=self.__bestNetwork, test_id=test_id, iteration=j)
 
                 self.__generateNewSpace()
                 self.__generateNetworks()
@@ -193,13 +193,13 @@ class CommandExperimentCifar_Restarts():
         bestNetwork = None
         for network in self.__networks[1:]:
 
-            network.generateEnergy(self.__settings.dataGen)
-            print("network accuracy=", network.getAcurracy())
-            if network.getAcurracy() >= highest_accuracy:
+            network.generate_accuracy(self.__settings.dataGen)
+            print("network accuracy=", network.get_accuracy())
+            if network.get_accuracy() >= highest_accuracy:
                 bestNetwork = network
-                highest_accuracy = network.getAcurracy()
+                highest_accuracy = network.get_accuracy()
 
-        print("bestnetwork= ", bestNetwork.getAcurracy())
+        print("bestnetwork= ", bestNetwork.get_accuracy())
         return bestNetwork
 
     def __generateNewSpace(self):
@@ -231,16 +231,16 @@ class CommandExperimentCifar_Restarts():
         self.__space = None
         self.__space = newSpace
 
-    def __saveModel(self, network, test_id, iteration):
+    def __save_model(self, network, test_id, iteration):
 
-        network.generateEnergy(self.__settings.dataGen)
+        network.generate_accuracy(self.__settings.dataGen)
         fileName = str(test_id)+"_"+self.__settings.test_name+"_model_"+str(iteration)
         final_path = os.path.join("saved_models","cifar", fileName)
 
         dna = str(network.adn)
-        accuracy = network.getAcurracy()
+        accuracy = network.get_accuracy()
 
-        network.saveModel(final_path)
+        network.save_model(final_path)
 
         self.__testModelDao.insert(idTest=test_id,dna=dna,iteration=iteration,fileName=fileName, model_weight=accuracy, 
                                 training_type=TrainingType.POST_TRAINING)
