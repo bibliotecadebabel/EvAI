@@ -4,9 +4,9 @@ import torch
 
 class LearnableLayer(layer.Layer):
 
-    def __init__(self, adn, torch_object):
+    def __init__(self, dna, torch_object):
         
-        layer.Layer.__init__(self, adn=adn)
+        layer.Layer.__init__(self, dna=dna)
         
         self.object = torch_object
         self.__dropout_value = 0
@@ -29,8 +29,8 @@ class LearnableLayer(layer.Layer):
 
         value = None
 
-        if self.adn is not None:
-            if self.adn[0] == 0 or self.adn[0] == 1:
+        if self.dna is not None:
+            if self.dna[0] == 0 or self.dna[0] == 1:
                 value = self.object.bias.grad
 
         return value
@@ -39,8 +39,8 @@ class LearnableLayer(layer.Layer):
 
         value = None
         
-        if self.adn is not None:
-            if self.adn[0] == 0 or self.adn[0] == 1:
+        if self.dna is not None:
+            if self.dna[0] == 0 or self.dna[0] == 1:
                 value = self.object.weight.grad
 
         return value
@@ -50,32 +50,32 @@ class LearnableLayer(layer.Layer):
  
         value = None
         
-        if self.adn is not None:
-            if self.adn[0] == 0 or self.adn[0] == 1:
+        if self.dna is not None:
+            if self.dna[0] == 0 or self.dna[0] == 1:
                 value = self.object.weight
 
         return value
     
     def set_filters(self, value):
 
-        if self.adn is not None:
-            if self.adn[0] == 0 or self.adn[0] == 1:
+        if self.dna is not None:
+            if self.dna[0] == 0 or self.dna[0] == 1:
                 self.object.weight = torch.nn.Parameter(value)
 
     def get_bias(self):
 
         value = None
         
-        if self.adn is not None:
-            if self.adn[0] == 0 or self.adn[0] == 1:
+        if self.dna is not None:
+            if self.dna[0] == 0 or self.dna[0] == 1:
                 value = self.object.bias
 
         return value
     
     def set_bias(self, value):
 
-        if self.adn is not None:
-            if self.adn[0] == 0 or self.adn[0] == 1:
+        if self.dna is not None:
+            if self.dna[0] == 0 or self.dna[0] == 1:
                 self.object.bias = torch.nn.Parameter(value)
 
     def apply_dropout(self, tensor):

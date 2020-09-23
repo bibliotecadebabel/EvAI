@@ -16,7 +16,7 @@ class TorchStream(Stream):
         class Torch_log_creator(Charge_log):
             def __init__(self,a=0):
                 super().__init__()
-                self.adn=None
+                self.dna=None
                 self.log_size=None
                 self.dataGen=None
                 self.Alai=Alai
@@ -24,14 +24,14 @@ class TorchStream(Stream):
                 self.memoryManager = memory_manager
                 self.settings = settings
             def get_net(self):
-                out_net=self.memoryManager.loadTempNetwork(self.adn, self.settings)
+                out_net=self.memoryManager.loadTempNetwork(self.dna, self.settings)
                 out_net.loss_history=[]
                 return out_net
             def set_net(self, net):
-                self.adn = net.adn
+                self.dna = net.dna
                 self.memoryManager.saveTempNetwork(net)
             def clear(self):
-                self.memoryManager.removeNetwork(self.adn, True)
+                self.memoryManager.removeNetwork(self.dna, True)
         return Torch_log_creator
     def __init__(self,dataGen,log_size=200,dt=0.001,min_size=5,
         Alai=None,status=None):

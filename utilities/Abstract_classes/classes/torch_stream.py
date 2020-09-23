@@ -1,5 +1,4 @@
 from utilities.Abstract_classes.AbstractStream import Stream, Charge_log
-import children.pytorch.Network as nw
 from DAO import GeneratorFromImage
 import torch
 import torch.nn as nn
@@ -93,8 +92,7 @@ class TorchStream(Stream):
         node=self.key2node(key)
         if not(node):
             self.add_node(key)
-            network = nw.Network(key,
-                                 cuda_flag=False)
+            network = None
             self.link_node(key,network)
             self.charge_node(key)
             print('added net')

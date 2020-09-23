@@ -74,9 +74,9 @@ def getNodeCenter(space):
     nodeCenter = None
     for node in space.objects:
 
-        nodeAdn = space.node2key(node)
+        nodeDna = space.node2key(node)
 
-        if str(nodeAdn) == str(space.center):
+        if str(nodeDna) == str(space.center):
             nodeCenter = node
 
     return nodeCenter
@@ -112,7 +112,7 @@ def Test_Mutacion():
 
     mutation_manager = MutationManager.MutationManager(directions_version=version)
     
-    parent_network = nw_dendrites.Network(adn=PARENT_DNA, cuda_flag=True, momentum=0.9, weight_decay=0, 
+    parent_network = nw_dendrites.Network(dna=PARENT_DNA, cuda_flag=True, momentum=0.9, weight_decay=0, 
                 enable_activation=True, enable_track_stats=True, dropout_value=0.2, dropout_function=None, version=version)
 
     parent_network.training_cosine_dt(dataGenerator=dataGen, max_dt=0.001, min_dt=0.001, epochs=1, restart_dt=1)
@@ -142,7 +142,7 @@ def Test_Convex():
     dataGen = GeneratorFromCIFAR.GeneratorFromCIFAR(2,  128, threads=0, dataAugmentation=True, transforms_mode=transform_compose)
     dataGen.dataConv2d()
 
-    ADN = ((-1, 1, 3, 32, 32), (0, 3, 32, 3, 3), (0, 32, 64, 3, 3, 2), (0, 64, 128, 3, 3, 2), (0, 128, 256, 3, 3), (0, 256, 128, 2, 2), (0, 128, 128, 3, 3, 2), (0, 256, 256, 3, 3), (0, 384, 256, 3, 3), (0, 256, 128, 3, 3), (0, 384, 128, 3, 3), (0, 128, 128, 3, 3), (0, 256, 256, 3, 3), (0, 256, 128, 8, 8), (1, 128, 10), (2,), (3, -1, 0), (3, 0, 1), (3, 1, 2), (3, 2, 3), (3, 3, 4), (3, 4, 5), (3, 3, 6), (3, 5, 7), (3, 6, 7), (3, 7, 8), (3, 8, 9), (3, 3, 9), (3, 4, 10), (3, 10, 11), (3, 9, 11), (3, 11, 12), (3, 13, 14))
+    DNA = ((-1, 1, 3, 32, 32), (0, 3, 32, 3, 3), (0, 32, 64, 3, 3, 2), (0, 64, 128, 3, 3, 2), (0, 128, 256, 3, 3), (0, 256, 128, 2, 2), (0, 128, 128, 3, 3, 2), (0, 256, 256, 3, 3), (0, 384, 256, 3, 3), (0, 256, 128, 3, 3), (0, 384, 128, 3, 3), (0, 128, 128, 3, 3), (0, 256, 256, 3, 3), (0, 256, 128, 8, 8), (1, 128, 10), (2,), (3, -1, 0), (3, 0, 1), (3, 1, 2), (3, 2, 3), (3, 3, 4), (3, 4, 5), (3, 3, 6), (3, 5, 7), (3, 6, 7), (3, 7, 8), (3, 8, 9), (3, 3, 9), (3, 4, 10), (3, 10, 11), (3, 9, 11), (3, 11, 12), (3, 13, 14))
     MUTATE_DNA = ((-1, 1, 3, 32, 32), (0, 3, 32, 3, 3), (0, 32, 64, 3, 3, 2), (0, 64, 128, 3, 3, 2), (0, 128, 256, 3, 3), (0, 256, 128, 2, 2), (0, 128, 128, 3, 3, 2), (0, 256, 256, 3, 3), (0, 128, 128, 3, 3), (0, 384, 256, 3, 3), (0, 256, 128, 3, 3), (0, 384, 128, 3, 3), (0, 128, 128, 3, 3), (0, 256, 256, 3, 3), (0, 256, 128, 8, 8), (1, 128, 10), (2,), (3, -1, 0), (3, 0, 1), (3, 1, 2), (3, 2, 3), (3, 3, 4), (3, 4, 5), (3, 3, 6), (3, 5, 7), (3, 7, 8), (3, 6, 8), (3, 8, 9), (3, 9, 10), (3, 3, 10), (3, 4, 11), (3, 11, 12), (3, 10, 12), (3, 12, 13), (3, 14, 15))
 
     ((-1, 1, 3, 32, 32), (0, 3, 32, 3, 3), (0, 32, 64, 3, 3, 2), (0, 64, 128, 3, 3, 2), 
@@ -150,7 +150,7 @@ def Test_Convex():
         (3, 0, 1), (3, 1, 2), (3, 2, 3), (3, 3, 4), (3, 5, 6))
 
 
-    parent_network = nw_dendrites.Network(adn=ADN, cuda_flag=True, momentum=0.9, weight_decay=0, 
+    parent_network = nw_dendrites.Network(dna=DNA, cuda_flag=True, momentum=0.9, weight_decay=0, 
                 enable_activation=True, enable_track_stats=True, dropout_value=0, dropout_function=None, version=version)   
 
     print("starting mutation")
@@ -193,7 +193,7 @@ def TestMemoryManager():
 
     mutation_manager = MutationManager.MutationManager(directions_version=settings.version)
 
-    adn = test_DNAs.DNA_base
+    dna = test_DNAs.DNA_base
 
     e =  50000 / batch_size
     e = math.ceil(e)
@@ -202,7 +202,7 @@ def TestMemoryManager():
     dt_array = Alaising(1.2, 99, int(epochs*e))
 
     input("press to continue: before load network")
-    network = nw_dendrites.Network(adn, cuda_flag=True, momentum=settings.momentum, weight_decay=settings.weight_decay,
+    network = nw_dendrites.Network(dna, cuda_flag=True, momentum=settings.momentum, weight_decay=settings.weight_decay,
                                     enable_activation=settings.enable_activation,
                                     enable_track_stats=settings.enable_track_stats, dropout_value=settings.dropout_value,
                                     dropout_function=settings.dropout_function, enable_last_activation=settings.enable_last_activation,
@@ -221,14 +221,14 @@ def TestMemoryManager():
     input("press to continue: after save network")
 
     input("press to continue: before load temp network")
-    network_loaded = memoryManager.loadTempNetwork(adn, settings)
+    network_loaded = memoryManager.loadTempNetwork(dna, settings)
     input("press to continue: after load temp network")
     
     network_loaded.generate_accuracy(dataGen)
     print("loaded acc: ", network_loaded.get_accuracy())
 
     input("press to continue: before mutate network (add filters layer 1)")
-    dna_mutate = direction_dna.increase_filters(1, network_loaded.adn)
+    dna_mutate = direction_dna.increase_filters(1, network_loaded.dna)
     network_mutate = mutation_manager.execute_mutation(network_loaded, dna_mutate)
     input("press to continue: after mutate network")
     
@@ -256,7 +256,7 @@ def TestMemoryManager():
     print("loaded acc: ", network_loaded.get_accuracy())
 
     input("press to continue: before mutate network (add layer pool 1)")
-    dna_mutate_2 = direction_dna.add_pool_layer(1, network_loaded.adn)
+    dna_mutate_2 = direction_dna.add_pool_layer(1, network_loaded.dna)
     network_mutate = mutation_manager.execute_mutation(network_loaded, dna_mutate_2)
     input("press to continue: after mutate network")
     
@@ -278,11 +278,11 @@ def TestMemoryManager():
 
 def Test_param_calculator():
 
-    adn = test_DNAs.DNA_val_25 
+    dna = test_DNAs.DNA_val_25 
 
     total_params = 0
     conv2d = 0
-    for layer in adn:
+    for layer in dna:
 
         layer_type = layer[0]
 
@@ -356,11 +356,11 @@ def TimeCalculator2():
 
 def LayerCalculator():
 
-    ADN = ((-1, 1, 3, 32, 32), (0, 3, 128, 4, 4), (0, 128, 128, 3, 3, 2), (0, 128, 128, 2, 2), (0, 128, 256, 2, 2, 2), (0, 128, 128, 3, 3), (0, 128, 256, 3, 3), (0, 256, 512, 2, 2), (0, 256, 128, 3, 3), (0, 512, 512, 3, 3), (0, 512, 512, 3, 3), (0, 640, 512, 3, 3, 2), (0, 768, 512, 3, 3), (0, 640, 512, 4, 4, 2), (0, 512, 512, 4, 4), (0, 512, 512, 2, 2), (0, 512, 512, 3, 3), (0, 1024, 256, 3, 3), (0, 256, 256, 2, 2), (0, 256, 512, 3, 3), (0, 512, 256, 4, 4), (0, 512, 512, 5, 5), (0, 1024, 512, 2, 2), (0, 512, 512, 4, 4), (0, 512, 512, 3, 3), (0, 512, 512, 4, 4), (0, 512, 512, 2, 2), (0, 512, 512, 3, 3), (0, 512, 512, 3, 3), (0, 512, 512, 3, 3), (0, 1024, 512, 2, 2), (0, 512, 512, 3, 3), (0, 512, 256, 3, 3), (0, 512, 256, 4, 4), (0, 768, 256, 3, 3), (0, 256, 256, 8, 8), (1, 256, 10), (2,), (3, -1, 0), (3, 0, 1), (3, 1, 2), (3, 2, 3), (3, 2, 4), (3, 4, 5), (3, 3, 6), (3, 5, 7), (3, 3, 7), (3, 6, 8), (3, 8, 9), (3, 7, 10), (3, 9, 10), (3, 10, 11), (3, 3, 11), (3, 11, 12), (3, 1, 12), (3, 12, 13), (3, 13, 14), (3, 14, 15), (3, 10, 16), (3, 15, 16), (3, 3, 17), (3, 17, 18), (3, 18, 19), (3, 3, 19), (3, 16, 20), (3, 19, 20), (3, 20, 21), (3, 13, 21), (3, 21, 22), (3, 22, 23), (3, 23, 24), (3, 12, 24), (3, 24, 25), (3, 25, 26), (3, 3, 26), (3, 26, 27), (3, 27, 28), (3, 28, 29), (3, 12, 29), (3, 25, 30), (3, 29, 31), (3, 30, 31), (3, 31, 32), (3, 3, 32), (3, 32, 33), (3, 21, 33), (3, 33, 34), (3, 34, 35), (3, 35, 36))    
+    DNA = ((-1, 1, 3, 32, 32), (0, 3, 128, 4, 4), (0, 128, 128, 3, 3, 2), (0, 128, 128, 2, 2), (0, 128, 256, 2, 2, 2), (0, 128, 128, 3, 3), (0, 128, 256, 3, 3), (0, 256, 512, 2, 2), (0, 256, 128, 3, 3), (0, 512, 512, 3, 3), (0, 512, 512, 3, 3), (0, 640, 512, 3, 3, 2), (0, 768, 512, 3, 3), (0, 640, 512, 4, 4, 2), (0, 512, 512, 4, 4), (0, 512, 512, 2, 2), (0, 512, 512, 3, 3), (0, 1024, 256, 3, 3), (0, 256, 256, 2, 2), (0, 256, 512, 3, 3), (0, 512, 256, 4, 4), (0, 512, 512, 5, 5), (0, 1024, 512, 2, 2), (0, 512, 512, 4, 4), (0, 512, 512, 3, 3), (0, 512, 512, 4, 4), (0, 512, 512, 2, 2), (0, 512, 512, 3, 3), (0, 512, 512, 3, 3), (0, 512, 512, 3, 3), (0, 1024, 512, 2, 2), (0, 512, 512, 3, 3), (0, 512, 256, 3, 3), (0, 512, 256, 4, 4), (0, 768, 256, 3, 3), (0, 256, 256, 8, 8), (1, 256, 10), (2,), (3, -1, 0), (3, 0, 1), (3, 1, 2), (3, 2, 3), (3, 2, 4), (3, 4, 5), (3, 3, 6), (3, 5, 7), (3, 3, 7), (3, 6, 8), (3, 8, 9), (3, 7, 10), (3, 9, 10), (3, 10, 11), (3, 3, 11), (3, 11, 12), (3, 1, 12), (3, 12, 13), (3, 13, 14), (3, 14, 15), (3, 10, 16), (3, 15, 16), (3, 3, 17), (3, 17, 18), (3, 18, 19), (3, 3, 19), (3, 16, 20), (3, 19, 20), (3, 20, 21), (3, 13, 21), (3, 21, 22), (3, 22, 23), (3, 23, 24), (3, 12, 24), (3, 24, 25), (3, 25, 26), (3, 3, 26), (3, 26, 27), (3, 27, 28), (3, 28, 29), (3, 12, 29), (3, 25, 30), (3, 29, 31), (3, 30, 31), (3, 31, 32), (3, 3, 32), (3, 32, 33), (3, 21, 33), (3, 33, 34), (3, 34, 35), (3, 35, 36))    
     
     
     count = 0
-    for layer in ADN:
+    for layer in DNA:
 
         if layer[0] == 0:
             count += 1

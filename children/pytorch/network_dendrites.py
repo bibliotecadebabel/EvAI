@@ -22,12 +22,12 @@ import torch.optim as optim
 
 class Network(nn.Module, na.NetworkAbstract):
 
-    def __init__(self, adn, cuda_flag=True, momentum=0.0, weight_decay=0.0, 
+    def __init__(self, dna, cuda_flag=True, momentum=0.0, weight_decay=0.0, 
                 enable_activation=True, enable_track_stats=True, dropout_value=0, 
                 dropout_function=None, enable_last_activation=True, version=None, eps_batchnorm=None):
 
         nn.Module.__init__(self)
-        na.NetworkAbstract.__init__(self,adn=adn, cuda=cuda_flag, momentum=momentum, weight_decay=weight_decay, 
+        na.NetworkAbstract.__init__(self,dna=dna, cuda=cuda_flag, momentum=momentum, weight_decay=weight_decay, 
                                 enable_activaiton=enable_activation, enable_track_stats=enable_track_stats, dropout_value=dropout_value,
                                 enable_last_activation=enable_last_activation)
         
@@ -61,9 +61,9 @@ class Network(nn.Module, na.NetworkAbstract):
 
         graph = Graphs.Graph(True)
 
-        for i in range(len(self.adn)):
+        for i in range(len(self.dna)):
 
-            layer_tuple = self.adn[i]
+            layer_tuple = self.dna[i]
 
             if layer_tuple[0] != 3:
                 self.__len_nodes += 1
@@ -88,9 +88,9 @@ class Network(nn.Module, na.NetworkAbstract):
         indexNode = 0
         index_learnable_layer = 0
 
-        for adn in self.adn:
+        for dna in self.dna:
 
-            layer_tuple = adn
+            layer_tuple = dna
 
             if layer_tuple[0] != 3:
                 
@@ -319,7 +319,7 @@ class Network(nn.Module, na.NetworkAbstract):
 
         except:
             print("ERROR TRAINING")
-            print("DNA: ", self.adn)
+            print("DNA: ", self.dna)
             raise
 
     def __generate_eval_loss(self, dataGenerator):
@@ -374,9 +374,9 @@ class Network(nn.Module, na.NetworkAbstract):
     def clone(self):
 
         newObjects = []
-        new_adn = tuple(list(self.adn))
+        new_dna = tuple(list(self.dna))
 
-        network = Network(new_adn,cuda_flag=self.cuda_flag, momentum=self.momentum, 
+        network = Network(new_dna,cuda_flag=self.cuda_flag, momentum=self.momentum, 
             weight_decay=self.weight_decay, enable_activation=self.enable_activation, 
             enable_track_stats=self.enable_track_stats, dropout_value=self.dropout_value, 
             dropout_function=self.dropout_function, enable_last_activation=self.enable_last_activation,
@@ -459,7 +459,7 @@ class Network(nn.Module, na.NetworkAbstract):
         torch.save({
             'model_state_dict': self.state_dict(),
             'optimizer_state_dict': self.optimizer.state_dict(),
-            'adn': self.adn,
+            'dna': self.dna,
             'cuda': self.cuda_flag,
             'momentum': self.momentum,
             'weight_decay': self.weight_decay,

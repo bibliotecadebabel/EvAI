@@ -49,7 +49,7 @@ class CommandExperimentCifar_Restarts():
     def __createNetwork(self, dna):
 
         settings = self.__settings
-        return nw.Network(adn=dna, cuda_flag=settings.cuda,
+        return nw.Network(dna=dna, cuda_flag=settings.cuda,
                                     momentum=settings.momentum, weight_decay=settings.weight_decay,
                                     enable_activation=settings.enable_activation,
                                     enable_track_stats=settings.enable_track_stats, dropout_value=settings.dropout_value,
@@ -64,7 +64,7 @@ class CommandExperimentCifar_Restarts():
 
         #centerNetwork = None
 
-        print("new space's center: =", self.__bestNetwork.adn)
+        print("new space's center: =", self.__bestNetwork.dna)
         #centerNetwork = self.__bestNetwork
         
         for network in self.__networks:
@@ -91,9 +91,9 @@ class CommandExperimentCifar_Restarts():
 
             for node in self.__nodes:
 
-                nodeAdn = self.__space.node2key(node)
+                nodeDna = self.__space.node2key(node)
 
-                if str(nodeAdn) == str(network.adn):
+                if str(nodeDna) == str(network.dna):
                     #network.generate_accuracy(self.__settings.dataGen)
                     node.objects[0].objects[0].energy = network.get_accuracy()
                     print("saving energy network #", i, " - L=", network.get_accuracy())
@@ -108,9 +108,9 @@ class CommandExperimentCifar_Restarts():
         nodeCenter = None
         for node in space.objects:
 
-            nodeAdn = space.node2key(node)
+            nodeDna = space.node2key(node)
 
-            if str(nodeAdn) == str(space.center):
+            if str(nodeDna) == str(space.center):
                 nodeCenter = node
 
         return nodeCenter
@@ -170,7 +170,7 @@ class CommandExperimentCifar_Restarts():
 
     def __getDirection(self, network):
 
-        node = self.__space.key2node(network.adn)
+        node = self.__space.key2node(network.dna)
 
         direction = node.objects[0].objects[0].direction
 
@@ -193,7 +193,7 @@ class CommandExperimentCifar_Restarts():
 
     def __generateNewSpace(self, firstTime=False):
         oldSpace = self.__space
-        newCenter = self.__bestNetwork.adn
+        newCenter = self.__bestNetwork.dna
     
         if firstTime == True:
             self.__selector.update(newCenter)
@@ -228,9 +228,9 @@ class CommandExperimentCifar_Restarts():
         final_path = os.path.join("saved_models","cifar", fileName)
 
         
-        dna = str(network.adn)
+        dna = str(network.dna)
         accuracy = network.get_accuracy()
-        node = self.__space.key2node(network.adn)
+        node = self.__space.key2node(network.dna)
         direction = str(node.objects[0].objects[0].direction)
         network.save_model(final_path)
 

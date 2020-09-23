@@ -290,8 +290,8 @@ def run(status):
     network.training_custom_dt(dataGenerator=status.Data_gen,
                     dt_array=dt_array, ricap=settings.ricap, evalLoss=settings.evalLoss)
 
-    status.stream.add_node(network.adn)
-    status.stream.link_node(network.adn, network)
+    status.stream.add_node(network.dna)
+    status.stream.link_node(network.dna, network)
 
     last_center_dna = None
     while k<status.max_iter:

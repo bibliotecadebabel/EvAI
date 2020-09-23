@@ -34,7 +34,7 @@ dataGen = dataCreator.returnParam()
 for model in test_models:
     print("charging model: ", model.model_name)
     path = os.path.join("saved_models","product_database", model.model_name)
-    network = NetworkStorage.loadNetwork(fileName=None, settings=settings, path=path)
+    network = NetworkStorage.load_network(fileName=None, settings=settings, path=path)
     network.generate_accuracy(dataGen)
     acc = network.get_accuracy()
     memoryManager.deleteNetwork(network)

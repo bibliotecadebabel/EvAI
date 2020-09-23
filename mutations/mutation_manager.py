@@ -32,9 +32,9 @@ class MutationManager():
         
         return self.__mutation_function
     
-    def execute_mutation(self, network, new_adn):
+    def execute_mutation(self, network, new_dna):
 
-        newNetwork = self.__mutation_function.execute_mutation(network, new_adn)
+        newNetwork = self.__mutation_function.execute_mutation(network, new_dna)
         torch.cuda.empty_cache()
         
         return newNetwork

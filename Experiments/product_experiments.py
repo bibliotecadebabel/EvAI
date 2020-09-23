@@ -12,17 +12,11 @@ import children.Interfaces as Inter
 import children.Operations as Op
 import children.net2.Network as nc
 from Geometric.Graphs.DNA_Graph import DNA_Graph
-from Geometric.Space.DNA_Phase_space_f_ac import DNA_Phase_space
-from Geometric.Dynamic.Dynamic_DNA_f import Dynamic_DNA
 from utilities.Abstract_classes.classes.torch_stream_ac import TorchStream
 from utilities.Abstract_classes.classes.positive_random_selector import(
     centered_random_selector as Selector)
-import children.pytorch.Network as nw
 from Geometric.Conditions.DNA_conditions import max_layer,max_filter
 from Geometric.Creators.DNA_creators import Creator_from_selection as Creator
-from Geometric.Dynamic.Dyamic_DNA_f_methods import update_from_select_09  as space_updater
-from Geometric.Dynamic.Dyamic_DNA_f_methods import (
-    update_velocity_mobility as velocity_updater)
 import time
 import Geometric.Conditions.DNA_conditions as DNA_conditions
 from utilities.Abstract_classes.classes.Alaising_cosine import (
@@ -41,7 +35,7 @@ def run_cifar_user_input_bidi(test_name,mutations_actions, const_direction_versi
     save=True#bool(input('Insert any input to save'))
     status=program.Status()
 
-    status.max_layer_conv2d = 22
+    status.max_layer_conv2d = 11
     status.max_filter = 530
     status.max_filter_dense = 270
     status.max_kernel_dense = 9
@@ -179,7 +173,7 @@ def run_cifar_user_input_bidi(test_name,mutations_actions, const_direction_versi
     x=32
     y=32
 
-    status.Center = DNAs.DNA_base_p_version
+    status.Center = DNAs.DNA_base
     status.settings=settings
     program.run(status)
 

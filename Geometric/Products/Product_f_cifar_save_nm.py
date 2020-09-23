@@ -309,7 +309,7 @@ def run(status):
     else:
 
         path = os.path.join("saved_models","product_database", "7_test_final_experiment_model_6044")
-        network = NetworkStorage.loadNetwork(fileName=None, settings=settings, path=path)
+        network = NetworkStorage.load_network(fileName=None, settings=settings, path=path)
         network.generate_accuracy(status.Data_gen)
         acc = network.get_accuracy()
         print("Acc loaded network: ", acc)
@@ -326,8 +326,8 @@ def run(status):
                     max_kernel_dense=status.max_kernel_dense, max_pool_layer=status.max_pool_layer, max_parents=status.max_parents)
 
 
-    status.stream.add_node(network.adn)
-    status.stream.link_node(network.adn, network)
+    status.stream.add_node(network.dna)
+    status.stream.link_node(network.dna, network)
 
     if status.save2database == True and loaded_network == False:
         dna_graph = status.Dynamics.phase_space.DNA_graph
@@ -503,7 +503,7 @@ def save_model(status, k, testModelDao, test_id, trainingType):
         #net.generate_accuracy(status.Data_gen)
         #acc = net.get_accuracy()
         acc = 0
-        testModelDao.insert(idTest=test_id, dna=str(net.adn),iteration=k, fileName=fileName, model_weight=acc,
+        testModelDao.insert(idTest=test_id, dna=str(net.dna),iteration=k, fileName=fileName, model_weight=acc,
                                 current_alai_time=status.Alai.computeTime(), reset_count=status.Alai.reset_count,
                                 training_type=trainingType)
 

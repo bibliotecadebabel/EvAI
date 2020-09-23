@@ -1,7 +1,6 @@
 from Geometric.Particle import particle as particle
 from utilities.Abstract_classes.classes.torch_stream_fb import TorchStream
 from DAO import GeneratorFromImage
-import children.pytorch.MutateNetwork_Dendrites_clone as Mutator
 import utilities.Graphs as gr
 import utilities.P_trees as tr
 from Geometric.timing import timing
@@ -415,7 +414,7 @@ class DNA_Phase_space():
             self.Mutator=mut_man.get_mutation_function()
             self.status=status
         else:
-            self.Mutator=Mutator
+            self.Mutator=None
 
 
 

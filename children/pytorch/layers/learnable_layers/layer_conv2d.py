@@ -5,9 +5,9 @@ import torch
 
 class Conv2dLayer(layer.LearnableLayer):
 
-    def __init__(self, adn, torch_object, enable_activation, propagate_mode):
+    def __init__(self, dna, torch_object, enable_activation, propagate_mode):
         
-        layer.LearnableLayer.__init__(self, adn=adn, torch_object=torch_object)
+        layer.LearnableLayer.__init__(self, dna=dna, torch_object=torch_object)
 
         self.__enable_activation = enable_activation
         self.__batchnorm = None
@@ -110,9 +110,9 @@ class Conv2dLayer(layer.LearnableLayer):
         if self.__pool is not None:
             current_input = self.__apply_pooling(current_input)
 
-        kernel = self.adn[3]
+        kernel = self.dna[3]
 
-        if self.node.kids[0].objects[0].adn[0] == 0:
+        if self.node.kids[0].objects[0].dna[0] == 0:
             current_input = self.__do_pad_input(targetTensor=current_input, kernel_size=kernel)
 
         if self.get_dropout_value() > 0:
@@ -133,7 +133,7 @@ class Conv2dLayer(layer.LearnableLayer):
             
     def __generate_input(self):
     
-        input_channels = self.adn[1]
+        input_channels = self.dna[1]
 
         parents_outputs_channels = 0
 

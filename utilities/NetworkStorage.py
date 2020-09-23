@@ -3,7 +3,7 @@ import os
 import utilities.ExperimentSettings
 import children.pytorch.network_dendrites as nw
 
-def loadNetwork(fileName, settings : utilities.ExperimentSettings.ExperimentSettings, path=None):
+def load_network(fileName, settings : utilities.ExperimentSettings.ExperimentSettings, path=None):
 
     if path is None:
         path = os.path.join("saved_models","cifar", fileName)
@@ -51,7 +51,7 @@ def loadNetwork(fileName, settings : utilities.ExperimentSettings.ExperimentSett
     else:
         eps_batchnorm = settings.eps_batchorm
 
-    network = nw.Network(adn=checkpoint['adn'], cuda_flag=settings.cuda, momentum=momentum, weight_decay=weight_decay, 
+    network = nw.Network(dna=checkpoint['dna'], cuda_flag=settings.cuda, momentum=momentum, weight_decay=weight_decay, 
                 enable_activation=enable_activation, enable_last_activation=enable_last_activation, dropout_value=dropout_value,
                 dropout_function=settings.dropout_function, enable_track_stats=enable_track_stats, version=version, eps_batchnorm=eps_batchnorm)
     

@@ -39,7 +39,7 @@ class LayerGenerator(AbstractFactory.FactoryClass):
 
     def __createImage(self):
 
-        layer = Layer(adn=self.__layer_tuple)
+        layer = Layer(dna=self.__layer_tuple)
 
         return layer
 
@@ -50,7 +50,7 @@ class LayerGenerator(AbstractFactory.FactoryClass):
         self.__initConv2d(torch_object)
         self.__verifyCuda(torch_object)
         
-        layer = layer_conv2d.Conv2dLayer(adn=self.__layer_tuple, torch_object=torch_object, enable_activation=self.__enable_activation,
+        layer = layer_conv2d.Conv2dLayer(dna=self.__layer_tuple, torch_object=torch_object, enable_activation=self.__enable_activation,
                                             propagate_mode=self.__propagate_mode)
 
         return layer
@@ -62,7 +62,7 @@ class LayerGenerator(AbstractFactory.FactoryClass):
         self.__initLinear(torch_object)
         self.__verifyCuda(torch_object)
         
-        value = layer_linear.LinearLayer(adn=self.__layer_tuple, torch_object=torch_object)
+        value = layer_linear.LinearLayer(dna=self.__layer_tuple, torch_object=torch_object)
 
         return value
 
@@ -72,7 +72,7 @@ class LayerGenerator(AbstractFactory.FactoryClass):
         
         self.__verifyCuda(torch_object)
 
-        value = layer_loss.LossLayer(adn=self.__layer_tuple, torch_object=torch_object)
+        value = layer_loss.LossLayer(dna=self.__layer_tuple, torch_object=torch_object)
 
         return value
 

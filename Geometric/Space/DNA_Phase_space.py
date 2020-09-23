@@ -1,7 +1,6 @@
 from Geometric.Particle import particle as particle
 from utilities.Abstract_classes.classes.torch_stream import TorchStream
 from DAO import GeneratorFromImage
-import children.pytorch.MutateNetwork as Mutate
 import utilities.Graphs as gr
 import utilities.P_trees as tr
 from Geometric.timing import timing
@@ -87,6 +86,7 @@ class DNA_Phase_space():
         stream=self.stream
         if not(stream.get_net(k_f)):
             net=self.node2net(node_o)
+            Mutate = None
             net_f=Mutate.execute_mutation(net,k_f)
             stream.add_node(k_f)
             stream.link_node(k_f,net_f)

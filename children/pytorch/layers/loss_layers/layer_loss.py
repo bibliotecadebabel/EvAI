@@ -2,9 +2,9 @@ import children.pytorch.layers.layer as layer
 
 class LossLayer(layer.Layer):
 
-    def __init__(self, adn, torch_object):
+    def __init__(self, dna, torch_object):
         
-        layer.Layer.__init__(self, adn=adn)
+        layer.Layer.__init__(self, dna=dna)
         
         self.object = torch_object
         self.__labels = None

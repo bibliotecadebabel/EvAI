@@ -11,9 +11,9 @@ print("new dna: ", new_dna)
 from children.pytorch.layers.loss_layers import layer_loss
 from  children.pytorch.layers.learnable_layers import layer_conv2d, layer_learnable, layer_linear
 
-conv2d = layer_conv2d.Conv2dLayer(adn=(1,1,1), node=None, torch_object=None, enable_activation=True, propagate_mode=1)
-linear = layer_linear.LinearLayer(adn=(2,2,2), node=None, torch_object=None)
-loss = layer_loss.LossLayer(adn=(3,3,3), node=None, torch_object=None)
+conv2d = layer_conv2d.Conv2dLayer(dna=(1,1,1), node=None, torch_object=None, enable_activation=True, propagate_mode=1)
+linear = layer_linear.LinearLayer(dna=(2,2,2), node=None, torch_object=None)
+loss = layer_loss.LossLayer(dna=(3,3,3), node=None, torch_object=None)
 
 
 if isinstance(conv2d, layer_learnable.LearnableLayer):

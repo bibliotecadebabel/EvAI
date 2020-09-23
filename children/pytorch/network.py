@@ -5,9 +5,9 @@ import children.pytorch.layers.learnable_layers.layer_learnable as layer_learnab
 
 class NetworkAbstract(ABC):
 
-    def __init__(self, adn, cuda, momentum, weight_decay, enable_activaiton, enable_track_stats=True, dropout_value=0, enable_last_activation=True):
+    def __init__(self, dna, cuda, momentum, weight_decay, enable_activaiton, enable_track_stats=True, dropout_value=0, enable_last_activation=True):
         self.cuda_flag = cuda
-        self.adn = adn
+        self.dna = dna
         self.nodes = []
         self.enable_track_stats = enable_track_stats
         self.momentum = momentum 

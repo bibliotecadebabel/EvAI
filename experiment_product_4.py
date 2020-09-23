@@ -100,7 +100,7 @@ def Alaising(M,m,ep):
 
 def createNetwork(dna, settings):
 
-    return nw.Network(adn=dna, cuda_flag=settings.cuda,
+    return nw.Network(dna=dna, cuda_flag=settings.cuda,
                                     momentum=settings.momentum, weight_decay=settings.weight_decay,
                                     enable_activation=settings.enable_activation,
                                     enable_track_stats=settings.enable_track_stats, dropout_value=settings.dropout_value,

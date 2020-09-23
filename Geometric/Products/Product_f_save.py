@@ -292,7 +292,7 @@ def save_model(status, k, testModelDao, test_id):
     if center:
         net=stream.get_net(center)
         net.save_model(final_path)
-        testModelDao.insert(idTest=test_id, dna=str(net.adn),iteration=k, fileName=fileName, model_weight=0)
+        testModelDao.insert(idTest=test_id, dna=str(net.dna),iteration=k, fileName=fileName, model_weight=0)
         
 """
 c=[]

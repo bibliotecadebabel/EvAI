@@ -2,9 +2,9 @@ from abc import abstractmethod
 
 class Layer():
 
-    def __init__(self, adn):
+    def __init__(self, dna):
         
-        self.adn = adn
+        self.dna = dna
         self.object = None
         self.node = None
         self.value = None
@@ -18,9 +18,9 @@ class Layer():
 
     def viewGraph(self):
 
-        print("graph of: ", self.adn)
+        print("graph of: ", self.dna)
         for kid in self.node.kids:
-            print("kid: ", kid.objects[0].adn)
+            print("kid: ", kid.objects[0].dna)
         
         for parent in self.node.parents:
-            print("parent: ", parent.objects[0].adn)
+            print("parent: ", parent.objects[0].dna)

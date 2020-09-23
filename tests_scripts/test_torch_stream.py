@@ -16,8 +16,8 @@ def create_network(filters,dataGen):
     ks=[filters]
     x = dataGen.size[1]
     y = dataGen.size[2]
-    networkADN = ((0, 3, ks[0], x, y), (1, ks[0], 2), (2,))
-    network = nw.Network(networkADN,
+    networkDNA = ((0, 3, ks[0], x, y), (1, ks[0], 2), (2,))
+    network = nw.Network(networkDNA,
                          cuda_flag=False)
     return network
 
@@ -25,8 +25,8 @@ def create_DNA(filters,dataGen):
     ks=[filters]
     x = dataGen.size[1]
     y = dataGen.size[2]
-    networkADN = ((0, 3, ks[0], x, y), (1, ks[0], 2), (2,))
-    return networkADN
+    networkDNA = ((0, 3, ks[0], x, y), (1, ks[0], 2), (2,))
+    return networkDNA
 
 def torch_stream_add():
     log_size=2

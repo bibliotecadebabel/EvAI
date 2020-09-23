@@ -5,9 +5,9 @@ import torch
 
 class LinearLayer(layer.LearnableLayer):
 
-    def __init__(self, adn, torch_object):
+    def __init__(self, dna, torch_object):
         
-        layer.LearnableLayer.__init__(self, adn=adn, torch_object=torch_object)
+        layer.LearnableLayer.__init__(self, dna=dna, torch_object=torch_object)
 
 
     def propagate(self):

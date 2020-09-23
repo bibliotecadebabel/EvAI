@@ -29,26 +29,26 @@ class MemoryManager():
         path = os.path.join(self.__basepath, file_name)
         network.save_model(path)
 
-        old_filename = self.getFileNameByKey(network.adn)
+        old_filename = self.getFileNameByKey(network.dna)
 
         if old_filename is not None:
-            self.removeNetwork(network.adn, deleteFile=True)
+            self.removeNetwork(network.dna, deleteFile=True)
 
-        self.__dynamic_net_dict[network.adn] = file_name
+        self.__dynamic_net_dict[network.dna] = file_name
 
         self.deleteNetwork(network)
 
     
-    def loadTempNetwork(self, adn, settings):
+    def loadTempNetwork(self, dna, settings):
 
-        file_name = self.getFileNameByKey(adn)
+        file_name = self.getFileNameByKey(dna)
         network_loaded = None
         
         if file_name == None:
-            print("No network saved with dna: ", adn)
+            print("No network saved with dna: ", dna)
         else:
             path = os.path.join(self.__basepath, file_name)
-            network_loaded = NetworkStorage.loadNetwork(fileName=file_name, settings=settings, path=path)
+            network_loaded = NetworkStorage.load_network(fileName=file_name, settings=settings, path=path)
 
         gc.collect()
         if network_loaded.cuda_flag == True:
@@ -56,17 +56,17 @@ class MemoryManager():
 
         return network_loaded
     
-    def getFileNameByKey(self, adn):
+    def getFileNameByKey(self, dna):
         
-        file_name = self.__dynamic_net_dict.get(adn)
+        file_name = self.__dynamic_net_dict.get(dna)
         return file_name
 
-    def removeNetwork(self, adn, deleteFile=False):
+    def removeNetwork(self, dna, deleteFile=False):
 
-        file_name = self.__dynamic_net_dict.get(adn)
+        file_name = self.__dynamic_net_dict.get(dna)
 
         if file_name is not None:
-            del self.__dynamic_net_dict[adn]
+            del self.__dynamic_net_dict[dna]
 
             if deleteFile == True:
                 delete_path = os.path.join(self.__basepath, file_name)

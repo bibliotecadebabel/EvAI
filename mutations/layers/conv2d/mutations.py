@@ -338,8 +338,8 @@ class AdjustEntryFilters():
                 indexNode = index + 1
 
                 if indexNode > 0: #check if is not image
-                    adn = self.network.nodes[indexNode].objects[0].adn
-                    starting += adn[2]
+                    dna = self.network.nodes[indexNode].objects[0].dna
+                    starting += dna[2]
                 
                 elif indexNode == 0:
                     starting += 3 #if indexNode equals zero is image, and image always has 3 output channels
@@ -348,7 +348,7 @@ class AdjustEntryFilters():
         if self.targetIndex+1 == 0:
             ending = 3
         else:
-            ending = self.network.nodes[self.targetIndex+1].objects[0].adn[2]
+            ending = self.network.nodes[self.targetIndex+1].objects[0].dna[2]
 
         value = [starting, starting + ending-1]
 
