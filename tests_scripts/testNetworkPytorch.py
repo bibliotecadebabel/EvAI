@@ -8,7 +8,7 @@ from utilities.Abstract_classes.classes.uniform_random_selector import(
 from Geometric.Conditions.DNA_conditions import max_layer,max_filter,max_filter_dense
 import Geometric.Directions.DNA_directions_convex as direction_dna
 import Geometric.Directions.DNA_directions_pool as direction_dna_p
-import children.pytorch.MutationManager as MutationManager
+import mutations.mutation_manager as MutationManager
 import const.versions as directions_version
 
 import os
@@ -115,15 +115,14 @@ def Test_Mutacion():
     parent_network = nw_dendrites.Network(adn=PARENT_DNA, cuda_flag=True, momentum=0.9, weight_decay=0, 
                 enable_activation=True, enable_track_stats=True, dropout_value=0.2, dropout_function=None, version=version)
 
-    parent_network.training_cosine_dt(dataGenerator=dataGen, max_dt=0.001, min_dt=0.001, epochs=1, restart_dt=1, 
-                                        show_accuarcy=True)
+    parent_network.training_cosine_dt(dataGenerator=dataGen, max_dt=0.001, min_dt=0.001, epochs=1, restart_dt=1)
 
     parent_network.generate_accuracy(dataGen)
     print("original acc: ", parent_network.get_accuracy())
-    mutate_network = mutation_manager.executeMutation(parent_network, MUTATE_DNA)
+    mutate_network = mutation_manager.execute_mutation(parent_network, MUTATE_DNA)
     mutate_network.generate_accuracy(dataGen)
     print("mutated acc: ", mutate_network.get_accuracy())
-    mutate_network.training_cosine_dt(dataGenerator=dataGen, max_dt=0.001, min_dt=0.001, epochs=1, restart_dt=1, show_accuarcy=True)
+    mutate_network.training_cosine_dt(dataGenerator=dataGen, max_dt=0.001, min_dt=0.001, epochs=1, restart_dt=1)
 
     mutate_network.generate_accuracy(dataGen)
     print("mutated acc after training: ", mutate_network.get_accuracy())
@@ -155,12 +154,12 @@ def Test_Convex():
                 enable_activation=True, enable_track_stats=True, dropout_value=0, dropout_function=None, version=version)   
 
     print("starting mutation")
-    mutate_network = mutation_manager.executeMutation(parent_network, MUTATE_DNA)
+    mutate_network = mutation_manager.execute_mutation(parent_network, MUTATE_DNA)
 
 
 def TestMemoryManager():
     
-    epochs = 2
+    epochs = 0.2
     batch_size = 64
 
     def dropout_function(base_p, total_layers, index_layer, isPool=False):
@@ -199,8 +198,8 @@ def TestMemoryManager():
     e =  50000 / batch_size
     e = math.ceil(e)
     print("e: ", e)
-    print("total iterations: ", epochs*e)
-    dt_array = Alaising(1.2, 99, epochs*e)
+    print("total iterations: ", int(epochs*e))
+    dt_array = Alaising(1.2, 99, int(epochs*e))
 
     input("press to continue: before load network")
     network = nw_dendrites.Network(adn, cuda_flag=True, momentum=settings.momentum, weight_decay=settings.weight_decay,
@@ -228,9 +227,9 @@ def TestMemoryManager():
     network_loaded.generate_accuracy(dataGen)
     print("loaded acc: ", network_loaded.get_accuracy())
 
-    input("press to continue: before mutate network (remove layer 1)")
-    dna_mutate = direction_dna.remove_layer(1, network_loaded.adn)
-    network_mutate = mutation_manager.executeMutation(network_loaded, dna_mutate)
+    input("press to continue: before mutate network (add filters layer 1)")
+    dna_mutate = direction_dna.increase_filters(1, network_loaded.adn)
+    network_mutate = mutation_manager.execute_mutation(network_loaded, dna_mutate)
     input("press to continue: after mutate network")
     
     input("press to continue: before delete old network")
@@ -256,9 +255,9 @@ def TestMemoryManager():
     network_loaded.generate_accuracy(dataGen)
     print("loaded acc: ", network_loaded.get_accuracy())
 
-    input("press to continue: before mutate network (remove layer 1)")
-    dna_mutate_2 = direction_dna.remove_layer(1, network_loaded.adn)
-    network_mutate = mutation_manager.executeMutation(network_loaded, dna_mutate_2)
+    input("press to continue: before mutate network (add layer pool 1)")
+    dna_mutate_2 = direction_dna.add_pool_layer(1, network_loaded.adn)
+    network_mutate = mutation_manager.execute_mutation(network_loaded, dna_mutate_2)
     input("press to continue: after mutate network")
     
     input("press to continue: before delete old network")

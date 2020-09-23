@@ -1,5 +1,5 @@
-from Logic.commands import CommandCreateDataGen
-from Logic.commands import  CommandExperiment_lstm as CommandExperimentCifar_Restarts
+from commands import CommandCreateDataGen
+from commands import  CommandExperiment_lstm as CommandExperimentCifar_Restarts
 from Geometric.Conditions.DNA_conditions import max_layer,max_filter,max_filter_dense
 import Geometric.Conditions.DNA_conditions as DNA_conditions
 from Geometric.Creators.DNA_creators import Creator

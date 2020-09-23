@@ -5,7 +5,7 @@ import children.pytorch.MutateNetwork_Dendrites_clone as Mutator
 import utilities.Graphs as gr
 import utilities.P_trees as tr
 from Geometric.timing import timing
-import children.pytorch.MutationManager as mutation_manager
+import mutations.mutation_manager as mutation_manager
 
 class DNA_Phase_space():
 
@@ -116,7 +116,7 @@ class DNA_Phase_space():
 
             old_network = net
             for kid_dna in path_mutations:
-                net_f = self.Mutator.executeMutation(old_network, kid_dna)
+                net_f = self.Mutator.execute_mutation(old_network, kid_dna)
                 stream.memoryManager.deleteNetwork(old_network)
                 old_network = net_f
 
@@ -421,7 +421,7 @@ class DNA_Phase_space():
         self.time=0
         if status:
             mut_man=mutation_manager.MutationManager(status.version)
-            self.Mutator=mut_man.getMuation()
+            self.Mutator=mut_man.get_mutation_function()
             self.status=status
         else:
             self.Mutator=Mutator

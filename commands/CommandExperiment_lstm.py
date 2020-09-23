@@ -1,4 +1,4 @@
-import children.pytorch.MutationManager as mutation_manager
+import mutations.mutation_manager as mutation_manager
 import children.pytorch.network_dendrites as nw
 from DAO.database.dao import TestDAO, TestResultDAO, TestModelDAO
 from Geometric.Graphs.DNA_Graph import DNA_Graph as DNA_Graph

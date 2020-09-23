@@ -1,4 +1,4 @@
-from mutations.MutationAbstract import Mutation
+from mutations.layers.mutation import Mutation
 import torch as torch
 
 class AlterExitFilterMutation(Mutation):
@@ -16,7 +16,7 @@ class AlterExitFilterMutation(Mutation):
 
     value = property(value_getter, value_setter)
 
-    def doMutate(self, oldFilter, oldBias, newNode, cuda):
+    def execute(self, oldFilter, oldBias, newNode, cuda):
 
         if self._value > 0:
 
@@ -64,7 +64,7 @@ class AlterEntryFilterMutation(Mutation):
 
     value = property(value_getter, value_setter)
     
-    def doMutate(self, oldFilter, oldBias, newNode, cuda):
+    def execute(self, oldFilter, oldBias, newNode, cuda):
 
         if self._value > 0:
 

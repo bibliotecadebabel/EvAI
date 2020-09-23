@@ -1,5 +1,5 @@
 import children.pytorch.network_dendrites as nw
-from Logic.commands import CommandCreateDataGen
+from commands import CommandCreateDataGen
 from DAO.database.dao import TestDAO, TestResultDAO, TestModelDAO
 import numpy as np
 import utilities.Augmentation as Augmentation

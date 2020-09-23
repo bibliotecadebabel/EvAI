@@ -1,4 +1,3 @@
-#from abc import ABC, abstractmethod, abc
 import abc
 
 class Mutation(abc.ABC):
@@ -12,6 +11,6 @@ class Mutation(abc.ABC):
     value = abc.abstractproperty(value_getter, value_setter)
 
     @abc.abstractmethod
-    def doMutate(self, oldFilter, oldBias, newNode):
+    def execute(self, oldFilter, oldBias, newNode):
         pass
 

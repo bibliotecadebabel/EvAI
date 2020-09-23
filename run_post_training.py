@@ -1,4 +1,4 @@
-from Logic.commands import CommandCreateDataGen
+from commands import CommandCreateDataGen
 import utilities.ExperimentSettings as ExperimentSettings
 import const.versions as directions_version
 import const.file_names as FileNames

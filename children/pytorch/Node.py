@@ -1,19 +1,11 @@
 class Node():
     def __init__(self):
+
+        # child nodes
         self.kids=[]
+
+        # parent nodes 
         self.parents=[]
+
+        # layers
         self.objects=[]
-
-
-
-
-
-
-#positions = [g.recenter([-300,0],center),
-#g.recenter([-200,100],center),
-#g.recenter([-200,-100],center),
-#g.recenter([-100,0],center),
-#g.recenter([100,0],center),
-#g.recenter([200,-100],center),
-#g.recenter([200,100],center),
-#g.recenter([300,0],center)]

@@ -19,7 +19,7 @@ class NetworkLSTM(nn.Module):
         self.outChannels = outChannels
         self.kernelSize = kernelSize
         self.total_value = 0
-        self.history_loss = []
+        self.loss_history = []
         self.internalModules = []
         self.modulesXT = []
 

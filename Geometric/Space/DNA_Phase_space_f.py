@@ -103,7 +103,7 @@ class DNA_Phase_space():
         stream=self.stream
         if not(stream.get_net(k_f)):
             net=self.node2net(node_o)
-            net_f=Mutate.executeMutation(net,k_f)
+            net_f=Mutate.execute_mutation(net,k_f)
             stream.add_node(k_f)
             stream.link_node(k_f,net_f)
             stream.charge_node(k_f)

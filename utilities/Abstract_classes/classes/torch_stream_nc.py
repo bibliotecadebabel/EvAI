@@ -22,7 +22,7 @@ class TorchStream(Stream):
                 self.dt=0
             def get_net(self):
                 out_net=self.new_net.clone()
-                out_net.history_loss=[]
+                out_net.loss_history=[]
                 return out_net
         return Torch_log_creator
     def __init__(self,dataGen,log_size=200,dt=0.001,min_size=5,
@@ -84,8 +84,8 @@ class TorchStream(Stream):
                         torch.cuda.empty_cache()
                 net.training_custom_dt(dataGenerator=self.dataGen,
                     dt_array=Alai.get_increments(self.log_size))
-            log.charge(net.history_loss)
-            net.history_loss=[]
+            log.charge(net.loss_history)
+            net.loss_history=[]
         elif log.signal and (len(log.log) < self.min_size+2):
 #            print('The net')
 #            print(key)
@@ -108,8 +108,8 @@ class TorchStream(Stream):
 #            net.Training(data=self.dataGen,
 #                p=self.log_size-5,
 #                dt=self.dt,full_database=True)
-            log.charge(net.history_loss)
-            net.history_loss=[]
+            log.charge(net.loss_history)
+            net.loss_history=[]
 #        else:
 #            print('The net')
 #            print(key)
@@ -213,7 +213,7 @@ class TorchStream(Stream):
                     keys2erase.append(key)
                     nodes2erase.append(node)
                 else:
-                    log.new_net.history_loss=[]
+                    log.new_net.loss_history=[]
         for k in range(len(keys2erase)):
             Graph.key2node.pop(keys2erase[k])
             Graph.node2key.pop(nodes2erase[k])

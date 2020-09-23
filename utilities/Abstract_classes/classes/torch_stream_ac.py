@@ -52,7 +52,7 @@ class TorchStream(Stream):
                         p=p,
                         dt=dt,
                         full_database=True)
-                out_net.history_loss=[]
+                out_net.loss_history=[]
                 return out_net
         return Torch_log_creator
     def __init__(self,dataGen,log_size=200,dt=0.001,min_size=5,
@@ -91,7 +91,7 @@ class TorchStream(Stream):
 #            print('is charging')
             net=log.new_net
             log.old_net=net.clone()
-            log.old_net.history_loss=[]
+            log.old_net.loss_history=[]
             Alai=self.Alai
             if not(self.Alai):
                 self.flags_print(f'Training no Alaising : dt={self.dt}')
@@ -105,15 +105,15 @@ class TorchStream(Stream):
                     p=self.log_size,
                     dt=Alai.get_increments(self.log_size),
                     full_database=True)
-            log.charge(net.history_loss)
-            net.history_loss=[]
+            log.charge(net.loss_history)
+            net.loss_history=[]
         elif log.signal and (len(log.log) < self.min_size+2):
 #            print('The net')
 #            print(key)
 #            print('is charging')
             net=log.get_net()
             log.old_net=net.clone()
-            log.old_net.history_loss=[]
+            log.old_net.loss_history=[]
             Alai=self.Alai
             if not(self.Alai):
                 self.flags_print(f'Training no Alaising : dt={self.dt}')
@@ -130,8 +130,8 @@ class TorchStream(Stream):
 #            net.Training(data=self.dataGen,
 #                p=self.log_size-5,
 #                dt=self.dt,full_database=True)
-            log.charge(net.history_loss)
-            net.history_loss=[]
+            log.charge(net.loss_history)
+            net.loss_history=[]
 #        else:
 #            print('The net')
 #            print(key)

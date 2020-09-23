@@ -1,6 +1,5 @@
 import children.pytorch.Network as nw
 import children.Interfaces as Inter
-import children.pytorch.Functions as Functions
 from DAO import GeneratorFromImage
 
 import torch

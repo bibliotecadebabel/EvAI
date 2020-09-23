@@ -17,7 +17,7 @@ class NetworkAbstract(ABC):
         self.factory = factory.LayerGenerator(cuda=self.cuda_flag)
         self.foward_value = None   
         self.total_value = 0
-        self.history_loss = []
+        self.loss_history = []
         self.dropout_value = dropout_value
         self.enable_last_activation = enable_last_activation
 
@@ -70,7 +70,7 @@ class NetworkAbstract(ABC):
     
     def get_average_loss(self, iterations):
 
-        last_x = self.history_loss[-iterations:]
+        last_x = self.loss_history[-iterations:]
 
         accum = 0
 
@@ -81,8 +81,8 @@ class NetworkAbstract(ABC):
     
     def get_loss_array(self):
 
-        value = self.history_loss.copy()
-        self.history_loss = []
+        value = self.loss_history.copy()
+        self.loss_history = []
         return value
     
     def get_loss_layer(self):

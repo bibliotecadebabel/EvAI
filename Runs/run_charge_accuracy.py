@@ -3,8 +3,8 @@ import random
 import os
 import utilities.NetworkStorage as NetworkStorage
 import utilities.MemoryManager as MemoryManager
-from TestNetwork.commands import CommandCreateDataGen
-import TestNetwork.ExperimentSettings as ExperimentSettings
+from commands import CommandCreateDataGen
+import utilities.ExperimentSettings as ExperimentSettings
 
 testModelDAO = TestModelDAO.TestModelDAO()
 memoryManager = MemoryManager.MemoryManager()

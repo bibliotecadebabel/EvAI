@@ -5,7 +5,7 @@ import children.pytorch.MutateNetwork_Dendrites_clone as Mutator
 import utilities.Graphs as gr
 import utilities.P_trees as tr
 from Geometric.timing import timing
-import children.pytorch.MutationManager as mutation_manager
+import mutations.mutation_manager as mutation_manager
 
 class DNA_Phase_space():
 
@@ -109,7 +109,7 @@ class DNA_Phase_space():
         stream=self.stream
         if not(stream.get_net(k_f)):
             net=self.node2net(node_o)
-            net_f=self.Mutator.executeMutation(net,k_f)
+            net_f=self.Mutator.execute_mutation(net,k_f)
             stream.add_node(k_f)
             stream.link_node(k_f,net_f)
             stream.charge_node(k_f)
@@ -377,7 +377,7 @@ class DNA_Phase_space():
         self.time=0
         if status:
             mut_man=mutation_manager.MutationManager(status.version)
-            self.Mutator=mut_man.getMuation()
+            self.Mutator=mut_man.get_mutation_function()
             self.status=status
         else:
             self.Mutator=Mutator

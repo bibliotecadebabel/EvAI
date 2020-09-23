@@ -2,7 +2,6 @@ import torch
 from children.pytorch.layers.layer import Layer
 from children.pytorch.layers.loss_layers import layer_loss
 from children.pytorch.layers.learnable_layers import layer_conv2d, layer_linear
-import children.pytorch.Functions as functions
 import Factory.AbstractFactory as AbstractFactory
 import const.propagate_mode as const
 import math

@@ -1,28 +1,31 @@
-import children.pytorch.Node as nd
+
+# network structure
+import children.pytorch.node as nd
 import children.pytorch.layers.learnable_layers.layer_learnable as layer_learnable
 import children.pytorch.layers.learnable_layers.layer_conv2d as layer_conv2d
-import children.pytorch.Functions as functions
-import children.pytorch.network_abstract as na
-import const.propagate_mode as const
-import const.datagenerator_type as datagen_type
-import const.versions as directions_version
-import utilities.Augmentation as Augmentation
+import children.pytorch.network as na
 
+# constants
+import const.propagate_mode as propagate_mode
+import const.versions as directions_version
+
+# utilities
+import utilities.Augmentation as Augmentation
+import utilities.Graphs as Graphs
+import time
+
+# pytorch
 import torch
 import torch.nn as nn
 import torch.tensor as tensor
-
-import utilities.Graphs as Graphs
 import torch.optim as optim
-
-import os
-import time
 
 class Network(nn.Module, na.NetworkAbstract):
 
     def __init__(self, adn, cuda_flag=True, momentum=0.0, weight_decay=0.0, 
                 enable_activation=True, enable_track_stats=True, dropout_value=0, 
                 dropout_function=None, enable_last_activation=True, version=None, eps_batchnorm=None):
+
         nn.Module.__init__(self)
         na.NetworkAbstract.__init__(self,adn=adn, cuda=cuda_flag, momentum=momentum, weight_decay=weight_decay, 
                                 enable_activaiton=enable_activation, enable_track_stats=enable_track_stats, dropout_value=dropout_value,
@@ -35,18 +38,17 @@ class Network(nn.Module, na.NetworkAbstract):
         if dropout_function == None:
             self.dropout_function = self.__defaultDropoutFunction
         
-    
         self.__len_nodes = 0
         self.__accumulated_loss = 0
         self.__accuracy = 0
 
-        self.__conv2d_propagate_mode = const.CONV2D_MULTIPLE_INPUTS
+        self.__conv2d_propagate_mode = propagate_mode.CONV2D_MULTIPLE_INPUTS
 
         if self.version == directions_version.H_VERSION or self.version == directions_version.CONVEX_VERSION:
-            self.__conv2d_propagate_mode = const.CONV2D_PADDING
+            self.__conv2d_propagate_mode = propagate_mode.CONV2D_PADDING
 
-        self.createStructure()
-        self.__currentEpoch = 0
+        self.createStructure()        
+
         self.optimizer = optim.SGD(self.parameters(), lr=0.1, momentum=self.momentum, weight_decay=self.weight_decay)
         self.eval_iter = None  
         self.acc_array = []
@@ -82,8 +84,6 @@ class Network(nn.Module, na.NetworkAbstract):
         self.__assign_layers()
 
     def __assign_layers(self):
-
-        #self.nodes[0].objects.append(ly.Layer(adn=self.adn[0], node=self.nodes[0]))
 
         indexNode = 0
         index_learnable_layer = 0
@@ -230,7 +230,7 @@ class Network(nn.Module, na.NetworkAbstract):
         self.total_value = self.get_loss_layer().value.item()
         self.__accumulated_loss += self.total_value
 
-    def training_cosine_dt(self, dataGenerator, max_dt, min_dt, epochs, restart_dt=1, show_accuarcy=False, fileManager=None):
+    def training_cosine_dt(self, dataGenerator, max_dt, min_dt, epochs, restart_dt=1):
 
         print("momentum=", self.momentum)
         print("weight decay=", self.weight_decay)
@@ -240,19 +240,8 @@ class Network(nn.Module, na.NetworkAbstract):
         print_every = total_steps // 8
         epoch = 0
 
-        #scheduler = optim.lr_scheduler.CosineAnnealingLR(self.optimizer, total_steps * restart_dt, eta_min=min_dt)
         while epoch < epochs:
             start_time = time.time()
-            #if epoch % restart_dt == 0:
-            #    scheduler = optim.lr_scheduler.CosineAnnealingLR(self.optimizer, total_steps * restart_dt, eta_min=min_dt)
-
-            if show_accuarcy == True and epoch > 0:
-
-                if epoch % 5 == 0:
-                    self.generate_accuracy(dataGen=dataGenerator)
-                    print("ACCURACY= ", self.get_accuracy())
-                    fileManager.appendFile("epoch: "+str(epoch)+" - Acc: "+str(self.get_accuracy()))
-
 
             for i, data in enumerate(dataGenerator._trainoader):
 
@@ -261,17 +250,9 @@ class Network(nn.Module, na.NetworkAbstract):
                 else:
                     inputs, labels_data = data[0], data[1]
 
-                self.assign_labels(labels_data)
-                self.total_value = 0
-                self.optimizer.zero_grad()
-                self.__init_training(inputs)
-                self.optimizer.step()
-                #scheduler.step()
+                self.__default_training(inputs, labels_data)
 
-                self.total_value = self.get_loss_layer().value.item()
-                self.__accumulated_loss += self.total_value
-                self.history_loss.append(self.total_value)
-
+                self.loss_history.append(self.total_value)
 
                 if i % print_every == print_every - 1:
                     self.__print_training_values(epoch + 1, i, avg=(print_every))
@@ -285,10 +266,8 @@ class Network(nn.Module, na.NetworkAbstract):
     def training_custom_dt(self, dataGenerator, dt_array, ricap=None, evalLoss=False):
 
         try:
-            print("Using eva loss: ", evalLoss)
+            print("Using evaluation loss: ", evalLoss)
             print("ricap: ", ricap)
-            save_acc = False
-            current_epoch = 0
             iters = len(dt_array)
 
             print_every = iters // 10
@@ -299,7 +278,8 @@ class Network(nn.Module, na.NetworkAbstract):
                 self.eval_iter = iter(dataGenerator._evalloader)
             
             i = 0
-
+            current_epoch = 1
+            
             while i < iters:
                 
                 try:
@@ -318,11 +298,9 @@ class Network(nn.Module, na.NetworkAbstract):
                         self.__default_training(inputs=inputs, labels_data=labels_data)
                     else:
                         self.__training_with_ricap(inputs=inputs, labels_data=labels_data, ricap=ricap)
-
-                    self.__currentEpoch = i
                     
                     if evalLoss == False:
-                        self.history_loss.append(self.total_value)
+                        self.loss_history.append(self.total_value)
                     else:
                         self.__generate_eval_loss(dataGenerator)
                         
@@ -331,13 +309,12 @@ class Network(nn.Module, na.NetworkAbstract):
                         if i % print_every == print_every - 1:
                             
                             end_time = time.time() - start
-                            self.__print_training_values(epoch=1, i=i, avg=print_every, end_time=end_time)
+                            self.__print_training_values(epoch=current_epoch, i=i, avg=print_every, end_time=end_time)
                             start = time.time()
                     i+= 1
 
                 except StopIteration:
                     current_epoch += 1
-                    save_acc = True
                     data_iter = iter(dataGenerator._trainoader)
 
         except:
@@ -377,11 +354,14 @@ class Network(nn.Module, na.NetworkAbstract):
             model.nodes[0].objects[0].value = inputs 
             model(model.nodes[0].objects[0].value)
             eval_loss = model.get_loss_layer().value.item()
-            self.history_loss.append(eval_loss)
+            self.loss_history.append(eval_loss)
             self.train()
 
     def forward(self, x):
-        self.__start_propagation()
+        #self.__start_propagation()
+
+        for node in self.nodes:
+            node.objects[0].propagate()
 
     def __start_propagation(self):
 
@@ -394,9 +374,9 @@ class Network(nn.Module, na.NetworkAbstract):
     def clone(self):
 
         newObjects = []
-        newADN = tuple(list(self.adn))
+        new_adn = tuple(list(self.adn))
 
-        network = Network(newADN,cuda_flag=self.cuda_flag, momentum=self.momentum, 
+        network = Network(new_adn,cuda_flag=self.cuda_flag, momentum=self.momentum, 
             weight_decay=self.weight_decay, enable_activation=self.enable_activation, 
             enable_track_stats=self.enable_track_stats, dropout_value=self.dropout_value, 
             dropout_function=self.dropout_function, enable_last_activation=self.enable_last_activation,
@@ -423,7 +403,7 @@ class Network(nn.Module, na.NetworkAbstract):
         network.enable_activation = self.enable_activation
         network.enable_track_stats = self.enable_track_stats
 
-        network.history_loss = self.history_loss[-200:]
+        network.loss_history = self.loss_history[-200:]
 
         return network
 
@@ -521,7 +501,7 @@ class Network(nn.Module, na.NetworkAbstract):
 
         del self.optimizer
         del self.nodes
-        del self.history_loss
+        del self.loss_history
 
         if self.cuda_flag == True:
             torch.cuda.empty_cache()

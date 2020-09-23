@@ -1,14 +1,14 @@
-
+import children.pytorch.layers.learnable_layers.layer_conv2d as conv2d_layer
 class MutateBatchNormalization():
 
     def __init__(self):
         pass
 
-    def doMutate(self, oldBatchNorm, newLayer):
+    def execute(self, oldBatchNorm, new_layer):
 
-        if oldBatchNorm is not None and newLayer.get_batch_norm() is not None:
+        if oldBatchNorm is not None and isinstance(new_layer, conv2d_layer.Conv2dLayer):
 
-            new_batchNorm = newLayer.get_batch_norm()
+            new_batchNorm = new_layer.get_batch_norm()
 
             shape_oldBatch = oldBatchNorm.weight.shape[0]
             shape_newBatch = new_batchNorm.weight.shape[0]
@@ -36,7 +36,7 @@ class MutateBatchNormalization():
             if oldBatchNorm.num_batches_tracked is not None:
                 new_batchNorm.num_batches_tracked = oldBatchNorm.num_batches_tracked.clone()
             
-            newLayer.set_batch_norm(new_batchNorm)
+            new_layer.set_batch_norm(new_batchNorm)
 
             del new_batchNorm
 
