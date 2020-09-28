@@ -128,8 +128,6 @@ class Conv2dLayer(layer.LearnableLayer):
         if self.__enable_activation == True:
             self.value = torch.nn.functional.relu(value)
         
-        self.get_batch_norm_object
-
 
     def propagate(self):
         self.__propagate_function()

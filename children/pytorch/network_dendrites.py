@@ -177,7 +177,7 @@ class Network(nn.Module, na.NetworkAbstract):
         self.set_grad_flag(True)
 
         self(data)
-        self.__start_back_propagation()
+        self.__backward()
         self.set_grad_flag(False)
 
     def __default_training(self, inputs, labels_data):
@@ -342,7 +342,7 @@ class Network(nn.Module, na.NetworkAbstract):
             if isinstance(node.objects[0], layer_torch.TorchLayer):
                 node.objects[0].propagate()
 
-    def __start_back_propagation(self):
+    def __backward(self):
 
         self.get_loss_layer().value.backward()
 

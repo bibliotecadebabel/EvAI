@@ -42,7 +42,7 @@ class LossLayer(layer.TorchLayer):
             self.value = self.get_ricap().generateLoss(self)
         else:
             self.value = self.object(value, self.__labels)
-
+        
     def delete_params(self):
 
         if self.__labels is not None:
