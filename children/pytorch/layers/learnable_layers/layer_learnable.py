@@ -1,14 +1,13 @@
-import children.pytorch.layers.layer as layer
+import children.pytorch.layers.layer_torch as layer
 from abc import abstractmethod
 import torch
 
-class LearnableLayer(layer.Layer):
+class LearnableLayer(layer.TorchLayer):
 
     def __init__(self, dna, torch_object):
         
-        layer.Layer.__init__(self, dna=dna)
+        layer.TorchLayer.__init__(self, dna=dna, torch_object=torch_object)
         
-        self.object = torch_object
         self.__dropout_value = 0
         self.__dropout = None
         self.tensor_h = None
@@ -88,5 +87,5 @@ class LearnableLayer(layer.Layer):
         pass
     
     @layer.abstractmethod
-    def deleteParam(self):
+    def delete_params(self):
         pass

@@ -26,7 +26,7 @@ class LinearLayer(layer.LearnableLayer):
 
         self.value = value
     
-    def deleteParam(self):
+    def delete_params(self):
 
         if self.object is not None:
 

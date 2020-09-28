@@ -3,6 +3,7 @@
 import children.pytorch.node as nd
 import children.pytorch.layers.learnable_layers.layer_learnable as layer_learnable
 import children.pytorch.layers.learnable_layers.layer_conv2d as layer_conv2d
+import children.pytorch.layers.layer_torch as layer_torch
 import children.pytorch.network as na
 
 # constants
@@ -36,7 +37,7 @@ class Network(nn.Module, na.NetworkAbstract):
         self.eps_batchnorm = eps_batchnorm
 
         if dropout_function == None:
-            self.dropout_function = self.__defaultDropoutFunction
+            self.dropout_function = self.__generate_dropout
         
         self.__len_nodes = 0
         self.__accumulated_loss = 0
@@ -47,17 +48,16 @@ class Network(nn.Module, na.NetworkAbstract):
         if self.version == directions_version.H_VERSION or self.version == directions_version.CONVEX_VERSION:
             self.__conv2d_propagate_mode = propagate_mode.CONV2D_PADDING
 
-        self.createStructure()        
+        self.__generate_structure()        
 
         self.optimizer = optim.SGD(self.parameters(), lr=0.1, momentum=self.momentum, weight_decay=self.weight_decay)
         self.eval_iter = None  
-        self.acc_array = []
           
-    def __defaultDropoutFunction(self, base_p, total_layers, index_learnable_layer, isPool=False):
+    def __generate_dropout(self, base_p, total_layers, index_learnable_layer, isPool=False):
 
         return base_p
 
-    def createStructure(self):
+    def __generate_structure(self):
 
         graph = Graphs.Graph(True)
 
@@ -100,7 +100,12 @@ class Network(nn.Module, na.NetworkAbstract):
                 layer.node = self.nodes[indexNode]
                 self.nodes[indexNode].objects.append(layer)
                 attributeName = "layer"+str(indexNode)
-                self.set_attribute(attributeName, layer.object)
+                torch_object = None
+
+                if isinstance(layer, layer_torch.TorchLayer):
+                    torch_object = layer.object
+
+                self.set_attribute(attributeName, torch_object)
                 
                 #if index_learnable_layer == self.__total_layers - 2 and self.enable_last_activation == False:
                 #    layer.set_enable_activation(False)
@@ -166,33 +171,6 @@ class Network(nn.Module, na.NetworkAbstract):
                 target_node = layer_tuple[2]+1
                 self.nodes[target_node].objects[0].connected_layers.append(self.nodes[input_node].objects[0])
 
-    def predict(self, image, label):
-
-        labelTensor = na.tensorFactory.createTensor(body=[label.item()], cuda=self.cuda_flag, requiresGrad=False)
-        self.assign_labels(labelTensor)
-
-        value = image.view(1, 3, image.shape[1], image.shape[2])
-
-        if self.cuda_flag == True:
-            value = value.cuda()
-
-        self.nodes[0].objects[0].value = value
-        self(self.nodes[0].objects[0].value)
-
-        return self.get_prediction_result()
-
-
-    def get_prediction_result(self):
-
-        value = self.get_linear_layer().value
-
-        sc = value[0][0]
-        sn = value[0][1]
-
-        p = torch.exp(sc)/(torch.exp(sc) + torch.exp(sn))
-
-        return p.item()
-
     def __init_training(self, data):
 
         self.nodes[0].objects[0].value = data
@@ -215,7 +193,7 @@ class Network(nn.Module, na.NetworkAbstract):
         self.__accumulated_loss += self.total_value
 
     
-    def __training_with_ricap(self, inputs, labels_data, ricap : Augmentation.Ricap):
+    def __ricap_training(self, inputs, labels_data, ricap : Augmentation.Ricap):
 
         self.get_loss_layer().set_enable_ricap(True)
         self.assign_labels(labels_data)
@@ -297,7 +275,7 @@ class Network(nn.Module, na.NetworkAbstract):
                     if ricap == None:
                         self.__default_training(inputs=inputs, labels_data=labels_data)
                     else:
-                        self.__training_with_ricap(inputs=inputs, labels_data=labels_data, ricap=ricap)
+                        self.__ricap_training(inputs=inputs, labels_data=labels_data, ricap=ricap)
                     
                     if evalLoss == False:
                         self.loss_history.append(self.total_value)
@@ -358,14 +336,11 @@ class Network(nn.Module, na.NetworkAbstract):
             self.train()
 
     def forward(self, x):
-        #self.__start_propagation()
 
         for node in self.nodes:
-            node.objects[0].propagate()
 
-    def __start_propagation(self):
-
-        functions.Propagation(self.get_loss_layer())
+            if isinstance(node.objects[0], layer_torch.TorchLayer):
+                node.objects[0].propagate()
 
     def __start_back_propagation(self):
 
@@ -373,7 +348,6 @@ class Network(nn.Module, na.NetworkAbstract):
 
     def clone(self):
 
-        newObjects = []
         new_dna = tuple(list(self.dna))
 
         network = Network(new_dna,cuda_flag=self.cuda_flag, momentum=self.momentum, 
@@ -386,16 +360,19 @@ class Network(nn.Module, na.NetworkAbstract):
             layerToClone = self.nodes[i].objects[0]
             layer = network.nodes[i].objects[0]
 
-            if layerToClone.get_bias() is not None:
-                layer.set_bias(layerToClone.get_bias().clone())
+            if isinstance(layerToClone, layer_learnable.LearnableLayer) and isinstance(layer, layer_learnable.LearnableLayer):
 
-            if layerToClone.get_filters() is not None:
-                layer.set_filters(layerToClone.get_filters().clone())
-            
-            if layerToClone.tensor_h is not None:
-                layer.tensor_h.data = layerToClone.tensor_h.data.clone()
+                if layerToClone.get_bias() is not None:
+                    layer.set_bias(layerToClone.get_bias().clone())
+
+                if layerToClone.get_filters() is not None:
+                    layer.set_filters(layerToClone.get_filters().clone())
                 
-            layer.set_batch_norm(layerToClone.get_batch_norm_object())
+                if layerToClone.tensor_h is not None:
+                    layer.tensor_h.data = layerToClone.tensor_h.data.clone()
+
+            if isinstance(layer, layer_conv2d.Conv2dLayer) and isinstance(layerToClone, layer_conv2d.Conv2dLayer):
+                layer.set_batch_norm(layerToClone.get_batch_norm_object())
 
         network.total_value = self.total_value
         network.momentum = self.momentum
@@ -412,14 +389,13 @@ class Network(nn.Module, na.NetworkAbstract):
         accuracy = 0
 
         model = self.eval()
-        #model = model.eval()
 
         with torch.no_grad():
 
             total = 0
             correct = 0
 
-            for i, data in enumerate(dataGen._testloader):
+            for _, data in enumerate(dataGen._testloader):
 
                 if self.cuda_flag == True:
                     inputs, labels = data[0].cuda(), data[1].cuda()
@@ -496,7 +472,11 @@ class Network(nn.Module, na.NetworkAbstract):
     def delete_parameters(self):
         
         for node in self.nodes:
-            node.objects[0].deleteParam()
+
+            layer = node.objects[0]
+
+            if isinstance(layer, layer_torch.TorchLayer):
+                layer.delete_params()
             del node
 
         del self.optimizer

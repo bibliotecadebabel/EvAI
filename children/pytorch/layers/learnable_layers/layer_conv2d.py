@@ -113,7 +113,7 @@ class Conv2dLayer(layer.LearnableLayer):
         kernel = self.dna[3]
 
         if self.node.kids[0].objects[0].dna[0] == 0:
-            current_input = self.__do_pad_input(targetTensor=current_input, kernel_size=kernel)
+            current_input = self.__pad_input(targetTensor=current_input, kernel_size=kernel)
 
         if self.get_dropout_value() > 0:
             output_dropout = self.apply_dropout(current_input)
@@ -127,6 +127,9 @@ class Conv2dLayer(layer.LearnableLayer):
         
         if self.__enable_activation == True:
             self.value = torch.nn.functional.relu(value)
+        
+        self.get_batch_norm_object
+
 
     def propagate(self):
         self.__propagate_function()
@@ -151,7 +154,7 @@ class Conv2dLayer(layer.LearnableLayer):
             for i in range(len(self.connected_layers)):
                 
                 current_input = self.connected_layers[i].value.clone()
-                padded_input = self.__do_pad_kernels(current_input, biggest_input_kernel)
+                padded_input = self.__pad_kernels(current_input, biggest_input_kernel)
                 del current_input
                 concat_tensor_list.append(padded_input)
 
@@ -171,8 +174,8 @@ class Conv2dLayer(layer.LearnableLayer):
             for i in range(len(self.connected_layers)):
                 
                 current_input = self.connected_layers[i].value.clone()
-                padded_input_kernel = self.__do_pad_kernels(current_input, biggest_input_kernel)
-                padded_input_depth = self.__do_pad_filters(padded_input_kernel, biggest_input_depth)
+                padded_input_kernel = self.__pad_kernels(current_input, biggest_input_kernel)
+                padded_input_depth = self.__pad_filters(padded_input_kernel, biggest_input_depth)
                 del current_input, padded_input_kernel
                 
                 if i == 0:
@@ -227,7 +230,7 @@ class Conv2dLayer(layer.LearnableLayer):
         
         return biggest_input
     
-    def __do_pad_kernels(self, targetTensor, refferenceTensor):
+    def __pad_kernels(self, targetTensor, refferenceTensor):
 
         pad_tensor = targetTensor
         
@@ -241,7 +244,7 @@ class Conv2dLayer(layer.LearnableLayer):
         
         return pad_tensor
 
-    def __do_pad_filters(self, targetTensor, refferenceTensor):
+    def __pad_filters(self, targetTensor, refferenceTensor):
 
         pad_tensor = targetTensor
         
@@ -255,7 +258,7 @@ class Conv2dLayer(layer.LearnableLayer):
         
         return pad_tensor
     
-    def __do_pad_input(self, targetTensor, kernel_size):
+    def __pad_input(self, targetTensor, kernel_size):
         pad_tensor = targetTensor
         
         refference_size = kernel_size - 1
@@ -265,7 +268,7 @@ class Conv2dLayer(layer.LearnableLayer):
         
         return pad_tensor
     
-    def deleteParam(self):
+    def delete_params(self):
 
         if self.object is not None:
 

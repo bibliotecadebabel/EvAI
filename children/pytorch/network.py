@@ -24,22 +24,6 @@ class NetworkAbstract(ABC):
     def set_attribute(self, name, value):
         setattr(self,name,value)
 
-    def get_attribute(self, name):
-
-        attribute = None
-        try:
-            attribute = getattr(self, name)
-        except AttributeError:
-            pass
-
-        return attribute
-
-    def delete_attribute(self, name):
-        try:
-            delattr(self, name)
-        except AttributeError:
-            pass
-
     def set_grad_flag(self, flag):
 
         for node in self.nodes[:-1]:

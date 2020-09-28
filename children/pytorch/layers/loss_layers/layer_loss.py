@@ -1,12 +1,11 @@
-import children.pytorch.layers.layer as layer
+import children.pytorch.layers.layer_torch as layer
 
-class LossLayer(layer.Layer):
+class LossLayer(layer.TorchLayer):
 
     def __init__(self, dna, torch_object):
         
-        layer.Layer.__init__(self, dna=dna)
+        layer.TorchLayer.__init__(self, dna=dna, torch_object=torch_object)
         
-        self.object = torch_object
         self.__labels = None
         self.__crops = None
         self.__ricap = None
@@ -44,7 +43,7 @@ class LossLayer(layer.Layer):
         else:
             self.value = self.object(value, self.__labels)
 
-    def deleteParam(self):
+    def delete_params(self):
 
         if self.__labels is not None:
             del self.__labels
