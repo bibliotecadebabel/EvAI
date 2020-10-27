@@ -5,6 +5,8 @@ import torch
 import mutations.layers.conv2d.mutations as Conv2dMutations
 import mutations.layers.batch_normalization.mutations as batchMutate
 import const.mutation_type as m_type
+import children.pytorch.layers.learnable_layers.layer_learnable as learnable_layer
+import children.pytorch.layers.learnable_layers.layer_conv2d as conv2d_layer
 
 def execute_mutation(old_network, new_dna):
     
@@ -76,7 +78,7 @@ def __init_mutation(old_network, network, lenghtDna):
         old_layer = old_network.nodes[i].objects[0]
         new_layer = network.nodes[i].objects[0]
 
-        if old_layer.get_filters() is not None:
+        if isinstance(old_layer, learnable_layer.LearnableLayer) and isinstance(new_layer, learnable_layer.LearnableLayer) and old_layer.get_filters() is not None:
 
             adjustFilterMutation = __getAdjustFilterMutation(indexLayer=i, source_dendrites=source_dendrites,
                                                                 network=old_network, adjustLayer=old_layer, newFilter=new_layer.get_filters())
@@ -89,7 +91,11 @@ def __init_mutation(old_network, network, lenghtDna):
                 if old_layer.dna[0] == 0:
                     oldFilter, oldBias = adjustFilterMutation.adjustEntryFilters(mutation_type=mutation_type)
 
-            __execute_mutations(oldFilter=oldFilter, oldBias=oldBias, oldBatchnorm=old_layer.get_batch_norm(),
+            if isinstance(old_layer, conv2d_layer.Conv2dLayer):
+                __execute_mutations(oldFilter=oldFilter, oldBias=oldBias, oldBatchnorm=old_layer.get_batch_norm(),
+                        new_layer=new_layer, cuda_flag=network.cuda_flag, layerType=old_layer.dna[0])
+            else:
+                __execute_mutations(oldFilter=oldFilter, oldBias=oldBias, oldBatchnorm=None,
                         new_layer=new_layer, cuda_flag=network.cuda_flag, layerType=old_layer.dna[0])
         
         if network.cuda_flag == True:
@@ -179,13 +185,15 @@ def __execute_mutations(oldFilter, oldBias, oldBatchnorm, layerType,  new_layer,
             oldFilter = new_layer.get_filters()
             oldBias = new_layer.get_bias()
 
-        norm_mutation = batchMutate.MutateBatchNormalization()
+        norm_mutation = batchMutate.BatchNormMutation()
         norm_mutation.execute(oldBatchNorm=oldBatchnorm, new_layer=new_layer)
 
     else:
         new_layer.set_filters(oldFilter)
         new_layer.set_bias(oldBias)
-        new_layer.set_batch_norm(oldBatchnorm)
+
+        if isinstance(new_layer, conv2d_layer.Conv2dLayer):
+            new_layer.set_batch_norm(oldBatchnorm)
 
 def __initNewConvolution(newConvolution):
     factor_n = 0.25
@@ -326,7 +334,7 @@ def __getAdjustFilterMutation(indexLayer, source_dendrites, network, adjustLayer
 
     if len(index_dna_list) > 0:
         
-        mutation = Conv2dMutations.AdjustEntryFilters(adjustLayer=adjustLayer, indexList=index_dna_list,
+        mutation = Conv2dMutations.AdjustInputChannels(adjustLayer=adjustLayer, indexList=index_dna_list,
              targetIndex=source_dendrites[0][1], network=network, newFilter=newFilter)
 
     return mutation

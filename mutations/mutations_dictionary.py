@@ -22,14 +22,14 @@ class MutationsDictionary():
 
     def __generate_conv2d_mutations(self):
 
-        self.__conv2d[0] = Conv2dMutations.AlterExitFilterMutation()
-        self.__conv2d[1] = Conv2dMutations.AlterEntryFilterMutation()
-        self.__conv2d[3] = Conv2dMutations.AlterDimensionKernel()
+        self.__conv2d[0] = Conv2dMutations.OutputChannelMutation()
+        self.__conv2d[1] = Conv2dMutations.InputChannelMutation()
+        self.__conv2d[3] = Conv2dMutations.KernelSizeMutation()
         
     def __generate_linear_mutations(self):
         
-        self.__linear[0] = LinearMutations.AlterExitFilterMutation()
-        self.__linear[1] = LinearMutations.AlterEntryFilterMutation()
+        self.__linear[0] = LinearMutations.OutputChannelMutation()
+        self.__linear[1] = LinearMutations.InputChannelMutation()
 
     def __get_operation(self, oldFilter, newFilter):
 

@@ -232,7 +232,7 @@ def __execute_mutations(oldFilter, oldBias, oldBatchnorm, layerType,  new_layer,
             oldFilter = new_layer.get_filters()
             oldBias = new_layer.get_bias()
 
-        norm_mutation = batchMutate.MutateBatchNormalization()
+        norm_mutation = batchMutate.BatchNormMutation()
         norm_mutation.execute(oldBatchNorm=oldBatchnorm, new_layer=new_layer)
 
     else:
@@ -434,7 +434,7 @@ def __getAdjustFilterMutation(indexLayer, source_dendrites, network, adjustLayer
         if mutationType is not None and (mutationType == m_type.DEFAULT_ADD_FILTERS or mutationType == m_type.DEFAULT_REMOVE_DENDRITE):
             index_dna_list = __verifyConvexDendrites(newNetwork=newNetwork, newFilter=newFilter, index_list=index_dna_list, targetIndex=indexLayer-1)
         
-        mutation = Conv2dMutations.AdjustEntryFilters(adjustLayer=adjustLayer, indexList=index_dna_list,
+        mutation = Conv2dMutations.AdjustInputChannels(adjustLayer=adjustLayer, indexList=index_dna_list,
              targetIndex=source_dendrites[0][1], network=network, newFilter=newFilter)
 
     return mutation

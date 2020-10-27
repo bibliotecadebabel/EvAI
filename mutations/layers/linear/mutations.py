@@ -1,7 +1,7 @@
 from mutations.layers.mutation import Mutation
 import torch as torch
 
-class AlterExitFilterMutation(Mutation):
+class OutputChannelMutation(Mutation):
 
     def __init__(self):
         super().__init__()
@@ -49,7 +49,7 @@ class AlterExitFilterMutation(Mutation):
             newNode.set_filters(oldFilter)
             newNode.set_bias(oldBias)
 
-class AlterEntryFilterMutation(Mutation):
+class InputChannelMutation(Mutation):
 
     def __init__(self):
         super().__init__()

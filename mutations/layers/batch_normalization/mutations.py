@@ -1,5 +1,6 @@
 import children.pytorch.layers.learnable_layers.layer_conv2d as conv2d_layer
-class MutateBatchNormalization():
+
+class BatchNormMutation():
 
     def __init__(self):
         pass

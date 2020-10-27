@@ -2,7 +2,7 @@ from mutations.layers.mutation import Mutation
 import torch as torch
 import const.mutation_type as m_type
 
-class AlterExitFilterMutation(Mutation):
+class OutputChannelMutation(Mutation):
 
     def __init__(self):
         super().__init__()
@@ -53,7 +53,7 @@ class AlterExitFilterMutation(Mutation):
             newNode.set_filters(oldFilter)
             newNode.set_bias(oldBias)
 
-class AlterEntryFilterMutation(Mutation):
+class InputChannelMutation(Mutation):
 
     def __init__(self):
         super().__init__()
@@ -123,7 +123,7 @@ class AlterEntryFilterMutation(Mutation):
             newNode.set_filters(resized)
             newNode.set_bias(oldBias)
 
-class AlterDimensionKernel(Mutation):
+class KernelSizeMutation(Mutation):
 
     def __init__(self):
         super().__init__()
@@ -191,7 +191,7 @@ class AlterDimensionKernel(Mutation):
             newNode.set_filters(resized)
             newNode.set_bias(oldBias)
 
-class AdjustEntryFilters():
+class AdjustInputChannels():
 
     # adjustLayer = Layer afectado que debe ser ajustado antes de pasar sus parametros al nuevo layer
     # indexList = Lista de index de los layers que envian filtros al layer afectado ordenados por jerarquia

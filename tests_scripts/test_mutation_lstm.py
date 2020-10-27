@@ -2,6 +2,7 @@ import utilities.LSTMConverter as LSTMConverter
 import Geometric.Observations.Observation as Observation
 import LSTM.NetworkLSTM as nw_lstm
 import math
+import Geometric.Graphs.DNA_graph_functions as Funct
 import torch
 
 def getLoss(loss):
@@ -13,20 +14,22 @@ def getLoss(loss):
 def test():
 
     observation_size = 3
-    max_layers_lstm = 20
+    max_layers_lstm = 10*2
     num_actions = 4
+    mutations = ((0,1,0,0),(0,-1,0,0),(0,0,1,1),(0,0,-1,-1)) 
     directions_per_observations = [
-                                    [(1,(1,0,0,0)), (2,(4,0,0,0)), (2,(1,0,0,0))],
-                                    [(1,(1,0,0,0)), (2,(4,0,0,0)), (2,(4,0,0,0))],
-                                    [(1,(1,0,0,0)), (2,(4,0,0,0)), (0,(0,1,0,0))],
-                                    [(1,(1,0,0,0)), (2,(4,0,0,0)), (4,(0,0,1))]
+                                    [(1,(0,1,0,0)), (2,(0,-1,0,0)), (0,(0,1,0,0))],
+                                    [(1,(0,1,0,0)), (2,(0,-1,0,0)), (0,(0,0,1,1))],
+                                    [(1,(0,1,0,0)), (2,(0,-1,0,0)), (0,(0,-1,0,0))],
+                                    [(1,(0,1,0,0)), (2,(0,-1,0,0)), (0,(0,0,-1,-1))]
                                 ]
     #observations_weight = [getLoss(0.4525), getLoss(0.4520), getLoss(0.4145), getLoss(0.4220)]
 
-    observations_weight = [0.0248*100, 0.0498*100, 0.0278*100, 0.0192*100]
+    observations_weight = [0.5142*10, 0.4821*10, 0.3580*10, 0.4534*10]
+    observations_weight = Funct.normalize(dataset=observations_weight)
     print("weight: ", observations_weight)
 
-    lstmConverter = LSTMConverter.LSTMConverter(cuda=True, max_layers=max_layers_lstm, limit_directions=observation_size)
+    lstmConverter = LSTMConverter.LSTMConverter(cuda=True, max_layers=max_layers_lstm, mutation_list=mutations,limit_directions=observation_size)
     observations = []
 
     for i in range(num_actions):
@@ -38,7 +41,7 @@ def test():
 
     input_lstm = lstmConverter.generateLSTMInput(observations=observations)
     print(input_lstm.size())
-    current_path = Observation.Observation(path=[(2,(4,0,0,0)), (2,(4,0,0,0))], weight=1, time=0)
+    current_path = Observation.Observation(path=[(1,(0,1,0,0)), (2,(0,-1,0,0))], weight=1, time=0)
     network = nw_lstm.NetworkLSTM(observation_size=observation_size, inChannels=max_layers_lstm, 
                                     outChannels=max_layers_lstm*lstmConverter.mutations, kernelSize=lstmConverter.mutations, cuda_flag=True)
     
