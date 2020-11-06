@@ -1,4 +1,4 @@
-import utilities.LSTMConverter as LSTMConverter
+import utilities.lstm_converter as LSTMConverter
 import Geometric.Observations.Observation as Observation
 import LSTM.NetworkLSTM as nw_lstm
 import math
@@ -28,7 +28,6 @@ def test():
     observations_weight = [0.5142*10, 0.4821*10, 0.3580*10, 0.4534*10]
     observations_weight = Funct.normalize(dataset=observations_weight)
     print("weight: ", observations_weight)
-
     lstmConverter = LSTMConverter.LSTMConverter(cuda=True, max_layers=max_layers_lstm, mutation_list=mutations,limit_directions=observation_size)
     observations = []
 
@@ -40,7 +39,7 @@ def test():
         observations.append(observation)
 
     input_lstm = lstmConverter.generateLSTMInput(observations=observations)
-    print(input_lstm.size())
+    print("input size: ", input_lstm.size())
     current_path = Observation.Observation(path=[(1,(0,1,0,0)), (2,(0,-1,0,0))], weight=1, time=0)
     network = nw_lstm.NetworkLSTM(observation_size=observation_size, inChannels=max_layers_lstm, 
                                     outChannels=max_layers_lstm*lstmConverter.mutations, kernelSize=lstmConverter.mutations, cuda_flag=True)

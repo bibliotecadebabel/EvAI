@@ -3,22 +3,23 @@ import torch.nn as nn
 import torch.tensor as tensor
 
 
-class InternalModuleVariant():
+class MemoryUnit():
 
-    def __init__(self, kernelSize, inChannels, outChannels, cuda_flag=True):
+    def __init__(self, kernelSize, inChannels, inChannels_candidate, outChannels, cuda_flag=True):
 
         self.cuda_flag = cuda_flag
         self.kernelSize = kernelSize
-        self.__createStructure(inChannels=inChannels, outChannels=outChannels)
+        self.__createStructure(inChannels=inChannels, outChannels=outChannels, inChannels_candidate= inChannels_candidate)
         self.ct = None
         self.ht = None
         self.xt = None
 
     
-    def __createStructure(self, inChannels, outChannels):
+    def __createStructure(self, inChannels, outChannels, inChannels_candidate):
+
         self.convFt = nn.Conv1d(inChannels, outChannels, self.kernelSize)
         self.convIt = nn.Conv1d(inChannels, outChannels, self.kernelSize)
-        self.convCand = nn.Conv1d(inChannels, outChannels, self.kernelSize)
+        self.convCand = nn.Conv1d(inChannels_candidate, outChannels, self.kernelSize)
         self.convOt = nn.Conv1d(inChannels, outChannels, self.kernelSize)
 
         if self.cuda_flag == True:
@@ -43,10 +44,12 @@ class InternalModuleVariant():
             clone_ct.transpose_(1,2)            
             clone_ct = torch.reshape(clone_ct, (-1,xt.shape[1],xt.shape[2]))
             currentInput_ht = torch.cat((clone_ct, last_ht, xt), dim=1)
+            currentInput_candidates = torch.cat((last_ht, xt), dim=1)
         else:
             currentInput_ht = xt
+            currentInput_candidates = xt
         
-        self.__computeCt(currentInput_ht, last_ct)
+        self.__computeCt(currentInput_ht, currentInput_candidates, last_ct)
 
         if last_ht is not None:
             
@@ -61,22 +64,20 @@ class InternalModuleVariant():
         self.__computeHt(currentInput_ct)
 
     
-    def __computeCt(self, currentInput, last_ct=None):
+    def __computeCt(self, currentInput, currentInput_candidates, last_ct=None):
 
         sigmoid_ft = torch.nn.Sigmoid()
         sigmoid_it = torch.nn.Sigmoid()
         tanh_cand = torch.nn.Tanh()
 
-        #print("current input ct: ",currentInput.size())
         ft = self.convFt(currentInput)
-        #print("ft: ", ft.size())
         ft = sigmoid_ft(ft)
 
         it = self.convIt(currentInput)
-        #print("it: ", it.size())
+
         it = sigmoid_it(it)
 
-        candidates = self.convCand(currentInput)
+        candidates = self.convCand(currentInput_candidates)
         candidates = tanh_cand(candidates)
         
         if last_ct is not None:
@@ -85,7 +86,7 @@ class InternalModuleVariant():
         a = it * candidates
 
         self.ct = ft + a
-        #print("ct: ", self.ct.size())
+
 
     def __computeHt(self, currentInput):
         
@@ -93,18 +94,16 @@ class InternalModuleVariant():
         tanh_ct = torch.nn.Tanh()
 
         ot = self.convOt(currentInput)
-        #print("output ht: ", ot.size())
+
         ot = sigmoid_ot(ot)
         
         a = tanh_ct(self.ct)
 
-        #print("a: ", a.shape)
-        #print("ot: ", ot.shape)
         self.ht = ot * a
-        #print("output ht: ", self.ht.size())
+
         self.ht.transpose_(1, 2)
         self.ht = torch.reshape(self.ht, (-1, self.xt.shape[1], self.xt.shape[2]))
-        #print("ht: ", self.ht.size())
+
 
     def set_grad_flag(self, flag):
 

@@ -1,11 +1,11 @@
 from commands import CommandCreateDataGen
-from Experiments import  nas_experiment as nas_experiment
+from commands import  CommandExperiment_lstm as CommandExperimentCifar_Restarts
 from Geometric.Conditions.DNA_conditions import max_layer,max_filter,max_filter_dense
 import Geometric.Conditions.DNA_conditions as DNA_conditions
 from Geometric.Creators.DNA_creators import Creator
 from Geometric.Graphs.DNA_Graph import DNA_Graph
 from Geometric.Creators.DNA_creators import Creator_from_selection as Creator_s
-from utilities.Abstract_classes.classes.lstm_selector import LSTMSelector as LSTMSelector
+from utilities.Abstract_classes.classes.lstm_selector import centered_random_selector as random_selector
 import utilities.ExperimentSettings as ExperimentSettings
 import const.versions as directions_version
 import numpy as np
@@ -49,9 +49,9 @@ def DNA_Creator_s(x,y, dna, version):
         return DNA_conditions.dict2condition(DNA,list_conditions)
 
     selector = None
-    selector=LSTMSelector(condition=condition,
+    selector=random_selector(condition=condition,
         directions=version, num_actions=num_actions,
-        mutations=((0,1,0,0),(0,-1,0,0),(0,0,1,1)) 
+        mutations=((0,1,0,0),(1,0,0,0)) 
     )
     selector.update(dna)
     actions=selector.get_predicted_actions()
@@ -75,7 +75,7 @@ if __name__ == '__main__':
 
     transform_compose = augSettings.generateTransformCompose(dict_transformations, False)
     # DIRECTIONS VERSION
-    settings.version = directions_version.POOL_VERSION
+    settings.version = directions_version.CONVEX_VERSION
     # NUM OF THREADS
     THREADS = int(input("Enter threads: "))
 
@@ -204,9 +204,9 @@ if __name__ == '__main__':
     settings.dropout_function = dropout_function
     # INITIAL DNA
 
-    settings.initial_dna = ((-1, 1, 3, 32, 32), (0, 3, 4, 3, 3),(0, 4, 8, 3, 3, 2), (0, 8, 16, 3, 3, 2),
-                            (0, 16, 32, 5, 5),
-                            (1, 32, 10),
+    settings.initial_dna = ((-1, 1, 3, 32, 32), (0, 3, 4, 3, 3),(0, 4, 5, 3, 3, 2), (0, 5, 6, 3, 3, 2),
+                            (0, 6, 7, 8, 8),
+                            (1, 7, 10),
                             (2,),
                             (3, -1, 0),
                             (3, 0, 1),
@@ -230,5 +230,5 @@ if __name__ == '__main__':
     settings.initial_space = space
     settings.ricap = Augmentation.Ricap(beta=0.3)
 
-    trainer = nas_experiment.NAS(settings=settings)
+    trainer = CommandExperimentCifar_Restarts.CommandExperimentCifar_Restarts(settings=settings)
     trainer.execute()

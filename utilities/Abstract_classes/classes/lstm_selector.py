@@ -2,15 +2,15 @@ from utilities.Abstract_classes.AbstractSelector import Selector, Observation
 import random
 import Geometric.Graphs.DNA_graph_functions as Funct
 import numpy as np
-import LSTM.NetworkLSTM as net_lstm
-import utilities.LSTMConverter as LSTMConverter
+import LSTM.network_lstm as net_lstm
+import utilities.lstm_converter as LSTMConverter
 from Geometric.Conditions.DNA_conditions import max_layer,max_filter
 import time
 import const.general_values as const_values
 
 
 
-class centered_random_selector(Selector):
+class LSTMSelector(Selector):
     class Observation_creator(Observation):
         def __init__(self,time=0,path=[],weight=0,
             num_layer=1):
@@ -204,6 +204,7 @@ class centered_random_selector(Selector):
             print("current path: ", self.current_path.path)                
             input_lstm = self.converter.generateLSTMInput(observations=self.observations)
             print("starting lstm training")
+            print("input lstm: ", input_lstm.size())
             self.net.Training(data=input_lstm, observations=self.observations, dt=self.dt, p=self.training_time)
 
     def update_predicted_actions(self):
@@ -246,6 +247,7 @@ class centered_random_selector(Selector):
             predicted_tensor = self.net.predict(x=input_predict)
             predicted_relative_directions = self.converter.topKPredictedDirections(predicted_tensor=predicted_tensor, k=len(self.observations))
 
+            print("relative predicted: ", predicted_relative_directions)
             predicted_absolute_directions = []
 
             for relative_direction in predicted_relative_directions:

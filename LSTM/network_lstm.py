@@ -3,8 +3,7 @@ import torch.nn as nn
 import torch.tensor as tensor
 
 import torch.optim as optim
-import LSTM.InternalModule as InternalModule
-import LSTM.InternalModuleVariant as InternalModuleVariant
+import LSTM.memory_unit as memory_unit
 import Factory.TensorFactory as TensorFactory
 
 
@@ -20,7 +19,7 @@ class NetworkLSTM(nn.Module):
         self.kernelSize = kernelSize
         self.total_value = 0
         self.loss_history = []
-        self.internalModules = []
+        self.units = []
         self.modulesXT = []
 
         self.__createStructure()
@@ -49,14 +48,16 @@ class NetworkLSTM(nn.Module):
         for i in range(self.lenModules):
 
             inchannels = self.inChannels
+            inChannels_candidate = inchannels
 
             if i > 0:
                 
                 #inchannels += 2 #version 1
                 inchannels += self.inChannels * 2 #version 2
+                inChannels_candidate = inChannels_candidate*2
             
-            internal = InternalModuleVariant.InternalModuleVariant(kernelSize=self.kernelSize, inChannels=inchannels, outChannels=self.outChannels, cuda_flag=self.cuda_flag)
-            self.internalModules.append(internal)
+            internal = memory_unit.MemoryUnit(kernelSize=self.kernelSize, inChannels=inchannels, inChannels_candidate=inChannels_candidate, outChannels=self.outChannels, cuda_flag=self.cuda_flag)
+            self.units.append(internal)
             
             attr_1 = "internal_"+str(i)+"_convFT"
             attr_2 = "internal_"+str(i)+"_convIT"
@@ -72,7 +73,7 @@ class NetworkLSTM(nn.Module):
         
         self.set_grad_flag(True)
         self(dataElement)
-        self.__generate_accuracy(observations)
+        self.__generate_loss(observations)
         self.__doBackward()
         self.set_grad_flag(False)
 
@@ -126,33 +127,28 @@ class NetworkLSTM(nn.Module):
             value[i] = letter.clone()
             #print("value[i]: ", value[i].size())
             i += 1
-
-        #print("input module: ", value.size())
+        
         return value
             
 
-    def __generate_accuracy(self, observations):
+    def __generate_loss(self, observations):
         
-        #pesos = [4, 10, 30, 1]
 
         weights = []
         for observation in observations:
             weights.append([[observation.weight]])
         
-        #print("weights:" , weights)
-
-        tensor = torch.tensor(weights, dtype=torch.float32, requires_grad=False).cuda()
-        #print("tensor: ", tensor.size())
+        weigth_tensor = torch.tensor(weights, dtype=torch.float32, requires_grad=False).cuda()
         indexModule = 0
         energy = 0
-        for module in self.internalModules:
+
+        ## MSELoss
+        for module in self.units:
             
             value = module.ht - self.modulesXT[indexModule+1]
-            #print("value 1: ", value.size())
             value = torch.reshape(value, (value.shape[0], 1, value.shape[1]*value.shape[2]))
-            #print("value 2: ", value.size())
-            value = torch.bmm(tensor, value)
             value = torch.mul(value, value)
+            value = torch.bmm(weigth_tensor, value)
             energy += value
             indexModule += 1
         
@@ -165,7 +161,7 @@ class NetworkLSTM(nn.Module):
         last_ht = None
         last_ct = None
         moduleIndex = 0
-        for module in self.internalModules:
+        for module in self.units:
             xt = self.modulesXT[moduleIndex]
             module.compute(xt=xt, last_ht=last_ht, last_ct=last_ct)
             
@@ -179,7 +175,7 @@ class NetworkLSTM(nn.Module):
 
     def set_grad_flag(self, flag):
 
-        for module in self.internalModules:
+        for module in self.units:
 
             module.set_grad_flag(flag)
     
@@ -195,13 +191,13 @@ class NetworkLSTM(nn.Module):
 
         for moduleIndex in range(modules):
             xt = self.modulesXT[moduleIndex]
-            module = self.internalModules[moduleIndex]
+            module = self.units[moduleIndex]
             module.compute(xt=xt, last_ht=last_ht, last_ct=last_ct)
             
             last_ht = module.ht
             last_ct = module.ct
         
-        ht = self.internalModules[modules-1].ht
+        ht = self.units[modules-1].ht
         
         return ht
             

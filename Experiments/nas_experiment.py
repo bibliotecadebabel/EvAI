@@ -13,7 +13,7 @@ import torch
 import const.training_type as TrainingType
 import utilities
 import utilities.MemoryManager as MemoryManager
-class CommandExperimentCifar_Restarts():
+class NAS():
 
     def __init__(self, settings : utilities.ExperimentSettings.ExperimentSettings):
         self.__space = settings.initial_space

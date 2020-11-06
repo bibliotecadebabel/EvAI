@@ -107,7 +107,6 @@ class LSTMConverter():
 
         for i in range(directions_number):
             
-            print("direction: ", observation.path[i])
             value[0][i] = self.directionToTensor(observation.path[i])
 
         return value           
