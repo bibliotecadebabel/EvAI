@@ -1,6 +1,6 @@
 import mutations.mutation_manager as mutation_manager
 import children.pytorch.network_dendrites as nw
-from DAO.database.dao import TestDAO, TestResultDAO, TestModelDAO
+from DAO.database.dao import test_dao, test_result_dao, test_model_dao
 from Geometric.Graphs.DNA_Graph import DNA_Graph as DNA_Graph
 #from utilities.Abstract_classes.classes.uniform_random_selector_2 import centered_random_selector as random_selector
 from Geometric.Creators.DNA_creators import Creator_from_selection as Creator_s
@@ -23,9 +23,9 @@ class NAS():
 
         self.__settings = settings
 
-        self.__testDao = TestDAO.TestDAO(db='database.db')
-        self.__testResultDao = TestResultDAO.TestResultDAO(db='database.db')
-        self.__testModelDao = TestModelDAO.TestModelDAO(db='database.db')
+        self.__testDao = test_dao.TestDAO(db='database.db')
+        self.__testResultDao = test_result_dao.TestResultDAO(db='database.db')
+        self.__testModelDao = test_model_dao.TestModelDAO(db='database.db')
 
         self.__bestNetwork = None
 

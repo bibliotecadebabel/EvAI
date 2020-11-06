@@ -28,7 +28,7 @@ from utilities.Abstract_classes.classes.Alaising_cosine import (
     Alaising as Alai)
 
 import os
-from DAO.database.dao import TestDAO, TestResultDAO, TestModelDAO
+from DAO.database.dao import test_dao, test_result_dao, test_model_dao
 import const.training_type as TrainingType
 import const.file_names as FileNames
 import utilities.NetworkStorage as NetworkStorage

@@ -29,7 +29,7 @@ from utilities.Abstract_classes.classes.Alaising_cosine import (
     Alaising as Alai)
 
 import os
-from DAO.database.dao import TestDAO, TestResultDAO, TestModelDAO
+from DAO.database.dao import test_dao, test_result_dao, test_model_dao
 import const.training_type as TrainingType
 import utilities.NetworkStorage as NetworkStorage
 from Dyamic_DNA_f_methods import ( update_force_field_ac
@@ -272,9 +272,9 @@ def run(status):
     k=0
 
     test_id = 0
-    testDao = TestDAO.TestDAO()
-    testResultDao = TestResultDAO.TestResultDAO()
-    testModelDao = TestModelDAO.TestModelDAO()
+    testDao = test_dao.TestDAO()
+    testResultDao = test_result_dao.TestResultDAO()
+    testModelDao = test_model_dao.TestModelDAO()
     print("cuda=", status.cuda)
 
     print("max layers: ", status.max_layer_conv2d)

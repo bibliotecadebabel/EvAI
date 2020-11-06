@@ -1,11 +1,11 @@
 
-from DAO.database.dao import TestDAO
+from DAO.database.dao import test_dao
 
 class CommandGetAllTest():
 
     def __init__(self, db="database_product.db"):
 
-        self.__testDao = TestDAO.TestDAO(db)
+        self.__testDao = test_dao.TestDAO(db)
         self.__value = None
         
     def execute(self):

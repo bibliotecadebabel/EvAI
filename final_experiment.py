@@ -1,6 +1,6 @@
 import children.pytorch.network_dendrites as nw
 from commands import CommandCreateDataGen
-from DAO.database.dao import TestDAO, TestResultDAO, TestModelDAO
+from DAO.database.dao import test_dao, test_result_dao, test_model_dao
 import numpy as np
 import utilities.Augmentation as Augmentation
 import utilities.AugmentationSettings as AugmentationSettings
@@ -9,7 +9,7 @@ import const.versions as directions_version
 import utilities.MemoryManager as MemoryManager
 import math
 
-modelDAO = TestModelDAO.TestModelDAO()
+modelDAO = test_model_dao.TestModelDAO()
 
 # found at 1200 epochs (dont train)
 BEST_LSTM_1 = ((-1, 1, 3, 32, 32), (0, 3, 64, 4, 4), (0, 64, 128, 3, 3, 2), (0, 128, 258, 3, 3, 2), (0, 258, 259, 5, 5), (1, 259, 10), (2,), (3, -1, 0), (3, 0, 1), (3, 1, 2), (3, 2, 3), (3, 3, 4), (3, 4, 5))

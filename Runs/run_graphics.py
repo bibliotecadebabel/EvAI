@@ -2,12 +2,12 @@ import matplotlib.pyplot as plt
 import matplotlib.ticker
 import numpy as np
 import matplotlib.backends.backend_pdf as pdf_manager
-from DAO.database.dao import TestModelDAO, TestDAO, TestResultDAO
+from DAO.database.dao import test_model_dao, test_dao, test_result_dao
 import os 
 
-testDAO = TestDAO.TestDAO()
-testModelDAO = TestModelDAO.TestModelDAO()
-testResultDAO = TestResultDAO.TestResultDAO()
+testDAO = test_dao.TestDAO()
+testModelDAO = test_model_dao.TestModelDAO()
+testResultDAO = test_result_dao.TestResultDAO()
 test_list = testDAO.findAll()
 
 def findAccByAlaiRange(min_alai, max_alai, modelList, last_acc):

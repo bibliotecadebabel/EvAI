@@ -173,7 +173,7 @@ def run_cifar_user_input_bidi(test_name,mutations_actions, const_direction_versi
     x=32
     y=32
 
-    status.Center = DNAs.DNA_base
+    status.Center = DNAs.DNA_base_p_version
     status.settings=settings
     program.run(status)
 

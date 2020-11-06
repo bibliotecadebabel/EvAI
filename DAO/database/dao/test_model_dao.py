@@ -1,5 +1,5 @@
 from DAO.database.DBHandler import DBHandler
-from Entities.TestModelEntity import TestModelEntity
+from Entities.test_model_entity import TestModelEntity
 import json
 import time
 

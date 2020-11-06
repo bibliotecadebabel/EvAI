@@ -1,5 +1,4 @@
 import json
-from Entities.TangentPlaneEntity import TangentPlaneEntity
 
 class TestModelEntity():
 

@@ -1,6 +1,6 @@
 from DAO.database.DBHandler import DBHandler
 import time
-from Entities.TestEntity import TestEntity
+from Entities.test_entity import TestEntity
 
 class TestDAO():
 

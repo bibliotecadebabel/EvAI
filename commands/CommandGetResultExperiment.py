@@ -1,14 +1,14 @@
 import children.pytorch.MutateNetwork as MutateNetwork
 import children.pytorch.Network as nw
-from DAO.database.dao import TestDAO, TestResultDAO
+from DAO.database.dao import test_dao, test_result_dao
 from DNA_Graph import DNA_Graph
 
 class CommandGetResultExperiment():
 
     def __init__(self, testId):
         self.__testId = testId
-        self.__testDao = TestDAO.TestDAO()
-        self.__testResultDao = TestResultDAO.TestResultDAO()
+        self.__testDao = test_dao.TestDAO()
+        self.__testResultDao = test_result_dao.TestResultDAO()
         self.__value = None
         
     def execute(self, periodIteration, minRange, maxRange):

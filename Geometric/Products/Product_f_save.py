@@ -31,7 +31,7 @@ import time
 from utilities.Abstract_classes.classes.Alaising_cosine import (
     Alaising as Alai)
 import os
-from DAO.database.dao import TestDAO, TestResultDAO, TestModelDAO
+from DAO.database.dao import test_dao, test_result_dao, test_model_dao
 
 class Status():
     def __init__(self, display_size=None):
@@ -233,9 +233,9 @@ def run(status):
     k=0
     #update(status)
     test_id = 0
-    testDao = TestDAO.TestDAO()
-    testResultDao = TestResultDAO.TestResultDAO()
-    testModelDao = TestModelDAO.TestModelDAO()
+    testDao = test_dao.TestDAO()
+    testResultDao = test_result_dao.TestResultDAO()
+    testModelDao = test_model_dao.TestModelDAO()
 
     if status.save2database == True:
         test_id = testDao.insert(testName=status.experiment_name, periodSave=status.save_space_period, dt=status.dt_Max, 
