@@ -9,18 +9,16 @@ import Factory.TensorFactory as TensorFactory
 
 class NetworkLSTM(nn.Module):
 
-    def __init__(self, observation_size, inChannels, outChannels, kernelSize, cuda_flag=True):
+    def __init__(self, observation_size, in_channels, out_channels, kernel_size, cuda_flag=True):
         super(NetworkLSTM, self).__init__()
 
         self.cuda_flag = cuda_flag
-        self.lenModules = observation_size-1
-        self.inChannels = inChannels
-        self.outChannels = outChannels
-        self.kernelSize = kernelSize
-        self.total_value = 0
-        self.loss_history = []
+        self.len_units = observation_size-1
+        self.in_channels = in_channels
+        self.out_channels = out_channels
+        self.kernel_size = kernel_size
         self.units = []
-        self.modulesXT = []
+        self.xt_unit = []
 
         self.__createStructure()
 
@@ -45,18 +43,17 @@ class NetworkLSTM(nn.Module):
     
     def __createStructure(self):
         
-        for i in range(self.lenModules):
+        for i in range(self.len_units):
 
-            inchannels = self.inChannels
-            inChannels_candidate = inchannels
+            in_channels = self.in_channels
+            in_channels_candidate = in_channels
 
             if i > 0:
                 
-                #inchannels += 2 #version 1
-                inchannels += self.inChannels * 2 #version 2
-                inChannels_candidate = inChannels_candidate*2
+                in_channels += self.in_channels * 2 
+                in_channels_candidate = in_channels_candidate * 2
             
-            internal = memory_unit.MemoryUnit(kernelSize=self.kernelSize, inChannels=inchannels, inChannels_candidate=inChannels_candidate, outChannels=self.outChannels, cuda_flag=self.cuda_flag)
+            internal = memory_unit.MemoryUnit(kernel_size=self.kernel_size, in_channels=in_channels, in_channels_candidate=in_channels_candidate, out_channels=self.out_channels, cuda_flag=self.cuda_flag)
             self.units.append(internal)
             
             attr_1 = "internal_"+str(i)+"_convFT"
@@ -69,50 +66,48 @@ class NetworkLSTM(nn.Module):
             self.set_attribute(attr_3, internal.convCand)
             self.set_attribute(attr_4, internal.convOt)
     
-    def Train(self, dataElement, observations):
+    def __train(self, dataElement, observations):
         
         self.set_grad_flag(True)
         self(dataElement)
         self.__generate_loss(observations)
-        self.__doBackward()
+        self.__backward()
         self.set_grad_flag(False)
 
-    def __createModulesXT(self, data):
+    def __create_xt_unit(self, data):
         
-        for indexModule in range(self.lenModules):
-            self.modulesXT.append(self.__getInputModule(indexModule, data))
+        for unit_index in range(self.len_units):
+            self.xt_unit.append(self.__get_unit_input(unit_index, data))
 
-        self.modulesXT.append(self.__getInputModule(self.lenModules, data))
+        self.xt_unit.append(self.__get_unit_input(self.len_units, data))
     
-    def __createModulesXTPredict(self, data, length):
+    def __create_xt_unit_predict(self, data, length):
         
-        for indexModule in range(length):
-            self.modulesXT.append(self.__getInputModule(indexModule, data))
+        for unit_index in range(length):
+            self.xt_unit.append(self.__get_unit_input(unit_index, data))
 
     def Training(self, data, observations, dt=0.1, p=1):
         
-        self.modulesXT = []
+        self.xt_unit = []
         self.optimizer = optim.SGD(self.parameters(), lr=dt, momentum=0)
-        self.__createModulesXT(data)
+        self.__create_xt_unit(data)
         i = 0
-        print_every = p // 4
+        print_every = p // 20
         while i < p:
-            self.energy = 0
+            self.loss = 0
             self.optimizer.zero_grad()
-            self.Train(data, observations)
+            self.__train(data, observations)
             self.optimizer.step()
 
             
             if i % print_every == print_every - 1:
-                print("L=", self.energy, "i=", i+1)
+                print("L=", self.loss, "i=", i+1)
             
             i += 1
         
 
-    def __getInputModule(self, moduleIndex, wordsTensor):
-        batch = wordsTensor.shape[0]
-        wordValue = wordsTensor.shape[2]
-        shape = wordsTensor.shape
+    def __get_unit_input(self, unit_index, data):
+        shape = data.shape
 
         if len(shape) > 3:
             value = TensorFactory.createTensorZeros(tupleShape=(shape[0], shape[2], shape[3]), cuda=self.cuda_flag, requiresGrad=False)
@@ -120,12 +115,9 @@ class NetworkLSTM(nn.Module):
             value = TensorFactory.createTensorZeros(tupleShape=(shape[0], 1, shape[2]), cuda=self.cuda_flag, requiresGrad=False)
 
         i = 0
-        for word in wordsTensor:
-            #print("word: ", word.size())
-            letter = word[moduleIndex]
-            #print("letter: ", letter.size())
+        for word in data:
+            letter = word[unit_index]
             value[i] = letter.clone()
-            #print("value[i]: ", value[i].size())
             i += 1
         
         return value
@@ -139,39 +131,36 @@ class NetworkLSTM(nn.Module):
             weights.append([[observation.weight]])
         
         weigth_tensor = torch.tensor(weights, dtype=torch.float32, requires_grad=False).cuda()
-        indexModule = 0
-        energy = 0
+        unit_index = 0
+        loss = 0
 
         ## MSELoss
         for module in self.units:
             
-            value = module.ht - self.modulesXT[indexModule+1]
+            value = module.ht - self.xt_unit[unit_index+1]
             value = torch.reshape(value, (value.shape[0], 1, value.shape[1]*value.shape[2]))
             value = torch.mul(value, value)
             value = torch.bmm(weigth_tensor, value)
-            energy += value
-            indexModule += 1
+            loss += value
+            unit_index += 1
         
-        self.energy = torch.div(energy, self.lenModules+1).sum()
+        self.loss = torch.div(loss, self.len_units+1).sum()
 
-        # multiplicar por peso de la palabra (cantidad de particulas)
-        #self.energy = self.energy
-
-    def forward(self, wordsTensor):
+    def forward(self, data):
         last_ht = None
         last_ct = None
-        moduleIndex = 0
+        unit_index = 0
         for module in self.units:
-            xt = self.modulesXT[moduleIndex]
+            xt = self.xt_unit[unit_index]
             module.compute(xt=xt, last_ht=last_ht, last_ct=last_ct)
             
             last_ht = module.ht
             last_ct = module.ct
 
-            moduleIndex += 1
+            unit_index += 1
 
-    def __doBackward(self):
-        self.energy.backward()
+    def __backward(self):
+        self.loss.backward()
 
     def set_grad_flag(self, flag):
 
@@ -186,12 +175,12 @@ class NetworkLSTM(nn.Module):
 
         modules = x.shape[1]
 
-        self.modulesXT = []
-        self.__createModulesXTPredict(x, modules)
+        self.xt_unit = []
+        self.__create_xt_unit_predict(x, modules)
 
-        for moduleIndex in range(modules):
-            xt = self.modulesXT[moduleIndex]
-            module = self.units[moduleIndex]
+        for unit_index in range(modules):
+            xt = self.xt_unit[unit_index]
+            module = self.units[unit_index]
             module.compute(xt=xt, last_ht=last_ht, last_ct=last_ct)
             
             last_ht = module.ht

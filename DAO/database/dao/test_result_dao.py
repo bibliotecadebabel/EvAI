@@ -1,4 +1,4 @@
-from DAO.database.DBHandler import DBHandler
+from DAO.database.db_handler import DBHandler
 from Entities.test_result_entity import TestResultEntity
 import json
 import time

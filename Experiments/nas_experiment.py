@@ -1,4 +1,4 @@
-import mutations.mutation_manager as mutation_manager
+
 import children.pytorch.network_dendrites as nw
 from DAO.database.dao import test_dao, test_result_dao, test_model_dao
 from Geometric.Graphs.DNA_Graph import DNA_Graph as DNA_Graph
@@ -23,18 +23,16 @@ class NAS():
 
         self.__settings = settings
 
-        self.__testDao = test_dao.TestDAO(db='database.db')
-        self.__testResultDao = test_result_dao.TestResultDAO(db='database.db')
-        self.__testModelDao = test_model_dao.TestModelDAO(db='database.db')
+        self._test_dao = test_dao.TestDAO(db='database.db')
+        self.__test_result_dao = test_result_dao.TestResultDAO(db='database.db')
+        self.__test_model_dao = test_model_dao.TestModelDAO(db='database.db')
 
-        self.__bestNetwork = None
+        self.__best_network = None
 
         if self.__settings.loadedNetwork == None:
-            self.__bestNetwork = self.__createNetwork(dna=settings.initial_dna)
+            self.__best_network = self.__create_network(dna=settings.initial_dna)
         else:
-            self.__bestNetwork = self.__settings.loadedNetwork
-
-        self.mutation_manager = mutation_manager.MutationManager(directions_version=settings.version)
+            self.__best_network = self.__settings.loadedNetwork
 
         self.__actions = []
 
@@ -46,7 +44,7 @@ class NAS():
 
         self.__memoryManager = MemoryManager.MemoryManager()
 
-    def __createNetwork(self, dna):
+    def __create_network(self, dna):
 
         settings = self.__settings
         return nw.Network(dna=dna, cuda_flag=settings.cuda,
@@ -56,16 +54,16 @@ class NAS():
                                     dropout_function=settings.dropout_function, enable_last_activation=settings.enable_last_activation,
                                     version=settings.version, eps_batchnorm=settings.eps_batchorm)
 
-    def __generateNetworks(self):
+    def __generate_networks(self):
         
 
         space = self.__space
-        nodeCenter = self.__getNodeCenter(self.__space)
+        nodeCenter = self.__get_center_node(self.__space)
 
         #centerNetwork = None
 
-        print("new space's center: =", self.__bestNetwork.dna)
-        #centerNetwork = self.__bestNetwork
+        print("new space's center: =", self.__best_network.dna)
+        #centerNetwork = self.__best_network
         
         for network in self.__networks:
             self.__memoryManager.deleteNetwork(network=network)
@@ -79,11 +77,11 @@ class NAS():
 
         for nodeKid in nodeCenter.kids:
             kidDNA = space.node2key(nodeKid)
-            kidNetwork = self.__createNetwork(dna=kidDNA)
+            kidNetwork = self.__create_network(dna=kidDNA)
             self.__nodes.append(nodeKid)
             self.__networks.append(kidNetwork)
 
-    def __saveEnergy(self):
+    def __set_node_energy(self):
 
         i = 0
 
@@ -99,11 +97,7 @@ class NAS():
                     print("saving energy network #", i, " - L=", network.get_accuracy())
                     i +=1
 
-    def __getEnergyNode(self, node):
-
-        return node.objects[0].objects[0].energy
-
-    def __getNodeCenter(self, space):
+    def __get_center_node(self, space):
 
         nodeCenter = None
         for node in space.objects:
@@ -115,14 +109,10 @@ class NAS():
 
         return nodeCenter
 
-    def __trainNetwork(self, network : nw.Network, dt_array, max_iter, keep_clone=False, allow_save_txt=False):
+    def __train_network(self, network : nw.Network, dt_array, max_iter, , allow_save_txt=False):
 
         dt_array_len = len(dt_array)
         avg_factor = dt_array_len // 4
-        
-        #network.generate_accuracy(self.__settings.dataGen)
-        #best_accuracy = network.get_accuracy()
-        #print("initial accuracy= ", best_accuracy)
 
         for i in range(max_iter):
             print("iteration: ", i+1)
@@ -139,36 +129,36 @@ class NAS():
 
     def execute(self):
         
-        test_id = self.__testDao.insert(testName=self.__settings.test_name, dt=self.__settings.init_dt_array[0], 
+        test_id = self._test_dao.insert(testName=self.__settings.test_name, dt=self.__settings.init_dt_array[0], 
                 dt_min=self.__settings.init_dt_array[-1], batch_size=self.__settings.batch_size)
 
         if self.__settings.disable_mutation == False:
 
-            self.__generateNewSpace(firstTime=True)
-            self.__generateNetworks()
+            self.__generate_new_space(firstTime=True)
+            self.__generate_networks()
 
             for j in range(1, self.__settings.epochs+1):
 
                 print("---- EPOCH #", j)
 
                 for i  in range(len(self.__networks)):
-                    print("Training net #", i, " - direction: ", self.__getDirection(network=self.__networks[i]) ) 
-                    self.__networks[i] = self.__trainNetwork(network=self.__networks[i], dt_array=self.__settings.joined_dt_array, max_iter=self.__settings.max_joined_iter)
+                    print("Training net #", i, " - direction: ", self.__get_direction(network=self.__networks[i]) ) 
+                    self.__networks[i] = self.__train_network(network=self.__networks[i], dt_array=self.__settings.joined_dt_array, max_iter=self.__settings.max_joined_iter)
 
-                self.__saveEnergy()
-                self.__testResultDao.insert(idTest=test_id, iteration=j, dna_graph=self.__space)
+                self.__set_node_energy()
+                self.__test_result_dao.insert(idTest=test_id, iteration=j, dna_graph=self.__space)
 
-                self.__bestNetwork = self.__getBestNetwork()
+                self.__best_network = self.__get_best_network()
 
                 current_iteration = j * len(self.__settings.joined_dt_array) * self.__settings.max_joined_iter
-                self.__save_model(network=self.__bestNetwork, test_id=test_id, iteration=current_iteration)
+                self.__save_model(network=self.__best_network, test_id=test_id, iteration=current_iteration)
 
-                self.__generateNewSpace()
-                self.__generateNetworks()
+                self.__generate_new_space()
+                self.__generate_networks()
 
                 torch.cuda.empty_cache()
 
-    def __getDirection(self, network):
+    def __get_direction(self, network):
 
         node = self.__space.key2node(network.dna)
 
@@ -176,7 +166,7 @@ class NAS():
 
         return direction
 
-    def __getBestNetwork(self):
+    def __get_best_network(self):
 
         highest_accuracy = -1
         bestNetwork = None
@@ -191,9 +181,9 @@ class NAS():
         print("bestnetwork= ", bestNetwork.get_accuracy())
         return bestNetwork
 
-    def __generateNewSpace(self, firstTime=False):
+    def __generate_new_space(self, firstTime=False):
         oldSpace = self.__space
-        newCenter = self.__bestNetwork.dna
+        newCenter = self.__best_network.dna
     
         if firstTime == True:
             self.__selector.update(newCenter)
@@ -212,7 +202,7 @@ class NAS():
                                     condition=oldSpace.condition, typos=predicted_actions,
                                     type_add_layer=oldSpace.version, creator=Creator_s)
 
-            nodeCenter = self.__getNodeCenter(newSpace)
+            nodeCenter = self.__get_center_node(newSpace)
 
             if len(nodeCenter.kids) >= 0:
                 print("kids: ", len(nodeCenter.kids))
@@ -234,7 +224,7 @@ class NAS():
         direction = str(node.objects[0].objects[0].direction)
         network.save_model(final_path)
 
-        self.__testModelDao.insert(idTest=test_id,dna=dna,iteration=iteration,fileName=fileName, model_weight=accuracy, 
+        self.__test_model_dao.insert(idTest=test_id,dna=dna,iteration=iteration,fileName=fileName, model_weight=accuracy, 
                                 training_type=TrainingType.MUTATION, current_alai_time=iteration, direction=direction)
 
         print("model saved with accuarcy= ", accuracy)

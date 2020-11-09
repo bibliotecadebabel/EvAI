@@ -22,7 +22,7 @@ letters_max = words_tensor.shape[1]
 kernel_size = words_tensor.shape[2]
 
 
-network = netLSTM.NetworkLSTM(max_letters=letters_max, inChannels=1, outChannels=kernel_size, kernelSize=kernel_size)
+network = netLSTM.NetworkLSTM(max_letters=letters_max, in_channels=1, out_channels=kernel_size, kernel_size=kernel_size)
 
 print("empezando entrenamiento")
 network.Training(data=words_tensor, dt=0.001, p=100)

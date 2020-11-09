@@ -1,4 +1,4 @@
-from DAO.database.DBHandler import DBHandler
+from DAO.database.db_handler import DBHandler
 import time
 from Entities.test_entity import TestEntity
 

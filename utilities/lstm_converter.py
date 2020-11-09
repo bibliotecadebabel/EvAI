@@ -8,15 +8,12 @@ class LSTMConverter():
     def __init__(self, cuda, max_layers, mutation_list, limit_directions=3):
         self.cuda = cuda
         self.__mutation_list = mutation_list
-        self.__createDictionary()
-        print("mutation to index: ", self.mutation_to_index)
-        print("index to mutation: ", self.index_to_mutation)
-
+        self.__create_dictionary()
         self.mutations = len(self.mutation_to_index) - 1
         self.max_layers = max_layers
         self.limit_directions = limit_directions
 
-    def __createDictionary(self):
+    def __create_dictionary(self):
 
         index_mutation = 0
         self.mutation_to_index = {}
@@ -33,28 +30,7 @@ class LSTMConverter():
                 self.index_to_mutation[index_mutation] = mutation
                 index_mutation += 1
 
-        '''
-        self.mutation_to_index[(1,0,0,0)] = 0
-        self.mutation_to_index[(0,1,0,0)] = 1
-        self.mutation_to_index[(4,0,0,0)] = 2
-        self.mutation_to_index[(0,0,1)] = 3
-        #self.mutation_to_index[(0,0,-1)] = 4
-        self.mutation_to_index[(0,0,2)] = 4
-        self.mutation_to_index[(0,0,1,1)] = 5
-        self.mutation_to_index[(0,0,-1,-1)] = 6
-        
-        self.index_to_mutation[const_values.EMPTY_INDEX_LAYER] = const_values.EMPTY_MUTATION
-        self.index_to_mutation[0] = (1,0,0,0)
-        self.index_to_mutation[1] = (0,1,0,0)
-        self.index_to_mutation[2] = (4,0,0,0)
-        self.index_to_mutation[3] = (0,0,1)
-        #self.index_to_mutation[4] = (0,0,-1)
-        self.index_to_mutation[4] = (0,0,2)
-        self.index_to_mutation[5] = (0,0,1,1)
-        self.index_to_mutation[6] = (0,0,-1,-1)
-        '''
-
-    def directionToTensor(self, direction):
+    def __direction_to_tensor(self, direction):
 
         index_layer = direction[0]
         mutation = direction[1]
@@ -73,7 +49,7 @@ class LSTMConverter():
 
         return value
     
-    def generateLSTMInput(self, observations):
+    def generate_LSTM_input(self, observations):
 
         num_observations = len(observations)
 
@@ -87,10 +63,10 @@ class LSTMConverter():
             tensors_directions = []
 
             for i in range(num_directions):
-                tensors_directions.append(self.directionToTensor(directions[i]))
+                tensors_directions.append(self.__direction_to_tensor(directions[i]))
 
             for i in range(num_directions, self.limit_directions):
-                tensors_directions.append(self.directionToTensor(directions[num_directions-1]))
+                tensors_directions.append(self.__direction_to_tensor(directions[num_directions-1]))
             
             for index in range(value.shape[1]):
                 value[observation][index] = tensors_directions[index] 
@@ -99,7 +75,7 @@ class LSTMConverter():
         
         return value
 
-    def generateLSTMPredict(self, observation):
+    def generate_LSTM_predict(self, observation):
         
         directions_number = len(observation.path)
 
@@ -107,38 +83,17 @@ class LSTMConverter():
 
         for i in range(directions_number):
             
-            value[0][i] = self.directionToTensor(observation.path[i])
+            value[0][i] = self.__direction_to_tensor(observation.path[i])
 
         return value           
-            
     
-    def tensorToDirection(self, tensor):
-
-        index_values = []
-        for index_layer in range(tensor.shape[0]):
-
-            for index_mutation in range(tensor.shape[1]):
-
-                if tensor[index_layer][index_mutation] == 1:
-
-                    index_values.append(index_layer)
-                    index_values.append(index_mutation)
-                    break
-        
-        mutation = self.index_to_mutation.get(index_values[1])
-
-        if mutation is None or index_values[0] >= self.max_layers:
-            raise Exception("Error converting tensor to direction {}".format(tensor))
-
-        return (index_values[0],mutation)
-    
-    def predictedToDirection(self, predicted_layer_index, predicted_mutation_index):
+    def __predicted_to_direction(self, predicted_layer_index, predicted_mutation_index):
 
         mutation = self.index_to_mutation.get(predicted_mutation_index)
 
         return (predicted_layer_index, mutation)
 
-    def topKPredictedDirections(self, predicted_tensor, k=2):
+    def topK_predicted_directions(self, predicted_tensor, k=2):
         
         shape = predicted_tensor.shape
         tensor = predicted_tensor.view(shape[0], 1, shape[1]*shape[2])
@@ -153,7 +108,7 @@ class LSTMConverter():
 
             top_i_layer_index = index // shape[2]
             top_i_mutation_index = index - (shape[2]*top_i_layer_index)
-            predicted_direction = self.predictedToDirection(top_i_layer_index, top_i_mutation_index)
+            predicted_direction = self.__predicted_to_direction(top_i_layer_index, top_i_mutation_index)
             predicted_directions.append(predicted_direction)
 
         return predicted_directions

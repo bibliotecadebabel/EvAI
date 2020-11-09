@@ -65,9 +65,9 @@ class LSTMSelector(Selector):
                                                         limit_directions=self.max_observation_size)
 
         self.net = net_lstm.NetworkLSTM(observation_size=self.max_observation_size, 
-                                            inChannels=self.max_layers_lstm, 
-                                            outChannels=self.max_layers_lstm*self.converter.mutations, 
-                                            kernelSize=self.converter.mutations, cuda_flag=True)
+                                            in_channels=self.max_layers_lstm, 
+                                            out_channels=self.max_layers_lstm*self.converter.mutations, 
+                                            kernel_size=self.converter.mutations, cuda_flag=True)
         self.input_lstm = None
         self.current_path = self.observation_creator(num_layer=0,
             path=[const_values.EMPTY_DIRECTION], weight=1)
@@ -202,7 +202,7 @@ class LSTMSelector(Selector):
                 print("weight: ", self.observations[i].weight)
 
             print("current path: ", self.current_path.path)                
-            input_lstm = self.converter.generateLSTMInput(observations=self.observations)
+            input_lstm = self.converter.generate_LSTM_input(observations=self.observations)
             print("starting lstm training")
             print("input lstm: ", input_lstm.size())
             self.net.Training(data=input_lstm, observations=self.observations, dt=self.dt, p=self.training_time)
@@ -242,10 +242,10 @@ class LSTMSelector(Selector):
 
         if self.observations is not None and len(self.observations) > 0:
             
-            input_predict = self.converter.generateLSTMPredict(observation=self.current_path)
+            input_predict = self.converter.generate_LSTM_predict(observation=self.current_path)
             top_directions = len(self.observations) // 2
             predicted_tensor = self.net.predict(x=input_predict)
-            predicted_relative_directions = self.converter.topKPredictedDirections(predicted_tensor=predicted_tensor, k=len(self.observations))
+            predicted_relative_directions = self.converter.topK_predicted_directions(predicted_tensor=predicted_tensor, k=len(self.observations))
 
             print("relative predicted: ", predicted_relative_directions)
             predicted_absolute_directions = []
