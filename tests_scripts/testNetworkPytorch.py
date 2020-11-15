@@ -8,6 +8,7 @@ from utilities.Abstract_classes.classes.uniform_random_selector import(
 from Geometric.Conditions.DNA_conditions import max_layer,max_filter,max_filter_dense
 import Geometric.Directions.DNA_directions_convex as direction_dna
 import Geometric.Directions.DNA_directions_pool as direction_dna_p
+import Geometric.Directions.DNA_directions_pool_duplicate as direction_dna_p_duplicate
 import mutations.mutation_manager as MutationManager
 import const.versions as directions_version
 
@@ -91,24 +92,25 @@ def Test_Mutacion():
         augSettings.translate : True,
     }
 
-    PARENT_DNA = ((-1, 1, 3, 32, 32), (0, 3, 64, 3, 3),(0, 64, 128, 3, 3, 2), (0, 128, 256, 3, 3, 2),
-                            (0, 256, 256, 5, 5),
-                            (1, 256, 10),
-                            (2,),
-                            (3, -1, 0),
-                            (3, 0, 1),
-                            (3, 1, 2),
-                            (3, 2, 3),
-                            (3, 3, 4),
-                            (3, 4, 5))
+    PARENT_DNA = ((-1, 1, 3, 32, 32), (0, 3, 5, 3, 3), (0, 5, 10, 4, 4, 2), (0, 15, 15, 5, 5), 
+                                (0, 15, 30, 26, 26), 
+                                (1, 30, 10), 
+                                (2,), 
+                                (3, -1, 0), 
+                                (3, 0, 1),
+                                (3, 0, 2),
+                                (3, 1, 2), 
+                                (3, 2, 3), 
+                                (3, 3, 4), 
+                                (3, 4, 5))
 
-    MUTATE_DNA = direction_dna_p.increase_filters(2, PARENT_DNA)
+    MUTATE_DNA = direction_dna_p_duplicate.increase_filters(1, PARENT_DNA)
     print("MUTATED DNA: ", MUTATE_DNA)
     transform_compose = augSettings.generateTransformCompose(list_transform, False)
     dataGen = GeneratorFromCIFAR.GeneratorFromCIFAR(2,  64, threads=0, dataAugmentation=True, transforms_mode=transform_compose)
     dataGen.dataConv2d()
     
-    version = directions_version.POOL_VERSION
+    version = directions_version.POOL_DUPLICATE_VERSION
 
     mutation_manager = MutationManager.MutationManager(directions_version=version)
     

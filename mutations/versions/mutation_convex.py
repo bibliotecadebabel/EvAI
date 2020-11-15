@@ -103,8 +103,7 @@ def __init_mutation(old_network, network, lenghtDna):
 
             if adjustFilterMutation is not None:
 
-                if old_layer.dna[0] == 0:
-                    oldFilter, oldBias = adjustFilterMutation.adjustEntryFilters(mutation_type=mutation_type)
+                oldFilter, oldBias = adjustFilterMutation.adjustEntryFilters(mutation_type=mutation_type)
 
             h_value = 1
             if old_layer.tensor_h is not None:

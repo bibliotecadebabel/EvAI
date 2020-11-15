@@ -248,7 +248,7 @@ class Network(nn.Module, na.NetworkAbstract):
             print("ricap: ", ricap)
             iters = len(dt_array)
 
-            print_every = iters // 10
+            print_every = iters // 4
             start = time.time()
             data_iter = iter(dataGenerator._trainoader)
 

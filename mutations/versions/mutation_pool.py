@@ -88,8 +88,7 @@ def __init_mutation(old_network, network, lenghtDna):
 
             if adjustFilterMutation is not None:
                 
-                if old_layer.dna[0] == 0:
-                    oldFilter, oldBias = adjustFilterMutation.adjustEntryFilters(mutation_type=mutation_type)
+                oldFilter, oldBias = adjustFilterMutation.adjustEntryFilters(mutation_type=mutation_type)
 
             if isinstance(old_layer, conv2d_layer.Conv2dLayer):
                 __execute_mutations(oldFilter=oldFilter, oldBias=oldBias, oldBatchnorm=old_layer.get_batch_norm(),
@@ -121,8 +120,13 @@ def __init_add_layer_mutation(old_network, network, lenghtold_dna, added_layer_i
         old_layer = old_network.nodes[old_layer_index].objects[0]
         new_layer = network.nodes[new_layer_index].objects[0]
 
-        if old_layer.get_filters() is not None:
-            __execute_mutations(oldFilter=old_layer.get_filters(), oldBias=old_layer.get_bias(), oldBatchnorm=old_layer.get_batch_norm(),
+        if isinstance(old_layer, learnable_layer.LearnableLayer) and isinstance(new_layer, learnable_layer.LearnableLayer) and old_layer.get_filters() is not None:
+
+            if isinstance(old_layer, conv2d_layer.Conv2dLayer):
+                __execute_mutations(oldFilter=old_layer.get_filters(), oldBias=old_layer.get_bias(), oldBatchnorm=old_layer.get_batch_norm(),
+                        new_layer=new_layer, cuda_flag=network.cuda_flag, layerType=old_layer.dna[0])
+            else:
+                __execute_mutations(oldFilter=old_layer.get_filters(), oldBias=old_layer.get_bias(), oldBatchnorm=None,
                         new_layer=new_layer, cuda_flag=network.cuda_flag, layerType=old_layer.dna[0])
         
         if network.cuda_flag == True:

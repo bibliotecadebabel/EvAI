@@ -219,19 +219,16 @@ class AdjustInputChannels():
         newEntries = shape[1] - (abs(value[0] - value[1]) + 1)
         #print("new entries: ", newEntries)
 
-        if self.network.cuda_flag == True:
-            adjustedOldFilter = torch.zeros(shape[0], newEntries, shape[2], shape[3]).cuda()
-        else:
-            adjustedOldFilter = torch.zeros(shape[0], newEntries, shape[2], shape[3])
+        adjustedOldFilter = self.__generateEmptyFilters(oldShape=shape, inputChannels=newEntries, cuda=self.network.cuda_flag)
         
-        for exit_channel in range(shape[0]):
+        for output_channel in range(shape[0]):
             index_accepted = 0
-            for entries_channel in range(shape[1]):
+            for input_channel in range(shape[1]):
 
-                if entries_channel >= value[0] and entries_channel <= value[1]:
+                if input_channel >= value[0] and input_channel <= value[1]:
                     pass
                 else:
-                    adjustedOldFilter[exit_channel][index_accepted] = oldFilter[exit_channel][entries_channel].clone()
+                    adjustedOldFilter[output_channel][index_accepted] = oldFilter[output_channel][input_channel].clone()
                     index_accepted += 1
 
         value = self.__normalize(oldFilter=adjustedOldFilter, oldBias=oldBias, originalShape=shape)
@@ -263,23 +260,22 @@ class AdjustInputChannels():
         value = abs(newFilter.shape[1] - oldFilter.shape[1])
         conserved_range = [range_filter[0], abs(range_filter[1] - value)]
         remove_gane = [conserved_range[1]+1, range_filter[1]]
-        if self.network.cuda_flag == True:
-            adjustedFilter = torch.zeros(shape[0], shape[1]-value, shape[2], shape[3]).cuda()
-        else:
-            adjustedFilter = torch.zeros(shape[0], shape[1]-value, shape[2], shape[3])
-        
-        #print("layer range=", range_filter)
-        #print("conserved RANGE=", conserved_range)
-        #print("range to remove=", remove_gane)
-        
-        for exit_channel in range(shape[0]):
-            index_accepted = 0
-            for entries_channel in range(shape[1]):
 
-                if entries_channel >= remove_gane[0] and entries_channel <= remove_gane[1]:
+        adjustedFilter = self.__generateEmptyFilters(oldShape=shape, inputChannels=shape[1]-value, cuda=self.network.cuda_flag)
+        
+        '''
+        print("layer range=", range_filter)
+        print("conserved RANGE=", conserved_range)
+        print("range to remove=", remove_gane)
+        '''
+        for output_channel in range(shape[0]):
+            index_accepted = 0
+            for input_channel in range(shape[1]):
+
+                if input_channel >= remove_gane[0] and input_channel <= remove_gane[1]:
                     pass
                 else:
-                    adjustedFilter[exit_channel][index_accepted] = oldFilter[exit_channel][entries_channel].clone()
+                    adjustedFilter[output_channel][index_accepted] = oldFilter[output_channel][input_channel].clone()
                     index_accepted += 1
         
         value = self.__normalize(oldFilter=adjustedFilter, oldBias=oldBias, originalShape=shape)
@@ -301,25 +297,24 @@ class AdjustInputChannels():
         #print("value: ", value)
         shape = oldFilter.shape
 
-        if self.network.cuda_flag == True:
-            adjustedFilter = torch.zeros(shape[0], shape[1]+value, shape[2], shape[3]).cuda()
-        else:
-            adjustedFilter = torch.zeros(shape[0], shape[1]+value, shape[2], shape[3])
+        adjustedFilter = self.__generateEmptyFilters(oldShape=shape, inputChannels=shape[1]+value, cuda=self.network.cuda_flag)
+        
+        '''
+        print("adjustfilter: ", adjustedFilter.size())
+        print("oldfilter: ", oldFilter.size())
+        print("add range=", range_add)
+        print("new filter size=", adjustedFilter.shape) 
+        '''
 
-        #print("adjustfilter: ", adjustedFilter.size())
-        #print("oldfilter: ", oldFilter.size())
-        #print("add range=", range_add)
-        #print("new filter size=", adjustedFilter.shape) 
-
-        for exit_channel in range(shape[0]):
+        for output_channel in range(shape[0]):
             index_accepted = 0
-            for entries_channel in range(shape[1]+value):
+            for input_channel in range(shape[1]+value):
 
-                if entries_channel >= range_add[0] and entries_channel <= range_add[1]:
+                if input_channel >= range_add[0] and input_channel <= range_add[1]:
                     pass
                 else:
-                    new_value = oldFilter[exit_channel][index_accepted].clone()
-                    adjustedFilter[exit_channel][entries_channel] = new_value
+                    new_value = oldFilter[output_channel][index_accepted].clone()
+                    adjustedFilter[output_channel][input_channel] = new_value
                     index_accepted += 1
         
         value = self.__normalize(oldFilter=adjustedFilter, oldBias=oldBias, originalShape=shape)
@@ -356,14 +351,24 @@ class AdjustInputChannels():
     
     def __normalize(self, oldFilter, oldBias, originalShape):
         
-        # Si los filtros tienen el mismo shape, no ocurrira una mutacion posterior y se puede normalizar de una vez
-        '''
-        if str(oldFilter.shape) == str(self.newFilter.shape):
-            
-            old_normalize = originalShape[1] * originalShape[2] * originalShape[3]
-            new_normalize = oldFilter.shape[1] * oldFilter.shape[2] * oldFilter.shape[3]
-
-            oldFilter = (oldFilter * new_normalize) / old_normalize
-            oldBias = (oldBias * new_normalize) / old_normalize
-        '''
         return [oldFilter, oldBias]
+    
+    def __generateEmptyFilters(self, oldShape, inputChannels, cuda):
+        
+        emptyFilters = None
+
+        if len(oldShape) > 2: # Conv2d layer
+            
+            if cuda == True:
+                emptyFilters = torch.zeros(oldShape[0], inputChannels, oldShape[2], oldShape[3]).cuda()
+            else:
+                emptyFilters = torch.zeros(oldShape[0], inputChannels, oldShape[2], oldShape[3])
+
+        else: # Linear layer
+
+            if cuda == True:
+                emptyFilters = torch.zeros(oldShape[0], inputChannels).cuda()
+            else:
+                emptyFilters = torch.zeros(oldShape[0], inputChannels)
+
+        return emptyFilters
