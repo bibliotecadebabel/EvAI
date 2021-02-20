@@ -38,6 +38,7 @@ class LossLayer(layer.TorchLayer):
 
         value = parent.value
 
+        # Se calcula el valor de pérdida, dependiendo si aplica o no RICAP.
         if self.get_ricap() != None and self.get_enable_ricap() == True:
             self.value = self.get_ricap().generateLoss(self)
         else:

@@ -83,30 +83,39 @@ class Conv2dLayer(layer.LearnableLayer):
         else:
             self.__propagate_function = self.__propagate_default
 
+    # Función de propagación Convolution2d (Versión por defecto)
     def __propagate_default(self):
 
+        # Se genera el Tensor entrada de la función Convolution2d
         current_input = self.__generate_input()
 
+        # Se aplica la función de agrupamiento
         if self.__pool is not None:
             current_input = self.__apply_pooling(current_input)
 
+        # Se aplica la función Dropout
         if self.get_dropout_value() > 0:
             output_dropout = self.apply_dropout(current_input)
             value = self.object(output_dropout)
         else:
             value = self.object(current_input)
 
+        # Se aplica la función de normalización
         value = self.__apply_normalization(value)
         
         self.value = value
         
+        # Se aplica la función de activación
         if self.__enable_activation == True:
             self.value = torch.nn.functional.relu(value)
     
+    # Función de propagación Convolution2d (Versión convexa)
     def __propagate_padding(self):
 
+        # Se genera el Tensor entrada de la función Convolution2d
         current_input = self.__generate_input()
 
+        # Se aplica la función de agrupamiento.
         if self.__pool is not None:
             current_input = self.__apply_pooling(current_input)
 
@@ -115,16 +124,19 @@ class Conv2dLayer(layer.LearnableLayer):
         if self.node.kids[0].objects[0].dna[0] == 0:
             current_input = self.__pad_input(targetTensor=current_input, kernel_size=kernel)
 
+        # Se aplica la función Dropout
         if self.get_dropout_value() > 0:
             output_dropout = self.apply_dropout(current_input)
             value = self.object(output_dropout)
         else:
             value = self.object(current_input)
 
+        # Se aplica la función de normalización
         value = self.__apply_normalization(value)
         
         self.value = value
         
+        # Se aplica la función de activación
         if self.__enable_activation == True:
             self.value = torch.nn.functional.relu(value)
         
@@ -145,6 +157,7 @@ class Conv2dLayer(layer.LearnableLayer):
         
         biggest_input_kernel = self.__get_input_with_bigger_kernel()
 
+        # Versión por defecto
         if input_channels == parents_outputs_channels:
 
             concat_tensor_list = []
@@ -163,6 +176,7 @@ class Conv2dLayer(layer.LearnableLayer):
             
             del concat_tensor_list
 
+        # Versión convexa
         else:
 
             biggest_input_depth = self.__get_input_with_more_filters() 

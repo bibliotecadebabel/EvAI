@@ -1,5 +1,4 @@
 from abc import ABC, abstractmethod
-import Factory.LayerFactory as factory
 import Factory.TensorFactory as tensorFactory
 import children.pytorch.layers.learnable_layers.layer_learnable as layer_learnable
 
@@ -14,7 +13,6 @@ class NetworkAbstract(ABC):
         self.weight_decay = weight_decay
         self.enable_activation = enable_activaiton 
         self.label = tensorFactory.createTensor(body=[1], cuda=self.cuda_flag, requiresGrad=False)
-        self.factory = factory.LayerGenerator(cuda=self.cuda_flag)
         self.foward_value = None   
         self.total_value = 0
         self.loss_history = []

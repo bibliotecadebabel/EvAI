@@ -9,7 +9,9 @@ class Ricap():
         self.__beta = beta
         self.__w = {}
         self.__c = {}
-        
+
+    # Autor = 4ui_iurz1 (2019)
+    # Repositorio de Github = https://github.com/4uiiurz1/pytorch-ricap    
     def doRicap(self, inputs, target, cuda=True):
 
         I_x, I_y = inputs.size()[2:]
@@ -46,6 +48,8 @@ class Ricap():
 
         return patched_images
 
+    # Autor = 4ui_iurz1 (2019)
+    # Repositorio de Github = https://github.com/4uiiurz1/pytorch-ricap   
     def generateLoss(self, layer):
 
         parent_layer = layer.node.parents[0].objects[0]

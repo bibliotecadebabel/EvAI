@@ -92,25 +92,26 @@ def Test_Mutacion():
         augSettings.translate : True,
     }
 
-    PARENT_DNA = ((-1, 1, 3, 32, 32), (0, 3, 5, 3, 3), (0, 5, 10, 4, 4, 2), (0, 15, 15, 5, 5), 
-                                (0, 15, 30, 26, 26), 
+
+    PARENT_DNA = ((-1, 1, 3, 32, 32), (0, 3, 12, 3, 3), (0, 12, 16, 4, 4, 2), (0, 16, 24, 5, 5, 2), 
+                                (0, 24, 30, 8, 8), 
                                 (1, 30, 10), 
                                 (2,), 
                                 (3, -1, 0), 
                                 (3, 0, 1),
-                                (3, 0, 2),
-                                (3, 1, 2), 
-                                (3, 2, 3), 
+                                (3, 1, 2),
+                                (3, 2, 3),
                                 (3, 3, 4), 
                                 (3, 4, 5))
 
-    MUTATE_DNA = direction_dna_p_duplicate.increase_filters(1, PARENT_DNA)
+
+    MUTATE_DNA = direction_dna.spread_convex_dendrites(1, PARENT_DNA)
     print("MUTATED DNA: ", MUTATE_DNA)
     transform_compose = augSettings.generateTransformCompose(list_transform, False)
     dataGen = GeneratorFromCIFAR.GeneratorFromCIFAR(2,  64, threads=0, dataAugmentation=True, transforms_mode=transform_compose)
     dataGen.dataConv2d()
     
-    version = directions_version.POOL_DUPLICATE_VERSION
+    version = directions_version.CONVEX_VERSION
 
     mutation_manager = MutationManager.MutationManager(directions_version=version)
     
