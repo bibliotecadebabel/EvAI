@@ -71,7 +71,6 @@ class InputChannelMutation(Mutation):
     def execute(self, oldFilter, oldBias, newNode, cuda):
 
         old_shape = oldFilter.shape
-        new_filter_shape = newNode.get_filters().shape
 
         if self._value > 0:
 
@@ -81,16 +80,6 @@ class InputChannelMutation(Mutation):
                 resized = torch.zeros(old_shape[0], self._value, old_shape[2], old_shape[3])
 
             oldFilter = torch.cat((oldFilter, resized), dim=1)
-            resized_shape = oldFilter.shape
-
-            '''            
-            if str(new_filter_shape) == str(resized_shape):
-                
-                old_normalize = old_shape[1] * old_shape[2] * old_shape[3]
-                new_normalize = resized_shape[1] * resized_shape[2] * resized_shape[3]
-                oldFilter = (oldFilter * new_normalize) / old_normalize
-                oldBias = (oldBias * new_normalize) / old_normalize
-            '''
 
             newNode.set_filters(oldFilter)
             newNode.set_bias(oldBias)
@@ -110,14 +99,6 @@ class InputChannelMutation(Mutation):
                 for in_channel in range(old_shape[1]-value):
                     resized[out_channel][in_channel] = oldFilter[out_channel][in_channel].clone()
 
-            '''
-            if str(new_filter_shape) == str(resized.shape):
-                
-                old_normalize = old_shape[1] * old_shape[2] * old_shape[3]
-                new_normalize = resized.shape[1] * resized.shape[2] * resized.shape[3]
-                resized = (resized * new_normalize) / old_normalize
-                oldBias = (oldBias * new_normalize) / old_normalize
-            '''
             del oldFilter
 
             newNode.set_filters(resized)
@@ -145,7 +126,6 @@ class KernelSizeMutation(Mutation):
         if self._value > 0:
 
             shape = oldFilter.shape
-            old_normalize = 1 * shape[2] * shape[3]
 
             if cuda == True:
                 resized_1 = torch.zeros(shape[0], shape[1], shape[2], newDimensions).cuda()
@@ -156,17 +136,9 @@ class KernelSizeMutation(Mutation):
 
             oldFilter = torch.cat((oldFilter, resized_1), dim=3)
             oldFilter = torch.cat((oldFilter, resized_2), dim=2)
-            
-            #new_normalize = 1 * oldFilter.shape[2] * oldFilter.shape[3]
 
             del resized_1
-            del resized_2
-
-            
-            #oldFilter = (oldFilter * new_normalize) / old_normalize
-
-            #oldBias = (oldBias * new_normalize) / old_normalize
-            
+            del resized_2          
 
             newNode.set_filters(oldFilter)
             newNode.set_bias(oldBias)
@@ -174,19 +146,12 @@ class KernelSizeMutation(Mutation):
         elif self._value < 0:
 
             shape = oldFilter.shape
-            #old_normalize = 1 * shape[2] * shape[3]
 
             new_x = shape[2] - newDimensions
             new_y = shape[3] - newDimensions
             resized = oldFilter[:, :, :new_x, :new_y]
 
             del oldFilter
-
-            #new_normalize = 1 * resized.shape[2] * resized.shape[3]
-            
-            #resized = (resized * new_normalize) / old_normalize
-
-            #oldBias = (oldBias * new_normalize) / old_normalize
             
             newNode.set_filters(resized)
             newNode.set_bias(oldBias)
@@ -205,7 +170,7 @@ class AdjustInputChannels():
         self.network = network
         self.newFilter = newFilter
 
-    # Only use when mutation is remove layer or remove dendrite
+    # Se eliminan los canales de entrada requeridos (mutación remover conexión)
     def removeFilters(self):
 
         oldFilter = self.adjustLayer.get_filters()
@@ -215,9 +180,7 @@ class AdjustInputChannels():
 
         value = self.getTargetRange()
 
-        #print("range to remove=", value)
         newEntries = shape[1] - (abs(value[0] - value[1]) + 1)
-        #print("new entries: ", newEntries)
 
         adjustedOldFilter = self.__generateEmptyFilters(oldShape=shape, inputChannels=newEntries, cuda=self.network.cuda_flag)
         
@@ -232,13 +195,14 @@ class AdjustInputChannels():
                     index_accepted += 1
 
         value = self.__normalize(oldFilter=adjustedOldFilter, oldBias=oldBias, originalShape=shape)
-        #print("value shape: ", value[0].shape)
+
         return value
 
     def adjustEntryFilters(self, mutation_type):
         
         value = [self.adjustLayer.get_filters(), self.adjustLayer.get_bias()]
 
+        # Se ajustan la canidad de canales de entrada dependiendo del tipo de mutación.
         if mutation_type == m_type.DEFAULT_ADD_FILTERS:
             value =  self.__increaseEntryFilters()
         elif mutation_type == m_type.DEFAULT_REMOVE_FILTERS:
@@ -248,6 +212,7 @@ class AdjustInputChannels():
         
         return value
 
+    # Se disminuye la cantidad de canales de entrada.
     def __decreaseEntryFilters(self):
         
         oldFilter = self.adjustLayer.get_filters()
@@ -262,12 +227,7 @@ class AdjustInputChannels():
         remove_gane = [conserved_range[1]+1, range_filter[1]]
 
         adjustedFilter = self.__generateEmptyFilters(oldShape=shape, inputChannels=shape[1]-value, cuda=self.network.cuda_flag)
-        
-        '''
-        print("layer range=", range_filter)
-        print("conserved RANGE=", conserved_range)
-        print("range to remove=", remove_gane)
-        '''
+
         for output_channel in range(shape[0]):
             index_accepted = 0
             for input_channel in range(shape[1]):
@@ -281,6 +241,7 @@ class AdjustInputChannels():
         value = self.__normalize(oldFilter=adjustedFilter, oldBias=oldBias, originalShape=shape)
         return value
     
+    # Se aumenta la cantidad de canales de entrada.
     def __increaseEntryFilters(self):
 
         startIndex = self.getTargetRange()[1]
@@ -293,19 +254,10 @@ class AdjustInputChannels():
 
         range_add = [startIndex+1, startIndex+value]
 
-        #print("range to add: ", range_add)
-        #print("value: ", value)
         shape = oldFilter.shape
 
         adjustedFilter = self.__generateEmptyFilters(oldShape=shape, inputChannels=shape[1]+value, cuda=self.network.cuda_flag)
         
-        '''
-        print("adjustfilter: ", adjustedFilter.size())
-        print("oldfilter: ", oldFilter.size())
-        print("add range=", range_add)
-        print("new filter size=", adjustedFilter.shape) 
-        '''
-
         for output_channel in range(shape[0]):
             index_accepted = 0
             for input_channel in range(shape[1]+value):

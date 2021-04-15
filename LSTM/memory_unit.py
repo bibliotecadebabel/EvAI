@@ -27,6 +27,7 @@ class MemoryUnit():
             self.convCand.cuda()
             self.convOt.cuda()
 
+    # Ejecución de la unidad de memoria LSTM.
     def compute(self, xt, last_ht=None, last_ct=None):
 
         current_input_ct = None
@@ -62,7 +63,7 @@ class MemoryUnit():
 
         self.__computeHt(current_input_ct)
 
-    
+    # Se calcula el tensor Ct.
     def __computeCt(self, current_input, current_input_candidates, last_ct=None):
 
         sigmoid_ft = torch.nn.Sigmoid()
@@ -86,7 +87,7 @@ class MemoryUnit():
 
         self.ct = ft + a
 
-
+    # Se calcula el tensor Ht
     def __computeHt(self, current_input):
         
         sigmoid_ot = torch.nn.Sigmoid()

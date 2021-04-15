@@ -93,11 +93,12 @@ class Conv2dLayer(layer.LearnableLayer):
         if self.__pool is not None:
             current_input = self.__apply_pooling(current_input)
 
-        # Se aplica la función Dropout
         if self.get_dropout_value() > 0:
+            # Se aplica Dropout y luego la convolución 2d.
             output_dropout = self.apply_dropout(current_input)
             value = self.object(output_dropout)
         else:
+            # Se aplica la función convolución 2d
             value = self.object(current_input)
 
         # Se aplica la función de normalización
@@ -124,11 +125,13 @@ class Conv2dLayer(layer.LearnableLayer):
         if self.node.kids[0].objects[0].dna[0] == 0:
             current_input = self.__pad_input(targetTensor=current_input, kernel_size=kernel)
 
-        # Se aplica la función Dropout
+        
         if self.get_dropout_value() > 0:
+            # Se aplica Dropout y luego la convolución 2d.
             output_dropout = self.apply_dropout(current_input)
             value = self.object(output_dropout)
         else:
+            # Se aplica la función convolución 2d
             value = self.object(current_input)
 
         # Se aplica la función de normalización

@@ -243,6 +243,8 @@ class LSTMSelector(Selector):
         if self.observations is not None and len(self.observations) > 0:
             
             input_predict = self.converter.generate_LSTM_predict(observation=self.current_path)
+            print("path to predict: ", self.current_path.path)
+            print(input_predict.size())
             top_directions = len(self.observations) // 2
             predicted_tensor = self.net.predict(x=input_predict)
             predicted_relative_directions = self.converter.topK_predicted_directions(predicted_tensor=predicted_tensor, k=len(self.observations))

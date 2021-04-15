@@ -31,17 +31,19 @@ class LossLayer(layer.TorchLayer):
         
     def get_ricap(self):
         return self.__ricap
-        
+
+    # Función de pérdida CrossEntropy
     def propagate(self):
         
         parent = self.node.parents[0].objects[0]
 
         value = parent.value
 
-        # Se calcula el valor de pérdida, dependiendo si aplica o no RICAP.
         if self.get_ricap() != None and self.get_enable_ricap() == True:
+            # Se aplica la función de pérdida CrossEntropy teniendo en cuenta la función RICAP
             self.value = self.get_ricap().generateLoss(self)
         else:
+            # Se aplica la función de pérdida CrossEntropy por defecto.
             self.value = self.object(value, self.__labels)
         
     def delete_params(self):

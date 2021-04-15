@@ -13,6 +13,7 @@ import torch
 import const.training_type as TrainingType
 import utilities
 import utilities.MemoryManager as MemoryManager
+
 class NAS():
 
     def __init__(self, settings : utilities.ExperimentSettings.ExperimentSettings):
@@ -60,20 +61,13 @@ class NAS():
         space = self.__space
         nodeCenter = self.__get_center_node(self.__space)
 
-        #centerNetwork = None
-
         print("new space's center: =", self.__best_network.dna)
-        #centerNetwork = self.__best_network
         
         for network in self.__networks:
             self.__memoryManager.deleteNetwork(network=network)
 
         self.__networks = []
         self.__nodes = []
-
-        
-        #self.__nodes.append(nodeCenter)
-        #self.__networks.append(centerNetwork)
 
         for nodeKid in nodeCenter.kids:
             kidDNA = space.node2key(nodeKid)
@@ -92,7 +86,6 @@ class NAS():
                 nodeDna = self.__space.node2key(node)
 
                 if str(nodeDna) == str(network.dna):
-                    #network.generate_accuracy(self.__settings.dataGen)
                     node.objects[0].objects[0].energy = network.get_accuracy()
                     print("saving energy network #", i, " - L=", network.get_accuracy())
                     i +=1
@@ -109,7 +102,7 @@ class NAS():
 
         return nodeCenter
 
-    def __train_network(self, network : nw.Network, dt_array, max_iter, , allow_save_txt=False):
+    def __train_network(self, network : nw.Network, dt_array, max_iter, allow_save_txt=False):
 
         dt_array_len = len(dt_array)
         avg_factor = dt_array_len // 4
@@ -129,34 +122,49 @@ class NAS():
 
     def execute(self):
         
+        # Se inserta el registro que contiene la configuración del experimento.
         test_id = self._test_dao.insert(testName=self.__settings.test_name, dt=self.__settings.init_dt_array[0], 
                 dt_min=self.__settings.init_dt_array[-1], batch_size=self.__settings.batch_size)
 
-        if self.__settings.disable_mutation == False:
+        # Se generan las modificaciones aleatorias y las secuencias de tuplas respectivas por cada modificación generada.
+        self.__generate_new_space(firstTime=True)
 
-            self.__generate_new_space(firstTime=True)
+        # Se crean las redes neuronales convolucionales iniciales utilizando las secuencias de tuplas generadas.
+        self.__generate_networks()
+
+        # Ejecución de las iteraciones del algoritmo basado en NAS.
+        for j in range(1, self.__settings.epochs+1):
+
+            print("---- EPOCH #", j)
+
+            # Se entrenan las redes neuronales convolucionales y se evalúa su entrenamiento al finalizar el mismo respectivamente.
+            for i  in range(len(self.__networks)):
+                print("Training net #", i, " - direction: ", self.__get_direction(network=self.__networks[i]) ) 
+                self.__networks[i] = self.__train_network(network=self.__networks[i], dt_array=self.__settings.joined_dt_array, 
+                                                            max_iter=self.__settings.max_joined_iter)
+
+            # Se generan los datos de entrenamiento de la red neuronal LSTM.
+            self.__set_node_energy()
+
+            # Se inserta el registro de la iteración actual del experimento (No. de iteración actual e información de las R.N.C entrenadas)
+            self.__test_result_dao.insert(idTest=test_id, iteration=j, dna_graph=self.__space)
+
+            # Se obtiene la red neuronal convolucional con mayor porcentaje de precisión
+            self.__best_network = self.__get_best_network()
+
+            current_iteration = j * len(self.__settings.joined_dt_array) * self.__settings.max_joined_iter
+
+            # Se almacena en disco la red neuronal convolucional con mayor precisión
+            self.__save_model(network=self.__best_network, test_id=test_id, iteration=current_iteration)
+
+            # Se entrena la red neuronal LSTM, se generan las nuevas modificaciones y las secuencias de tuplas respectivas por cada modificación
+            self.__generate_new_space()
+
+            # Se crean las nuevas redes neuronales convolucionales a utilizar en la siguiente iteración.
             self.__generate_networks()
 
-            for j in range(1, self.__settings.epochs+1):
-
-                print("---- EPOCH #", j)
-
-                for i  in range(len(self.__networks)):
-                    print("Training net #", i, " - direction: ", self.__get_direction(network=self.__networks[i]) ) 
-                    self.__networks[i] = self.__train_network(network=self.__networks[i], dt_array=self.__settings.joined_dt_array, max_iter=self.__settings.max_joined_iter)
-
-                self.__set_node_energy()
-                self.__test_result_dao.insert(idTest=test_id, iteration=j, dna_graph=self.__space)
-
-                self.__best_network = self.__get_best_network()
-
-                current_iteration = j * len(self.__settings.joined_dt_array) * self.__settings.max_joined_iter
-                self.__save_model(network=self.__best_network, test_id=test_id, iteration=current_iteration)
-
-                self.__generate_new_space()
-                self.__generate_networks()
-
-                torch.cuda.empty_cache()
+            # Se limpia el cache del GPU para liberar memoria.
+            torch.cuda.empty_cache()
 
     def __get_direction(self, network):
 

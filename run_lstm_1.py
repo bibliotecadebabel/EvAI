@@ -51,7 +51,7 @@ def DNA_Creator_s(x,y, dna, version):
     selector = None
     selector=LSTMSelector(condition=condition,
         directions=version, num_actions=num_actions,
-        mutations=((0,1,0,0),(0,-1,0,0),(0,0,1,1)) 
+        mutations=((0,1,0,0),(0,-1,0,0),(0,0,1,1), (0,0,-1,-1)) 
     )
     selector.update(dna)
     actions=selector.get_predicted_actions()
@@ -108,7 +108,7 @@ if __name__ == '__main__':
     settings.eps_batchorm = 0.001
 
     # INITIAL DT PARAMETERS
-    num_actions=4
+    num_actions=8
     settings.save_txt = True
     settings.max_init_iter = 0
     INIT_ITER = 200*e
@@ -120,7 +120,7 @@ if __name__ == '__main__':
 
 
     # JOINED DT PARAMETERS
-    JOINED_ITER = int(0.5*e)
+    JOINED_ITER = 100*e
     #settings.joined_dt_array = Alaising(2,6,e)
     settings.joined_dt_array = Alaising(1.2,99,JOINED_ITER)
     settings.max_joined_iter = 1
@@ -204,16 +204,7 @@ if __name__ == '__main__':
     settings.dropout_function = dropout_function
     # INITIAL DNA
 
-    settings.initial_dna = ((-1, 1, 3, 32, 32), (0, 3, 4, 3, 3),(0, 4, 8, 3, 3, 2), (0, 8, 16, 3, 3, 2),
-                            (0, 16, 32, 5, 5),
-                            (1, 32, 10),
-                            (2,),
-                            (3, -1, 0),
-                            (3, 0, 1),
-                            (3, 1, 2),
-                            (3, 2, 3),
-                            (3, 3, 4),
-                            (3, 4, 5))
+    settings.initial_dna = DNAs.DNA_base_p_version
 
     print('The initial DNA is:')
     print(settings.initial_dna)

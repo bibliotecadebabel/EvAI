@@ -295,7 +295,7 @@ def run(status):
         print("starting pre-training")
 
         print("iterations per epoch = ", status.iterations_per_epoch)
-        dt_array=status.Alai.get_increments(1*status.iterations_per_epoch)
+        dt_array=status.Alai.get_increments(20*status.iterations_per_epoch)
 
         if status.save2database == True:
             test_id = testDao.insert(testName=status.experiment_name, dt=status.dt_Max, dt_min=status.dt_min, batch_size=status.S,

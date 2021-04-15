@@ -9,12 +9,16 @@ import children.pytorch.layers.learnable_layers.layer_learnable as learnable_lay
 import children.pytorch.layers.learnable_layers.layer_conv2d as conv2d_layer
 import utilities.FileManager as FileManager
 
+# Params:
+# old_network = Red neuronal entrenada que se desea mutar.
+# new_dna = Secuencia de tuplas que contiene la nueva estructura de la red neuronal.
 def execute_mutation(old_network, new_dna):
 
     file_manager = FileManager.FileManager()
     file_manager.setFileName("dnas_mutation_error.txt")
 
     try:
+        # Se crea la nueva red neuronal con la nueva estructura deseada.
         network = nw.Network(new_dna, cuda_flag=old_network.cuda_flag, momentum=old_network.momentum,
                                 weight_decay=old_network.weight_decay, enable_activation=old_network.enable_activation,
                                 enable_track_stats=old_network.enable_track_stats, dropout_value=old_network.dropout_value,
@@ -23,21 +27,23 @@ def execute_mutation(old_network, new_dna):
 
         network.loss_history = old_network.loss_history[-200:]
 
+        # Se calcula la cantidad de capas que posee la nueva red neuronal.
         length_new_dna = __generateLenghtDNA(new_dna)
+
+        # Se calcula la cantidad de capas que posee la antigua red neuronal.
         length_old_dna = __generateLenghtDNA(old_network.dna)
 
+        # Se desactivan el registro de gradientes de ambas redes neuronales.
         old_network.set_grad_flag(False)
         network.set_grad_flag(False)
 
-    
+        # Se ejecuta el proceso de modificación y transferencia de parámetros de entrenamiento,
+        # dependiendo si ambas redes neuronales poseen la misma cantidad de capas o no.
         if length_new_dna == length_old_dna:
-            #print("default mutation process")
             __init_mutation(old_network=old_network, network=network, lenghtDna=length_new_dna)
 
-        elif length_new_dna > length_old_dna: # add layer
-            #print("add layer mutation")
+        elif length_new_dna > length_old_dna:
             index_layer, mutation_type = __getTargetIndex(old_dna=old_network.dna, new_dna=new_dna)
-
             __init_add_layer_mutation(old_network=old_network, network=network, lenghtold_dna=length_old_dna,
                                             added_layer_index=index_layer, mutation_type=mutation_type)
 
@@ -77,38 +83,45 @@ def __generateLenghtDNA(dna):
 
 def __init_mutation(old_network, network, lenghtDna):
 
+    # Se obtiene el tipo de mutación y ubicación de la capa a mutar.
     mutation_type, index_target = __getMutationTypeAndTargetIndex(old_dna=old_network.dna, new_dna=network.dna)
 
     source_dendrites = []
 
+    # Se obtiene la lista de receptores de la capa a mutar (si se cumplen las condicones del tipo de mutación)
     if mutation_type == m_type.DEFAULT_ADD_FILTERS or mutation_type == m_type.DEFAULT_REMOVE_FILTERS:
         source_dendrites = __getSourceLayerDendrites(indexLayer=index_target, old_dna=old_network.dna)
     elif mutation_type == m_type.DEFAULT_REMOVE_DENDRITE:
         source_dendrites = __getRemovedDendrite(old_dna=old_network.dna, new_dna=network.dna)
 
-
+    # Se recorren las estructuras de ambas redes neuronales, capa por capa.
     for i in range(1, lenghtDna+1):
 
         old_layer = old_network.nodes[i].objects[0]
         new_layer = network.nodes[i].objects[0]
 
+        # Se verifica si ambas capas poseen parámetros de entrenamiento.
         if isinstance(old_layer, learnable_layer.LearnableLayer) and isinstance(new_layer, learnable_layer.LearnableLayer) and old_layer.get_filters() is not None:
+            
 
+            # Se verifica si la capa actual es una de las capas conectadas como receptores de la capa a mutar.
             adjustFilterMutation = __getAdjustFilterMutation(indexLayer=i, source_dendrites=source_dendrites,
-                                                                network=old_network, adjustLayer=old_layer, newFilter=new_layer.get_filters(),
+                                                                network=old_network, adjustLayer=old_layer, 
+                                                                newFilter=new_layer.get_filters(),
                                                                 mutationType=mutation_type, newNetwork=network)
 
             oldFilter = old_layer.get_filters()
             oldBias = old_layer.get_bias()
-
+            
             if adjustFilterMutation is not None:
-
+                # Se ajustan los canales de entrada de la capa actual ya que es una de los receptores de la capa a mutar.
                 oldFilter, oldBias = adjustFilterMutation.adjustEntryFilters(mutation_type=mutation_type)
 
             h_value = 1
             if old_layer.tensor_h is not None:
                 h_value = old_layer.tensor_h.data.clone()
-            
+
+            # Se modifican y transfieren los parámetros de entrenamiento de la capa entrenada a la nueva capa.    
             if isinstance(old_layer, conv2d_layer.Conv2dLayer):
                 __execute_mutations(oldFilter=oldFilter, oldBias=oldBias, oldBatchnorm=old_layer.get_batch_norm(),
                     new_layer=new_layer, cuda_flag=network.cuda_flag, layerType=old_layer.dna[0], oldH=h_value)
@@ -121,17 +134,20 @@ def __init_mutation(old_network, network, lenghtDna):
         if network.cuda_flag == True:
             torch.cuda.empty_cache()
 
+# Proceso de mutación cuando se agrega una nueva capa.
 def __init_add_layer_mutation(old_network, network, lenghtold_dna, added_layer_index, mutation_type):
 
     old_layer_index = 0
     new_layer_index = 0
     addedFound = False
 
+    # Se inicializa la nueva capa convolucional dependiendo si posee capa de agrupamiento o no.
     if mutation_type == m_type.ADD_POOL_LAYER:
         __initNewPoolConvolution(network.nodes[added_layer_index+1].objects[0])
     else:
         __initNewConvolution(network.nodes[added_layer_index+1].objects[0])
 
+    # Se recorren las estructuras de ambas redes neuronales, capa por capa.
     for i in range(1, lenghtold_dna+1):
 
         new_layer_index = i
@@ -144,6 +160,7 @@ def __init_add_layer_mutation(old_network, network, lenghtold_dna, added_layer_i
         old_layer = old_network.nodes[old_layer_index].objects[0]
         new_layer = network.nodes[new_layer_index].objects[0]
 
+        # Se verifica si ambas capas poseen parámetros de entrenamiento.
         if isinstance(old_layer, learnable_layer.LearnableLayer) and isinstance(new_layer, learnable_layer.LearnableLayer): 
 
             h_value = 1
@@ -152,7 +169,8 @@ def __init_add_layer_mutation(old_network, network, lenghtold_dna, added_layer_i
                 h_value = old_layer.tensor_h.data.clone()
 
             if old_layer.get_filters() is not None:
-
+                
+                # Se modifican y transfieren los parámetros de entrenamiento de la capa entrenada a la nueva capa. 
                 if isinstance(old_layer, conv2d_layer.Conv2dLayer):
                     __execute_mutations(oldFilter=old_layer.get_filters(), oldBias=old_layer.get_bias(), oldBatchnorm=old_layer.get_batch_norm(),
                         new_layer=new_layer, cuda_flag=network.cuda_flag, layerType=old_layer.dna[0], oldH=h_value)
@@ -213,6 +231,7 @@ def __init_remove_layer_mutation(old_network, network, lengthnew_dna, removed_la
         if network.cuda_flag == True:
             torch.cuda.empty_cache()
 
+# Proceso de modificación y transferencia de los parámetros de entrenamiento
 def __execute_mutations(oldFilter, oldBias, oldBatchnorm, layerType,  new_layer, cuda_flag, oldH):
 
     oldBias = oldBias.clone()
@@ -220,11 +239,14 @@ def __execute_mutations(oldFilter, oldBias, oldBatchnorm, layerType,  new_layer,
 
     dictionaryMutation = MutationsDictionary()
 
+    # Se obtiene la lista de modificaciones a realizar comparando la estructura de los filtros y bias de ambas capas (vieja y nueva)
     mutation_list = dictionaryMutation.get_mutation_list(layerType=layerType,
         oldFilter=oldFilter, newFilter=new_layer.get_filters())
 
     if mutation_list is not None:
-
+        
+        # Se ejecutan las modificaciones a realizar a los parámetros de entrenamiento de la capa vieja
+        # y se transfieren a la capa nueva.
         for mutation in mutation_list:
 
             mutation.execute(oldFilter, oldBias, new_layer, cuda=cuda_flag)

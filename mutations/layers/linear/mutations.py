@@ -76,11 +76,7 @@ class InputChannelMutation(Mutation):
                 resized = torch.zeros(shape[0], self._value)
 
             oldFilter = torch.cat((oldFilter, resized), dim=1)
-
-            '''
-            for i in range(oldFilter.shape[0]):
-                oldFilter[i][oldFilter.shape[1]-1] = oldFilter[i][oldFilter.shape[1]-2].clone()
-            '''
+            
             newNode.set_filters(oldFilter)
             newNode.set_bias(oldBias)
 

@@ -93,16 +93,8 @@ def Test_Mutacion():
     }
 
 
-    PARENT_DNA = ((-1, 1, 3, 32, 32), (0, 3, 12, 3, 3), (0, 12, 16, 4, 4, 2), (0, 16, 24, 5, 5, 2), 
-                                (0, 24, 30, 8, 8), 
-                                (1, 30, 10), 
-                                (2,), 
-                                (3, -1, 0), 
-                                (3, 0, 1),
-                                (3, 1, 2),
-                                (3, 2, 3),
-                                (3, 3, 4), 
-                                (3, 4, 5))
+    PARENT_DNA = ( (-1, 1, 3, 32, 32), (0, 3, 64, 3, 3),(0, 64, 128, 3, 3, 2),  (0, 192, 256, 3, 3, 2), (0, 256, 256, 13, 13), (1, 256, 10), (2,), 
+(3, -1, 0), (3, 0, 1), (3, 1, 2), (3, 0, 2), (3, 2, 3), (3, 3, 4), (3, 4, 5) )
 
 
     MUTATE_DNA = direction_dna.spread_convex_dendrites(1, PARENT_DNA)
@@ -111,7 +103,7 @@ def Test_Mutacion():
     dataGen = GeneratorFromCIFAR.GeneratorFromCIFAR(2,  64, threads=0, dataAugmentation=True, transforms_mode=transform_compose)
     dataGen.dataConv2d()
     
-    version = directions_version.CONVEX_VERSION
+    version = directions_version.POOL_VERSION
 
     mutation_manager = MutationManager.MutationManager(directions_version=version)
     

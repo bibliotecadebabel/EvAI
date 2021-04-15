@@ -9,7 +9,7 @@ class LinearLayer(layer.LearnableLayer):
         
         layer.LearnableLayer.__init__(self, dna=dna, torch_object=torch_object)
 
-
+    # Función de propagación Linear
     def propagate(self):
 
         parent = self.node.parents[0].objects[0]
@@ -19,9 +19,11 @@ class LinearLayer(layer.LearnableLayer):
         value = parent.value.view(shape[0], -1 )
 
         if self.get_dropout_value() > 0:
+            # Se aplica Dropout y luego la función lineal
             output_dropout = self.apply_dropout(value)
             value = self.object(output_dropout)
         else:
+            # Se aplica la función lineal
             value = self.object(value)
 
         self.value = value
