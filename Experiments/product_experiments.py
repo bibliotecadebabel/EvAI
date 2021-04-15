@@ -35,7 +35,7 @@ def run_cifar_user_input_bidi(test_name,mutations_actions, const_direction_versi
     save=True#bool(input('Insert any input to save'))
     status=program.Status()
 
-    status.max_layer_conv2d = 11
+    status.max_layer_conv2d = int(input("Enter max conv2d layers: "))
     status.max_filter = 530
     status.max_filter_dense = 270
     status.max_kernel_dense = 9
@@ -137,7 +137,7 @@ def run_cifar_user_input_bidi(test_name,mutations_actions, const_direction_versi
     from utilities.Abstract_classes.classes.uniform_random_selector_2 import (
         centered_random_selector as Selector)
     status.mutations=mutations_actions
-    status.num_actions=8#int(input("num_actions : "))
+    status.num_actions=int(input("num_actions : "))
 
     status.Selector_creator=Selector
     status.log_size=200#int(input("Log size : "))
@@ -164,16 +164,19 @@ def run_cifar_user_input_bidi(test_name,mutations_actions, const_direction_versi
 
 
 
-    status.mutation_coefficient=1#float(input("mutation_coefficient : "))
+    status.mutation_coefficient=float(input("mutation_coefficient : "))
     if save:
-        status.experiment_name=test_name#input("insert experiment name : ")
+        if test_name is not None:
+            status.experiment_name=test_name
+        else:
+            status.experiment_name=input("insert experiment name : ")
         status.save_space_period=200#int(input("save_space_period : "))
         status.save_net_period=600#int(input("save_space_net_period : "))
     status.save2database=save
     x=32
     y=32
 
-    status.Center = DNAs.DNA_base_p_version
+    status.Center = DNAs.DNA_base
     status.settings=settings
     program.run(status)
 
